@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>es.gob.afirma</groupId>
   <artifactId>afirma-lib-juniversalchardet</artifactId>
-  <version>3.2.0</version>
+  <version>0.0.1</version>
   <name>afirma-lib-juniversalchardet</name>
 
   <dependencies>
