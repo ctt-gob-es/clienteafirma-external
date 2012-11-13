@@ -694,8 +694,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      * @throws ClassNotFoundException cuando no se encuentra la clase a cargar
      */
     static Class<?> classForName(final String className) throws ClassNotFoundException {
-        getCleanClassLoader().loadClass(className);
-        return Class.forName(className);
+        return getCleanClassLoader().loadClass(className);
     }
 
     /** Obtiene un ClassLoader que no incluye URL que no referencien directamente a ficheros JAR.
