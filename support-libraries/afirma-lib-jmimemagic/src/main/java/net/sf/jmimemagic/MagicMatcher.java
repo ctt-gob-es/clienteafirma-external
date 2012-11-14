@@ -622,7 +622,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      */
     public String[] getDetectorExtensions() {
 
-        final String detectorClass = new String(this.match.getTest().array());
+        final String detectorClass = new String(this.match.getTest().array()).trim();
 
         try {
             final MagicDetector detector = (MagicDetector) classForName(detectorClass).newInstance();
