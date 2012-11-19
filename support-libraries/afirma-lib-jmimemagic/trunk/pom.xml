@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>es.gob.afirma</groupId>
   <artifactId>afirma-lib-jmimemagic</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>afirma-lib-jmimemagic</name>
 
   <dependencies>
@@ -24,8 +22,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-jmimemagic/trunk</connection>
-    <url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-jmimemagic/trunk</url>
+    <connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-jmimemagic/tags/afirma-lib-jmimemagic_0.0.1</connection>
+    <url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-jmimemagic/tags/afirma-lib-jmimemagic_0.0.1</url>
   </scm>
 
   <distributionManagement>
