@@ -1,10 +1,19 @@
 package org.mozilla.universalchardet;
 
-public final class Constants
-{
+/** Nombres de los juegos de caracteres. */
+public final class Constants {
+
+	private Constants() {
+		// No permitimos la instanciacion
+	}
+
+	/** ISO-2022-JP. */
     public static final String CHARSET_ISO_2022_JP  = "ISO-2022-JP".intern(); //$NON-NLS-1$
+    /** ISO-2022-CN. */
     public static final String CHARSET_ISO_2022_CN  = "ISO-2022-CN".intern(); //$NON-NLS-1$
+    /** ISO-2022-KR. */
     public static final String CHARSET_ISO_2022_KR  = "ISO-2022-KR".intern(); //$NON-NLS-1$
+    /** ISO-8859-5. */
     public static final String CHARSET_ISO_8859_5   = "ISO-8859-5".intern(); //$NON-NLS-1$
     public static final String CHARSET_ISO_8859_7   = "ISO-8859-7".intern(); //$NON-NLS-1$
     public static final String CHARSET_ISO_8859_8   = "ISO-8859-8".intern(); //$NON-NLS-1$
