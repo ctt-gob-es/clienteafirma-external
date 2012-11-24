@@ -205,7 +205,7 @@ public final class Perl5Util implements MatchResult {
    * util = new Perl5Util(new PatternCacheFIFO2(10));
    * </pre>
    */
-  public Perl5Util(final PatternCache cache) {
+  Perl5Util(final PatternCache cache) {
     this.__matcher      = new Perl5Matcher();
     this.__patternCache = cache;
     this.__expressionCache = new CacheLRU(cache.capacity());
@@ -420,7 +420,8 @@ public final class Perl5Util implements MatchResult {
    * <p>
    * @return The length of the last match found.
    */
-  public synchronized int length() {
+  @Override
+public synchronized int length() {
     return this.__lastMatch.length();
   }
 
@@ -430,7 +431,8 @@ public final class Perl5Util implements MatchResult {
    *         result refers to the number of parenthesized subgroups plus
    *         the entire match itself.
    */
-  public synchronized int groups() {
+  @Override
+public synchronized int groups() {
     return this.__lastMatch.groups();
   }
 
@@ -446,7 +448,8 @@ public final class Perl5Util implements MatchResult {
    *         a group matching the null string, which will return a String
    *         of length 0.
    */
-  public synchronized String group(final int group) {
+  @Override
+public synchronized String group(final int group) {
     return this.__lastMatch.group(group);
   }
 
@@ -462,7 +465,8 @@ public final class Perl5Util implements MatchResult {
    *         equal to the length of the string, so you shouldn't blindly
    *         use the offset to index an array or String.
    */
-  public synchronized int begin(final int group) {
+  @Override
+public synchronized int begin(final int group) {
     return this.__lastMatch.begin(group);
   }
 
@@ -477,7 +481,8 @@ public final class Perl5Util implements MatchResult {
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
    */
-  public synchronized int end(final int group) {
+  @Override
+public synchronized int end(final int group) {
     return this.__lastMatch.end(group);
   }
 
@@ -492,7 +497,8 @@ public final class Perl5Util implements MatchResult {
    *         pattern subgroup.  If a group was never matched or does
    *         not exist, returns -1.
    */
-  public synchronized int beginOffset(final int group) {
+  @Override
+public synchronized int beginOffset(final int group) {
     return this.__lastMatch.beginOffset(group);
   }
 
@@ -507,7 +513,8 @@ public final class Perl5Util implements MatchResult {
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
    */
-  public synchronized int endOffset(final int group) {
+  @Override
+public synchronized int endOffset(final int group) {
     return this.__lastMatch.endOffset(group);
   }
 

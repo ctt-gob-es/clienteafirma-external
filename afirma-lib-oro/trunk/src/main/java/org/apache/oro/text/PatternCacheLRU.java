@@ -84,7 +84,7 @@ public final class PatternCacheLRU extends GenericPatternCache {
    * @param capacity  The capacity of the cache.
    * @param compiler  The PatternCompiler to use to compile patterns.
    */
-  public PatternCacheLRU(final int capacity, final PatternCompiler compiler) {
+  PatternCacheLRU(final int capacity, final PatternCompiler compiler) {
     super(new CacheLRU(capacity), compiler);
   }
 
@@ -94,7 +94,7 @@ public final class PatternCacheLRU extends GenericPatternCache {
    * PatternCacheLRU(GenericPatternCache.DEFAULT_CAPACITY, compiler);
    * </pre></blockquote>
    */
-  public PatternCacheLRU(final PatternCompiler compiler) {
+  PatternCacheLRU(final PatternCompiler compiler) {
     this(GenericPatternCache.DEFAULT_CAPACITY, compiler);
   }
 
@@ -105,7 +105,7 @@ public final class PatternCacheLRU extends GenericPatternCache {
    * PatternCacheLRU(capacity, new Perl5Compiler());
    * </pre></blockquote>
    */
-  public PatternCacheLRU(final int capacity) {
+  PatternCacheLRU(final int capacity) {
     this(capacity, new Perl5Compiler());
   }
 

@@ -333,9 +333,9 @@ private boolean __lastSuccess = false;
 
       if(mustString != null &&
 	 ((expression._anchor & Perl5Pattern._OPT_ANCH) == 0 ||
-	  ((this.__multiline ||
+	  (this.__multiline ||
 	   (expression._anchor & Perl5Pattern._OPT_ANCH_MBOL) != 0)
-	   && expression._back >= 0)))
+	   && expression._back >= 0))
 	{
 
 	this.__currentOffset =
@@ -355,7 +355,7 @@ private boolean __lastSuccess = false;
 	  minLength = expression._back + mustString.length;
 	} else if(!expression._isExpensive &&
 		  (expression._options & Perl5Compiler.READ_ONLY_MASK) == 0 &&
-		  (--expression._mustUtility < 0)) {
+		  --expression._mustUtility < 0) {
 	  // Be careful!  The preceding logical expression is constructed
 	  // so that mustUtility is only decremented if the expression is
 	  // compiled without READ_ONLY_MASK.
@@ -438,7 +438,7 @@ private boolean __lastSuccess = false;
 	boolean doEvery, tmp;
 	char op;
 
-	doEvery = ((expression._anchor & Perl5Pattern._OPT_SKIP) == 0);
+	doEvery = (expression._anchor & Perl5Pattern._OPT_SKIP) == 0;
 
 	if(minLength > 0) {
 		dontTry = minLength - 1;
@@ -453,13 +453,12 @@ private boolean __lastSuccess = false;
 	    ch = this.__input[this.__currentOffset];
 
 	    if(ch < 256 &&
-	       (this.__program[offset + (ch >> 4)] & (1 << (ch & 0xf))) == 0) {
+	       (this.__program[offset + (ch >> 4)] & 1 << (ch & 0xf)) == 0) {
 	      if(tmp && __tryExpression(this.__currentOffset)) {
 		success = true;
 		break _mainLoop;
-	      } else {
-			tmp = doEvery;
-		}
+	      }
+		tmp = doEvery;
 	    } else {
 			tmp = true;
 		}
@@ -609,9 +608,8 @@ private boolean __lastSuccess = false;
 	      if(tmp && __tryExpression(this.__currentOffset)) {
 		success = true;
 		break _mainLoop;
-	      } else {
-			tmp = doEvery;
-		}
+	      }
+		tmp = doEvery;
 	    } else {
 			tmp = true;
 		}
@@ -681,12 +679,12 @@ private boolean __lastSuccess = false;
   private boolean __matchUnicodeClass(final char code, final char __program[],
 			     int offset ,final char opcode)
   {
-    boolean isANYOF = ( opcode == OpCode._ANYOFUN );
+    boolean isANYOF = opcode == OpCode._ANYOFUN;
 
     while( __program[offset] != OpCode._END ){
       if( __program[offset] == OpCode._RANGE ){
 	offset++;
-	if((code >= __program[offset]) && (code <= __program[offset+1])){
+	if(code >= __program[offset] && code <= __program[offset+1]){
 	  return isANYOF;
 	} else {
 	  offset+=2;
@@ -699,7 +697,7 @@ private boolean __lastSuccess = false;
 	}
 
       } else {
-	isANYOF = (__program[offset] == OpCode._OPCODE)
+	isANYOF = __program[offset] == OpCode._OPCODE
 	  ? isANYOF : !isANYOF;
 
 	offset++;
@@ -803,9 +801,9 @@ private boolean __lastSuccess = false;
 	    }
 	  break;
 	case OpCode._XDIGIT:
-	  if( (code >= '0' && code <= '9') ||
-	      (code >= 'a' && code <= 'f') ||
-	      (code >= 'A' && code <= 'F')) {
+	  if( code >= '0' && code <= '9' ||
+	      code >= 'a' && code <= 'f' ||
+	      code >= 'A' && code <= 'F') {
 		return isANYOF;
 	}
 	  break;
@@ -878,7 +876,7 @@ private boolean __lastSuccess = false;
 
     case OpCode._ANYOF:
       if(scan < eol && (ch = this.__input[scan]) < 256) {
-	while((ch < 256  ) && (this.__program[operand + (ch >> 4)] & (1 << (ch & 0xf))) == 0) {
+	while(ch < 256 && (this.__program[operand + (ch >> 4)] & 1 << (ch & 0xf)) == 0) {
 	  if(++scan < eol) {
 		ch = this.__input[scan];
 	} else {
@@ -958,8 +956,8 @@ private boolean __lastSuccess = false;
 
 
     input    = this.__inputOffset;
-    inputRemains = (input < this.__endOffset);
-    nextChar = (inputRemains ? this.__input[input] : __EOS);
+    inputRemains = input < this.__endOffset;
+    nextChar = inputRemains ? this.__input[input] : __EOS;
 
     scan     = offset;
     maxScan  = this.__program.length;
@@ -971,15 +969,15 @@ private boolean __lastSuccess = false;
 
       case OpCode._BOL:
 	if(input == this.__bol ? this.__previousChar == '\n' :
-	   (this.__multiline && (inputRemains || input < this.__eol) &&
-	    this.__input[input - 1] == '\n')) {
+	   this.__multiline && (inputRemains || input < this.__eol) &&
+	    this.__input[input - 1] == '\n') {
 		break;
 	}
 	return false;
 
       case OpCode._MBOL:
 	if(input == this.__bol ? this.__previousChar == '\n' :
-	   ((inputRemains || input < this.__eol) && this.__input[input - 1] == '\n')) {
+	   (inputRemains || input < this.__eol) && this.__input[input - 1] == '\n') {
 		break;
 	}
 	return false;
@@ -1024,16 +1022,16 @@ private boolean __lastSuccess = false;
 	if(!inputRemains && input >= this.__eol) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._ANY:
-	if((!inputRemains && input >= this.__eol) || nextChar == '\n') {
+	if(!inputRemains && input >= this.__eol || nextChar == '\n') {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._EXACTLY:
@@ -1052,8 +1050,8 @@ private boolean __lastSuccess = false;
 	}
 
 	input+=line;
-	inputRemains = (input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._ANYOF:
@@ -1064,7 +1062,7 @@ private boolean __lastSuccess = false;
 	}
 
 	if(nextChar >= 256 || (this.__program[current + (nextChar >> 4)] &
-	    (1 << (nextChar & 0xf))) != 0) {
+	    1 << (nextChar & 0xf)) != 0) {
 		return false;
 	}
 
@@ -1072,8 +1070,8 @@ private boolean __lastSuccess = false;
 		return false;
 	}
 
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._ANYOFUN:
@@ -1092,8 +1090,8 @@ private boolean __lastSuccess = false;
 		return false;
 	}
 
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._ALNUM:
@@ -1103,8 +1101,8 @@ private boolean __lastSuccess = false;
 	if(!OpCode._isWordCharacter(nextChar)) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._NALNUM:
@@ -1114,8 +1112,8 @@ private boolean __lastSuccess = false;
 	if(OpCode._isWordCharacter(nextChar)) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
 
@@ -1131,7 +1129,7 @@ private boolean __lastSuccess = false;
 
 	b = OpCode._isWordCharacter(nextChar);
 
-	if((a == b) == (this.__program[scan] == OpCode._BOUND)) {
+	if(a == b == (this.__program[scan] == OpCode._BOUND)) {
 		return false;
 	}
 	break;
@@ -1143,8 +1141,8 @@ private boolean __lastSuccess = false;
 	if(!Character.isWhitespace(nextChar)) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
 
@@ -1155,16 +1153,16 @@ private boolean __lastSuccess = false;
 	if(Character.isWhitespace(nextChar)) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._DIGIT:
 	if(!Character.isDigit(nextChar)) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._NDIGIT:
@@ -1174,8 +1172,8 @@ private boolean __lastSuccess = false;
 	if(Character.isDigit(nextChar)) {
 		return false;
 	}
-	inputRemains = (++input < this.__endOffset);
-	nextChar = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = ++input < this.__endOffset;
+	nextChar = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._REF:
@@ -1209,8 +1207,8 @@ private boolean __lastSuccess = false;
 	}
 
 	input+=line;
-	inputRemains = (input < this.__endOffset);
-	nextChar     = (inputRemains ? this.__input[input] : __EOS);
+	inputRemains = input < this.__endOffset;
+	nextChar     = inputRemains ? this.__input[input] : __EOS;
 	break;
 
       case OpCode._NOTHING:
@@ -1405,7 +1403,7 @@ private boolean __lastSuccess = false;
 	}
 
 
-	  while(arg >= line || (arg == Character.MAX_VALUE && line > 0)) {
+	  while(arg >= line || arg == Character.MAX_VALUE && line > 0) {
 	    // there may be a bug here with respect to
 	    // __inputOffset >= __endOffset, but it seems to be right for
 	    // now.  the issue is with __inputOffset being reset later.
@@ -1431,7 +1429,7 @@ private boolean __lastSuccess = false;
 	  arg = __repeat(scan, arg);
 
 	  if(line < arg && OpCode._opType[this.__program[next]] == OpCode._EOL &&
-	     ((!this.__multiline && this.__program[next] != OpCode._MEOL) ||
+	     (!this.__multiline && this.__program[next] != OpCode._MEOL ||
               this.__program[next] == OpCode._SEOL)) {
 		line = arg;
 	}
@@ -1536,7 +1534,8 @@ private boolean __lastSuccess = false;
    * @param offset The offset at which to start searching for the prefix.
    * @return True if input matches pattern, false otherwise.
    */
-  public boolean matchesPrefix(char[] input, final Pattern pattern, final int offset) {
+  @Override
+public boolean matchesPrefix(char[] input, final Pattern pattern, final int offset) {
     Perl5Pattern expression;
 
     expression = (Perl5Pattern)pattern;
@@ -1568,7 +1567,8 @@ private boolean __lastSuccess = false;
    * @param pattern  The Pattern to be matched.
    * @return True if input matches pattern, false otherwise.
    */
-  public boolean matchesPrefix(final char[] input, final Pattern pattern) {
+  @Override
+public boolean matchesPrefix(final char[] input, final Pattern pattern) {
     return matchesPrefix(input, pattern, 0);
   }
 
@@ -1586,7 +1586,8 @@ private boolean __lastSuccess = false;
    * @param pattern  The Pattern to be matched.
    * @return True if input matches pattern, false otherwise.
    */
-  public boolean matchesPrefix(final String input, final Pattern pattern) {
+  @Override
+public boolean matchesPrefix(final String input, final Pattern pattern) {
     return matchesPrefix(input.toCharArray(), pattern, 0);
   }
 
@@ -1609,7 +1610,8 @@ private boolean __lastSuccess = false;
    * @param pattern  The Pattern to be matched.
    * @return True if input matches pattern, false otherwise.
    */
-  public boolean matchesPrefix(final PatternMatcherInput input, final Pattern pattern) {
+  @Override
+public boolean matchesPrefix(final PatternMatcherInput input, final Pattern pattern) {
     char[] inp;
     Perl5Pattern expression;
 
@@ -1673,7 +1675,8 @@ private boolean __lastSuccess = false;
    * @exception ClassCastException If a Pattern instance other than a
    *         Perl5Pattern is passed as the pattern parameter.
    */
-  public boolean matches(char[] input, final Pattern pattern) {
+  @Override
+public boolean matches(char[] input, final Pattern pattern) {
     Perl5Pattern expression;
 
     expression = (Perl5Pattern)pattern;
@@ -1683,8 +1686,8 @@ private boolean __lastSuccess = false;
 	}
 
     __initInterpreterGlobals(expression, input, 0, input.length, 0);
-    this.__lastSuccess = (__tryExpression(0) &&
-		     this.__endMatchOffsets[0] == input.length);
+    this.__lastSuccess = __tryExpression(0) &&
+		     this.__endMatchOffsets[0] == input.length;
     this.__lastMatchResult = null;
 
     return this.__lastSuccess;
@@ -1728,7 +1731,8 @@ private boolean __lastSuccess = false;
    * @exception ClassCastException If a Pattern instance other than a
    *         Perl5Pattern is passed as the pattern parameter.
    */
-  public boolean matches(final String input, final Pattern pattern) {
+  @Override
+public boolean matches(final String input, final Pattern pattern) {
     return matches(input.toCharArray(), pattern);
   }
 
@@ -1777,7 +1781,8 @@ private boolean __lastSuccess = false;
    * @exception ClassCastException If a Pattern instance other than a
    *         Perl5Pattern is passed as the pattern parameter.
    */
-  public boolean matches(final PatternMatcherInput input, final Pattern pattern) {
+  @Override
+public boolean matches(final PatternMatcherInput input, final Pattern pattern) {
     char[] inp;
     Perl5Pattern expression;
 
@@ -1836,7 +1841,8 @@ private boolean __lastSuccess = false;
    * @exception ClassCastException If a Pattern instance other than a
    *         Perl5Pattern is passed as the pattern parameter.
    */
-  public boolean contains(final String input, final Pattern pattern) {
+  @Override
+public boolean contains(final String input, final Pattern pattern) {
     return contains(input.toCharArray(), pattern);
   }
 
@@ -1865,7 +1871,8 @@ private boolean __lastSuccess = false;
    * @exception ClassCastException If a Pattern instance other than a
    *         Perl5Pattern is passed as the pattern parameter.
    */
-  public boolean contains(char[] input, final Pattern pattern) {
+  @Override
+public boolean contains(char[] input, final Pattern pattern) {
     Perl5Pattern expression;
 
     expression = (Perl5Pattern)pattern;
@@ -1944,7 +1951,8 @@ private boolean __lastSuccess = false;
    * @exception ClassCastException If a Pattern instance other than a
    *         Perl5Pattern is passed as the pattern parameter.
    */
-  public boolean contains(final PatternMatcherInput input, final Pattern pattern) {
+  @Override
+public boolean contains(final PatternMatcherInput input, final Pattern pattern) {
     char[] inp;
     Perl5Pattern expression;
     boolean matchFound;
@@ -2015,7 +2023,8 @@ private boolean __lastSuccess = false;
    *         methods.  If no match was found by the last call, returns
    *         null.
    */
-  public MatchResult getMatch() {
+  @Override
+public MatchResult getMatch() {
     if(!this.__lastSuccess) {
 		return null;
 	}

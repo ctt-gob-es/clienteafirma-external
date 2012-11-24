@@ -26,13 +26,13 @@
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
- * 4. The names "Apache" and "Apache Software Foundation", "Jakarta-Oro" 
+ * 4. The names "Apache" and "Apache Software Foundation", "Jakarta-Oro"
  *    must not be used to endorse or promote products derived from this
  *    software without prior written permission. For written
  *    permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" 
- *    or "Jakarta-Oro", nor may "Apache" or "Jakarta-Oro" appear in their 
+ * 5. Products derived from this software may not be called "Apache"
+ *    or "Jakarta-Oro", nor may "Apache" or "Jakarta-Oro" appear in their
  *    name, without prior written permission of the Apache Software Foundation.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
@@ -73,7 +73,7 @@ package org.apache.oro.text.regex;
  * or by the {@link #toString()} method which is
  * defined to return the same thing.  It is also possible to obtain
  * the beginning and ending offsets of a match relative to the input
- * producing the match by using the 
+ * producing the match by using the
  * {@link #beginOffset(int)} and {@link #endOffset(int)} methods.  The
  * {@link #begin(int)} and {@link #end(int)} are useful in some
  * circumstances and return the begin and end offsets of the subgroups
@@ -103,11 +103,11 @@ package org.apache.oro.text.regex;
  * input   = new PatternMatcherInput(someStringInput);
  *
  * while(matcher.contains(input, pattern)) {
- *   result = matcher.getMatch();  
+ *   result = matcher.getMatch();
  *   // Perform whatever processing on the result you want.
  *   // Here we just print out all its elements to show how its
  *   // methods are used.
- * 
+ *
  *   System.out.println("Match: " + result.toString());
  *   System.out.println("Length: " + result.length());
  *   groups = result.groups();
@@ -141,7 +141,7 @@ public interface MatchResult {
    * int length = -1; // Use -1 to indicate group doesn't exist
    * MatchResult result;
    * String subgroup;
-   * 
+   *
    * // Initialization of result omitted
    *
    * subgroup = result.group(1);
@@ -246,5 +246,6 @@ public interface MatchResult {
    *
    * @return A string containing the entire match.
    */
+  @Override
   public String toString();
 }

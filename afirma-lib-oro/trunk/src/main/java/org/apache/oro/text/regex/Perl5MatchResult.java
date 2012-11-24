@@ -121,12 +121,13 @@ final class Perl5MatchResult implements MatchResult {
   /**
    * @return The length of the match.
    */
-  public int length(){
+  @Override
+public int length(){
     int length;
 
-    length = (this._endGroupOffset[0] - this._beginGroupOffset[0]);
+    length = this._endGroupOffset[0] - this._beginGroupOffset[0];
 
-    return (length > 0 ? length : 0);
+    return length > 0 ? length : 0;
   }
 
 
@@ -136,7 +137,8 @@ final class Perl5MatchResult implements MatchResult {
    *         to the number of parenthesized subgroups plus the entire match
    *         itself.
    */
-  public int groups(){
+  @Override
+public int groups(){
     return this._beginGroupOffset.length;
   }
 
@@ -148,7 +150,8 @@ final class Perl5MatchResult implements MatchResult {
    *         a group matching the null string, which will return a String
    *         of length 0.
    */
-  public String group(final int group){
+  @Override
+public String group(final int group){
     int begin, end, length;
 
     if(group < this._beginGroupOffset.length){
@@ -174,7 +177,8 @@ final class Perl5MatchResult implements MatchResult {
    *         pattern subgroup.  If a group was never matched or does
    *         not exist, returns -1.
    */
-  public int begin(final int group){
+  @Override
+public int begin(final int group){
     int begin, end;//, length;
     if(group < this._beginGroupOffset.length){
       begin  = this._beginGroupOffset[group];
@@ -196,7 +200,8 @@ final class Perl5MatchResult implements MatchResult {
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
    */
-  public int end(final int group){
+  @Override
+public int end(final int group){
     int begin, end; //, length;
     if(group < this._beginGroupOffset.length){
       begin  = this._beginGroupOffset[group];
@@ -219,7 +224,8 @@ final class Perl5MatchResult implements MatchResult {
    *         pattern subgroup.  If a group was never matched or does
    *         not exist, returns -1.
    */
-  public int beginOffset(final int group){
+  @Override
+public int beginOffset(final int group){
     int begin, end;//, length;
     if(group < this._beginGroupOffset.length){
       begin  = this._beginGroupOffset[group];
@@ -243,7 +249,8 @@ final class Perl5MatchResult implements MatchResult {
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
    */
-  public int endOffset(final int group){
+  @Override
+public int endOffset(final int group){
     int begin, end;//, length;
     if(group < this._endGroupOffset.length){
       begin  = this._beginGroupOffset[group];
