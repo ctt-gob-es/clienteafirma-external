@@ -87,7 +87,7 @@ public final class Perl5Pattern implements Pattern, Serializable, Cloneable {
     _OPT_ANCH_MBOL = 0x02,
     _OPT_SKIP      = 0x04,
     _OPT_IMPLICIT  = 0x08;
-  static final int _OPT_ANCH = (_OPT_ANCH_BOL | _OPT_ANCH_MBOL);
+  static final int _OPT_ANCH = _OPT_ANCH_BOL | _OPT_ANCH_MBOL;
 
   String _expression;
   char[] _program;
@@ -123,7 +123,8 @@ public final class Perl5Pattern implements Pattern, Serializable, Cloneable {
    * @return The original string representation of the regular expression
    *         pattern.
    */
-  public String getPattern() { return this._expression; }
+  @Override
+public String getPattern() { return this._expression; }
 
 
   /**
@@ -132,7 +133,8 @@ public final class Perl5Pattern implements Pattern, Serializable, Cloneable {
    * <p>
    * @return The compilation options used to compile the pattern.
    */
-  public int getOptions()    { return this._options; }
+  @Override
+public int getOptions()    { return this._options; }
 
   /*
   // For testing

@@ -126,20 +126,18 @@ public abstract class GenericPatternCache implements PatternCache {
    * @exception MalformedPatternException  If there is an error in compiling
    *         the regular expression.
    */
-  public final synchronized Pattern addPattern(final String expression, final int options)
-       throws MalformedPatternException
-  {
-    Object obj;
+  @Override
+  public final synchronized Pattern addPattern(final String expression, final int options) throws MalformedPatternException {
+    final Object obj;
     Pattern pattern;
 
     obj = this._cache.getElement(expression);
 
     if(obj != null) {
       pattern = (Pattern)obj;
-
       if(pattern.getOptions() == options) {
 		return pattern;
-	}
+      }
     }
 
     pattern = this._compiler.compile(expression, options);
@@ -157,9 +155,7 @@ public abstract class GenericPatternCache implements PatternCache {
    * @exception MalformedPatternException  If there is an error in compiling
    *         the regular expression.
    */
-  public final synchronized Pattern addPattern(final String expression)
-       throws MalformedPatternException
-  {
+  final synchronized Pattern addPattern(final String expression) throws MalformedPatternException {
     return addPattern(expression, 0);
   }
 
@@ -185,7 +181,8 @@ public abstract class GenericPatternCache implements PatternCache {
    * @exception MalformedCachePatternException  If there is an error in
    *     compiling the regular expression.
    */
-  public final synchronized Pattern getPattern(final String expression, final int options)
+  @Override
+public final synchronized Pattern getPattern(final String expression, final int options)
        throws MalformedCachePatternException
   {
     Pattern result = null;
@@ -208,7 +205,8 @@ public abstract class GenericPatternCache implements PatternCache {
    * getPattern(expression, 0)
    * </pre></blockquote>
    */
-  public final synchronized Pattern getPattern(final String expression)
+  @Override
+public final synchronized Pattern getPattern(final String expression)
        throws MalformedCachePatternException
   {
     return getPattern(expression, 0);
@@ -230,5 +228,6 @@ public abstract class GenericPatternCache implements PatternCache {
    * <p>
    * @return The maximum number of patterns that can be cached at one time.
    */
-  public final int capacity() { return this._cache.capacity(); }
+  @Override
+public final int capacity() { return this._cache.capacity(); }
 }
