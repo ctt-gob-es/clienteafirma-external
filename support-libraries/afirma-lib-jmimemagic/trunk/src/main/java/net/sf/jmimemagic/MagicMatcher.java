@@ -69,7 +69,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      */
     public boolean isValid() {
 
-        if ((this.match == null) || (this.match.getTest() == null)) {
+        if (this.match == null || this.match.getTest() == null) {
             return false;
         }
 
@@ -78,9 +78,9 @@ public class MagicMatcher implements Cloneable, Serializable {
         final String description = this.match.getDescription();
         final String test = new String(this.match.getTest().array());
 
-        if (!type.equals("") && (comparator != '\0') && //$NON-NLS-1$
-                ((comparator == '=') || (comparator == '!') || (comparator == '>') ||
-                (comparator == '<')) && (description != null) && !description.equals("") && //$NON-NLS-1$
+        if (!type.equals("") && comparator != '\0' && //$NON-NLS-1$
+                (comparator == '=' || comparator == '!' || comparator == '>' ||
+                comparator == '<') && description != null && !description.equals("") && //$NON-NLS-1$
                 !test.equals("")) { //$NON-NLS-1$
             return true;
         }
@@ -166,7 +166,7 @@ public class MagicMatcher implements Cloneable, Serializable {
             }
 
             // we know this match won't work since there isn't enough data for the test
-            if (length > (file.length() - offset)) {
+            if (length > file.length() - offset) {
                 return null;
             }
 
@@ -199,7 +199,7 @@ public class MagicMatcher implements Cloneable, Serializable {
                 match1 = getMatch();
 
                 // set the data on this match
-                if ((onlyMimeMatch == false) && (this.subMatchers != null) && (this.subMatchers.size() > 0)) {
+                if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
 
                     for (int i = 0; i < this.subMatchers.size(); i++) {
 
@@ -278,7 +278,7 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         final byte[] buf = new byte[length];
 
-        if ((offset + length) < data.length) {
+        if (offset + length < data.length) {
             System.arraycopy(data, offset, buf, 0, length);
 
             MagicMatch match1 = null;
@@ -289,7 +289,7 @@ public class MagicMatcher implements Cloneable, Serializable {
                 match1 = getMatch();
 
                 // set the data on this match
-                if ((onlyMimeMatch == false) && (this.subMatchers != null) && (this.subMatchers.size() > 0)) {
+                if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
 
                     for (int i = 0; i < this.subMatchers.size(); i++) {
 
@@ -327,7 +327,7 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         ByteBuffer buffer = ByteBuffer.allocate(data.length);
 
-        if ((type != null) && (test.length() > 0)) {
+        if (type != null && test.length() > 0) {
             if (type.equals("string")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
 
@@ -601,7 +601,7 @@ public class MagicMatcher implements Cloneable, Serializable {
                     this.match.getBitmask(), this.match.getComparator(), this.match.getMimeType(),
                     this.match.getProperties());
 
-            if ((types != null) && (types.length > 0)) {
+            if (types != null && types.length > 0) {
                 // the match object has no mime type set, so set from the detector class processing
                 this.match.setMimeType(types[0]);
 

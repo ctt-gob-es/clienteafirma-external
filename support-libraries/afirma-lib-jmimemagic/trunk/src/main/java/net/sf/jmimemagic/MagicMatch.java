@@ -55,20 +55,21 @@ public class MagicMatch implements Cloneable, Serializable {
     private long bitmask = 0xFFFFFFFFL;
     private char comparator = '\0';
     private final ArrayList<MagicMatch> subMatches = new ArrayList<MagicMatch>(0);
-    private Map properties;
+    private Map<String, String> properties;
 
     /** Set the mime type for this magic match. */
-    public void setMimeType(final String value) {
+    void setMimeType(final String value) {
         this.mimeType = value;
     }
 
-    /** Get the magic match for this magic match. */
+    /** Get the magic match for this magic match.
+     * @return The magic match for this magic match */
     public String getMimeType() {
         return this.mimeType;
     }
 
     /** Set the extension for this magic match. */
-    public void setExtension(final String value) {
+    void setExtension(final String value) {
         this.extension = value;
     }
 
@@ -81,7 +82,7 @@ public class MagicMatch implements Cloneable, Serializable {
     }
 
     /** Set the description for this magic match. */
-    public void setDescription(final String value) {
+    void setDescription(final String value) {
         this.description = value;
     }
 
@@ -220,7 +221,7 @@ public class MagicMatch implements Cloneable, Serializable {
      *
      * @param properties DOCUMENT ME!
      */
-    public void setProperties(final Map properties)
+    public void setProperties(final Map<String, String> properties)
     {
         this.properties = properties;
     }
@@ -230,7 +231,7 @@ public class MagicMatch implements Cloneable, Serializable {
      *
      * @return the properties for this magic match
      */
-    public Map getProperties()
+    public Map<String, String> getProperties()
     {
         return this.properties;
     }
@@ -271,7 +272,7 @@ public class MagicMatch implements Cloneable, Serializable {
      */
     public boolean descriptionMatches(final String desc)
     {
-        if ((this.description != null) && this.description.equals(desc)) {
+        if (this.description != null && this.description.equals(desc)) {
             return true;
         }
 
@@ -299,7 +300,7 @@ public class MagicMatch implements Cloneable, Serializable {
      */
     public boolean mimeTypeMatches(final String desc)
     {
-        if ((this.mimeType != null) && this.mimeType.equals(desc)) {
+        if (this.mimeType != null && this.mimeType.equals(desc)) {
             return true;
         }
 
@@ -339,7 +340,7 @@ public class MagicMatch implements Cloneable, Serializable {
         clone.setOffset(this.offset);
 
         // these properties should only be String types, so we shouldn't have to clone them
-        final HashMap m = new HashMap();
+        final HashMap<String, String> m = new HashMap<String, String>();
         m.putAll(this.properties);
         clone.setProperties(m);
 

@@ -53,7 +53,8 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String getDisplayName()
+    @Override
+	public String getDisplayName()
     {
         return "Text File Detector"; //$NON-NLS-1$
     }
@@ -63,7 +64,8 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String getVersion()
+    @Override
+	public String getVersion()
     {
         return "0.1"; //$NON-NLS-1$
     }
@@ -73,7 +75,8 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String[] getHandledExtensions()
+    @Override
+	public String[] getHandledExtensions()
     {
         return new String[] { "txt", "text" }; //$NON-NLS-1$ //$NON-NLS-2$
     }
@@ -83,7 +86,8 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String[] getHandledTypes()
+    @Override
+	public String[] getHandledTypes()
     {
         return new String[] { "text/plain" }; //$NON-NLS-1$
     }
@@ -93,7 +97,8 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String getName()
+    @Override
+	public String getName()
     {
         return "textfiledetector"; //$NON-NLS-1$
     }
@@ -111,8 +116,9 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String[] process(final byte[] data, final int offset, final int length, final long bitmask, final char comparator,
-        final String mimeType, final Map params)
+    @Override
+	public String[] process(final byte[] data, final int offset, final int length, final long bitmask, final char comparator,
+        final String mimeType, final Map<String, String> params)
     {
 
         final Perl5Util util = new Perl5Util();
@@ -144,8 +150,9 @@ public final class TextFileDetector implements MagicDetector
      *
      * @return DOCUMENT ME!
      */
-    public String[] process(final File file, final int offset, final int length, final long bitmask, final char comparator,
-        final String mimeType, final Map params)
+    @Override
+	public String[] process(final File file, final int offset, final int length, final long bitmask, final char comparator,
+        final String mimeType, final Map<String, String> params)
     {
 
         return new String[] {  };
