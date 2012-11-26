@@ -837,6 +837,12 @@
 	</match-list>
 </match>
 <match>
+ <mimetype>application/x-rar-compressed</mimetype>
+ <extension>rar</extension>
+ <description>RAR compressed file</description>
+ <test offset="0" type="string" comparator="=">Rar!</test><!--  0x526172211a0700 -->
+</match>
+<match>
 	<mimetype>???</mimetype>
 	<extension>???</extension>
 	<description>realaudio sound file</description>
@@ -2164,27 +2170,27 @@
 </match>
 <match>
 	<mimetype>application/msexcel</mimetype>
-	<extension>???</extension>
+	<extension>xls</extension>
 	<description>%s</description>
 	<test offset="2080" type="string" comparator="=">Microsoft Excel 5.0 Worksheet</test>
 </match>
 <match>
 	<mimetype>???</mimetype>
-	<extension>???</extension>
+	<extension>xls</extension>
 	<description>Microsoft Excel 5.0 Worksheet</description>
 	<test offset="2114" type="string" comparator="=">Biff5</test>
 </match>
 <match>
 	<mimetype>text/xml</mimetype>
-	<extension>???</extension>
+	<extension>xml</extension>
 	<description>XML 1.1 Document</description>
-	<test offset="0" type="string" comparator="=">&lt;?xml version="1.1"?&gt;</test>
+	<test offset="0" type="string" comparator="=">&lt;?xml version="1.1"</test>
 </match>
 <match>
 	<mimetype>text/xml</mimetype>
 	<extension>???</extension>
 	<description>XML 1.0 Document</description>
-	<test offset="0" type="string" comparator="=">&lt;?xml version="1.0"?&gt;</test>
+	<test offset="0" type="string" comparator="=">&lt;?xml version="1.0"</test>
 	<match-list>
 		<match>
 			<mimetype>application/msexcel</mimetype>
@@ -2193,6 +2199,12 @@
 			<test offset="23" type="string" comparator="=">&lt;Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"</test>
 		</match>
 	</match-list>
+</match>
+<match>
+	<mimetype>text/xml</mimetype>
+	<extension>xml</extension>
+	<description>XML Document</description>
+	<test offset="0" type="string" comparator="=">&lt;?xml</test>
 </match>
 <match>
 	<mimetype>???</mimetype>
