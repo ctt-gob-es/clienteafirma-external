@@ -23,7 +23,6 @@ For more information, please email arimus@users.sourceforge.net
 package net.sf.jmimemagic;
 
 import java.io.File;
-
 import java.util.Map;
 
 
@@ -90,7 +89,7 @@ public interface MagicDetector
      * @return DOCUMENT ME!
      */
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator,
-        String mimeType, Map params);
+        String mimeType, Map<String, String> params);
 
     // process the file and return all matching content types
     /**
@@ -107,5 +106,5 @@ public interface MagicDetector
      * @return DOCUMENT ME!
      */
     public String[] process(File file, int offset, int length, long bitmask, char comparator,
-        String mimeType, Map params);
+        String mimeType, Map<String, String> params);
 }
