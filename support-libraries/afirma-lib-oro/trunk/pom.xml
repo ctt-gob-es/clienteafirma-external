@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>es.gob.afirma</groupId>
   <artifactId>afirma-lib-oro</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3-SNAPSHOT</version>
   <name>afirma-lib-oro</name>
 
   <dependencies>
@@ -16,8 +16,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-oro/tags/afirma-lib-oro_0.0.2</connection>
-    <url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-oro/tags/afirma-lib-oro_0.0.2</url>
+    <connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-oro/trunk</connection>
+    <url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-oro/trunk</url>
   </scm>
 
   <distributionManagement>
