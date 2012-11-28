@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>es.gob.afirma</groupId>
   <artifactId>afirma-lib-juniversalchardet</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.2</version>
   <name>afirma-lib-juniversalchardet</name>
 
   <dependencies>
@@ -16,8 +16,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-juniversalchardet/trunk</connection>
-    <url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-juniversalchardet/trunk</url>
+    <connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-juniversalchardet/tags/afirma-lib-juniversalchardet_0.0.2</connection>
+    <url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/afirma-lib-juniversalchardet/tags/afirma-lib-juniversalchardet_0.0.2</url>
   </scm>
 
   <distributionManagement>
