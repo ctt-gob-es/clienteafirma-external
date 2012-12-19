@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.oro.text.perl.Perl5Util;
@@ -181,6 +183,7 @@ public class MagicMatcher implements Cloneable, Serializable {
                 size = file.read(buf, 0, length - bytesRead);
 
                 if (size == -1) {
+                	file.close();
                     throw new IOException("reached end of file before all bytes were read"); //$NON-NLS-1$
                 }
 
@@ -593,20 +596,23 @@ public class MagicMatcher implements Cloneable, Serializable {
      */
     private boolean testDetector(final ByteBuffer data) {
 
-        final String detectorClass = new String(this.match.getTest().array());
+        final String detectorClassName = new String(this.match.getTest().array());
 
         try {
-            final MagicDetector detector = (MagicDetector) classForName(detectorClass).newInstance();
-            final String[] types = detector.process(data.array(), this.match.getOffset(), this.match.getLength(),
-                    this.match.getBitmask(), this.match.getComparator(), this.match.getMimeType(),
-                    this.match.getProperties());
+        	final Class<?> detectorClass = classForName(detectorClassName);
+        	final Object detectorObject = detectorClass.newInstance();
+        	final Method processMethod = detectorClass.getDeclaredMethod("process", byte[].class, //$NON-NLS-1$
+        			Integer.TYPE, Integer.TYPE, Long.TYPE, Character.TYPE, String.class, Map.class);
+        	final String[] types =  (String[]) processMethod.invoke(detectorObject, data.array(), Integer.valueOf(this.match.getOffset()), Integer.valueOf(this.match.getLength()),
+        			Long.valueOf(this.match.getBitmask()), Character.valueOf(this.match.getComparator()), this.match.getMimeType(),
+        			this.match.getProperties());
 
-            if (types != null && types.length > 0) {
-                // the match object has no mime type set, so set from the detector class processing
-                this.match.setMimeType(types[0]);
+        	if (types != null && types.length > 0) {
+        		// the match object has no mime type set, so set from the detector class processing
+        		this.match.setMimeType(types[0]);
 
-                return true;
-            }
+        		return true;
+        	}
         }
         catch (final Throwable e) {
         	java.util.logging.Logger.getAnonymousLogger().warning(e.toString());
@@ -622,16 +628,21 @@ public class MagicMatcher implements Cloneable, Serializable {
      */
     public String[] getDetectorExtensions() {
 
-        final String detectorClass = new String(this.match.getTest().array()).trim();
+        final String detectorClassName = new String(this.match.getTest().array()).trim();
+
 
         try {
-            final MagicDetector detector = (MagicDetector) classForName(detectorClass).newInstance();
-            return detector.getHandledTypes();
+        	final Class<?> detectorClass = classForName(detectorClassName);
+        	final Object detectorObject = detectorClass.newInstance();
+        	final Method getHandledTypesMethod = detectorClass.getDeclaredMethod("getHandledTypes"); //$NON-NLS-1$
+
+        	return (String[]) getHandledTypesMethod.invoke(detectorObject);
         }
         catch (final Exception e) {
         	Logger.getLogger("es.gob.afirma").warning( //$NON-NLS-1$
-    			"Error cargando e instanciando la clase " + detectorClass + ": " + e //$NON-NLS-1$ //$NON-NLS-2$
+    			"Error cargando e instanciando la clase " + detectorClassName + ": " + e //$NON-NLS-1$ //$NON-NLS-2$
 			);
+        	e.printStackTrace();
         }
 
         return new String[0];
