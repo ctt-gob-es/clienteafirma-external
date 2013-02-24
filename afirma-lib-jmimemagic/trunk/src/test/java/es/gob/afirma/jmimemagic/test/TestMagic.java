@@ -17,7 +17,7 @@ public class TestMagic {
 	@SuppressWarnings("static-method")
 	@Test
 	public void testMagic() throws Exception {
-		final byte[] data = getDataFromInputStream(ClassLoader.getSystemResourceAsStream("TEST_PDF.pdf"));
+		final byte[] data = getDataFromInputStream(ClassLoader.getSystemResourceAsStream("TEST_PDF.pdf")); //$NON-NLS-1$
 		Assert.assertEquals("application/pdf", Magic.getMagicMatch(data).getMimeType()); //$NON-NLS-1$
 	}
 
