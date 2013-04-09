@@ -7,7 +7,6 @@
 <!ELEMENT match (mimetype,extension,description,test,submatch-list?)>
 <!ELEMENT extension (#PCDATA)>
 <!ELEMENT mimetype (#PCDATA)>
-<!ELEMENT description (#PCDATA)>
 <!ELEMENT test (#PCDATA)>
 <!ATTLIST test offset CDATA "0">
 <!ATTLIST test type CDATA "string">
