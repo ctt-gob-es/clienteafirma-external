@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>es.gob.afirma</groupId>
+	<artifactId>afirma-lib-jmimemagic</artifactId>
+	<version>0.0.3-SNAPSHOT</version>
+	<name>afirma-lib-jmimemagic</name>
+
+  	<parent>
+		<groupId>es.gob.afirma</groupId>
+		<artifactId>support-libraries</artifactId>
+		<version>1.0.0</version>
+	</parent>
+  
+	<dependencies>
+		<dependency>
+			<groupId>es.gob.afirma</groupId>
+			<artifactId>afirma-lib-oro</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+</project>
