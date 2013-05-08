@@ -7,10 +7,6 @@
 	<name>afirma-lib-itext-android</name>
 	<version>3.3.2-SNAPSHOT</version>
 
-	<properties>
-        <afirma.keytool.keystore>${basedir}/../../../afirma.keystore</afirma.keytool.keystore>
-	</properties>
-	
 	<parent>
 		<groupId>es.gob.afirma</groupId>
 		<artifactId>support-libraries</artifactId>
