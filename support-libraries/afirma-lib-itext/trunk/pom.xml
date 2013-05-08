@@ -6,10 +6,6 @@
 	<artifactId>afirma-lib-itext</artifactId>
 	<name>afirma-lib-itext</name>
 	<version>3.3.2-SNAPSHOT</version>
-
-	<properties>
-        <afirma.keytool.keystore>${basedir}/../../../afirma.keystore</afirma.keytool.keystore>
-	</properties>
 	
 	<parent>
 		<groupId>es.gob.afirma</groupId>
