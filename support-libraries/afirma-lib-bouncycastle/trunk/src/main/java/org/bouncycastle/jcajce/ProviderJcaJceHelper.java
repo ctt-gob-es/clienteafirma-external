@@ -85,7 +85,7 @@ public class ProviderJcaJceHelper
     public Signature createSignature(String algorithm)
         throws NoSuchAlgorithmException
     {
-        return Signature.getInstance(algorithm, provider);
+        return Signature.getInstance(algorithm);
     }
 
     public CertificateFactory createCertificateFactory(String algorithm)
