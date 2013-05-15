@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,24 +21,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A Proxy stream which acts as expected, that is it passes the method 
- * calls on to the proxied stream and doesn't change which methods are 
+ * A Proxy stream which acts as expected, that is it passes the method
+ * calls on to the proxied stream and doesn't change which methods are
  * being called. It is an alternative base class to FilterOutputStream
  * to increase reusability.
  * <p>
  * See the protected methods for ways in which a subclass can easily decorate
  * a stream with custom pre-, post- or error processing functionality.
- * 
+ *
  * @version $Id: ProxyOutputStream.java 1304052 2012-03-22 20:55:29Z ggregory $
  */
 public class ProxyOutputStream extends FilterOutputStream {
 
     /**
      * Constructs a new ProxyOutputStream.
-     * 
+     *
      * @param proxy  the OutputStream to delegate to
      */
-    public ProxyOutputStream(OutputStream proxy) {
+    public ProxyOutputStream(final OutputStream proxy) {
         super(proxy);
         // the proxy is stored in a protected superclass variable named 'out'
     }
@@ -49,12 +49,12 @@ public class ProxyOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    public void write(int idx) throws IOException {
+    public void write(final int idx) throws IOException {
         try {
             beforeWrite(1);
-            out.write(idx);
+            this.out.write(idx);
             afterWrite(1);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             handleIOException(e);
         }
     }
@@ -65,13 +65,13 @@ public class ProxyOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    public void write(byte[] bts) throws IOException {
+    public void write(final byte[] bts) throws IOException {
         try {
-            int len = bts != null ? bts.length : 0;
+            final int len = bts != null ? bts.length : 0;
             beforeWrite(len);
-            out.write(bts);
+            this.out.write(bts);
             afterWrite(len);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             handleIOException(e);
         }
     }
@@ -84,12 +84,12 @@ public class ProxyOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    public void write(byte[] bts, int st, int end) throws IOException {
+    public void write(final byte[] bts, final int st, final int end) throws IOException {
         try {
             beforeWrite(end);
-            out.write(bts, st, end);
+            this.out.write(bts, st, end);
             afterWrite(end);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             handleIOException(e);
         }
     }
@@ -101,8 +101,8 @@ public class ProxyOutputStream extends FilterOutputStream {
     @Override
     public void flush() throws IOException {
         try {
-            out.flush();
-        } catch (IOException e) {
+            this.out.flush();
+        } catch (final IOException e) {
             handleIOException(e);
         }
     }
@@ -114,8 +114,8 @@ public class ProxyOutputStream extends FilterOutputStream {
     @Override
     public void close() throws IOException {
         try {
-            out.close();
-        } catch (IOException e) {
+            this.out.close();
+        } catch (final IOException e) {
             handleIOException(e);
         }
     }
@@ -133,7 +133,8 @@ public class ProxyOutputStream extends FilterOutputStream {
      * @param n number of bytes to be written
      * @throws IOException if the pre-processing fails
      */
-    protected void beforeWrite(int n) throws IOException {
+    protected void beforeWrite(final int n) throws IOException {
+    	// Vacio
     }
 
     /**
@@ -150,7 +151,8 @@ public class ProxyOutputStream extends FilterOutputStream {
      * @param n number of bytes written
      * @throws IOException if the post-processing fails
      */
-    protected void afterWrite(int n) throws IOException {
+    protected void afterWrite(final int n) throws IOException {
+    	// Vacio
     }
 
     /**
@@ -162,7 +164,7 @@ public class ProxyOutputStream extends FilterOutputStream {
      * @throws IOException if an I/O error occurs
      * @since 2.0
      */
-    protected void handleIOException(IOException e) throws IOException {
+    protected static void handleIOException(final IOException e) throws IOException {
         throw e;
     }
 
