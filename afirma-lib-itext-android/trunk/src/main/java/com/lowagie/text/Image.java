@@ -1872,23 +1872,6 @@ public abstract class Image extends Rectangle {
 		this.additional = additional;
 	}
 
-	/**
-	 * Gets a PDF Name from an array or returns the object that was passed.
-	 */
-    private PdfObject simplifyColorspace(final PdfArray obj) {
-        if (obj == null) {
-			return obj;
-		}
-        final PdfName first = obj.getAsName(0);
-        if (PdfName.CALGRAY.equals(first)) {
-			return PdfName.DEVICEGRAY;
-		} else if (PdfName.CALRGB.equals(first)) {
-			return PdfName.DEVICERGB;
-		} else {
-			return obj;
-		}
-    }
-
 	/** Is this image a mask? */
 	protected boolean mask = false;
 
