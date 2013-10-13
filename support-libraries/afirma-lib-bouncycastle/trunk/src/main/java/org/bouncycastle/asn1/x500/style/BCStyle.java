@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1GeneralizedTime;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.DERGeneralizedTime;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERPrintableString;
 import org.bouncycastle.asn1.DERUTF8String;
@@ -303,7 +303,7 @@ public class BCStyle
             }
             else if (oid.equals(DATE_OF_BIRTH))  // accept time string as well as # (for compatibility)
             {
-                return new DERGeneralizedTime(value);
+                return new ASN1GeneralizedTime(value);
             }
             else if (oid.equals(C) || oid.equals(SN) || oid.equals(DN_QUALIFIER)
                 || oid.equals(TELEPHONE_NUMBER))
@@ -313,6 +313,16 @@ public class BCStyle
         }
 
         return new DERUTF8String(value);
+    }
+
+    public String oidToDisplayName(ASN1ObjectIdentifier oid)
+    {
+        return (String)DefaultSymbols.get(oid);
+    }
+
+    public String[] oidToAttrNames(ASN1ObjectIdentifier oid)
+    {
+        return IETFUtils.findAttrNamesForOID(oid, DefaultLookUp);
     }
 
     public ASN1ObjectIdentifier attrNameToOID(String attrName)
@@ -378,80 +388,7 @@ public class BCStyle
 
     protected boolean rdnAreEqual(RDN rdn1, RDN rdn2)
     {
-        if (rdn1.isMultiValued())
-        {
-            if (rdn2.isMultiValued())
-            {
-                AttributeTypeAndValue[] atvs1 = rdn1.getTypesAndValues();
-                AttributeTypeAndValue[] atvs2 = rdn2.getTypesAndValues();
-
-                if (atvs1.length != atvs2.length)
-                {
-                    return false;
-                }
-
-                for (int i = 0; i != atvs1.length; i++)
-                {
-                    if (!atvAreEqual(atvs1[i], atvs2[i]))
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (!rdn2.isMultiValued())
-            {
-                return atvAreEqual(rdn1.getFirst(), rdn2.getFirst());
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean atvAreEqual(AttributeTypeAndValue atv1, AttributeTypeAndValue atv2)
-    {
-        if (atv1 == atv2)
-        {
-            return true;
-        }
-
-        if (atv1 == null)
-        {
-            return false;
-        }
-
-        if (atv2 == null)
-        {
-            return false;
-        }
-
-        ASN1ObjectIdentifier o1 = atv1.getType();
-        ASN1ObjectIdentifier o2 = atv2.getType();
-
-        if (!o1.equals(o2))
-        {
-            return false;
-        }
-
-        String v1 = IETFUtils.canonicalize(IETFUtils.valueToString(atv1.getValue()));
-        String v2 = IETFUtils.canonicalize(IETFUtils.valueToString(atv2.getValue()));
-
-        if (!v1.equals(v2))
-        {
-            return false;
-        }
-
-        return true;
+        return IETFUtils.rDNAreEqual(rdn1, rdn2);
     }
 
     public RDN[] fromString(String dirName)
@@ -514,29 +451,7 @@ public class BCStyle
                 buf.append(',');
             }
 
-            if (rdns[i].isMultiValued())
-            {
-                AttributeTypeAndValue[] atv = rdns[i].getTypesAndValues();
-                boolean firstAtv = true;
-
-                for (int j = 0; j != atv.length; j++)
-                {
-                    if (firstAtv)
-                    {
-                        firstAtv = false;
-                    }
-                    else
-                    {
-                        buf.append('+');
-                    }
-                    
-                    IETFUtils.appendTypeAndValue(buf, atv[j], DefaultSymbols);
-                }
-            }
-            else
-            {
-                IETFUtils.appendTypeAndValue(buf, rdns[i].getFirst(), DefaultSymbols);
-            }
+            IETFUtils.appendRDN(buf, rdns[i], DefaultSymbols);
         }
 
         return buf.toString();

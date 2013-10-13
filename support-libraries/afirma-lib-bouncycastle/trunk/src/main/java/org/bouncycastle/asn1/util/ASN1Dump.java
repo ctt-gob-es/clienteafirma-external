@@ -10,8 +10,10 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1Set;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.BERApplicationSpecific;
 import org.bouncycastle.asn1.BERConstructedOctetString;
+import org.bouncycastle.asn1.BEROctetString;
 import org.bouncycastle.asn1.BERSequence;
 import org.bouncycastle.asn1.BERSet;
 import org.bouncycastle.asn1.BERTaggedObject;
@@ -25,12 +27,9 @@ import org.bouncycastle.asn1.DERExternal;
 import org.bouncycastle.asn1.DERGeneralizedTime;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERPrintableString;
 import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERT61String;
-import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.DERUTCTime;
 import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.DERVisibleString;
@@ -78,7 +77,7 @@ public class ASN1Dump
             {
                 Object  o = e.nextElement();
 
-                if (o == null || o.equals(new DERNull()))
+                if (o == null || o.equals(DERNull.INSTANCE))
                 {
                     buf.append(tab);
                     buf.append("NULL");
@@ -94,7 +93,7 @@ public class ASN1Dump
                 }
             }
         }
-        else if (obj instanceof DERTaggedObject)
+        else if (obj instanceof ASN1TaggedObject)
         {
             String          tab = indent + TAB;
 
@@ -108,7 +107,7 @@ public class ASN1Dump
                 buf.append("Tagged [");
             }
 
-            DERTaggedObject o = (DERTaggedObject)obj;
+            ASN1TaggedObject o = (ASN1TaggedObject)obj;
 
             buf.append(Integer.toString(o.getTagNo()));
             buf.append(']');
@@ -131,13 +130,22 @@ public class ASN1Dump
                 _dumpAsString(tab, verbose, o.getObject(), buf);
             }
         }
-        else if (obj instanceof BERSet)
+        else if (obj instanceof ASN1Set)
         {
             Enumeration     e = ((ASN1Set)obj).getObjects();
             String          tab = indent + TAB;
 
             buf.append(indent);
-            buf.append("BER Set");
+
+            if (obj instanceof BERSet)
+            {
+                buf.append("BER Set");
+            }
+            else
+            {
+                buf.append("DER Set");
+            }
+
             buf.append(nl);
 
             while (e.hasMoreElements())
@@ -160,33 +168,25 @@ public class ASN1Dump
                 }
             }
         }
-        else if (obj instanceof DERSet)
+        else if (obj instanceof ASN1OctetString)
         {
-            Enumeration     e = ((ASN1Set)obj).getObjects();
-            String          tab = indent + TAB;
+            ASN1OctetString oct = (ASN1OctetString)obj;
 
-            buf.append(indent);
-            buf.append("DER Set");
-            buf.append(nl);
-
-            while (e.hasMoreElements())
+            if (obj instanceof BEROctetString || obj instanceof  BERConstructedOctetString)
             {
-                Object  o = e.nextElement();
-
-                if (o == null)
-                {
-                    buf.append(tab);
-                    buf.append("NULL");
-                    buf.append(nl);
-                }
-                else if (o instanceof ASN1Primitive)
-                {
-                    _dumpAsString(tab, verbose, (ASN1Primitive)o, buf);
-                }
-                else
-                {
-                    _dumpAsString(tab, verbose, ((ASN1Encodable)o).toASN1Primitive(), buf);
-                }
+                buf.append(indent + "BER Constructed Octet String" + "[" + oct.getOctets().length + "] ");
+            }
+            else
+            {
+                buf.append(indent + "DER Octet String" + "[" + oct.getOctets().length + "] ");
+            }
+            if (verbose)
+            {
+                buf.append(dumpBinaryDataAsString(indent, oct.getOctets()));
+            }
+            else
+            {
+                buf.append(nl);
             }
         }
         else if (obj instanceof ASN1ObjectIdentifier)
@@ -201,30 +201,6 @@ public class ASN1Dump
         {
             buf.append(indent + "Integer(" + ((ASN1Integer)obj).getValue() + ")" + nl);
         }
-        else if (obj instanceof BERConstructedOctetString)
-        {
-            ASN1OctetString oct = (ASN1OctetString)obj;
-            buf.append(indent + "BER Constructed Octet String" + "[" + oct.getOctets().length + "] ");
-            if (verbose)
-            {
-                buf.append(dumpBinaryDataAsString(indent, oct.getOctets()));
-            }
-            else{
-                buf.append(nl);
-            }
-        }
-        else if (obj instanceof DEROctetString)
-        {
-            ASN1OctetString oct = (ASN1OctetString)obj;
-            buf.append(indent + "DER Octet String" + "[" + oct.getOctets().length + "] ");
-            if (verbose)
-            {
-                buf.append(dumpBinaryDataAsString(indent, oct.getOctets()));
-            }
-            else{
-                buf.append(nl);
-            }
-        }
         else if (obj instanceof DERBitString)
         {
             DERBitString bt = (DERBitString)obj;
@@ -233,7 +209,8 @@ public class ASN1Dump
             {
                 buf.append(dumpBinaryDataAsString(indent, bt.getBytes()));
             }
-            else{
+            else
+            {
                 buf.append(nl);
             }
         }

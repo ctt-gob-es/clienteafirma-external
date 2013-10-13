@@ -4,10 +4,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.bouncycastle.util.Strings;
+
 public class Hex
 {
     private static final Encoder encoder = new HexEncoder();
     
+    public static String toHexString(
+        byte[] data)
+    {
+        return toHexString(data, 0, data.length);
+    }
+
+    public static String toHexString(
+        byte[] data,
+        int    off,
+        int    length)
+    {
+        byte[] encoded = encode(data, off, length);
+        return Strings.fromByteArray(encoded);
+    }
+
     /**
      * encode the input data producing a Hex encoded byte array.
      *
@@ -35,9 +52,9 @@ public class Hex
         {
             encoder.encode(data, off, length, bOut);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            throw new RuntimeException("exception encoding Hex string: " + e);
+            throw new EncoderException("exception encoding Hex string: " + e.getMessage(), e);
         }
         
         return bOut.toByteArray();
@@ -85,9 +102,9 @@ public class Hex
         {
             encoder.decode(data, 0, data.length, bOut);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            throw new RuntimeException("exception decoding Hex string: " + e);
+            throw new DecoderException("exception decoding Hex data: " + e.getMessage(), e);
         }
         
         return bOut.toByteArray();
@@ -107,9 +124,9 @@ public class Hex
         {
             encoder.decode(data, bOut);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-            throw new RuntimeException("exception decoding Hex string: " + e);
+            throw new DecoderException("exception decoding Hex string: " + e.getMessage(), e);
         }
         
         return bOut.toByteArray();

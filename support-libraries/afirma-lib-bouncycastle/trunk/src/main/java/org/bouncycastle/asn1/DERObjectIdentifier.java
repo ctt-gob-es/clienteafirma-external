@@ -9,17 +9,17 @@ import org.bouncycastle.util.Arrays;
 public class DERObjectIdentifier
     extends ASN1Primitive
 {
-    String      identifier;
+    String identifier;
 
-    private     byte[] body;
+    private byte[] body;
 
     /**
      * return an OID from the passed in object
      *
-     * @exception IllegalArgumentException if the object cannot be converted.
+     * @throws IllegalArgumentException if the object cannot be converted.
      */
     public static ASN1ObjectIdentifier getInstance(
-        Object  obj)
+        Object obj)
     {
         if (obj == null || obj instanceof ASN1ObjectIdentifier)
         {
@@ -31,21 +31,31 @@ public class DERObjectIdentifier
             return new ASN1ObjectIdentifier(((DERObjectIdentifier)obj).getId());
         }
 
+        if (obj instanceof ASN1Encodable && ((ASN1Encodable)obj).toASN1Primitive() instanceof ASN1ObjectIdentifier)
+        {
+            return (ASN1ObjectIdentifier)((ASN1Encodable)obj).toASN1Primitive();
+        }
+
+        if (obj instanceof byte[])
+        {
+            return ASN1ObjectIdentifier.fromOctetString((byte[])obj);
+        }
+
         throw new IllegalArgumentException("illegal object in getInstance: " + obj.getClass().getName());
     }
 
     /**
      * return an Object Identifier from a tagged object.
      *
-     * @param obj the tagged object holding the object we want
+     * @param obj      the tagged object holding the object we want
      * @param explicit true if the object is meant to be explicitly
-     *              tagged false otherwise.
-     * @exception IllegalArgumentException if the tagged object cannot
-     *               be converted.
+     *                 tagged false otherwise.
+     * @throws IllegalArgumentException if the tagged object cannot
+     * be converted.
      */
     public static ASN1ObjectIdentifier getInstance(
         ASN1TaggedObject obj,
-        boolean          explicit)
+        boolean explicit)
     {
         ASN1Primitive o = obj.getObject();
 
@@ -59,35 +69,38 @@ public class DERObjectIdentifier
         }
     }
 
+    private static final long LONG_LIMIT = (Long.MAX_VALUE >> 7) - 0x7f;
+
     DERObjectIdentifier(
-        byte[]  bytes)
+        byte[] bytes)
     {
-        StringBuffer    objId = new StringBuffer();
-        long            value = 0;
-        BigInteger      bigValue = null;
-        boolean         first = true;
+        StringBuffer objId = new StringBuffer();
+        long value = 0;
+        BigInteger bigValue = null;
+        boolean first = true;
 
         for (int i = 0; i != bytes.length; i++)
         {
             int b = bytes[i] & 0xff;
 
-            if (value < 0x80000000000000L) 
+            if (value <= LONG_LIMIT)
             {
-                value = value * 128 + (b & 0x7f);
+                value += (b & 0x7f);
                 if ((b & 0x80) == 0)             // end of number reached
                 {
                     if (first)
                     {
-                        switch ((int)value / 40)
+                        if (value < 40)
                         {
-                        case 0:
                             objId.append('0');
-                            break;
-                        case 1:
+                        }
+                        else if (value < 80)
+                        {
                             objId.append('1');
                             value -= 40;
-                            break;
-                        default:
+                        }
+                        else
+                        {
                             objId.append('2');
                             value -= 80;
                         }
@@ -98,31 +111,50 @@ public class DERObjectIdentifier
                     objId.append(value);
                     value = 0;
                 }
-            } 
-            else 
+                else
+                {
+                    value <<= 7;
+                }
+            }
+            else
             {
                 if (bigValue == null)
                 {
                     bigValue = BigInteger.valueOf(value);
                 }
-                bigValue = bigValue.shiftLeft(7);
                 bigValue = bigValue.or(BigInteger.valueOf(b & 0x7f));
-                if ((b & 0x80) == 0) 
+                if ((b & 0x80) == 0)
                 {
+                    if (first)
+                    {
+                        objId.append('2');
+                        bigValue = bigValue.subtract(BigInteger.valueOf(80));
+                        first = false;
+                    }
+
                     objId.append('.');
                     objId.append(bigValue);
                     bigValue = null;
                     value = 0;
                 }
+                else
+                {
+                    bigValue = bigValue.shiftLeft(7);
+                }
             }
         }
 
         this.identifier = objId.toString();
+        this.body = Arrays.clone(bytes);
     }
 
     public DERObjectIdentifier(
-        String  identifier)
+        String identifier)
     {
+        if (identifier == null)
+        {
+            throw new IllegalArgumentException("'identifier' cannot be null");
+        }
         if (!isValidIdentifier(identifier))
         {
             throw new IllegalArgumentException("string " + identifier + " not an OID");
@@ -131,14 +163,24 @@ public class DERObjectIdentifier
         this.identifier = identifier;
     }
 
+    DERObjectIdentifier(DERObjectIdentifier oid, String branchID)
+    {
+        if (!isValidBranchID(branchID, 0))
+        {
+            throw new IllegalArgumentException("string " + branchID + " not a valid OID branch");
+        }
+
+        this.identifier = oid.getId() + "." + branchID;
+    }
+
     public String getId()
     {
         return identifier;
     }
 
     private void writeField(
-        ByteArrayOutputStream    out,
-        long                     fieldValue)
+        ByteArrayOutputStream out,
+        long fieldValue)
     {
         byte[] result = new byte[9];
         int pos = 8;
@@ -152,40 +194,47 @@ public class DERObjectIdentifier
     }
 
     private void writeField(
-        ByteArrayOutputStream   out,
-        BigInteger              fieldValue)
+        ByteArrayOutputStream out,
+        BigInteger fieldValue)
     {
-        int byteCount = (fieldValue.bitLength()+6)/7;
-        if (byteCount == 0) 
+        int byteCount = (fieldValue.bitLength() + 6) / 7;
+        if (byteCount == 0)
         {
             out.write(0);
-        }  
-        else 
+        }
+        else
         {
             BigInteger tmpValue = fieldValue;
             byte[] tmp = new byte[byteCount];
-            for (int i = byteCount-1; i >= 0; i--) 
+            for (int i = byteCount - 1; i >= 0; i--)
             {
-                tmp[i] = (byte) ((tmpValue.intValue() & 0x7f) | 0x80);
-                tmpValue = tmpValue.shiftRight(7); 
+                tmp[i] = (byte)((tmpValue.intValue() & 0x7f) | 0x80);
+                tmpValue = tmpValue.shiftRight(7);
             }
-            tmp[byteCount-1] &= 0x7f;
+            tmp[byteCount - 1] &= 0x7f;
             out.write(tmp, 0, tmp.length);
         }
     }
 
     private void doOutput(ByteArrayOutputStream aOut)
     {
-        OIDTokenizer            tok = new OIDTokenizer(identifier);
+        OIDTokenizer tok = new OIDTokenizer(identifier);
+        int first = Integer.parseInt(tok.nextToken()) * 40;
 
-        writeField(aOut,
-                    Integer.parseInt(tok.nextToken()) * 40
-                    + Integer.parseInt(tok.nextToken()));
+        String secondToken = tok.nextToken();
+        if (secondToken.length() <= 18)
+        {
+            writeField(aOut, first + Long.parseLong(secondToken));
+        }
+        else
+        {
+            writeField(aOut, new BigInteger(secondToken).add(BigInteger.valueOf(first)));
+        }
 
         while (tok.hasMoreTokens())
         {
             String token = tok.nextToken();
-            if (token.length() < 18)
+            if (token.length() <= 18)
             {
                 writeField(aOut, Long.parseLong(token));
             }
@@ -196,7 +245,7 @@ public class DERObjectIdentifier
         }
     }
 
-    protected byte[] getBody()
+    protected synchronized byte[] getBody()
     {
         if (body == null)
         {
@@ -227,7 +276,7 @@ public class DERObjectIdentifier
         ASN1OutputStream out)
         throws IOException
     {
-        byte[]                     enc = getBody();
+        byte[] enc = getBody();
 
         out.write(BERTags.OBJECT_IDENTIFIER);
         out.writeLength(enc.length);
@@ -240,7 +289,7 @@ public class DERObjectIdentifier
     }
 
     boolean asn1Equals(
-        ASN1Primitive  o)
+        ASN1Primitive o)
     {
         if (!(o instanceof DERObjectIdentifier))
         {
@@ -255,26 +304,17 @@ public class DERObjectIdentifier
         return getId();
     }
 
-    private static boolean isValidIdentifier(
-        String identifier)
+    private static boolean isValidBranchID(
+        String branchID, int start)
     {
-        if (identifier.length() < 3
-            || identifier.charAt(1) != '.')
-        {
-            return false;
-        }
-
-        char first = identifier.charAt(0);
-        if (first < '0' || first > '2')
-        {
-            return false;
-        }
-
         boolean periodAllowed = false;
-        for (int i = identifier.length() - 1; i >= 2; i--)
-        {
-            char ch = identifier.charAt(i);
 
+        int pos = branchID.length();
+        while (--pos >= start)
+        {
+            char ch = branchID.charAt(pos);
+
+            // TODO Leading zeroes?
             if ('0' <= ch && ch <= '9')
             {
                 periodAllowed = true;
@@ -298,7 +338,24 @@ public class DERObjectIdentifier
         return periodAllowed;
     }
 
-    private static ASN1ObjectIdentifier[][] cache = new ASN1ObjectIdentifier[255][];
+    private static boolean isValidIdentifier(
+        String identifier)
+    {
+        if (identifier.length() < 3 || identifier.charAt(1) != '.')
+        {
+            return false;
+        }
+
+        char first = identifier.charAt(0);
+        if (first < '0' || first > '2')
+        {
+            return false;
+        }
+
+        return isValidBranchID(identifier, 2);
+    }
+
+    private static ASN1ObjectIdentifier[][] cache = new ASN1ObjectIdentifier[256][];
 
     static ASN1ObjectIdentifier fromOctetString(byte[] enc)
     {
@@ -308,62 +365,59 @@ public class DERObjectIdentifier
         }
 
         int idx1 = enc[enc.length - 2] & 0xff;
-        ASN1ObjectIdentifier[] first = cache[idx1];
+        // in this case top bit is always zero
+        int idx2 = enc[enc.length - 1] & 0x7f;
 
-        if (first == null)
+        ASN1ObjectIdentifier possibleMatch;
+
+        synchronized (cache)
         {
-            first = cache[idx1] = new ASN1ObjectIdentifier[255];
-        }
+            ASN1ObjectIdentifier[] first = cache[idx1];
+            if (first == null)
+            {
+                first = cache[idx1] = new ASN1ObjectIdentifier[128];
+            }
 
-        int idx2 = enc[enc.length - 1] & 0xff;
+            possibleMatch = first[idx2];
+            if (possibleMatch == null)
+            {
+                return first[idx2] = new ASN1ObjectIdentifier(enc);
+            }
 
-        ASN1ObjectIdentifier possibleMatch = first[idx2];
+            if (Arrays.areEqual(enc, possibleMatch.getBody()))
+            {
+                return possibleMatch;
+            }
 
-        if (possibleMatch == null)
-        {
-            possibleMatch = first[idx2] = new ASN1ObjectIdentifier(enc);
-            return possibleMatch;
+            idx1 = (idx1 + 1) & 0xff;
+            first = cache[idx1];
+            if (first == null)
+            {
+                first = cache[idx1] = new ASN1ObjectIdentifier[128];
+            }
+
+            possibleMatch = first[idx2];
+            if (possibleMatch == null)
+            {
+                return first[idx2] = new ASN1ObjectIdentifier(enc);
+            }
+
+            if (Arrays.areEqual(enc, possibleMatch.getBody()))
+            {
+                return possibleMatch;
+            }
+
+            idx2 = (idx2 + 1) & 0x7f;
+            possibleMatch = first[idx2];
+            if (possibleMatch == null)
+            {
+                return first[idx2] = new ASN1ObjectIdentifier(enc);
+            }
         }
 
         if (Arrays.areEqual(enc, possibleMatch.getBody()))
         {
             return possibleMatch;
-        }
-        else
-        {
-            idx1 = (idx1 + 1) % 256;
-            first = cache[idx1];
-            if (first == null)
-            {
-                first = cache[idx1] = new ASN1ObjectIdentifier[255];
-            }
-
-            possibleMatch = first[idx2];
-
-            if (possibleMatch == null)
-            {
-                possibleMatch = first[idx2] = new ASN1ObjectIdentifier(enc);
-                return possibleMatch;
-            }
-
-            if (Arrays.areEqual(enc, possibleMatch.getBody()))
-            {
-                return possibleMatch;
-            }
-
-            idx2 = (idx2 + 1) % 256;
-            possibleMatch = first[idx2];
-
-            if (possibleMatch == null)
-            {
-                possibleMatch = first[idx2] = new ASN1ObjectIdentifier(enc);
-                return possibleMatch;
-            }
-
-            if (Arrays.areEqual(enc, possibleMatch.getBody()))
-            {
-                return possibleMatch;
-            }
         }
 
         return new ASN1ObjectIdentifier(enc);

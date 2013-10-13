@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -38,13 +39,17 @@ public class ExtendedKeyUsage
         {
             return (ExtendedKeyUsage)obj;
         }
-        
-        if (obj != null)
+        else if (obj != null)
         {
             return new ExtendedKeyUsage(ASN1Sequence.getInstance(obj));
         }
 
         return null;
+    }
+
+    public static ExtendedKeyUsage fromExtensions(Extensions extensions)
+    {
+        return ExtendedKeyUsage.getInstance(extensions.getExtensionParsedValue(Extension.extendedKeyUsage));
     }
 
     public ExtendedKeyUsage(
@@ -55,7 +60,7 @@ public class ExtendedKeyUsage
         this.usageTable.put(usage, usage);
     }
     
-    public ExtendedKeyUsage(
+    private ExtendedKeyUsage(
         ASN1Sequence  seq)
     {
         this.seq = seq;
@@ -64,8 +69,8 @@ public class ExtendedKeyUsage
 
         while (e.hasMoreElements())
         {
-            Object  o = e.nextElement();
-            if (!(o instanceof ASN1ObjectIdentifier))
+            ASN1Encodable o = (ASN1Encodable)e.nextElement();
+            if (!(o.toASN1Primitive() instanceof ASN1ObjectIdentifier))
             {
                 throw new IllegalArgumentException("Only ASN1ObjectIdentifiers allowed in ExtendedKeyUsage.");
             }
@@ -74,7 +79,24 @@ public class ExtendedKeyUsage
     }
 
     public ExtendedKeyUsage(
-        Vector  usages)
+        KeyPurposeId[]  usages)
+    {
+        ASN1EncodableVector v = new ASN1EncodableVector();
+
+        for (int i = 0; i != usages.length; i++)
+        {
+            v.add(usages[i]);
+            this.usageTable.put(usages[i], usages[i]);
+        }
+
+        this.seq = new DERSequence(v);
+    }
+
+    /**
+     * @deprecated use KeyPurposeId[] constructor.
+     */
+    public ExtendedKeyUsage(
+        Vector usages)
     {
         ASN1EncodableVector v = new ASN1EncodableVector();
         Enumeration         e = usages.elements();
@@ -98,15 +120,17 @@ public class ExtendedKeyUsage
     
     /**
      * Returns all extended key usages.
-     * The returned vector contains ASN1ObjectIdentifiers.
-     * @return A vector with all key purposes.
+     * The returned vector contains DERObjectIdentifiers.
+     * @return An array with all key purposes.
      */
-    public Vector getUsages()
+    public KeyPurposeId[] getUsages()
     {
-        Vector temp = new Vector();
-        for (Enumeration it = usageTable.elements(); it.hasMoreElements();)
+        KeyPurposeId[] temp = new KeyPurposeId[seq.size()];
+
+        int i = 0;
+        for (Enumeration it = seq.getObjects(); it.hasMoreElements();)
         {
-            temp.addElement(it.nextElement());
+            temp[i++] = KeyPurposeId.getInstance(it.nextElement());
         }
         return temp;
     }

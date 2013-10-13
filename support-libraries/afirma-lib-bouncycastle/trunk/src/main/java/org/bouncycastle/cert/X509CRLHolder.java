@@ -202,6 +202,16 @@ public class X509CRLHolder
     }
 
     /**
+     * Return the extensions block associated with this CRL if there is one.
+     *
+     * @return the extensions block, null otherwise.
+     */
+    public Extensions getExtensions()
+    {
+        return extensions;
+    }
+
+    /**
      * Returns a list of ASN1ObjectIdentifier objects representing the OIDs of the
      * extensions contained in this holder's CRL.
      *
@@ -256,7 +266,7 @@ public class X509CRLHolder
     {
         TBSCertList tbsCRL = x509CRL.getTBSCertList();
 
-        if (!tbsCRL.getSignature().equals(x509CRL.getSignatureAlgorithm()))
+        if (!CertUtils.isAlgIdEqual(tbsCRL.getSignature(), x509CRL.getSignatureAlgorithm()))
         {
             throw new CertException("signature invalid - algorithm identifier mismatch");
         }

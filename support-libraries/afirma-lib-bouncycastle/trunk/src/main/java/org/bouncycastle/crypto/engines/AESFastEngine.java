@@ -3,6 +3,7 @@ package org.bouncycastle.crypto.engines;
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.DataLengthException;
+import org.bouncycastle.crypto.OutputLengthException;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 /**
@@ -549,9 +550,7 @@ public class AESFastEngine
      0xd89ce4b4, 0x6490c156, 0x7b6184cb, 0xd570b632, 0x48745c6c, 
      0xd04257b8};
 
-    private int shift(
-        int     r,
-        int     shift)
+    private static int shift(int r, int shift)
     {
         return (r >>> shift) | (r << -shift);
     }
@@ -562,7 +561,7 @@ public class AESFastEngine
     private static final int m2 = 0x7f7f7f7f;
     private static final int m3 = 0x0000001b;
 
-    private int FFmulX(int x)
+    private static int FFmulX(int x)
     {
         return (((x & m2) << 1) ^ (((x & m1) >>> 7) * m3));
     }
@@ -577,7 +576,7 @@ public class AESFastEngine
 
     */
 
-    private int inv_mcol(int x)
+    private static int inv_mcol(int x)
     {
         int f2 = FFmulX(x);
         int f4 = FFmulX(f2);
@@ -588,7 +587,7 @@ public class AESFastEngine
     }
 
 
-    private int subWord(int x)
+    private static int subWord(int x)
     {
         return (S[x&255]&255 | ((S[(x>>8)&255]&255)<<8) | ((S[(x>>16)&255]&255)<<16) | S[(x>>24)&255]<<24);
     }
@@ -725,7 +724,7 @@ public class AESFastEngine
 
         if ((outOff + (32 / 2)) > out.length)
         {
-            throw new DataLengthException("output buffer too short");
+            throw new OutputLengthException("output buffer too short");
         }
 
         if (forEncryption)

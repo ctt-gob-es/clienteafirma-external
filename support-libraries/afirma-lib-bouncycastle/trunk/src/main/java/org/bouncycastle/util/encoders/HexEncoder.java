@@ -19,6 +19,11 @@ public class HexEncoder
 
     protected void initialiseDecodingTable()
     {
+        for (int i = 0; i < decodingTable.length; i++)
+        {
+            decodingTable[i] = (byte)0xff;
+        }
+
         for (int i = 0; i < encodingTable.length; i++)
         {
             decodingTable[encodingTable[i]] = (byte)i;
@@ -60,12 +65,12 @@ public class HexEncoder
         return length * 2;
     }
 
-    private boolean ignore(
+    private static boolean ignore(
         char    c)
     {
-        return (c == '\n' || c =='\r' || c == '\t' || c == ' ');
+        return c == '\n' || c =='\r' || c == '\t' || c == ' ';
     }
-    
+
     /**
      * decode the Hex encoded byte data writing it to the given output stream,
      * whitespace characters will be ignored.
@@ -110,6 +115,11 @@ public class HexEncoder
             }
             
             b2 = decodingTable[data[i++]];
+
+            if ((b1 | b2) < 0)
+            {
+                throw new IOException("invalid characters encountered in Hex data");
+            }
 
             out.write((b1 << 4) | b2);
             
@@ -161,6 +171,11 @@ public class HexEncoder
             }
             
             b2 = decodingTable[data.charAt(i++)];
+
+            if ((b1 | b2) < 0)
+            {
+                throw new IOException("invalid characters encountered in Hex string");
+            }
 
             out.write((b1 << 4) | b2);
             
