@@ -27,6 +27,18 @@ public class DERInteger
             return new ASN1Integer((((DERInteger)obj).getValue()));
         }
 
+        if (obj instanceof byte[])
+        {
+            try
+            {
+                return (ASN1Integer)fromByteArray((byte[])obj);
+            }
+            catch (Exception e)
+            {
+                throw new IllegalArgumentException("encoding error in getInstance: " + e.toString());
+            }
+        }
+
         throw new IllegalArgumentException("illegal object in getInstance: " + obj.getClass().getName());
     }
 
@@ -56,7 +68,7 @@ public class DERInteger
     }
 
     public DERInteger(
-        int         value)
+        long         value)
     {
         bytes = BigInteger.valueOf(value).toByteArray();
     }

@@ -58,8 +58,14 @@ public class ESSCertIDv2
 
         if (seq.size() > count)
         {
-            this.issuerSerial = new IssuerSerial(ASN1Sequence.getInstance(seq.getObjectAt(count).toASN1Primitive()));
+            this.issuerSerial = IssuerSerial.getInstance(seq.getObjectAt(count));
         }
+    }
+
+    public ESSCertIDv2(
+        byte[]              certHash)
+    {
+        this(null, certHash, null);
     }
 
     public ESSCertIDv2(
@@ -67,6 +73,13 @@ public class ESSCertIDv2
         byte[]              certHash)
     {
         this(algId, certHash, null);
+    }
+
+    public ESSCertIDv2(
+        byte[]              certHash,
+        IssuerSerial        issuerSerial)
+    {
+        this(null, certHash, issuerSerial);
     }
 
     public ESSCertIDv2(

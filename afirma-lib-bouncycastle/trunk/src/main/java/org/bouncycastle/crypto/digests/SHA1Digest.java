@@ -1,12 +1,13 @@
 package org.bouncycastle.crypto.digests;
 
 import org.bouncycastle.crypto.util.Pack;
+import org.bouncycastle.util.Memoable;
 
 /**
  * implementation of SHA-1 as outlined in "Handbook of Applied Cryptography", pages 346 - 349.
  *
  * It is interesting to ponder why the, apart from the extra IV, the other difference here from MD5
- * is the "endienness" of the word processing!
+ * is the "endianness" of the word processing!
  */
 public class SHA1Digest
     extends GeneralDigest
@@ -34,6 +35,11 @@ public class SHA1Digest
     {
         super(t);
 
+        copyIn(t);
+    }
+
+    private void copyIn(SHA1Digest t)
+    {
         H1 = t.H1;
         H2 = t.H2;
         H3 = t.H3;
@@ -282,6 +288,19 @@ public class SHA1Digest
         {
             X[i] = 0;
         }
+    }
+
+    public Memoable copy()
+    {
+        return new SHA1Digest(this);
+    }
+
+    public void reset(Memoable other)
+    {
+        SHA1Digest d = (SHA1Digest)other;
+
+        super.copyIn(d);
+        copyIn(d);
     }
 }
 

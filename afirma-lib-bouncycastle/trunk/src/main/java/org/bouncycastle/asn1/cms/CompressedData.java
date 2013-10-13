@@ -35,7 +35,7 @@ public class CompressedData
         this.encapContentInfo = encapContentInfo;
     }
     
-    public CompressedData(
+    private CompressedData(
         ASN1Sequence seq)
     {
         this.version = (ASN1Integer)seq.getObjectAt(0);
@@ -63,23 +63,23 @@ public class CompressedData
     /**
      * return a CompressedData object from the given object.
      *
-     * @param _obj the object we want converted.
+     * @param obj the object we want converted.
      * @exception IllegalArgumentException if the object cannot be converted.
      */
     public static CompressedData getInstance(
-        Object _obj)
+        Object obj)
     {
-        if (_obj == null || _obj instanceof CompressedData)
+        if (obj instanceof CompressedData)
         {
-            return (CompressedData)_obj;
+            return (CompressedData)obj;
         }
-        
-        if (_obj instanceof ASN1Sequence)
+
+        if (obj != null)
         {
-            return new CompressedData((ASN1Sequence)_obj);
+            return new CompressedData(ASN1Sequence.getInstance(obj));
         }
-        
-        throw new IllegalArgumentException("Invalid CompressedData: " + _obj.getClass().getName());
+
+        return null;
     }
 
     public ASN1Integer getVersion()

@@ -238,7 +238,17 @@ public final class Arrays
             array[i] = value;
         }
     }
-    
+
+    public static void fill(
+        char[] array,
+        char value)
+    {
+        for (int i = 0; i < array.length; i++)
+        {
+            array[i] = value;
+        }
+    }
+
     public static void fill(
         long[] array,
         long value)
@@ -307,6 +317,18 @@ public final class Arrays
         return hc;
     }
 
+    public static int hashCode(int[][] ints)
+    {
+        int hc = 0;
+
+        for (int i = 0; i != ints.length; i++)
+        {
+            hc = hc * 257 + hashCode(ints[i]);
+        }
+
+        return hc;
+    }
+
     public static int hashCode(int[] data)
     {
         if (data == null)
@@ -321,6 +343,49 @@ public final class Arrays
         {
             hc *= 257;
             hc ^= data[i];
+        }
+
+        return hc;
+    }
+
+    public static int hashCode(short[][][] shorts)
+    {
+        int hc = 0;
+
+        for (int i = 0; i != shorts.length; i++)
+        {
+            hc = hc * 257 + hashCode(shorts[i]);
+        }
+
+        return hc;
+    }
+
+    public static int hashCode(short[][] shorts)
+    {
+        int hc = 0;
+
+        for (int i = 0; i != shorts.length; i++)
+        {
+            hc = hc * 257 + hashCode(shorts[i]);
+        }
+
+        return hc;
+    }
+
+    public static int hashCode(short[] data)
+    {
+        if (data == null)
+        {
+            return 0;
+        }
+
+        int i = data.length;
+        int hc = i + 1;
+
+        while (--i >= 0)
+        {
+            hc *= 257;
+            hc ^= (data[i] & 0xff);
         }
 
         return hc;
@@ -358,6 +423,40 @@ public final class Arrays
         return copy;
     }
 
+    public static byte[][] clone(byte[][] data)
+    {
+        if (data == null)
+        {
+            return null;
+        }
+
+        byte[][] copy = new byte[data.length][];
+
+        for (int i = 0; i != copy.length; i++)
+        {
+            copy[i] = clone(data[i]);
+        }
+
+        return copy;
+    }
+
+    public static byte[][][] clone(byte[][][] data)
+    {
+        if (data == null)
+        {
+            return null;
+        }
+
+        byte[][][] copy = new byte[data.length][][];
+
+        for (int i = 0; i != copy.length; i++)
+        {
+            copy[i] = clone(data[i]);
+        }
+
+        return copy;
+    }
+
     public static int[] clone(int[] data)
     {
         if (data == null)
@@ -365,6 +464,19 @@ public final class Arrays
             return null;
         }
         int[] copy = new int[data.length];
+
+        System.arraycopy(data, 0, copy, 0, data.length);
+
+        return copy;
+    }
+
+    public static short[] clone(short[] data)
+    {
+        if (data == null)
+        {
+            return null;
+        }
+        short[] copy = new short[data.length];
 
         System.arraycopy(data, 0, copy, 0, data.length);
 
@@ -387,6 +499,22 @@ public final class Arrays
     public static byte[] copyOf(byte[] data, int newLength)
     {
         byte[] tmp = new byte[newLength];
+
+        if (newLength < data.length)
+        {
+            System.arraycopy(data, 0, tmp, 0, newLength);
+        }
+        else
+        {
+            System.arraycopy(data, 0, tmp, 0, data.length);
+        }
+
+        return tmp;
+    }
+
+    public static char[] copyOf(char[] data, int newLength)
+    {
+        char[] tmp = new char[newLength];
 
         if (newLength < data.length)
         {
@@ -525,8 +653,84 @@ public final class Arrays
         int newLength = to - from;
         if (newLength < 0)
         {
-            throw new IllegalArgumentException(from + " > " + to);
+            StringBuffer sb = new StringBuffer(from);
+            sb.append(" > ").append(to);
+            throw new IllegalArgumentException(sb.toString());
         }
         return newLength;
+    }
+
+    public static byte[] concatenate(byte[] a, byte[] b)
+    {
+        if (a != null && b != null)
+        {
+            byte[] rv = new byte[a.length + b.length];
+
+            System.arraycopy(a, 0, rv, 0, a.length);
+            System.arraycopy(b, 0, rv, a.length, b.length);
+
+            return rv;
+        }
+        else if (b != null)
+        {
+            return clone(b);
+        }
+        else
+        {
+            return clone(a);
+        }
+    }
+
+    public static byte[] concatenate(byte[] a, byte[] b, byte[] c)
+    {
+        if (a != null && b != null && c != null)
+        {
+            byte[] rv = new byte[a.length + b.length + c.length];
+
+            System.arraycopy(a, 0, rv, 0, a.length);
+            System.arraycopy(b, 0, rv, a.length, b.length);
+            System.arraycopy(c, 0, rv, a.length + b.length, c.length);
+
+            return rv;
+        }
+        else if (b == null)
+        {
+            return concatenate(a, c);
+        }
+        else
+        {
+            return concatenate(a, b);
+        }
+    }
+
+    public static byte[] concatenate(byte[] a, byte[] b, byte[] c, byte[] d)
+    {
+        if (a != null && b != null && c != null && d != null)
+        {
+            byte[] rv = new byte[a.length + b.length + c.length + d.length];
+
+            System.arraycopy(a, 0, rv, 0, a.length);
+            System.arraycopy(b, 0, rv, a.length, b.length);
+            System.arraycopy(c, 0, rv, a.length + b.length, c.length);
+            System.arraycopy(d, 0, rv, a.length + b.length + c.length, d.length);
+
+            return rv;
+        }
+        else if (d == null)
+        {
+            return concatenate(a, b, c);
+        }
+        else if (c == null)
+        {
+            return concatenate(a, b, d);
+        }
+        else if (b == null)
+        {
+            return concatenate(a, c, d);
+        }
+        else
+        {
+            return concatenate(b, c, d);
+        }
     }
 }
