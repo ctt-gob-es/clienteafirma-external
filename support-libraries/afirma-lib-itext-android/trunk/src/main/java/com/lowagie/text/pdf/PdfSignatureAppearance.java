@@ -94,14 +94,10 @@ public class PdfSignatureAppearance {
      */
     private static final int SignatureRenderGraphicAndDescription = 2;
 
-
-
-
-
     public static final int NOT_CERTIFIED = 0;
-
-
-
+    public static final int CERTIFIED_NO_CHANGES_ALLOWED = 1;
+    public static final int CERTIFIED_FORM_FILLING = 2;
+    public static final int CERTIFIED_FORM_FILLING_AND_ANNOTATIONS = 3;
 
     private static final float TOP_SECTION = 0.3f;
     private static final float MARGIN = 2;
