@@ -20,17 +20,22 @@ import java.util.List;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.BEROctetStringGenerator;
 import org.bouncycastle.asn1.BERSet;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
+import org.bouncycastle.asn1.cms.OtherRevocationInfoFormat;
+import org.bouncycastle.asn1.ocsp.OCSPResponse;
+import org.bouncycastle.asn1.ocsp.OCSPResponseStatus;
+import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.asn1.x509.CertificateList;
-import org.bouncycastle.asn1.x509.TBSCertificateStructure;
-import org.bouncycastle.asn1.x509.X509CertificateStructure;
+import org.bouncycastle.asn1.x509.TBSCertificate;
 import org.bouncycastle.cert.X509AttributeCertificateHolder;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -69,8 +74,7 @@ class CMSUtils
             {
                 X509Certificate c = (X509Certificate)it.next();
 
-                certs.add(X509CertificateStructure.getInstance(
-                                                       ASN1Primitive.fromByteArray(c.getEncoded())));
+                certs.add(Certificate.getInstance(ASN1Primitive.fromByteArray(c.getEncoded())));
             }
 
             return certs;
@@ -185,6 +189,30 @@ class CMSUtils
         }
     }
 
+    static Collection getOthersFromStore(ASN1ObjectIdentifier otherRevocationInfoFormat, Store otherRevocationInfos)
+    {
+        List others = new ArrayList();
+
+        for (Iterator it = otherRevocationInfos.getMatches(null).iterator(); it.hasNext();)
+        {
+            ASN1Encodable info = (ASN1Encodable)it.next();
+
+            if (CMSObjectIdentifiers.id_ri_ocsp_response.equals(otherRevocationInfoFormat))
+            {
+                OCSPResponse resp = OCSPResponse.getInstance(info);
+
+                if (resp.getResponseStatus().getValue().intValue() != OCSPResponseStatus.SUCCESSFUL)
+                {
+                    throw new IllegalArgumentException("cannot add unsuccessful OCSP response to CMS SignedData");
+                }
+            }
+
+            others.add(new DERTaggedObject(false, 1, new OtherRevocationInfoFormat(otherRevocationInfoFormat, info)));
+        }
+
+        return others;
+    }
+
     static ASN1Set createBerSetFromList(List derObjects)
     {
         ASN1EncodableVector v = new ASN1EncodableVector();
@@ -222,12 +250,12 @@ class CMSUtils
         return octGen.getOctetOutputStream();
     }
 
-    static TBSCertificateStructure getTBSCertificateStructure(
+    static TBSCertificate getTBSCertificateStructure(
         X509Certificate cert)
     {
         try
         {
-            return TBSCertificateStructure.getInstance(
+            return TBSCertificate.getInstance(
                 ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
         }
         catch (Exception e)
@@ -239,7 +267,7 @@ class CMSUtils
 
     static IssuerAndSerialNumber getIssuerAndSerialNumber(X509Certificate cert)
     {
-        TBSCertificateStructure tbsCert = getTBSCertificateStructure(cert);
+        TBSCertificate tbsCert = getTBSCertificateStructure(cert);
         return new IssuerAndSerialNumber(tbsCert.getIssuer(), tbsCert.getSerialNumber().getValue());
     }
 
