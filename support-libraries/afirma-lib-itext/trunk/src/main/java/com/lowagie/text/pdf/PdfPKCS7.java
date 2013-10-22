@@ -510,9 +510,9 @@ public class PdfPKCS7 {
             }
             if (this.RSAdata != null || this.digestAttr != null) {
                 if (provider == null || provider.startsWith("SunPKCS11")) {
-					this.messageDigest = MessageDigest.getInstance(getHashAlgorithm());
+					this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()));
 				} else {
-					this.messageDigest = MessageDigest.getInstance(getHashAlgorithm(), provider);
+					this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()), provider);
 				}
             }
             if (provider == null) {
@@ -1413,4 +1413,61 @@ public class PdfPKCS7 {
             return this.buf.toString().trim();
         }
     }
+
+	/** Obtiene el nombre de un algoritmo de huella digital a partir de una de
+	 * las variantes de este.
+	 * @param pseudoName
+	 *        Nombre o variante del nombre del algoritmo de huella digital
+	 * @return Nombre del algoritmo de huella digital */
+	private static String getDigestAlgorithmName(final String pseudoName) {
+		final String upperPseudoName = pseudoName.toUpperCase();
+		if (upperPseudoName.equals("SHA")  //$NON-NLS-1$
+				|| upperPseudoName.equals("http://www.w3.org/2000/09/xmldsig#sha1".toUpperCase()) //$NON-NLS-1$
+				|| upperPseudoName.equals("1.3.14.3.2.26") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA1") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-1")) //$NON-NLS-1$
+		{
+			return "SHA1"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("http://www.w3.org/2001/04/xmlenc#sha256".toUpperCase())  //$NON-NLS-1$
+				|| upperPseudoName.equals("2.16.840.1.101.3.4.2.1") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA256") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-256")) { //$NON-NLS-1$
+			return "SHA-256"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.startsWith("SHA384") //$NON-NLS-1$
+				|| upperPseudoName.equals("2.16.840.1.101.3.4.2.2") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-384")) { //$NON-NLS-1$
+			return "SHA-384"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("http://www.w3.org/2001/04/xmlenc#sha512".toUpperCase())  //$NON-NLS-1$
+				|| upperPseudoName.equals("2.16.840.1.101.3.4.2.3") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA512") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-512")) { //$NON-NLS-1$
+			return "SHA-512"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("http://www.w3.org/2001/04/xmlenc#ripemd160".toUpperCase())  //$NON-NLS-1$
+				|| upperPseudoName.startsWith("RIPEMD160") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("RIPEMD-160")) { //$NON-NLS-1$
+			return "RIPEMD160"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("MD5") //$NON-NLS-1$
+				|| upperPseudoName.equals("1.2.840.113549.2.5") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("MD5")) { //$NON-NLS-1$
+			return "MD5"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("MD2")  //$NON-NLS-1$
+				|| upperPseudoName.equals("1.2.840.113549.2.2") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("MD2")) { //$NON-NLS-1$
+			return "MD2"; //$NON-NLS-1$
+		}
+
+		throw new IllegalArgumentException("Algoritmo de huella digital no soportado: " + pseudoName); //$NON-NLS-1$
+	}
 }
