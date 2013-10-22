@@ -15,13 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
+import org.bouncycastle.asn1.cms.OtherRevocationInfoFormat;
 import org.bouncycastle.asn1.cryptopro.CryptoProObjectIdentifiers;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
@@ -30,7 +32,11 @@ import org.bouncycastle.asn1.teletrust.TeleTrusTObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.AttributeCertificate;
 import org.bouncycastle.asn1.x9.X9ObjectIdentifiers;
+import org.bouncycastle.cert.X509AttributeCertificateHolder;
+import org.bouncycastle.cert.X509CRLHolder;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.jce.interfaces.GOST3410PrivateKey;
+import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.x509.X509AttributeCertificate;
 import org.bouncycastle.x509.X509Store;
@@ -150,12 +156,12 @@ public class CMSSignedGenerator
         return encOID;
     }
 
-    protected Map getBaseParameters(DERObjectIdentifier contentType, AlgorithmIdentifier digAlgId, byte[] hash)
+    protected Map getBaseParameters(ASN1ObjectIdentifier contentType, AlgorithmIdentifier digAlgId, byte[] hash)
     {
         Map param = new HashMap();
         param.put(CMSAttributeTableGenerator.CONTENT_TYPE, contentType);
         param.put(CMSAttributeTableGenerator.DIGEST_ALGORITHM_IDENTIFIER, digAlgId);
-        param.put(CMSAttributeTableGenerator.DIGEST,  hash.clone());
+        param.put(CMSAttributeTableGenerator.DIGEST, Arrays.clone(hash));
         return param;
     }
 
@@ -189,6 +195,25 @@ public class CMSSignedGenerator
         crls.addAll(CMSUtils.getCRLsFromStore(certStore));
     }
 
+    /**
+     * Add a certificate to the certificate set to be included with the generated SignedData message.
+     *
+     * @param certificate the certificate to be included.
+     * @throws CMSException if the certificate cannot be encoded for adding.
+     */
+    public void addCertificate(
+        X509CertificateHolder certificate)
+        throws CMSException
+    {
+        certs.add(certificate.toASN1Structure());
+    }
+
+    /**
+     * Add the certificates in certStore to the certificate set to be included with the generated SignedData message.
+     *
+     * @param certStore the store containing the certificates to be included.
+     * @throws CMSException if the certificates cannot be encoded for adding.
+     */
     public void addCertificates(
         Store certStore)
         throws CMSException
@@ -196,6 +221,22 @@ public class CMSSignedGenerator
         certs.addAll(CMSUtils.getCertificatesFromStore(certStore));
     }
 
+    /**
+     * Add a CRL to the CRL set to be included with the generated SignedData message.
+     *
+     * @param crl the CRL to be included.
+     */
+    public void addCRL(X509CRLHolder crl)
+    {
+        crls.add(crl.toASN1Structure());
+    }
+
+    /**
+     * Add the CRLs in crlStore to the CRL set to be included with the generated SignedData message.
+     *
+     * @param crlStore the store containing the CRLs to be included.
+     * @throws CMSException if the CRLs cannot be encoded for adding.
+     */
     public void addCRLs(
         Store crlStore)
         throws CMSException
@@ -203,11 +244,56 @@ public class CMSSignedGenerator
         crls.addAll(CMSUtils.getCRLsFromStore(crlStore));
     }
 
+    /**
+     * Add the attribute certificates in attrStore to the certificate set to be included with the generated SignedData message.
+     *
+     * @param attrCert the store containing the certificates to be included.
+     * @throws CMSException if the attribute certificate cannot be encoded for adding.
+     */
+    public void addAttributeCertificate(
+        X509AttributeCertificateHolder attrCert)
+        throws CMSException
+    {
+        certs.add(new DERTaggedObject(false, 2, attrCert.toASN1Structure()));
+    }
+
+    /**
+     * Add the attribute certificates in attrStore to the certificate set to be included with the generated SignedData message.
+     *
+     * @param attrStore the store containing the certificates to be included.
+     * @throws CMSException if the attribute certificate cannot be encoded for adding.
+     */
     public void addAttributeCertificates(
         Store attrStore)
         throws CMSException
     {
         certs.addAll(CMSUtils.getAttributeCertificatesFromStore(attrStore));
+    }
+
+    /**
+     * Add a single instance of otherRevocationData to the CRL set to be included with the generated SignedData message.
+     *
+     * @param otherRevocationInfoFormat the OID specifying the format of the otherRevocationInfo data.
+     * @param otherRevocationInfo the otherRevocationInfo ASN.1 structure.
+     */
+    public void addOtherRevocationInfo(
+        ASN1ObjectIdentifier   otherRevocationInfoFormat,
+        ASN1Encodable          otherRevocationInfo)
+    {
+        crls.add(new DERTaggedObject(false, 1, new OtherRevocationInfoFormat(otherRevocationInfoFormat, otherRevocationInfo)));
+    }
+
+    /**
+     * Add a Store of otherRevocationData to the CRL set to be included with the generated SignedData message.
+     *
+     * @param otherRevocationInfoFormat the OID specifying the format of the otherRevocationInfo data.
+     * @param otherRevocationInfos a Store of otherRevocationInfo data to add.
+     */
+    public void addOtherRevocationInfo(
+        ASN1ObjectIdentifier   otherRevocationInfoFormat,
+        Store                  otherRevocationInfos)
+    {
+        crls.addAll(CMSUtils.getOthersFromStore(otherRevocationInfoFormat, otherRevocationInfos));
     }
 
     /**

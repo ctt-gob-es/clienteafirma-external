@@ -11,15 +11,12 @@ import org.bouncycastle.operator.SignatureAlgorithmIdentifierFinder;
 
 public class SignerInformationVerifier
 {
-    private final ContentVerifierProvider verifierProvider;
-    private final DigestCalculatorProvider digestProvider;
-    private final SignatureAlgorithmIdentifierFinder sigAlgorithmFinder;
-    private final CMSSignatureAlgorithmNameGenerator sigNameGenerator;
+    private ContentVerifierProvider verifierProvider;
+    private DigestCalculatorProvider digestProvider;
+    private SignatureAlgorithmIdentifierFinder sigAlgorithmFinder;
+    private CMSSignatureAlgorithmNameGenerator sigNameGenerator;
 
-    public SignerInformationVerifier(final CMSSignatureAlgorithmNameGenerator sigNameGenerator,
-    		                         final SignatureAlgorithmIdentifierFinder sigAlgorithmFinder,
-    		                         final ContentVerifierProvider verifierProvider,
-    		                         final DigestCalculatorProvider digestProvider)
+    public SignerInformationVerifier(CMSSignatureAlgorithmNameGenerator sigNameGenerator, SignatureAlgorithmIdentifierFinder sigAlgorithmFinder, ContentVerifierProvider verifierProvider, DigestCalculatorProvider digestProvider)
     {
         this.sigNameGenerator = sigNameGenerator;
         this.sigAlgorithmFinder = sigAlgorithmFinder;
@@ -29,25 +26,25 @@ public class SignerInformationVerifier
 
     public boolean hasAssociatedCertificate()
     {
-        return this.verifierProvider.hasAssociatedCertificate();
+        return verifierProvider.hasAssociatedCertificate();
     }
 
     public X509CertificateHolder getAssociatedCertificate()
     {
-        return this.verifierProvider.getAssociatedCertificate();
+        return verifierProvider.getAssociatedCertificate();
     }
 
-    public ContentVerifier getContentVerifier(final AlgorithmIdentifier signingAlgorithm, final AlgorithmIdentifier digestAlgorithm)
+    public ContentVerifier getContentVerifier(AlgorithmIdentifier signingAlgorithm, AlgorithmIdentifier digestAlgorithm)
         throws OperatorCreationException
     {
-        final String          signatureName = this.sigNameGenerator.getSignatureName(digestAlgorithm, signingAlgorithm);
+        String          signatureName = sigNameGenerator.getSignatureName(digestAlgorithm, signingAlgorithm);
 
-        return this.verifierProvider.get(this.sigAlgorithmFinder.find(signatureName));
+        return verifierProvider.get(sigAlgorithmFinder.find(signatureName));
     }
 
-    public DigestCalculator getDigestCalculator(final AlgorithmIdentifier algorithmIdentifier)
+    public DigestCalculator getDigestCalculator(AlgorithmIdentifier algorithmIdentifier)
         throws OperatorCreationException
     {
-        return this.digestProvider.get(algorithmIdentifier);
+        return digestProvider.get(algorithmIdentifier);
     }
 }

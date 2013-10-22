@@ -21,7 +21,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -41,6 +41,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.RawContentVerifier;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Arrays;
+import org.bouncycastle.util.io.TeeOutputStream;
 
 /**
  * an expanded SignerInfo block from a CMS Signed message
@@ -143,7 +144,7 @@ public class SignerInformation
      */
     public String getDigestAlgOID()
     {
-        return digestAlgorithm.getObjectId().getId();
+        return digestAlgorithm.getAlgorithm().getId();
     }
 
     /**
@@ -179,7 +180,7 @@ public class SignerInformation
      */
     public String getEncryptionAlgOID()
     {
-        return encryptionAlgorithm.getObjectId().getId();
+        return encryptionAlgorithm.getAlgorithm().getId();
     }
 
     /**
@@ -358,9 +359,21 @@ public class SignerInformation
         throws CMSException
     {
         String          encName = CMSSignedHelper.INSTANCE.getEncryptionAlgName(this.getEncryptionAlgOID());
+        ContentVerifier contentVerifier;
 
         try
         {
+            contentVerifier = verifier.getContentVerifier(encryptionAlgorithm, info.getDigestAlgorithm());
+        }
+        catch (OperatorCreationException e)
+        {
+            throw new CMSException("can't create content verifier: " + e.getMessage(), e);
+        }
+
+        try
+        {
+            OutputStream sigOut = contentVerifier.getOutputStream();
+
             if (resultDigest == null)
             {
                 DigestCalculator calc = verifier.getDigestCalculator(this.getDigestAlgorithmID());
@@ -368,11 +381,34 @@ public class SignerInformation
                 {
                     OutputStream      digOut = calc.getOutputStream();
 
-                    content.write(digOut);
+                    if (signedAttributeSet == null)
+                    {
+                        if (contentVerifier instanceof RawContentVerifier)
+                        {
+                            content.write(digOut);
+                        }
+                        else
+                        {
+                            OutputStream cOut = new TeeOutputStream(digOut, sigOut);
+
+                            content.write(cOut);
+
+                            cOut.close();
+                        }
+                    }
+                    else
+                    {
+                        content.write(digOut);
+                        sigOut.write(this.getEncodedSignedAttributes());
+                    }
 
                     digOut.close();
                 }
-                else if (signedAttributeSet == null)
+                else if (signedAttributeSet != null)
+                {
+                    sigOut.write(this.getEncodedSignedAttributes());
+                }
+                else
                 {
                     // TODO Get rid of this exception and just treat content==null as empty not missing?
                     throw new CMSException("data not encapsulated in signature - use detached constructor.");
@@ -380,6 +416,22 @@ public class SignerInformation
 
                 resultDigest = calc.getDigest();
             }
+            else
+            {
+                if (signedAttributeSet == null)
+                {
+                    if (content != null)
+                    {
+                        content.write(sigOut);
+                    }
+                }
+                else
+                {
+                    sigOut.write(this.getEncodedSignedAttributes());
+                }
+            }
+
+            sigOut.close();
         }
         catch (IOException e)
         {
@@ -408,12 +460,12 @@ public class SignerInformation
                     throw new CMSException("[For counter signatures,] the signedAttributes field MUST NOT contain a content-type attribute");
                 }
 
-                if (!(validContentType instanceof DERObjectIdentifier))
+                if (!(validContentType instanceof ASN1ObjectIdentifier))
                 {
                     throw new CMSException("content-type attribute value not of ASN.1 type 'OBJECT IDENTIFIER'");
                 }
 
-                DERObjectIdentifier signedContentType = (DERObjectIdentifier)validContentType;
+                ASN1ObjectIdentifier signedContentType = (ASN1ObjectIdentifier)validContentType;
 
                 if (!signedContentType.equals(contentType))
                 {
@@ -477,51 +529,28 @@ public class SignerInformation
 
         try
         {
-            ContentVerifier contentVerifier = verifier.getContentVerifier(encryptionAlgorithm, info.getDigestAlgorithm());
-            OutputStream sigOut = contentVerifier.getOutputStream();
-
-            if (signedAttributeSet == null)
+            if (signedAttributeSet == null && resultDigest != null)
             {
-                if (resultDigest != null)
+                if (contentVerifier instanceof RawContentVerifier)
                 {
-                    if (contentVerifier instanceof RawContentVerifier)
-                    {           
-                        RawContentVerifier rawVerifier = (RawContentVerifier)contentVerifier;
+                    RawContentVerifier rawVerifier = (RawContentVerifier)contentVerifier;
 
-                        if (encName.equals("RSA"))
-                        {
-                            DigestInfo digInfo = new DigestInfo(digestAlgorithm, resultDigest);
+                    if (encName.equals("RSA"))
+                    {
+                        DigestInfo digInfo = new DigestInfo(new AlgorithmIdentifier(digestAlgorithm.getAlgorithm(), DERNull.INSTANCE), resultDigest);
 
-                            return rawVerifier.verify(digInfo.getEncoded(ASN1Encoding.DER), this.getSignature());
-                        }
-
-                        return rawVerifier.verify(resultDigest, this.getSignature());
+                        return rawVerifier.verify(digInfo.getEncoded(ASN1Encoding.DER), this.getSignature());
                     }
 
-                    throw new CMSException("verifier unable to process raw signature");
-                }
-                else if (content != null)
-                {
-                    // TODO Use raw signature of the hash value instead
-                    content.write(sigOut);
+                    return rawVerifier.verify(resultDigest, this.getSignature());
                 }
             }
-            else
-            {
-                sigOut.write(this.getEncodedSignedAttributes());
-            }
-
-            sigOut.close();
 
             return contentVerifier.verify(this.getSignature());
         }
         catch (IOException e)
         {
             throw new CMSException("can't process mime object to create signature.", e);
-        }
-        catch (OperatorCreationException e)
-        {
-            throw new CMSException("can't create content verifier: " + e.getMessage(), e);
         }
     }
 
@@ -764,7 +793,7 @@ public class SignerInformation
 
         for (Iterator it = counterSigners.getSigners().iterator(); it.hasNext();)
         {
-            sigs.add(((SignerInformation)it.next()).toSignerInfo());
+            sigs.add(((SignerInformation)it.next()).toASN1Structure());
         }
 
         v.add(new Attribute(CMSAttributes.counterSignature, new DERSet(sigs)));
