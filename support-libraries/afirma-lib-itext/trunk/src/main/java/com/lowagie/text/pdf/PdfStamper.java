@@ -570,9 +570,15 @@ public class PdfStamper
         return stp;
     }
 
-
-
-
+    /** Gets a <CODE>PdfContentByte</CODE> to write over the page of
+     * the original document.
+     * @param pageNum the page number where the extra content is written
+     * @return a <CODE>PdfContentByte</CODE> to write over the page of
+     * the original document
+     */
+    public PdfContentByte getOverContent(final int pageNum) {
+        return this.stamper.getOverContent(pageNum);
+    }
 
     /**
      * Gets the PdfLayer objects in an existing document as a Map
