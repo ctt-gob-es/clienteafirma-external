@@ -594,7 +594,7 @@ public class PdfStamperImp extends PdfWriter {
 
 
 
-    private PdfContentByte getOverContent(final int pageNum) {
+    PdfContentByte getOverContent(final int pageNum) {
         if (pageNum < 1 || pageNum > this.reader.getNumberOfPages()) {
 			return null;
 		}
