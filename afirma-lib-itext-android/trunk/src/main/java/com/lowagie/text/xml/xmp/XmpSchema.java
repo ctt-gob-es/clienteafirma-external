@@ -55,7 +55,7 @@ import java.util.Properties;
 /**
  * Abstract superclass of the XmpSchemas supported by iText.
  */
-abstract class XmpSchema extends Properties {
+public abstract class XmpSchema extends Properties {
 
 	private static final long serialVersionUID = -176374295948945272L;
 
@@ -65,7 +65,7 @@ abstract class XmpSchema extends Properties {
 	/** Constructs an XMP schema.
 	 * @param xmlns
 	 */
-	XmpSchema(final String xmlns) {
+	protected XmpSchema(final String xmlns) {
 		super();
 		this.xmlns = xmlns;
 	}
@@ -119,11 +119,9 @@ abstract class XmpSchema extends Properties {
 	 * @param value
 	 * @return the previous property (null if there wasn't one)
 	 */
-	Object setProperty(final String key, final XmpArray value) {
+	protected Object setProperty(final String key, final XmpArray value) {
 		return super.setProperty(key, value.toString());
 	}
-
-
 
 	/**
 	 * @param content

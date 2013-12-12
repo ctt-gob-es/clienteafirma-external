@@ -2815,7 +2815,7 @@ public class PdfReader implements PdfViewerPreferences {
     /**
      * Closes the reader
      */
-    void close() {
+    public void close() {
         if (!this.partial) {
 			return;
 		}
