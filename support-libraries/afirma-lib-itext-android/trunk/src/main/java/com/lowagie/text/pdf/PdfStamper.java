@@ -91,11 +91,9 @@ public class PdfStamper
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    PdfStamper(final PdfReader reader, final OutputStream os, final Calendar globalDate) throws DocumentException, IOException {
+    public PdfStamper(final PdfReader reader, final OutputStream os, final Calendar globalDate) throws DocumentException, IOException {
         this.stamper = new PdfStamperImp(reader, os, '\0', false, globalDate);
     }
-
-
 
     /**
      * Starts the process of adding extra content to an existing PDF
@@ -153,7 +151,7 @@ public class PdfStamper
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    void close(final Calendar globalDate) throws DocumentException, IOException {
+    public void close(final Calendar globalDate) throws DocumentException, IOException {
         if (!this.hasSignature) {
             this.stamper.close(this.moreInfo, globalDate);
             return;
@@ -183,10 +181,6 @@ public class PdfStamper
         this.sigApp.close(dic);
         this.stamper.reader.close();
     }
-
-
-
-
 
     /** Checks if the content is automatically adjusted to compensate
      * the original page rotation.

@@ -124,7 +124,7 @@ public class XmpWriter {
 	 * @param os
 	 * @throws IOException
 	 */
-	private XmpWriter(final OutputStream os) throws IOException {
+	public XmpWriter(final OutputStream os) throws IOException {
 		this(os, UTF8, 20);
 	}
 
@@ -144,7 +144,7 @@ public class XmpWriter {
 	 * @param s
 	 * @throws IOException
 	 */
-	private void addRdfDescription(final XmpSchema s) throws IOException {
+	public void addRdfDescription(final XmpSchema s) throws IOException {
 		this.writer.write("<rdf:Description rdf:about=\"");
 		this.writer.write(this.about);
 		this.writer.write("\" ");

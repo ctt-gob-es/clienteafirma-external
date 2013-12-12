@@ -55,11 +55,11 @@ import java.util.Iterator;
 /**
  * StringBuffer to construct an XMP array.
  */
-class XmpArray extends ArrayList {
+public class XmpArray<E> extends ArrayList<E> {
 
 	private static final long serialVersionUID = 5722854116328732742L;
 	/** An array that is unordered. */
-	static final String UNORDERED = "rdf:Bag";
+	public static final String UNORDERED = "rdf:Bag";
 	/** An array that is ordered. */
 	static final String ORDERED = "rdf:Seq";
 	/** An array with alternatives. */
