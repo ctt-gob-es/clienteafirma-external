@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -71,12 +72,12 @@ class PdfCopyFieldsImp extends PdfWriter {
     private static final PdfName iTextTag = new PdfName("_iTextTag_");
     private static final Integer zero = new Integer(0);
     private final ArrayList readers = new ArrayList();
-    HashMap readers2intrefs = new HashMap();
-    private final HashMap pages2intrefs = new HashMap();
-    private final HashMap visited = new HashMap();
+    HashMap readers2intrefs = new LinkedHashMap();
+    private final HashMap pages2intrefs = new LinkedHashMap();
+    private final HashMap visited = new LinkedHashMap();
     ArrayList fields = new ArrayList();
     private RandomAccessFileOrArray file;
-    private final HashMap fieldTree = new HashMap();
+    private final HashMap fieldTree = new LinkedHashMap();
     private final ArrayList pageRefs = new ArrayList();
     private final ArrayList pageDics = new ArrayList();
     private final PdfDictionary resources = new PdfDictionary();
@@ -355,7 +356,7 @@ class PdfCopyFieldsImp extends PdfWriter {
         this.form.put(PdfName.DR, this.resources);
         propagate(this.resources, null, false);
         this.form.put(PdfName.DA, new PdfString("/Helv 0 Tf 0 g "));
-        this.tabOrder = new HashMap();
+        this.tabOrder = new LinkedHashMap();
         this.calculationOrderRefs = new ArrayList(this.calculationOrder);
         this.form.put(PdfName.FIELDS, branchForm(this.fieldTree, null, ""));
         if (this.hasSignature) {
@@ -484,7 +485,7 @@ class PdfCopyFieldsImp extends PdfWriter {
             Object obj = map.get(s);
             if (tk.hasMoreTokens()) {
                 if (obj == null) {
-                    obj = new HashMap();
+                    obj = new LinkedHashMap();
                     map.put(s, obj);
                     map = (HashMap)obj;
                     continue;
@@ -663,8 +664,8 @@ class PdfCopyFieldsImp extends PdfWriter {
 		}
     }
 
-    private static final HashMap widgetKeys = new HashMap();
-    protected static final HashMap fieldKeys = new HashMap();
+    private static final HashMap widgetKeys = new LinkedHashMap();
+    protected static final HashMap fieldKeys = new LinkedHashMap();
     static {
         final Integer one = new Integer(1);
         widgetKeys.put(PdfName.SUBTYPE, one);

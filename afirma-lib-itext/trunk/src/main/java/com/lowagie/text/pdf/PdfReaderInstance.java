@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 /**
  * Instance of PdfReader in each output document.
  *
@@ -63,9 +64,9 @@ class PdfReaderInstance {
     private final int myXref[];
     private final PdfReader reader;
     private final RandomAccessFileOrArray file;
-    private final HashMap importedPages = new HashMap();
+    private final HashMap importedPages = new LinkedHashMap();
     private final PdfWriter writer;
-    private final HashMap visited = new HashMap();
+    private final HashMap visited = new LinkedHashMap();
     private ArrayList nextRound = new ArrayList();
 
     PdfReaderInstance(final PdfReader reader, final PdfWriter writer) {

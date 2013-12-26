@@ -52,6 +52,7 @@ package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 /**
@@ -110,7 +111,7 @@ public class PdfDictionary extends PdfObject {
      */
     public PdfDictionary() {
         super(DICTIONARY);
-        this.hashMap = new HashMap();
+        this.hashMap = new LinkedHashMap();
     }
 
     /**

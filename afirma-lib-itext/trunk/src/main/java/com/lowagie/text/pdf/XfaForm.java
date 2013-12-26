@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -752,10 +753,10 @@ class XfaForm {
          */
         private Xml2SomDatasets(final Node n) {
             this.order = new ArrayList();
-            this.name2Node = new HashMap();
+            this.name2Node = new LinkedHashMap();
             this.stack = new Stack2();
             this.anform = 0;
-            this.inverseSearch = new HashMap();
+            this.inverseSearch = new LinkedHashMap();
             processDatasetsInternal(n);
         }
 
@@ -826,7 +827,7 @@ class XfaForm {
         }
 
         private void processDatasetsInternal(final Node n) {
-            final HashMap ss = new HashMap();
+            final HashMap ss = new LinkedHashMap();
             Node n2 = n.getFirstChild();
             while (n2 != null) {
                 if (n2.getNodeType() == Node.ELEMENT_NODE) {
@@ -868,8 +869,8 @@ class XfaForm {
          * @param items the Collection
          */
         private AcroFieldsSearch(final Collection items) {
-            this.inverseSearch = new HashMap();
-            this.acroShort2LongName = new HashMap();
+            this.inverseSearch = new LinkedHashMap();
+            this.acroShort2LongName = new LinkedHashMap();
             for (final Iterator it = items.iterator(); it.hasNext();) {
                 final String itemName = (String)it.next();
                 final String itemShort = getShortName(itemName);
@@ -910,11 +911,11 @@ class XfaForm {
          */
         private Xml2SomTemplate(final Node n) {
             this.order = new ArrayList();
-            this.name2Node = new HashMap();
+            this.name2Node = new LinkedHashMap();
             this.stack = new Stack2();
             this.anform = 0;
             this.templateLevel = 0;
-            this.inverseSearch = new HashMap();
+            this.inverseSearch = new LinkedHashMap();
             processTemplate(n, null);
         }
 
@@ -922,9 +923,9 @@ class XfaForm {
 
         private void processTemplate(final Node n, HashMap ff) {
             if (ff == null) {
-				ff = new HashMap();
+				ff = new LinkedHashMap();
 			}
-            final HashMap ss = new HashMap();
+            final HashMap ss = new LinkedHashMap();
             Node n2 = n.getFirstChild();
             while (n2 != null) {
                 if (n2.getNodeType() == Node.ELEMENT_NODE) {

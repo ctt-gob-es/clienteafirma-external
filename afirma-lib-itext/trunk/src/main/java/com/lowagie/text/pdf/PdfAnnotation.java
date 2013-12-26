@@ -52,6 +52,7 @@ package com.lowagie.text.pdf;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.Rectangle;
 /**
@@ -291,7 +292,7 @@ public class PdfAnnotation extends PdfDictionary {
 			return;
 		}
         if (this.templates == null) {
-			this.templates = new HashMap();
+			this.templates = new LinkedHashMap();
 		}
         this.templates.put(template, null);
     }
@@ -316,7 +317,7 @@ public class PdfAnnotation extends PdfDictionary {
 			return;
 		}
         if (this.templates == null) {
-			this.templates = new HashMap();
+			this.templates = new LinkedHashMap();
 		}
         this.templates.put(template, null);
     }
