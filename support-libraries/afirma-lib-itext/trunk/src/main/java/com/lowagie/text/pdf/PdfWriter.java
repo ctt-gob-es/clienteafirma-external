@@ -1988,7 +1988,7 @@ public class PdfWriter extends DocWriter implements
 
     /** The form XObjects in this document. The key is the xref and the value
         is Object[]{PdfName, template}.*/
-    private final HashMap formXObjects = new HashMap();
+    private final HashMap formXObjects = new LinkedHashMap();
 
     /** The name counter for the form XObjects name. */
     private int formXObjectsCounter = 1;
@@ -2058,7 +2058,7 @@ public class PdfWriter extends DocWriter implements
 
 //  [F5] adding pages imported form other PDF documents
 
-    private final HashMap importedPages = new HashMap();
+    private final HashMap importedPages = new LinkedHashMap();
 
     /**
      * Use this method to get a page from other PDF document.
@@ -2123,7 +2123,7 @@ public class PdfWriter extends DocWriter implements
 //  [F6] spot colors
 
     /** The colors of this document */
-    private final HashMap documentColors = new HashMap();
+    private final HashMap documentColors = new LinkedHashMap();
 
     /** The color number counter for the colors in the document. */
     private int colorNumber = 1;
@@ -2150,7 +2150,7 @@ public class PdfWriter extends DocWriter implements
 //  [F7] document patterns
 
     /** The patterns of this document */
-    private final HashMap documentPatterns = new HashMap();
+    private final HashMap documentPatterns = new LinkedHashMap();
 
     /** The pattern number counter for the colors in the document. */
     private int patternNumber = 1;
@@ -2171,7 +2171,7 @@ public class PdfWriter extends DocWriter implements
 
 //  [F8] shading patterns
 
-    private final HashMap documentShadingPatterns = new HashMap();
+    private final HashMap documentShadingPatterns = new LinkedHashMap();
 
     void addSimpleShadingPattern(final PdfShadingPattern shading) {
         if (!this.documentShadingPatterns.containsKey(shading)) {
@@ -2184,7 +2184,7 @@ public class PdfWriter extends DocWriter implements
 
 //  [F9] document shadings
 
-    private final HashMap documentShadings = new HashMap();
+    private final HashMap documentShadings = new LinkedHashMap();
 
     void addSimpleShading(final PdfShading shading) {
         if (!this.documentShadings.containsKey(shading)) {
@@ -2195,7 +2195,7 @@ public class PdfWriter extends DocWriter implements
 
 // [F10] extended graphics state (for instance for transparency)
 
-    private final HashMap documentExtGState = new HashMap();
+    private final HashMap documentExtGState = new LinkedHashMap();
 
     PdfObject[] addSimpleExtGState(final PdfDictionary gstate) {
         if (!this.documentExtGState.containsKey(gstate)) {
@@ -2207,7 +2207,7 @@ public class PdfWriter extends DocWriter implements
 
 //  [F11] adding properties (OCG, marked content)
 
-    private final HashMap documentProperties = new HashMap();
+    private final HashMap documentProperties = new LinkedHashMap();
     PdfObject[] addSimpleProperty(final Object prop, final PdfIndirectReference refi) {
         if (!this.documentProperties.containsKey(prop)) {
             if (prop instanceof PdfOCG) {
@@ -2647,7 +2647,7 @@ public class PdfWriter extends DocWriter implements
 
 //  [M2] spot patterns
 
-    private final HashMap documentSpotPatterns = new HashMap();
+    private final HashMap documentSpotPatterns = new LinkedHashMap();
     private ColorDetails patternColorspaceRGB;
     private ColorDetails patternColorspaceGRAY;
     private ColorDetails patternColorspaceCMYK;
@@ -2730,7 +2730,7 @@ public class PdfWriter extends DocWriter implements
     private final PdfDictionary imageDictionary = new PdfDictionary();
 
     /** This is the list with all the images in the document. */
-    private final HashMap images = new HashMap();
+    private final HashMap images = new LinkedHashMap();
 
     /**
      * Use this method to adds an image to the document
@@ -2882,7 +2882,7 @@ public class PdfWriter extends DocWriter implements
      * A HashSet with Stream objects containing JBIG2 Globals
      * @since 2.1.5
      */
-    private final HashMap JBIG2Globals = new HashMap();
+    private final HashMap JBIG2Globals = new LinkedHashMap();
     /**
      * Gets an indirect reference to a JBIG2 Globals stream.
      * Adds the stream if it hasn't already been added to the writer.

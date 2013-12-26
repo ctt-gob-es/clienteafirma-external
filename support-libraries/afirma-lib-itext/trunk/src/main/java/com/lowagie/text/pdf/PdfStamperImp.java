@@ -53,6 +53,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.xml.sax.SAXException;
@@ -70,13 +71,13 @@ public class PdfStamperImp extends PdfWriter {
 
     private PdfObject pdfFileID = null;
 
-    private final HashMap readers2intrefs = new HashMap();
-    private final HashMap readers2file = new HashMap();
+    private final HashMap readers2intrefs = new LinkedHashMap();
+    private final HashMap readers2file = new LinkedHashMap();
     private final RandomAccessFileOrArray file;
     PdfReader reader;
     private final IntHashtable myXref = new IntHashtable();
     /** Integer(page number) -> PageStamp */
-    private final HashMap pagesToContent = new HashMap();
+    private final HashMap pagesToContent = new LinkedHashMap();
     private boolean closed = false;
     /** Holds value of property rotateContents. */
     private boolean rotateContents = true;
@@ -87,7 +88,7 @@ public class PdfStamperImp extends PdfWriter {
     private final HashSet partialFlattening = new HashSet();
     private boolean useVp = false;
     private final PdfViewerPreferencesImp viewerPreferences = new PdfViewerPreferencesImp();
-    private final HashMap fieldTemplates = new HashMap();
+    private final HashMap fieldTemplates = new LinkedHashMap();
     private boolean fieldsAdded = false;
     private int sigFlags = 0;
     private final boolean append;
@@ -1412,7 +1413,7 @@ public class PdfStamperImp extends PdfWriter {
     	final PdfArray ocgs = dict.getAsArray(PdfName.OCGS);
     	PdfIndirectReference ref;
     	PdfLayer layer;
-    	final HashMap ocgmap = new HashMap();
+    	final HashMap ocgmap = new LinkedHashMap();
     	for (final Iterator i = ocgs.listIterator(); i.hasNext(); ) {
     		ref = (PdfIndirectReference)i.next();
     		layer = new PdfLayer(null);
@@ -1502,7 +1503,7 @@ public class PdfStamperImp extends PdfWriter {
     	if (this.documentOCG.isEmpty()) {
     		readOCProperties();
     	}
-    	final HashMap map = new HashMap();
+    	final HashMap map = new LinkedHashMap();
     	PdfLayer layer;
     	String key;
     	for (final Iterator i = this.documentOCG.iterator(); i.hasNext(); ) {

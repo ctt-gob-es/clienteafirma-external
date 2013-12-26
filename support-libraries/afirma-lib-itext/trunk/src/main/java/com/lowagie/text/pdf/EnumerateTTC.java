@@ -50,7 +50,7 @@
 package com.lowagie.text.pdf;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.DocumentException;
 /** Enumerates all the fonts inside a True Type Collection.
@@ -70,7 +70,7 @@ class EnumerateTTC extends TrueTypeFont{
 
 
     private void findNames() throws DocumentException, IOException {
-        this.tables = new HashMap();
+        this.tables = new LinkedHashMap();
 
         try {
             final String mainTag = readStandardString(4);

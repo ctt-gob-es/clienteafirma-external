@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -557,7 +558,7 @@ class PdfCopy extends PdfWriter {
 					}
                     expandFields(field, allAnnots);
                     if (this.cstp.fieldTemplates == null) {
-						this.cstp.fieldTemplates = new HashMap();
+						this.cstp.fieldTemplates = new LinkedHashMap();
 					}
                 } else {
 					allAnnots.add(annot);

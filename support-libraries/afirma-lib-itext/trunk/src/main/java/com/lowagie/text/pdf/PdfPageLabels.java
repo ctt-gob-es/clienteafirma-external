@@ -51,6 +51,7 @@ package com.lowagie.text.pdf;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.ExceptionConverter;
 
@@ -79,7 +80,7 @@ class PdfPageLabels {
     /** Creates a new PdfPageLabel with a default logical page 1
      */
     public PdfPageLabels() {
-        this.map = new HashMap();
+        this.map = new LinkedHashMap();
         addPageLabel(1, DECIMAL_ARABIC_NUMERALS, null, 1);
     }
 

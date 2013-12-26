@@ -94,6 +94,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.ExceptionConverter;
@@ -125,7 +126,7 @@ public class BmpImage {
     private boolean isBottomUp;
     private int bitsPerPixel;
     private int redMask, greenMask, blueMask, alphaMask;
-    private final HashMap properties = new HashMap();
+    private final HashMap properties = new LinkedHashMap();
     private long xPelsPerMeter;
     private long yPelsPerMeter;
     // BMP Image types

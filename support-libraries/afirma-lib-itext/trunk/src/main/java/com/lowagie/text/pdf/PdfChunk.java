@@ -52,6 +52,7 @@ package com.lowagie.text.pdf;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.lowagie.text.Chunk;
@@ -77,7 +78,7 @@ public class PdfChunk {
     private static final PdfChunk thisChunk[] = new PdfChunk[1];
     private static final float ITALIC_ANGLE = 0.21256f;
 /** The allowed attributes in variable <CODE>attributes</CODE>. */
-    private static final HashMap keysAttributes = new HashMap();
+    private static final HashMap keysAttributes = new LinkedHashMap();
 
 /** The allowed attributes in variable <CODE>noStroke</CODE>. */
     private static final HashMap keysNoStroke = new HashMap();
@@ -124,7 +125,7 @@ public class PdfChunk {
  * This attributes require the measurement of characters widths when rendering
  * such as underline.
  */
-    private HashMap attributes = new HashMap();
+    private HashMap attributes = new LinkedHashMap();
 
 /**
  * Non metric attributes.

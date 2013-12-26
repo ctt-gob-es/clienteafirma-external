@@ -47,6 +47,7 @@
 package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 /** Reads an FDF form and makes the fields available
  * @author Paulo Soares (psoares@consiste.pt)
  */
@@ -66,7 +67,7 @@ class FdfReader extends PdfReader {
 
     @Override
 	protected void readPdf() throws IOException {
-        this.fields = new HashMap();
+        this.fields = new LinkedHashMap();
         try {
             this.tokens.checkFdfHeader();
             rebuildXref();
