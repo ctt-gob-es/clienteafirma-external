@@ -52,6 +52,7 @@ import harmony.java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.Annotation;
 import com.lowagie.text.DocumentException;
@@ -179,7 +180,7 @@ public class PdfContentByte {
     private int mcDepth = 0;
     private boolean inText = false;
 
-    private static HashMap abrev = new HashMap();
+    private static HashMap abrev = new LinkedHashMap();
 
     static {
         abrev.put(PdfName.BITSPERCOMPONENT, "/BPC ");

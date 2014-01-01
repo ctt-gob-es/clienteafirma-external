@@ -51,6 +51,7 @@ import harmony.java.awt.Color;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -140,7 +141,7 @@ abstract class BaseField {
     /** Holds value of property maxCharacterLength. */
     protected int maxCharacterLength;
 
-    private final static HashMap fieldKeys = new HashMap();
+    private final static HashMap fieldKeys = new LinkedHashMap();
 
     static {
         fieldKeys.putAll(PdfCopyFieldsImp.fieldKeys);

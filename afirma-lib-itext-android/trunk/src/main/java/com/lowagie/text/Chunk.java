@@ -53,6 +53,7 @@ import harmony.java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.pdf.HyphenationEvent;
 import com.lowagie.text.pdf.PdfAction;
@@ -382,7 +383,7 @@ public class Chunk implements Element {
 
 	private Chunk setAttribute(final String name, final Object obj) {
 		if (this.attributes == null) {
-			this.attributes = new HashMap();
+			this.attributes = new LinkedHashMap();
 		}
 		this.attributes.put(name, obj);
 		return this;
@@ -438,7 +439,7 @@ public class Chunk implements Element {
 	private Chunk setUnderline(final Color color, final float thickness, final float thicknessMul,
 			final float yPosition, final float yPositionMul, final int cap) {
 		if (this.attributes == null) {
-			this.attributes = new HashMap();
+			this.attributes = new LinkedHashMap();
 		}
 		final Object obj[] = {
 				color,

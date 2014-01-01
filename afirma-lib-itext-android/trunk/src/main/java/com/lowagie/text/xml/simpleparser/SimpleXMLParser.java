@@ -82,6 +82,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Stack;
 
 /**
@@ -551,7 +552,7 @@ public final class SimpleXMLParser {
      */
     private void initTag() {
         this.tag = null;
-        this.attributes = new HashMap();
+        this.attributes = new LinkedHashMap();
     }
     /** Sets the name of the tag. */
     private void doTag() {

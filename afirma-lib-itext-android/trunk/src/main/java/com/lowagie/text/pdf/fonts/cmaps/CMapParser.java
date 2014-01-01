@@ -31,12 +31,11 @@
 package com.lowagie.text.pdf.fonts.cmaps;
 
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PushbackInputStream;
-
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,11 +51,11 @@ public class CMapParser
     private static final String BEGIN_CODESPACE_RANGE = "begincodespacerange";
     private static final String BEGIN_BASE_FONT_CHAR = "beginbfchar";
     private static final String BEGIN_BASE_FONT_RANGE = "beginbfrange";
-    
+
     private static final String MARK_END_OF_DICTIONARY = ">>";
     private static final String MARK_END_OF_ARRAY = "]";
-    
-    private byte[] tokenParserByteBuffer = new byte[512];
+
+    private final byte[] tokenParserByteBuffer = new byte[512];
 
     /**
      * Creates a new instance of CMapParser.
@@ -73,25 +72,25 @@ public class CMapParser
      *
      * @throws IOException If there is an error parsing the stream.
      */
-    public CMap parse( InputStream input ) throws IOException
+    public CMap parse( final InputStream input ) throws IOException
     {
-        PushbackInputStream cmapStream = new PushbackInputStream( input );
-        CMap result = new CMap();
+        final PushbackInputStream cmapStream = new PushbackInputStream( input );
+        final CMap result = new CMap();
         Object previousToken = null;
         Object token = null;
         while( (token = parseNextToken( cmapStream )) != null )
         {
             if( token instanceof Operator )
             {
-                Operator op = (Operator)token;
+                final Operator op = (Operator)token;
                 if( op.op.equals( BEGIN_CODESPACE_RANGE ) )
                 {
-                    Number cosCount = (Number)previousToken;
+                    final Number cosCount = (Number)previousToken;
                     for( int j=0; j<cosCount.intValue(); j++ )
                     {
-                        byte[] startRange = (byte[])parseNextToken( cmapStream );
-                        byte[] endRange = (byte[])parseNextToken( cmapStream );
-                        CodespaceRange range = new CodespaceRange();
+                        final byte[] startRange = (byte[])parseNextToken( cmapStream );
+                        final byte[] endRange = (byte[])parseNextToken( cmapStream );
+                        final CodespaceRange range = new CodespaceRange();
                         range.setStart( startRange );
                         range.setEnd( endRange );
                         result.addCodespaceRange( range );
@@ -99,15 +98,15 @@ public class CMapParser
                 }
                 else if( op.op.equals( BEGIN_BASE_FONT_CHAR ) )
                 {
-                    Number cosCount = (Number)previousToken;
+                    final Number cosCount = (Number)previousToken;
                     for( int j=0; j<cosCount.intValue(); j++ )
                     {
-                        byte[] inputCode = (byte[])parseNextToken( cmapStream );
-                        Object nextToken = parseNextToken( cmapStream );
+                        final byte[] inputCode = (byte[])parseNextToken( cmapStream );
+                        final Object nextToken = parseNextToken( cmapStream );
                         if( nextToken instanceof byte[] )
                         {
-                            byte[] bytes = (byte[])nextToken;
-                            String value = createStringFromBytes( bytes );
+                            final byte[] bytes = (byte[])nextToken;
+                            final String value = createStringFromBytes( bytes );
                             result.addMapping( inputCode, value );
                         }
                         else if( nextToken instanceof LiteralName )
@@ -123,13 +122,13 @@ public class CMapParser
                 }
                else if( op.op.equals( BEGIN_BASE_FONT_RANGE ) )
                 {
-                    Number cosCount = (Number)previousToken;
-                    
+                    final Number cosCount = (Number)previousToken;
+
                     for( int j=0; j<cosCount.intValue(); j++ )
                     {
-                        byte[] startCode = (byte[])parseNextToken( cmapStream );
-                        byte[] endCode = (byte[])parseNextToken( cmapStream );
-                        Object nextToken = parseNextToken( cmapStream );
+                        final byte[] startCode = (byte[])parseNextToken( cmapStream );
+                        final byte[] endCode = (byte[])parseNextToken( cmapStream );
+                        final Object nextToken = parseNextToken( cmapStream );
                         List array = null;
                         byte[] tokenBytes = null;
                         if( nextToken instanceof List )
@@ -141,9 +140,9 @@ public class CMapParser
                         {
                             tokenBytes = (byte[])nextToken;
                         }
-                        
+
                         String value = null;
-                        
+
                         int arrayIndex = 0;
                         boolean done = false;
                         while( !done )
@@ -155,7 +154,7 @@ public class CMapParser
                             value = createStringFromBytes( tokenBytes );
                             result.addMapping( startCode, value );
                             increment( startCode );
-                            
+
                             if( array == null )
                             {
                                 increment( tokenBytes );
@@ -176,8 +175,8 @@ public class CMapParser
         }
         return result;
     }
-    
-    private Object parseNextToken( PushbackInputStream is ) throws IOException
+
+    private Object parseNextToken( final PushbackInputStream is ) throws IOException
     {
         Object retval = null;
         int nextByte = is.read();
@@ -190,9 +189,9 @@ public class CMapParser
         {
             case '%':
             {
-                //header operations, for now return the entire line 
+                //header operations, for now return the entire line
                 //may need to smarter in the future
-                StringBuffer buffer = new StringBuffer();
+                final StringBuffer buffer = new StringBuffer();
                 buffer.append( (char)nextByte );
                 readUntilEndOfLine( is, buffer );
                 retval = buffer.toString();
@@ -200,9 +199,9 @@ public class CMapParser
             }
             case '(':
             {
-                StringBuffer buffer = new StringBuffer();
+                final StringBuffer buffer = new StringBuffer();
                 int stringByte = is.read();
-                
+
                 while( stringByte != -1 && stringByte != ')' )
                 {
                     buffer.append( (char)stringByte );
@@ -213,7 +212,7 @@ public class CMapParser
             }
             case '>':
             {
-                int secondCloseBrace = is.read();
+                final int secondCloseBrace = is.read();
                 if( secondCloseBrace == '>' )
                 {
                     retval = MARK_END_OF_DICTIONARY;
@@ -231,9 +230,9 @@ public class CMapParser
             }
             case '[':
             {
-                List list = new ArrayList();
-                
-                Object nextToken = parseNextToken( is ); 
+                final List list = new ArrayList();
+
+                Object nextToken = parseNextToken( is );
                 while( nextToken != MARK_END_OF_ARRAY )
                 {
                     list.add( nextToken );
@@ -247,12 +246,12 @@ public class CMapParser
                 int theNextByte = is.read();
                 if( theNextByte == '<' )
                 {
-                    Map result = new HashMap();
+                    final Map result = new LinkedHashMap();
                     //we are reading a dictionary
-                    Object key = parseNextToken( is ); 
+                    Object key = parseNextToken( is );
                     while( key instanceof LiteralName && key != MARK_END_OF_DICTIONARY )
                     {
-                        Object value = parseNextToken( is );
+                        final Object value = parseNextToken( is );
                         result.put( ((LiteralName)key).name, value );
                         key = parseNextToken( is );
                     }
@@ -261,7 +260,7 @@ public class CMapParser
                 else
                 {
                     //won't read more than 512 bytes
-                    
+
                     int multiplyer = 16;
                     int bufferIndex = -1;
                     while( theNextByte != -1 && theNextByte != '>' )
@@ -281,34 +280,34 @@ public class CMapParser
                         }
                         else
                         {
-                            throw new IOException( "Error: expected hex character and not " + 
+                            throw new IOException( "Error: expected hex character and not " +
                                 (char)theNextByte + ":" + theNextByte );
                         }
                         intValue *= multiplyer;
                         if( multiplyer == 16 )
                         {
                             bufferIndex++;
-                            tokenParserByteBuffer[bufferIndex] = 0;
+                            this.tokenParserByteBuffer[bufferIndex] = 0;
                             multiplyer = 1;
                         }
                         else
                         {
                             multiplyer = 16;
                         }
-                        tokenParserByteBuffer[bufferIndex]+= intValue;
+                        this.tokenParserByteBuffer[bufferIndex]+= intValue;
                         theNextByte = is.read();
                     }
-                    byte[] finalResult = new byte[bufferIndex+1];
-                    System.arraycopy(tokenParserByteBuffer,0,finalResult, 0, bufferIndex+1);
+                    final byte[] finalResult = new byte[bufferIndex+1];
+                    System.arraycopy(this.tokenParserByteBuffer,0,finalResult, 0, bufferIndex+1);
                     retval = finalResult;
                 }
                 break;
             }
             case '/':
             {
-                StringBuffer buffer = new StringBuffer();
+                final StringBuffer buffer = new StringBuffer();
                 int stringByte = is.read();
-                
+
                 while( !isWhitespaceOrEOF( stringByte ) )
                 {
                     buffer.append( (char)stringByte );
@@ -333,10 +332,10 @@ public class CMapParser
             case '8':
             case '9':
             {
-                StringBuffer buffer = new StringBuffer();
+                final StringBuffer buffer = new StringBuffer();
                 buffer.append( (char)nextByte );
                 nextByte = is.read();
-                
+
                 while( !isWhitespaceOrEOF( nextByte ) &&
                         (Character.isDigit( (char)nextByte )||
                          nextByte == '.' ) )
@@ -345,7 +344,7 @@ public class CMapParser
                     nextByte = is.read();
                 }
                 is.unread( nextByte );
-                String value = buffer.toString();
+                final String value = buffer.toString();
                 if( value.indexOf( '.' ) >=0 )
                 {
                     retval = new Double( value );
@@ -358,24 +357,24 @@ public class CMapParser
             }
             default:
             {
-                StringBuffer buffer = new StringBuffer();
+                final StringBuffer buffer = new StringBuffer();
                 buffer.append( (char)nextByte );
                 nextByte = is.read();
-                
+
                 while( !isWhitespaceOrEOF( nextByte ) )
                 {
                     buffer.append( (char)nextByte );
                     nextByte = is.read();
                 }
-                retval = new Operator( buffer.toString() );                        
-                
+                retval = new Operator( buffer.toString() );
+
                 break;
             }
         }
         return retval;
     }
-    
-    private void readUntilEndOfLine( InputStream is, StringBuffer buf ) throws IOException
+
+    private void readUntilEndOfLine( final InputStream is, final StringBuffer buf ) throws IOException
     {
         int nextByte = is.read();
         while( nextByte != -1 && nextByte != 0x0D && nextByte != 0x0A )
@@ -384,19 +383,19 @@ public class CMapParser
             nextByte = is.read();
         }
     }
-    
-    private boolean isWhitespaceOrEOF( int aByte )
-    {
-        return aByte == -1 || aByte == 0x20 || aByte == 0x0D || aByte == 0x0A; 
-    }
-    
 
-    private void increment( byte[] data )
+    private boolean isWhitespaceOrEOF( final int aByte )
+    {
+        return aByte == -1 || aByte == 0x20 || aByte == 0x0D || aByte == 0x0A;
+    }
+
+
+    private void increment( final byte[] data )
     {
         increment( data, data.length-1 );
     }
 
-    private void increment( byte[] data, int position )
+    private void increment( final byte[] data, final int position )
     {
         if( position > 0 && (data[position]+256)%256 == 255 )
         {
@@ -408,8 +407,8 @@ public class CMapParser
             data[position] = (byte)(data[position]+1);
         }
     }
-    
-    private String createStringFromBytes( byte[] bytes ) throws IOException
+
+    private String createStringFromBytes( final byte[] bytes ) throws IOException
     {
         String retval = null;
         if( bytes.length == 1 )
@@ -423,7 +422,7 @@ public class CMapParser
         return retval;
     }
 
-    private int compare( byte[] first, byte[] second )
+    private int compare( final byte[] first, final byte[] second )
     {
         int retval = 1;
         boolean done = false;
@@ -433,7 +432,7 @@ public class CMapParser
             {
                 //move to next position
             }
-            else if( ((first[i]+256)%256) < ((second[i]+256)%256) )
+            else if( (first[i]+256)%256 < (second[i]+256)%256 )
             {
                 done = true;
                 retval = -1;
@@ -446,47 +445,47 @@ public class CMapParser
         }
         return retval;
     }
-    
+
     /**
      * Internal class.
      */
     private class LiteralName
     {
-        private String name;
-        private LiteralName( String theName )
+        private final String name;
+        private LiteralName( final String theName )
         {
-            name = theName;
+            this.name = theName;
         }
     }
-    
+
     /**
      * Internal class.
      */
     private class Operator
     {
-        private String op;
-        private Operator( String theOp )
+        private final String op;
+        private Operator( final String theOp )
         {
-            op = theOp;
+            this.op = theOp;
         }
     }
-    
+
     /**
      * A simple class to test parsing of cmap files.
-     * 
+     *
      * @param args Some command line arguments.
-     * 
+     *
      * @throws Exception If there is an error parsing the file.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( final String[] args ) throws Exception
     {
         if( args.length != 1 )
         {
             System.err.println( "usage: java org.pdfbox.cmapparser.CMapParser <CMAP File>" );
             System.exit( -1 );
         }
-        CMapParser parser = new CMapParser(  );
-        CMap result = parser.parse( new FileInputStream( args[0] ) );
+        final CMapParser parser = new CMapParser(  );
+        final CMap result = parser.parse( new FileInputStream( args[0] ) );
         System.out.println( "Result:" + result );
     }
 }

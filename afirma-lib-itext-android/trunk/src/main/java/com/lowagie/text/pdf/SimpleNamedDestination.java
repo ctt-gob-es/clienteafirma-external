@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -221,7 +222,7 @@ final class SimpleNamedDestination implements SimpleXMLDocHandler {
 	public void startElement(final String tag, final HashMap h) {
         if (this.xmlNames == null) {
             if (tag.equals("Destination")) {
-                this.xmlNames = new HashMap();
+                this.xmlNames = new LinkedHashMap();
                 return;
             } else {
 				throw new RuntimeException("Root element is not Destination.");
@@ -233,7 +234,7 @@ final class SimpleNamedDestination implements SimpleXMLDocHandler {
         if (this.xmlLast != null) {
 			throw new RuntimeException("Nested tags are not allowed.");
 		}
-        this.xmlLast = new HashMap(h);
+        this.xmlLast = new LinkedHashMap(h);
         this.xmlLast.put("Name", "");
     }
 

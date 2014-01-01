@@ -49,6 +49,7 @@ package com.lowagie.text.pdf;
 import harmony.java.awt.Font;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.ExceptionConverter;
 /** Default class to map awt fonts to BaseFont.
@@ -92,10 +93,10 @@ class DefaultFontMapper implements FontMapper {
 
     /** Maps aliases to names.
      */
-    private final HashMap aliases = new HashMap();
+    private final HashMap aliases = new LinkedHashMap();
     /** Maps names to BaseFont parameters.
      */
-    private final HashMap mapper = new HashMap();
+    private final HashMap mapper = new LinkedHashMap();
     /**
      * Returns a BaseFont which can be used to represent the given AWT Font
      *

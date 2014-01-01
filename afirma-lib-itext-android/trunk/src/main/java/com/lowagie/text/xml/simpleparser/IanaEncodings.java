@@ -68,6 +68,7 @@
 package com.lowagie.text.xml.simpleparser;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Translates a IANA encoding name to a Java encoding.
@@ -76,7 +77,7 @@ import java.util.HashMap;
 class IanaEncodings {
 
 	/** The object that maps IANA to Java encodings. */
-    private static final HashMap map = new HashMap();
+    private static final HashMap map = new LinkedHashMap();
 
     static {
         // add IANA to Java encoding mappings.

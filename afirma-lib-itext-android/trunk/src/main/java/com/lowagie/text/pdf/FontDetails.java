@@ -51,6 +51,7 @@ package com.lowagie.text.pdf;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Utilities;
@@ -133,7 +134,7 @@ class FontDetails {
                 this.cjkFont = (CJKFont)baseFont;
                 break;
             case BaseFont.FONT_TYPE_TTUNI:
-                this.longTag = new HashMap();
+                this.longTag = new LinkedHashMap();
                 this.ttu = (TrueTypeFontUnicode)baseFont;
                 this.symbolic = baseFont.isFontSpecific();
                 break;

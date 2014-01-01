@@ -32,7 +32,7 @@ package com.lowagie.text.pdf.fonts.cmaps;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +45,8 @@ import java.util.Map;
 public class CMap
 {
     private final List codeSpaceRanges = new ArrayList();
-    private final Map singleByteMappings = new HashMap();
-    private final Map doubleByteMappings = new HashMap();
+    private final Map singleByteMappings = new LinkedHashMap();
+    private final Map doubleByteMappings = new LinkedHashMap();
 
     /**
      * Creates a new instance of CMap.

@@ -50,6 +50,7 @@ package com.lowagie.text.pdf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -144,8 +145,8 @@ class XfdfReader implements SimpleXMLDocHandler {
     	} else if ( tag.equals("f") ) {
     		this.fileSpec = (String)h.get( "href" );
     	} else if ( tag.equals("fields") ) {
-            this.fields = new HashMap();		// init it!
-            this.listFields = new HashMap();
+            this.fields = new LinkedHashMap();		// init it!
+            this.listFields = new LinkedHashMap();
     	} else if ( tag.equals("field") ) {
     		final String	fName = (String) h.get( "name" );
     		this.fieldNames.push( fName );

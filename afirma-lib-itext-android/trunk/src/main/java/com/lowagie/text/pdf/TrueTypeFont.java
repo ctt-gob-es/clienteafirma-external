@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.lowagie.text.Document;
@@ -608,7 +609,7 @@ class TrueTypeFont extends BaseFont {
      * @since	2.1.5
      */
     void process(final byte ttfAfm[], final boolean preload) throws DocumentException, IOException {
-        this.tables = new HashMap();
+        this.tables = new LinkedHashMap();
 
         try {
             if (ttfAfm == null) {
@@ -869,7 +870,7 @@ class TrueTypeFont extends BaseFont {
     }
 
     private HashMap readFormat12() throws IOException {
-        final HashMap h = new HashMap();
+        final HashMap h = new LinkedHashMap();
         this.rf.skipBytes(2);
         final int table_lenght = this.rf.readInt();
         this.rf.skipBytes(4);
@@ -895,7 +896,7 @@ class TrueTypeFont extends BaseFont {
      * @throws IOException the font file could not be read
      */
     private HashMap readFormat0() throws IOException {
-        final HashMap h = new HashMap();
+        final HashMap h = new LinkedHashMap();
         this.rf.skipBytes(4);
         for (int k = 0; k < 256; ++k) {
             final int r[] = new int[2];
@@ -912,7 +913,7 @@ class TrueTypeFont extends BaseFont {
      * @throws IOException the font file could not be read
      */
     private HashMap readFormat4() throws IOException {
-        final HashMap h = new HashMap();
+        final HashMap h = new LinkedHashMap();
         final int table_lenght = this.rf.readUnsignedShort();
         this.rf.skipBytes(2);
         final int segCount = this.rf.readUnsignedShort() / 2;
@@ -967,7 +968,7 @@ class TrueTypeFont extends BaseFont {
      * @throws IOException the font file could not be read
      */
     private HashMap readFormat6() throws IOException {
-        final HashMap h = new HashMap();
+        final HashMap h = new LinkedHashMap();
         this.rf.skipBytes(4);
         final int start_code = this.rf.readUnsignedShort();
         final int code_count = this.rf.readUnsignedShort();
@@ -1275,7 +1276,7 @@ class TrueTypeFont extends BaseFont {
                 if (subsetp) {
 					subsetPrefix = createSubsetPrefix();
 				}
-                final HashMap glyphs = new HashMap();
+                final HashMap glyphs = new LinkedHashMap();
                 for (int k = firstChar; k <= lastChar; ++k) {
                     if (shortTag[k] != 0) {
                         int[] metrics = null;

@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
@@ -105,7 +106,7 @@ class CFFFontSubset extends CFFFont {
 	/**
 	 * A HashMap for keeping the FDArrays being used by the font
 	 */
-	private final HashMap FDArrayUsed = new HashMap();
+	private final HashMap FDArrayUsed = new LinkedHashMap();
 	/**
 	 * A HashMaps array for keeping the subroutines used in each FontDict
 	 */
@@ -117,7 +118,7 @@ class CFFFontSubset extends CFFFont {
 	/**
 	 * A HashMap for keeping the Global subroutines used in the font
 	 */
-	private final HashMap hGSubrsUsed  = new HashMap();
+	private final HashMap hGSubrsUsed  = new LinkedHashMap();
 	/**
 	 * The Global SubroutinesUsed HashMaps as ArrayLists
 	 */
@@ -125,7 +126,7 @@ class CFFFontSubset extends CFFFont {
 	/**
 	 * A HashMap for keeping the subroutines used in a non-cid font
 	 */
-	private final HashMap hSubrsUsedNonCID  = new HashMap();
+	private final HashMap hSubrsUsedNonCID  = new LinkedHashMap();
 	/**
 	 * The SubroutinesUsed HashMap as ArrayList
 	 */
@@ -448,7 +449,7 @@ class CFFFontSubset extends CFFFont {
 		{
 			// Init the hashmap-array and the arraylist-array to hold the subrs used
 			// in each private dict.
-			this.hSubrsUsed = new HashMap[this.fonts[Font].fdprivateOffsets.length];
+			this.hSubrsUsed = new LinkedHashMap[this.fonts[Font].fdprivateOffsets.length];
 			this.lSubrsUsed = new ArrayList[this.fonts[Font].fdprivateOffsets.length];
 			// A [][] which will store the byte array for each new FD Array lsubs index
 			this.NewLSubrsIndex = new byte[this.fonts[Font].fdprivateOffsets.length][];
@@ -464,7 +465,7 @@ class CFFFontSubset extends CFFFont {
 			{
 				// The FDArray index, Hash Map, Array List to work on
 				final int FD = ((Integer)FDInList.get(j)).intValue();
-				this.hSubrsUsed[FD] = new HashMap();
+				this.hSubrsUsed[FD] = new LinkedHashMap();
 				this.lSubrsUsed[FD] = new ArrayList();
 				//Reads the private dicts looking for the subr operator and
 				// store both the offset for the index and its offset array

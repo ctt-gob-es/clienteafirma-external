@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * The structure tree root corresponds to the highest hierarchy level in a tagged PDF.
@@ -59,7 +60,7 @@ import java.util.Iterator;
  */
 class PdfStructureTreeRoot extends PdfDictionary {
 
-    private final HashMap parentTree = new HashMap();
+    private final HashMap parentTree = new LinkedHashMap();
     private final PdfIndirectReference reference;
 
     /**
@@ -112,7 +113,7 @@ class PdfStructureTreeRoot extends PdfDictionary {
     }
 
     void buildTree() throws IOException {
-        final HashMap numTree = new HashMap();
+        final HashMap numTree = new LinkedHashMap();
         for (final Iterator it = this.parentTree.keySet().iterator(); it.hasNext();) {
             final Integer i = (Integer)it.next();
             final PdfArray ar = (PdfArray)this.parentTree.get(i);

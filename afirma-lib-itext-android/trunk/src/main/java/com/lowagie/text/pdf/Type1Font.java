@@ -53,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 import com.lowagie.text.Document;
@@ -140,14 +141,14 @@ class Type1Font extends BaseFont
  *  Integer, Integer, String and int[]. This is the code, width, name and char bbox.
  *  The key is the name of the char and also an Integer with the char number.
  */
-    private final HashMap CharMetrics = new HashMap();
+    private final HashMap CharMetrics = new LinkedHashMap();
 /** Represents the section KernPairs in the AFM file. The key is
  *  the name of the first character and the value is a <CODE>Object[]</CODE>
  *  with 2 elements for each kern pair. Position 0 is the name of
  *  the second character and position 1 is the kerning distance. This is
  *  repeated for all the pairs.
  */
-    private final HashMap KernPairs = new HashMap();
+    private final HashMap KernPairs = new LinkedHashMap();
 /** The file in use.
  */
     private final String fileName;
