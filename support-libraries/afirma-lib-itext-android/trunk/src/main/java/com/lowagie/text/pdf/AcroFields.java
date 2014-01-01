@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +85,7 @@ public class AcroFields {
     private static final int DA_FONT = 0;
     private static final int DA_SIZE = 1;
     private static final int DA_COLOR = 2;
-    private final HashMap extensionFonts = new HashMap();
+    private final HashMap extensionFonts = new LinkedHashMap();
     private XfaForm xfa;
 
     /**
@@ -132,7 +133,7 @@ public class AcroFields {
     /** Holds value of property generateAppearances. */
     private boolean generateAppearances = true;
 
-    private final HashMap localFonts = new HashMap();
+    private final HashMap localFonts = new LinkedHashMap();
 
     private float extraMarginLeft;
     private float extraMarginTop;
@@ -154,7 +155,7 @@ public class AcroFields {
     }
 
     private void fill() {
-        this.fields = new HashMap();
+        this.fields = new LinkedHashMap();
         final PdfDictionary top = (PdfDictionary)PdfReader.getPdfObjectRelease(this.reader.getCatalog().get(PdfName.ACROFORM));
         if (top == null) {
 			return;
@@ -1505,7 +1506,7 @@ public class AcroFields {
         if (this.sigNames != null) {
 			return new ArrayList(this.sigNames.keySet());
 		}
-        this.sigNames = new HashMap();
+        this.sigNames = new LinkedHashMap();
         final ArrayList sorter = new ArrayList();
         for (final Iterator it = this.fields.entrySet().iterator(); it.hasNext();) {
             final Map.Entry entry = (Map.Entry)it.next();
@@ -1767,7 +1768,7 @@ public class AcroFields {
      * String pdfFile = ...;// the pdf file used as template
      * ArrayList xfdfFiles = ...;// the xfdf file names
      * ArrayList pdfOutFiles = ...;// the output file names, one for each element in xpdfFiles
-     * HashMap cache = new HashMap();// the appearances cache
+     * HashMap cache = new LinkedHashMap();// the appearances cache
      * PdfReader originalReader = new PdfReader(pdfFile);
      * for (int k = 0; k &lt; xfdfFiles.size(); ++k) {
      *    PdfReader reader = new PdfReader(originalReader);
@@ -1791,7 +1792,7 @@ public class AcroFields {
 
 
 
-    private static final HashMap stdFieldFontNames = new HashMap();
+    private static final HashMap stdFieldFontNames = new LinkedHashMap();
 
     /**
      * Holds value of property totalRevisions.

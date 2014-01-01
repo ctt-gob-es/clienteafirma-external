@@ -52,13 +52,14 @@ package com.lowagie.text.pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 import com.lowagie.text.pdf.fonts.FontsResourceAnchor;
 
 class GlyphList {
-    private static HashMap unicode2names = new HashMap();
-    private static HashMap names2unicode = new HashMap();
+    private static HashMap unicode2names = new LinkedHashMap();
+    private static HashMap names2unicode = new LinkedHashMap();
 
     static {
         InputStream is = null;

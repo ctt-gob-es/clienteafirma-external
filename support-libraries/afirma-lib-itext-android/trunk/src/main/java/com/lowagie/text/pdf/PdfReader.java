@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -407,7 +408,7 @@ public class PdfReader implements PdfViewerPreferences {
      * @return content of the document information dictionary
      */
     public HashMap getInfo() {
-        final HashMap map = new HashMap();
+        final HashMap map = new LinkedHashMap();
         final PdfDictionary info = this.trailer.getAsDict(PdfName.INFO);
         if (info == null) {
 			return map;
@@ -1414,7 +1415,7 @@ public class PdfReader implements PdfViewerPreferences {
         // type 2 -> index, obj num
         ensureXrefSize(size * 2);
         if (this.objStmMark == null && !this.partial) {
-			this.objStmMark = new HashMap();
+			this.objStmMark = new LinkedHashMap();
 		}
         if (this.objStmToOffset == null && this.partial) {
 			this.objStmToOffset = new IntHashtable();
@@ -2582,7 +2583,7 @@ public class PdfReader implements PdfViewerPreferences {
      * @since	2.1.6
      */
     private HashMap getNamedDestinationFromNames(final boolean keepNames) {
-        final HashMap names = new HashMap();
+        final HashMap names = new LinkedHashMap();
         if (this.catalog.get(PdfName.DESTS) != null) {
             final PdfDictionary dic = (PdfDictionary)getPdfObjectRelease(this.catalog.get(PdfName.DESTS));
             if (dic == null) {
@@ -2632,7 +2633,7 @@ public class PdfReader implements PdfViewerPreferences {
                 }
             }
         }
-        return new HashMap();
+        return new LinkedHashMap();
     }
 
     private boolean replaceNamedDestination(PdfObject obj, final HashMap names) {

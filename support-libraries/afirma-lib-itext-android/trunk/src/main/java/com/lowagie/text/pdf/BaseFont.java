@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 import com.lowagie.text.DocumentException;
@@ -270,10 +271,10 @@ public abstract class BaseFont {
     protected boolean fontSpecific = true;
 
 /** cache for the fonts already used. */
-    private static HashMap fontCache = new HashMap();
+    private static HashMap fontCache = new LinkedHashMap();
 
 /** list of the 14 built in fonts. */
-    protected static final HashMap BuiltinFonts14 = new HashMap();
+    protected static final HashMap BuiltinFonts14 = new LinkedHashMap();
 
     /** Forces the output of the width array. Only matters for the 14
      * built-in fonts.

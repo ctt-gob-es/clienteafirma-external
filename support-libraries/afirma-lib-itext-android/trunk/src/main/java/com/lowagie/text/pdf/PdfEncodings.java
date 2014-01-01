@@ -53,6 +53,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 import com.lowagie.text.ExceptionConverter;
@@ -106,7 +107,7 @@ class PdfEncodings {
 
     private static final IntHashtable pdfEncoding = new IntHashtable();
 
-    private static HashMap extraEncodings = new HashMap();
+    private static HashMap extraEncodings = new LinkedHashMap();
 
     static {
         for (int k = 128; k < 161; ++k) {
@@ -328,7 +329,7 @@ class PdfEncodings {
         return true;
     }
 
-    private static final HashMap cmaps = new HashMap();
+    private static final HashMap cmaps = new LinkedHashMap();
 
     /** Converts a <CODE>byte</CODE> array encoded as <CODE>name</CODE>
      * to a CID string. This is needed to reach some CJK characters

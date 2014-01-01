@@ -49,6 +49,7 @@ package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Creates a name tree.
@@ -154,7 +155,7 @@ class PdfNameTree {
     }
 
     public static HashMap readTree(final PdfDictionary dic) {
-        final HashMap items = new HashMap();
+        final HashMap items = new LinkedHashMap();
         if (dic != null) {
 			iterateItems(dic, items);
 		}

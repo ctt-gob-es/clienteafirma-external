@@ -50,6 +50,7 @@
 package com.lowagie.text.xml.simpleparser;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Font;
@@ -67,7 +68,7 @@ public class EntitiesToSymbol {
     private static final HashMap map;
 
     static {
-        map = new HashMap();
+        map = new LinkedHashMap();
         map.put("169", new Character((char)227));
         map.put("172", new Character((char)216));
         map.put("174", new Character((char)210));

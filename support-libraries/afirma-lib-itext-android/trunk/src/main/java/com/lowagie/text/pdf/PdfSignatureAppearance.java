@@ -64,6 +64,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.lowagie.text.Chunk;
@@ -908,7 +909,7 @@ public class PdfSignatureAppearance {
             this.writer.addAnnotation(sigField, pagen);
         }
 
-        this.exclusionLocations = new HashMap();
+        this.exclusionLocations = new LinkedHashMap();
         if (this.cryptoDictionary == null) {
             if (PdfName.ADOBE_PPKLITE.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.PPKLite(getProvider());

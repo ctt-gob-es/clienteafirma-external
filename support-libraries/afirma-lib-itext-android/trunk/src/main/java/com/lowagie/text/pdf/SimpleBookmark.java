@@ -52,6 +52,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -111,7 +112,7 @@ final class SimpleBookmark implements SimpleXMLDocHandler {
     private static List bookmarkDepth(final PdfReader reader, PdfDictionary outline, final IntHashtable pages) {
         final ArrayList list = new ArrayList();
         while (outline != null) {
-            final HashMap map = new HashMap();
+            final HashMap map = new LinkedHashMap();
             final PdfString title = (PdfString)PdfReader.getPdfObjectRelease(outline.get(PdfName.TITLE));
             map.put("Title", title.toUnicodeString());
             final PdfArray color = (PdfArray)PdfReader.getPdfObjectRelease(outline.get(PdfName.C));
@@ -598,7 +599,7 @@ final class SimpleBookmark implements SimpleXMLDocHandler {
         if (!tag.equals("Title")) {
 			throw new RuntimeException("Tag " + tag + " not allowed.");
 		}
-        final HashMap attributes = new HashMap(h);
+        final HashMap attributes = new LinkedHashMap(h);
         attributes.put("Title", "");
         attributes.remove("Kids");
         this.attr.push(attributes);

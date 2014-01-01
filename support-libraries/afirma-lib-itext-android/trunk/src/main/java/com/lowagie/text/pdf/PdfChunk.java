@@ -53,6 +53,7 @@ import harmony.java.awt.Color;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.lowagie.text.Chunk;
@@ -78,10 +79,10 @@ public class PdfChunk {
     private static final PdfChunk thisChunk[] = new PdfChunk[1];
     private static final float ITALIC_ANGLE = 0.21256f;
 /** The allowed attributes in variable <CODE>attributes</CODE>. */
-    private static final HashMap keysAttributes = new HashMap();
+    private static final HashMap keysAttributes = new LinkedHashMap();
 
 /** The allowed attributes in variable <CODE>noStroke</CODE>. */
-    private static final HashMap keysNoStroke = new HashMap();
+    private static final HashMap keysNoStroke = new LinkedHashMap();
 
     static {
         keysAttributes.put(Chunk.ACTION, null);
@@ -125,7 +126,7 @@ public class PdfChunk {
  * This attributes require the measurement of characters widths when rendering
  * such as underline.
  */
-    private HashMap attributes = new HashMap();
+    private HashMap attributes = new LinkedHashMap();
 
 /**
  * Non metric attributes.
@@ -133,7 +134,7 @@ public class PdfChunk {
  * This attributes do not require the measurement of characters widths when rendering
  * such as Color.
  */
-    private HashMap noStroke = new HashMap();
+    private HashMap noStroke = new LinkedHashMap();
 
 /** <CODE>true</CODE> if the chunk split was cause by a newline. */
     private boolean newlineSplit;
@@ -312,7 +313,7 @@ public class PdfChunk {
             if (this.image.getScaledWidth() > width) {
                 final PdfChunk pc = new PdfChunk(Chunk.OBJECT_REPLACEMENT_CHARACTER, this);
                 this.value = "";
-                this.attributes = new HashMap();
+                this.attributes = new LinkedHashMap();
                 this.image = null;
                 this.font = PdfFont.getDefaultFont();
                 return pc;

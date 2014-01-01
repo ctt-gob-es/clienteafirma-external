@@ -58,6 +58,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -742,7 +743,7 @@ class PdfDocument extends Document {
         this.currentHeight = 0;
 
         // backgroundcolors, etc...
-        this.thisBoxSize = new HashMap(this.boxSize);
+        this.thisBoxSize = new LinkedHashMap(this.boxSize);
         if (this.pageSize.getBackgroundColor() != null
         || this.pageSize.hasBorders()
         || this.pageSize.getBorderColor() != null) {
@@ -1688,7 +1689,7 @@ class PdfDocument extends Document {
      * Stores a list of document level JavaScript actions.
      */
     private int jsCounter;
-    private final HashMap documentLevelJS = new HashMap();
+    private final HashMap documentLevelJS = new LinkedHashMap();
     private static final DecimalFormat SIXTEEN_DIGITS = new DecimalFormat("0000000000000000");
     void addJavaScript(final PdfAction js) {
         if (js.get(PdfName.JS) == null) {
@@ -1717,7 +1718,7 @@ class PdfDocument extends Document {
     	return this.documentLevelJS;
     }
 
-    private final HashMap documentFileAttachment = new HashMap();
+    private final HashMap documentFileAttachment = new LinkedHashMap();
 
     void addFileAttachment(String description, final PdfFileSpecification fs) throws IOException {
         if (description == null) {
@@ -1825,11 +1826,11 @@ class PdfDocument extends Document {
     private Rectangle nextPageSize = null;
 
     /** This is the size of the several boxes of the current Page. */
-    private HashMap thisBoxSize = new HashMap();
+    private HashMap thisBoxSize = new LinkedHashMap();
 
     /** This is the size of the several boxes that will be used in
      * the next page. */
-    private final HashMap boxSize = new HashMap();
+    private final HashMap boxSize = new LinkedHashMap();
 
     void setCropBoxSize(final Rectangle crop) {
         setBoxSize("crop", crop);
@@ -2078,7 +2079,7 @@ class PdfDocument extends Document {
 
 
         private Map rowspanMap;
-        private final Map pageMap = new HashMap();
+        private final Map pageMap = new LinkedHashMap();
         /**
          * A PdfPTable
          */
@@ -2179,7 +2180,7 @@ class PdfDocument extends Document {
         ctx.pagetop = indentTop();
         ctx.oldHeight = this.currentHeight;
         ctx.cellGraphics = new PdfContentByte(this.writer);
-        ctx.rowspanMap = new HashMap();
+        ctx.rowspanMap = new LinkedHashMap();
         ctx.table = table;
 
 		// initialization of parameters

@@ -54,6 +54,7 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -627,7 +628,7 @@ class CJKFont extends BaseFont {
             p.remove("W");
             final IntHashtable W2 = createMetric(p.getProperty("W2"));
             p.remove("W2");
-            final HashMap map = new HashMap();
+            final HashMap map = new LinkedHashMap();
             for (final Enumeration e = p.keys(); e.hasMoreElements();) {
                 final Object obj = e.nextElement();
                 map.put(obj, p.getProperty((String)obj));

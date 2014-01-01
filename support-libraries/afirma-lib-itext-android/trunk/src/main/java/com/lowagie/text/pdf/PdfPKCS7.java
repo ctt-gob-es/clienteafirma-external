@@ -73,6 +73,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -165,9 +166,9 @@ public class PdfPKCS7 {
 
     private TimeStampToken timeStampToken;
 
-    private static final HashMap digestNames = new HashMap();
-    private static final HashMap algorithmNames = new HashMap();
-    private static final HashMap allowedDigests = new HashMap();
+    private static final HashMap digestNames = new LinkedHashMap();
+    private static final HashMap algorithmNames = new LinkedHashMap();
+    private static final HashMap allowedDigests = new LinkedHashMap();
 
     static {
         digestNames.put("1.2.840.113549.2.5", "MD5");
@@ -1274,7 +1275,7 @@ public class PdfPKCS7 {
         private static final DERObjectIdentifier UID = new DERObjectIdentifier("0.9.2342.19200300.100.1.1");
 
         /** A HashMap with default symbols */
-        private static HashMap DefaultSymbols = new HashMap();
+        private static HashMap DefaultSymbols = new LinkedHashMap();
 
         static {
             DefaultSymbols.put(C, "C");
@@ -1294,7 +1295,7 @@ public class PdfPKCS7 {
             DefaultSymbols.put(GENERATION, "GENERATION");
         }
         /** A HashMap with values */
-        private final HashMap values = new HashMap();
+        private final HashMap values = new LinkedHashMap();
 
         /**
          * Constructs an X509 name

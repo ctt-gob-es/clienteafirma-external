@@ -51,6 +51,7 @@ package com.lowagie.text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * An <CODE>Annotation</CODE> is a little note that can be added to a page on
@@ -128,7 +129,7 @@ public class Annotation implements Element {
 	private int annotationtype;
 
 	/** This is the title of the <CODE>Annotation</CODE>. */
-	private HashMap annotationAttributes = new HashMap();
+	private HashMap annotationAttributes = new LinkedHashMap();
 
 	/** This is the lower left x-value */
 	private float llx = Float.NaN;

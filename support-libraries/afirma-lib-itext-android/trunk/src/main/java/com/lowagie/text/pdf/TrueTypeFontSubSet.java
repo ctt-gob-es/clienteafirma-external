@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.ExceptionConverter;
@@ -236,7 +237,7 @@ class TrueTypeFontSubSet {
     }
 
     private void createTableDirectory() throws IOException, DocumentException {
-        this.tableDirectory = new HashMap();
+        this.tableDirectory = new LinkedHashMap();
         this.rf.seek(this.directoryOffset);
         final int id = this.rf.readInt();
         if (id != 0x00010000) {

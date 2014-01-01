@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -133,7 +134,7 @@ class PdfCopy extends PdfWriter {
         super(new PdfDocument(globalDate), os);
         document.addDocListener(this.pdf);
         this.pdf.addWriter(this);
-        this.indirectMap = new HashMap();
+        this.indirectMap = new LinkedHashMap();
     }
 
     /** Getter for property rotateContents.
@@ -326,7 +327,7 @@ class PdfCopy extends PdfWriter {
         this.reader = reader;
         this.indirects = (HashMap)this.indirectMap.get(reader);
         if (this.indirects == null) {
-            this.indirects = new HashMap();
+            this.indirects = new LinkedHashMap();
             this.indirectMap.put(reader,this.indirects);
             final PdfDictionary catalog = reader.getCatalog();
             PRIndirectReference ref = null;
@@ -557,7 +558,7 @@ class PdfCopy extends PdfWriter {
 					}
                     expandFields(field, allAnnots);
                     if (this.cstp.fieldTemplates == null) {
-						this.cstp.fieldTemplates = new HashMap();
+						this.cstp.fieldTemplates = new LinkedHashMap();
 					}
                 } else {
 					allAnnots.add(annot);

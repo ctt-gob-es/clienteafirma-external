@@ -20,9 +20,9 @@
 package org.apache.harmony.awt.gl.color;
 
 import harmony.java.awt.color.ICC_Profile;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * This class is a wrapper for the native CMM library
@@ -33,19 +33,19 @@ public class NativeCMM {
 	 * Storage for profile handles, since they are private in ICC_Profile, but
 	 * we need access to them.
 	 */
-	private static HashMap<ICC_Profile, Long> profileHandles = new HashMap<ICC_Profile, Long>();
+	private static HashMap<ICC_Profile, Long> profileHandles = new LinkedHashMap<ICC_Profile, Long>();
 
 	private static boolean isCMMLoaded;
 
-	public static void addHandle(ICC_Profile key, long handle) {
+	public static void addHandle(final ICC_Profile key, final long handle) {
 		profileHandles.put(key, new Long(handle));
 	}
 
-	public static void removeHandle(ICC_Profile key) {
+	public static void removeHandle(final ICC_Profile key) {
 		profileHandles.remove(key);
 	}
 
-	public static long getHandle(ICC_Profile key) {
+	public static long getHandle(final ICC_Profile key) {
 		return profileHandles.get(key).longValue();
 	}
 

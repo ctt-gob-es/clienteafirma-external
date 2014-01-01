@@ -47,8 +47,8 @@
 package com.lowagie.text.pdf.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -94,7 +94,7 @@ abstract class PdfContentStreamProcessor {
      * Loads all the supported graphics and text state operators in a map.
      */
     private void populateOperators(){
-        this.operators = new HashMap();
+        this.operators = new LinkedHashMap();
 
         this.operators.put("q", new PushGraphicsState());
         this.operators.put("Q", new PopGraphicsState());
