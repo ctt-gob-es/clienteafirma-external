@@ -32,35 +32,37 @@ import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
 public class SignatureSpi
     extends DSABase
 {
-    SignatureSpi(Digest digest, DSA signer, DSAEncoder encoder)
+    SignatureSpi(final Digest digest, final DSA signer, final DSAEncoder encoder)
     {
         super(digest, signer, encoder);
     }
 
-    protected void engineInitVerify(PublicKey publicKey)
+    @Override
+	protected void engineInitVerify(final PublicKey publicKey)
         throws InvalidKeyException
     {
-        CipherParameters param = ECUtil.generatePublicKeyParameter(publicKey);
+        final CipherParameters param = ECUtil.generatePublicKeyParameter(publicKey);
 
-        digest.reset();
-        signer.init(false, param);
+        this.digest.reset();
+        this.signer.init(false, param);
     }
 
-    protected void engineInitSign(
-        PrivateKey privateKey)
+    @Override
+	protected void engineInitSign(
+        final PrivateKey privateKey)
         throws InvalidKeyException
     {
-        CipherParameters param = ECUtil.generatePrivateKeyParameter(privateKey);
+        final CipherParameters param = ECUtil.generatePrivateKeyParameter(privateKey);
 
-        digest.reset();
+        this.digest.reset();
 
-        if (appRandom != null)
+        if (this.appRandom != null)
         {
-            signer.init(true, new ParametersWithRandom(param, appRandom));
+            this.signer.init(true, new ParametersWithRandom(param, this.appRandom));
         }
         else
         {
-            signer.init(true, param);
+            this.signer.init(true, param);
         }
     }
 
@@ -220,12 +222,17 @@ public class SignatureSpi
     private static class StdDSAEncoder
         implements DSAEncoder
     {
-        public byte[] encode(
-            BigInteger r,
-            BigInteger s)
+        public StdDSAEncoder() {
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public byte[] encode(
+            final BigInteger r,
+            final BigInteger s)
             throws IOException
         {
-            ASN1EncodableVector v = new ASN1EncodableVector();
+            final ASN1EncodableVector v = new ASN1EncodableVector();
 
             v.add(new ASN1Integer(r));
             v.add(new ASN1Integer(s));
@@ -233,12 +240,13 @@ public class SignatureSpi
             return new DERSequence(v).getEncoded(ASN1Encoding.DER);
         }
 
-        public BigInteger[] decode(
-            byte[] encoding)
+        @Override
+		public BigInteger[] decode(
+            final byte[] encoding)
             throws IOException
         {
-            ASN1Sequence s = (ASN1Sequence)ASN1Primitive.fromByteArray(encoding);
-            BigInteger[] sig = new BigInteger[2];
+            final ASN1Sequence s = (ASN1Sequence)ASN1Primitive.fromByteArray(encoding);
+            final BigInteger[] sig = new BigInteger[2];
 
             sig[0] = ASN1Integer.getInstance(s.getObjectAt(0)).getValue();
             sig[1] = ASN1Integer.getInstance(s.getObjectAt(1)).getValue();
@@ -250,13 +258,14 @@ public class SignatureSpi
     private static class CVCDSAEncoder
         implements DSAEncoder
     {
-        public byte[] encode(
-            BigInteger r,
-            BigInteger s)
+        @Override
+		public byte[] encode(
+            final BigInteger r,
+            final BigInteger s)
             throws IOException
         {
-            byte[] first = makeUnsigned(r);
-            byte[] second = makeUnsigned(s);
+            final byte[] first = makeUnsigned(r);
+            final byte[] second = makeUnsigned(s);
             byte[] res;
 
             if (first.length > second.length)
@@ -275,13 +284,13 @@ public class SignatureSpi
         }
 
 
-        private byte[] makeUnsigned(BigInteger val)
+        private byte[] makeUnsigned(final BigInteger val)
         {
-            byte[] res = val.toByteArray();
+            final byte[] res = val.toByteArray();
 
             if (res[0] == 0)
             {
-                byte[] tmp = new byte[res.length - 1];
+                final byte[] tmp = new byte[res.length - 1];
 
                 System.arraycopy(res, 1, tmp, 0, tmp.length);
 
@@ -291,14 +300,15 @@ public class SignatureSpi
             return res;
         }
 
-        public BigInteger[] decode(
-            byte[] encoding)
+        @Override
+		public BigInteger[] decode(
+            final byte[] encoding)
             throws IOException
         {
-            BigInteger[] sig = new BigInteger[2];
+            final BigInteger[] sig = new BigInteger[2];
 
-            byte[] first = new byte[encoding.length / 2];
-            byte[] second = new byte[encoding.length / 2];
+            final byte[] first = new byte[encoding.length / 2];
+            final byte[] second = new byte[encoding.length / 2];
 
             System.arraycopy(encoding, 0, first, 0, first.length);
             System.arraycopy(encoding, first.length, second, 0, second.length);

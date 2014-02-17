@@ -32,24 +32,24 @@ public class JcaContentVerifierProviderBuilder
     {
     }
 
-    public JcaContentVerifierProviderBuilder setProvider(Provider provider)
+    public JcaContentVerifierProviderBuilder setProvider(final Provider provider)
     {
         this.helper = new OperatorHelper(new ProviderJcaJceHelper(provider));
 
         return this;
     }
 
-    public JcaContentVerifierProviderBuilder setProvider(String providerName)
+    public JcaContentVerifierProviderBuilder setProvider(final String providerName)
     {
         this.helper = new OperatorHelper(new NamedJcaJceHelper(providerName));
 
         return this;
     }
 
-    public ContentVerifierProvider build(X509CertificateHolder certHolder)
+    public ContentVerifierProvider build(final X509CertificateHolder certHolder)
         throws OperatorCreationException, CertificateException
     {
-        return build(helper.convertCertificate(certHolder));
+        return build(this.helper.convertCertificate(certHolder));
     }
 
     public ContentVerifierProvider build(final X509Certificate certificate)
@@ -61,50 +61,53 @@ public class JcaContentVerifierProviderBuilder
         {
             certHolder = new JcaX509CertificateHolder(certificate);
         }
-        catch (CertificateEncodingException e)
+        catch (final CertificateEncodingException e)
         {
-            throw new OperatorCreationException("cannot process certificate: " + e.getMessage(), e);
+            throw new OperatorCreationException("cannot process certificate: " + e.getMessage(), e); //$NON-NLS-1$
         }
 
         return new ContentVerifierProvider()
         {
             private SignatureOutputStream stream;
 
-            public boolean hasAssociatedCertificate()
+            @Override
+			public boolean hasAssociatedCertificate()
             {
                 return true;
             }
 
-            public X509CertificateHolder getAssociatedCertificate()
+            @Override
+			public X509CertificateHolder getAssociatedCertificate()
             {
                 return certHolder;
             }
 
-            public ContentVerifier get(AlgorithmIdentifier algorithm)
+            @Override
+			public ContentVerifier get(final AlgorithmIdentifier algorithm)
                 throws OperatorCreationException
             {
                 try
                 {
-                    Signature sig = helper.createSignature(algorithm);
+                    final Signature sig = JcaContentVerifierProviderBuilder.this.helper.createSignature(algorithm);
 
                     sig.initVerify(certificate.getPublicKey());
 
-                    stream = new SignatureOutputStream(sig);
+                    this.stream = new SignatureOutputStream(sig);
                 }
-                catch (GeneralSecurityException e)
+                catch (final GeneralSecurityException e)
                 {
-                    throw new OperatorCreationException("exception on setup: " + e, e);
+                    throw new OperatorCreationException("exception on setup: " + e, e); //$NON-NLS-1$
                 }
 
-                Signature rawSig = createRawSig(algorithm, certificate.getPublicKey());
+                final Signature rawSig = createRawSig(algorithm, certificate.getPublicKey());
 
                 if (rawSig != null)
                 {
-                    return new RawSigVerifier(algorithm, stream, rawSig);
+                    return new RawSigVerifier(algorithm, this.stream, rawSig);
                 }
                 else
                 {
-                    return new SigVerifier(algorithm, stream);
+                    return new SigVerifier(algorithm, this.stream);
                 }
             }
         };
@@ -115,22 +118,25 @@ public class JcaContentVerifierProviderBuilder
     {
         return new ContentVerifierProvider()
         {
-            public boolean hasAssociatedCertificate()
+            @Override
+			public boolean hasAssociatedCertificate()
             {
                 return false;
             }
 
-            public X509CertificateHolder getAssociatedCertificate()
+            @Override
+			public X509CertificateHolder getAssociatedCertificate()
             {
                 return null;
             }
 
-            public ContentVerifier get(AlgorithmIdentifier algorithm)
+            @Override
+			public ContentVerifier get(final AlgorithmIdentifier algorithm)
                 throws OperatorCreationException
             {
-                SignatureOutputStream stream = createSignatureStream(algorithm, publicKey);
+                final SignatureOutputStream stream = createSignatureStream(algorithm, publicKey);
 
-                Signature rawSig = createRawSig(algorithm, publicKey);
+                final Signature rawSig = createRawSig(algorithm, publicKey);
 
                 if (rawSig != null)
                 {
@@ -144,36 +150,36 @@ public class JcaContentVerifierProviderBuilder
         };
     }
 
-    private SignatureOutputStream createSignatureStream(AlgorithmIdentifier algorithm, PublicKey publicKey)
+    private SignatureOutputStream createSignatureStream(final AlgorithmIdentifier algorithm, final PublicKey publicKey)
         throws OperatorCreationException
     {
         try
         {
-            Signature sig = helper.createSignature(algorithm);
+            final Signature sig = this.helper.createSignature(algorithm);
 
             sig.initVerify(publicKey);
 
             return new SignatureOutputStream(sig);
         }
-        catch (GeneralSecurityException e)
+        catch (final GeneralSecurityException e)
         {
-            throw new OperatorCreationException("exception on setup: " + e, e);
+            throw new OperatorCreationException("exception on setup: " + e, e); //$NON-NLS-1$
         }
     }
 
-    private Signature createRawSig(AlgorithmIdentifier algorithm, PublicKey publicKey)
+    private Signature createRawSig(final AlgorithmIdentifier algorithm, final PublicKey publicKey)
     {
         Signature rawSig;
         try
         {
-            rawSig = helper.createRawSignature(algorithm);
+            rawSig = this.helper.createRawSignature(algorithm);
 
             if (rawSig != null)
             {
                 rawSig.initVerify(publicKey);
             }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             rawSig = null;
         }
@@ -183,39 +189,42 @@ public class JcaContentVerifierProviderBuilder
     private class SigVerifier
         implements ContentVerifier
     {
-        private SignatureOutputStream stream;
-        private AlgorithmIdentifier algorithm;
+        private final SignatureOutputStream stream;
+        private final AlgorithmIdentifier algorithm;
 
-        SigVerifier(AlgorithmIdentifier algorithm, SignatureOutputStream stream)
+        SigVerifier(final AlgorithmIdentifier algorithm, final SignatureOutputStream stream)
         {
             this.algorithm = algorithm;
             this.stream = stream;
         }
 
-        public AlgorithmIdentifier getAlgorithmIdentifier()
+        @Override
+		public AlgorithmIdentifier getAlgorithmIdentifier()
         {
-            return algorithm;
+            return this.algorithm;
         }
 
-        public OutputStream getOutputStream()
+        @Override
+		public OutputStream getOutputStream()
         {
-            if (stream == null)
+            if (this.stream == null)
             {
-                throw new IllegalStateException("verifier not initialised");
+                throw new IllegalStateException("verifier not initialised"); //$NON-NLS-1$
             }
 
-            return stream;
+            return this.stream;
         }
 
-        public boolean verify(byte[] expected)
+        @Override
+		public boolean verify(final byte[] expected)
         {
             try
             {
-                return stream.verify(expected);
+                return this.stream.verify(expected);
             }
-            catch (SignatureException e)
+            catch (final SignatureException e)
             {
-                throw new RuntimeOperatorException("exception obtaining signature: " + e.getMessage(), e);
+                throw new RuntimeOperatorException("exception obtaining signature: " + e.getMessage(), e); //$NON-NLS-1$
             }
         }
     }
@@ -224,25 +233,26 @@ public class JcaContentVerifierProviderBuilder
         extends SigVerifier
         implements RawContentVerifier
     {
-        private Signature rawSignature;
+        private final Signature rawSignature;
 
-        RawSigVerifier(AlgorithmIdentifier algorithm, SignatureOutputStream stream, Signature rawSignature)
+        RawSigVerifier(final AlgorithmIdentifier algorithm, final SignatureOutputStream stream, final Signature rawSignature)
         {
             super(algorithm, stream);
             this.rawSignature = rawSignature;
         }
 
-        public boolean verify(byte[] digest, byte[] expected)
+        @Override
+		public boolean verify(final byte[] digest, final byte[] expected)
         {
             try
             {
-                rawSignature.update(digest);
+                this.rawSignature.update(digest);
 
-                return rawSignature.verify(expected);
+                return this.rawSignature.verify(expected);
             }
-            catch (SignatureException e)
+            catch (final SignatureException e)
             {
-                throw new RuntimeOperatorException("exception obtaining raw signature: " + e.getMessage(), e);
+                throw new RuntimeOperatorException("exception obtaining raw signature: " + e.getMessage(), e); //$NON-NLS-1$
             }
         }
     }
@@ -250,56 +260,59 @@ public class JcaContentVerifierProviderBuilder
     private class SignatureOutputStream
         extends OutputStream
     {
-        private Signature sig;
+        private final Signature sig;
 
-        SignatureOutputStream(Signature sig)
+        SignatureOutputStream(final Signature sig)
         {
             this.sig = sig;
         }
 
-        public void write(byte[] bytes, int off, int len)
+        @Override
+		public void write(final byte[] bytes, final int off, final int len)
             throws IOException
         {
             try
             {
-                sig.update(bytes, off, len);
+                this.sig.update(bytes, off, len);
             }
-            catch (SignatureException e)
+            catch (final SignatureException e)
             {
-                throw new OperatorStreamException("exception in content signer: " + e.getMessage(), e);
+                throw new OperatorStreamException("exception in content signer: " + e.getMessage(), e); //$NON-NLS-1$
             }
         }
 
-        public void write(byte[] bytes)
+        @Override
+		public void write(final byte[] bytes)
             throws IOException
         {
             try
             {
-                sig.update(bytes);
+                this.sig.update(bytes);
             }
-            catch (SignatureException e)
+            catch (final SignatureException e)
             {
-                throw new OperatorStreamException("exception in content signer: " + e.getMessage(), e);
+                throw new OperatorStreamException("exception in content signer: " + e.getMessage(), e); //$NON-NLS-1$
             }
         }
 
-        public void write(int b)
+        @Override
+		public void write(final int b)
             throws IOException
         {
             try
             {
-                sig.update((byte)b);
+                this.sig.update((byte)b);
             }
-            catch (SignatureException e)
+            catch (final SignatureException e)
             {
-                throw new OperatorStreamException("exception in content signer: " + e.getMessage(), e);
+                throw new OperatorStreamException("exception in content signer: " + e.getMessage(), e); //$NON-NLS-1$
             }
         }
 
-        boolean verify(byte[] expected)
+        boolean verify(final byte[] expected)
             throws SignatureException
         {
-            return sig.verify(expected);
+            return this.sig.verify(expected);
         }
     }
 }
