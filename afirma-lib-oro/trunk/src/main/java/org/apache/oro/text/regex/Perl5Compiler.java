@@ -770,6 +770,7 @@ public final class Perl5Compiler implements PatternCompiler {
 	}
 
 	// fall through to default
+		//$FALL-THROUGH$
 	default:
 	  doDefault = true;
 	  break tryAgain;
@@ -787,7 +788,8 @@ public final class Perl5Compiler implements PatternCompiler {
 	}
 	}
 	// fall through to default
-      default:
+		//$FALL-THROUGH$
+	default:
 	this.__input._increment();
 	doDefault = true;
 	break tryAgain;
@@ -913,7 +915,8 @@ public final class Perl5Compiler implements PatternCompiler {
 			MalformedPatternException("Trailing \\ in expression."); //$NON-NLS-1$
 		}
 	    // fall through to default
-	  default:
+		//$FALL-THROUGH$
+	default:
 	    ender = this.__input._getValue(pOffset++);
 	    break;
 	  } // end backslash switch
@@ -925,6 +928,7 @@ public final class Perl5Compiler implements PatternCompiler {
 		}
 	  }
 	  // fall through to whitespace handling
+		//$FALL-THROUGH$
 	case ' ': case '\t': case '\n': case '\r': case '\f': case '\013':
 	  if((this.__modifierFlags[0] & __EXTENDED) != 0) {
 	    ++pOffset;
@@ -932,6 +936,7 @@ public final class Perl5Compiler implements PatternCompiler {
 	    continue;
 	  }
 	  // fall through to default
+		//$FALL-THROUGH$
 	default:
 	  ender = this.__input._getValue(pOffset++);
 	  break;
