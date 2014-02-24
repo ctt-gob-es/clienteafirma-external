@@ -211,9 +211,10 @@ private boolean __lastSuccess = false;
 
   // Initialize globals needed before calling __tryExpression for first time
   private void __initInterpreterGlobals(final Perl5Pattern expression, final char[] input,
-					final int beginOffset, int endOffset,
+					final int beginOffset, final int eo,
 					final int currentOffset)
   {
+	int endOffset = eo;
     // Remove this hack after more efficient case-folding and unicode
     // character classes are implemented
     this.__caseInsensitive            = expression._isCaseInsensitive;
@@ -452,19 +453,18 @@ private boolean __lastSuccess = false;
 	  while(this.__currentOffset < endOffset) {
 	    ch = this.__input[this.__currentOffset];
 
-	    if(ch < 256 &&
-	       (this.__program[offset + (ch >> 4)] & 1 << (ch & 0xf)) == 0) {
-	      if(tmp && __tryExpression(this.__currentOffset)) {
-		success = true;
-		break _mainLoop;
-	      }
-		tmp = doEvery;
-	    } else {
+	    if (ch < 256 && (this.__program[offset + (ch >> 4)] & 1 << (ch & 0xf)) == 0) {
+	        if(tmp && __tryExpression(this.__currentOffset)) {
+	    	  success = true;
+	    	  break _mainLoop;
+      		}
+	        tmp = doEvery;
+	    }
+	    else {
 			tmp = true;
 		}
 	    ++this.__currentOffset;
 	  }
-
 	  break;
 
 	case OpCode._ANYOFUN:
@@ -576,9 +576,8 @@ private boolean __lastSuccess = false;
 	      if(tmp && __tryExpression(this.__currentOffset)) {
 		success = true;
 		break _mainLoop;
-	      } else {
-			tmp = doEvery;
-		}
+	      }
+		tmp = doEvery;
 	    } else {
 			tmp = true;
 		}
@@ -592,9 +591,8 @@ private boolean __lastSuccess = false;
 	      if(tmp && __tryExpression(this.__currentOffset)) {
 		success = true;
 		break _mainLoop;
-	      } else {
-			tmp = doEvery;
-		}
+	      }
+		tmp = doEvery;
 	    } else {
 			tmp = true;
 		}
@@ -623,9 +621,8 @@ private boolean __lastSuccess = false;
 	      if(tmp && __tryExpression(this.__currentOffset)) {
 		success = true;
 		break _mainLoop;
-	      } else {
-			tmp = doEvery;
-		}
+	      }
+		tmp = doEvery;
 	    } else {
 			tmp = true;
 		}
@@ -640,9 +637,8 @@ private boolean __lastSuccess = false;
 	      if(tmp && __tryExpression(this.__currentOffset)) {
 		success = true;
 		break _mainLoop;
-	      } else {
-			tmp = doEvery;
-		}
+	      }
+		tmp = doEvery;
 	    } else {
 			tmp = true;
 		}
@@ -686,9 +682,8 @@ private boolean __lastSuccess = false;
 	offset++;
 	if(code >= __program[offset] && code <= __program[offset+1]){
 	  return isANYOF;
-	} else {
-	  offset+=2;
 	}
+	offset+=2;
 
       } else if(__program[offset] == OpCode._ONECHAR) {
        	offset++;
@@ -779,12 +774,14 @@ private boolean __lastSuccess = false;
           // Fall through to check if the character is alphanumeric,
 	  // or a punctuation mark.  Printable characters are either
 	  // alphanumeric, punctuation marks, or spaces.
+		//$FALL-THROUGH$
 	case OpCode._GRAPH:
 	  if(Character.isLetterOrDigit(code)) {
 		return isANYOF;
 	}
           // Fall through to check if the character is a punctuation mark.
           // Graph characters are either alphanumeric or punctuation.
+		//$FALL-THROUGH$
 	case OpCode._PUNCT:
 	  switch ( Character.getType(code) ) {
 	    case Character.DASH_PUNCTUATION:
@@ -969,8 +966,7 @@ private boolean __lastSuccess = false;
 
       case OpCode._BOL:
 	if(input == this.__bol ? this.__previousChar == '\n' :
-	   this.__multiline && (inputRemains || input < this.__eol) &&
-	    this.__input[input - 1] == '\n') {
+	   this.__multiline) {
 		break;
 	}
 	return false;
