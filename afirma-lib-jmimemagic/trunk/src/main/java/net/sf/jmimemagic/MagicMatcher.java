@@ -137,94 +137,91 @@ public class MagicMatcher implements Cloneable, Serializable {
         final String type = this.match.getType();
         this.match.getMimeType();
 
-        RandomAccessFile file = null;
-        file = new RandomAccessFile(f, "r"); //$NON-NLS-1$
+        final RandomAccessFile file = new RandomAccessFile(f, "r"); //$NON-NLS-1$
 
-        try {
-            int length = 0;
+        int length = 0;
 
-            if (type.equals("byte")) { //$NON-NLS-1$
-                length = 1;
-            } else if (type.equals("short") || type.equals("leshort") || type.equals("beshort")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                length = 4;
-            } else if (type.equals("long") || type.equals("lelong") || type.equals("belong")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                length = 8;
-            } else if (type.equals("string")) { //$NON-NLS-1$
-                length = this.match.getTest().capacity();
-            } else if (type.equals("regex")) { //$NON-NLS-1$
-                length = (int) file.length() - offset;
+        if (type.equals("byte")) { //$NON-NLS-1$
+            length = 1;
+        }
+        else if (type.equals("short") || type.equals("leshort") || type.equals("beshort")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            length = 4;
+        }
+        else if (type.equals("long") || type.equals("lelong") || type.equals("belong")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            length = 8;
+        }
+        else if (type.equals("string")) { //$NON-NLS-1$
+            length = this.match.getTest().capacity();
+        }
+        else if (type.equals("regex")) { //$NON-NLS-1$
+            length = (int) file.length() - offset;
 
-                if (length < 0) {
-                    length = 0;
-                }
-            } else if (type.equals("detector")) { //$NON-NLS-1$
-                length = (int) file.length() - offset;
+            if (length < 0) {
+                length = 0;
+            }
+        }
+        else if (type.equals("detector")) { //$NON-NLS-1$
+            length = (int) file.length() - offset;
 
-                if (length < 0) {
-                    length = 0;
-                }
-            } else {
-                throw new UnsupportedTypeException("unsupported test type '" + type + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+            if (length < 0) {
+                length = 0;
+            }
+        }
+        else {
+        	file.close();
+            throw new UnsupportedTypeException("unsupported test type '" + type + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        // we know this match won't work since there isn't enough data for the test
+        if (length > file.length() - offset) {
+        	file.close();
+            return null;
+        }
+
+        final byte[] buf = new byte[length];
+        file.seek(offset);
+
+        int bytesRead = 0;
+        int size = 0;
+        boolean done = false;
+
+        while (!done) {
+            size = file.read(buf, 0, length - bytesRead);
+
+            if (size == -1) {
+            	file.close();
+                throw new IOException("reached end of file before all bytes were read"); //$NON-NLS-1$
             }
 
-            // we know this match won't work since there isn't enough data for the test
-            if (length > file.length() - offset) {
-                return null;
+            bytesRead += size;
+
+            if (bytesRead == length) {
+                done = true;
             }
+        }
 
-            final byte[] buf = new byte[length];
-            file.seek(offset);
+        MagicMatch match1 = null;
+        MagicMatch submatch = null;
 
-            int bytesRead = 0;
-            int size = 0;
-            boolean done = false;
+        if (testInternal(buf)) {
+            // set the top level match to this one
+            match1 = getMatch();
 
-            while (!done) {
-                size = file.read(buf, 0, length - bytesRead);
+            // set the data on this match
+            if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
 
-                if (size == -1) {
-                	file.close();
-                    throw new IOException("reached end of file before all bytes were read"); //$NON-NLS-1$
-                }
+                for (int i = 0; i < this.subMatchers.size(); i++) {
 
-                bytesRead += size;
+                    final MagicMatcher m = this.subMatchers.get(i);
 
-                if (bytesRead == length) {
-                    done = true;
-                }
-            }
-
-            MagicMatch match1 = null;
-            MagicMatch submatch = null;
-
-            if (testInternal(buf)) {
-                // set the top level match to this one
-                match1 = getMatch();
-
-                // set the data on this match
-                if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
-
-                    for (int i = 0; i < this.subMatchers.size(); i++) {
-
-                        final MagicMatcher m = this.subMatchers.get(i);
-
-                        if ((submatch = m.test(f, false)) != null) {
-                            match1.addSubMatch(submatch);
-                        }
+                    if ((submatch = m.test(f, false)) != null) {
+                        match1.addSubMatch(submatch);
                     }
                 }
             }
-
-            return match1;
         }
-        finally {
-            try {
-                file.close();
-            }
-            catch (final Exception fce) {
-            	// Ignorada
-            }
-        }
+        file.close();
+        return match1;
     }
 
     /**
@@ -399,8 +396,7 @@ public class MagicMatcher implements Cloneable, Serializable {
         final char comparator = this.match.getComparator();
         final long bitmask = this.match.getBitmask();
 
-        byte b = data.get(0);
-        b = (byte) (b & bitmask);
+        final byte b = (byte) (data.get(0) & bitmask);
 
         final int tst = Integer.decode(test).byteValue();
         final byte t = (byte) (tst & 0xff);
@@ -417,9 +413,10 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         case '<':
             return t < b;
-        }
 
-        return false;
+        default:
+        	return false;
+        }
     }
 
     /**
@@ -429,8 +426,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      *
      * @return if we have a match
      */
-    private boolean testString(final ByteBuffer data)
-    {
+    private boolean testString(final ByteBuffer data) {
 
         final ByteBuffer test = this.match.getTest();
         final char comparator = this.match.getComparator();
@@ -462,9 +458,11 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         case '<':
             return t[i] < b[i];
+
+        default:
+        	return false;
         }
 
-        return false;
     }
 
     /**
@@ -474,8 +472,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      *
      * @return if we have a match
      */
-    private boolean testShort(final ByteBuffer data)
-    {
+    private boolean testShort(final ByteBuffer data) {
 
         short val = 0;
         final String test = new String(this.match.getTest().array());
@@ -491,7 +488,8 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         try {
             tst = Integer.decode(test).shortValue();
-        } catch (final NumberFormatException e) {
+        }
+        catch (final NumberFormatException e) {
 
             return false;
 
@@ -512,9 +510,11 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         case '<':
             return val < tst;
+
+        default:
+    		return false;
         }
 
-        return false;
     }
 
     /**
@@ -551,9 +551,11 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         case '<':
             return val < tst;
+
+        default:
+        	return false;
         }
 
-        return false;
     }
 
     /**
