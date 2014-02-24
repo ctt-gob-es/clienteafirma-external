@@ -191,7 +191,7 @@ final class PatternMatcherInput {
    *         the begin offset.
    */
   public int length()        {
-    return (this._endOffset - this._beginOffset);
+    return this._endOffset - this._beginOffset;
     //return _originalBuffer.length;
   }
 
@@ -307,13 +307,14 @@ final class PatternMatcherInput {
    * to the begin offset and extends to the end offset of the
    * PatternMatcherInput.
    * <p>
-   * @param beginOffset  The offset relative to the begin offset of the
+   * @param bo  The offset relative to the begin offset of the
    *        PatternMatcherInput at which to start the substring.
    * @return The specified substring.
    * @exception ArrayIndexOutOfBoundsException If the offset does not occur
    *            within the bounds of the input.
    */
-  public String substring(int beginOffset) {
+  public String substring(final int bo) {
+	int beginOffset = bo;
     beginOffset+=this._beginOffset;
     return new String(this._originalBuffer, beginOffset, this._endOffset - beginOffset);
   }
@@ -352,7 +353,7 @@ final class PatternMatcherInput {
    * @return True if the current offset is greater than or equal to the
    *         end offset.
    */
-  public boolean endOfInput(){ return (this._currentOffset >= this._endOffset); }
+  public boolean endOfInput(){ return this._currentOffset >= this._endOffset; }
 
 
   /**

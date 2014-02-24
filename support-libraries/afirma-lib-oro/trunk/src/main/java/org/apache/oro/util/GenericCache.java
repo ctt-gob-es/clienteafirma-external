@@ -88,7 +88,7 @@ public abstract class GenericCache implements Cache, java.io.Serializable {
 
   int _numEntries;
   GenericCacheEntry[] _cache;
-  HashMap _table;
+  HashMap<Object, Object> _table;
 
   /**
    * The primary constructor for GenericCache.  It has default
@@ -101,7 +101,7 @@ public abstract class GenericCache implements Cache, java.io.Serializable {
    */
   GenericCache(int capacity) {
     this._numEntries = 0;
-    this._table    = new HashMap(capacity);
+    this._table    = new HashMap<Object, Object>(capacity);
     this._cache    = new GenericCacheEntry[capacity];
 
     while(--capacity >= 0) {
@@ -109,9 +109,11 @@ public abstract class GenericCache implements Cache, java.io.Serializable {
 	}
   }
 
-  public abstract void addElement(Object key, Object value);
+  @Override
+public abstract void addElement(Object key, Object value);
 
-  public synchronized Object getElement(final Object key) {
+  @Override
+public synchronized Object getElement(final Object key) {
     Object obj;
 
     obj = this._table.get(key);
@@ -135,14 +137,16 @@ public abstract class GenericCache implements Cache, java.io.Serializable {
    * @return  The current size of the cache (i.e., the number of elements
    *          currently cached).
    */
-  public final int size() { return this._numEntries; }
+  @Override
+public final int size() { return this._numEntries; }
 
   /**
    * Returns the maximum number of elements that can be cached at one time.
    * <p>
    * @return The maximum number of elements that can be cached at one time.
    */
-  public final int capacity() { return this._cache.length; }
+  @Override
+public final int capacity() { return this._cache.length; }
 
-  public final boolean isFull() { return (this._numEntries >= this._cache.length); }
+  public final boolean isFull() { return this._numEntries >= this._cache.length; }
 }

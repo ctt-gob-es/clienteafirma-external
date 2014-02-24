@@ -315,9 +315,9 @@ private boolean __lastSuccess = false;
   // beginOffset marks the beginning of the string
   // currentOffset marks where to start the pattern search
   private boolean __interpret(final Perl5Pattern expression, final char[] input,
-			      final int beginOffset, int endOffset,
-			      final int currentOffset)
-  {
+			      final int beginOffset, final int eo,
+			      final int currentOffset) {
+	int endOffset = eo;
     boolean success;
     int minLength = 0, dontTry = 0, offset;
     char ch, mustString[];
