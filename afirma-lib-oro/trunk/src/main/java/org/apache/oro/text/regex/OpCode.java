@@ -177,20 +177,21 @@ final class OpCode {
   }
 
   static final int _getOperand(final int offset) {
-    return (offset + 2);
+    return offset + 2;
   }
 
-  static final boolean _isInArray(final char ch, final char[] array, int start) {
+  static final boolean _isInArray(final char ch, final char[] array, final int start) {
+	int s = start;
     while(start < array.length) {
-		if(ch == array[start++]) {
+		if(ch == array[s++]) {
 			return true;
 		}
 	}
     return false;
   }
 
-  static final int _getNextOperator(final int offset) { return (offset + 2); }
-  static final int _getPrevOperator(final int offset) { return (offset - 2); }
+  static final int _getNextOperator(final int offset) { return offset + 2; }
+  static final int _getPrevOperator(final int offset) { return offset - 2; }
 
   static final int _getNext(final char[] program, final int offset) {
     int offs;
@@ -206,17 +207,17 @@ final class OpCode {
 	}
 
     if(program[offset] == OpCode._BACK) {
-		return (offset - offs);
+		return offset - offs;
 	}
 
-    return (offset + offs);
+    return offset + offs;
   }
 
   // doesn't really belong in this class, but we want Perl5Matcher not to
   // depend on Perl5Compiler
   // Matches Perl's definition of \w, which is different from [:alnum:]
   static final boolean _isWordCharacter(final char token) {
-    return (Character.isLetterOrDigit(token) || token == '_');
+    return Character.isLetterOrDigit(token) || token == '_';
   }
 }
 

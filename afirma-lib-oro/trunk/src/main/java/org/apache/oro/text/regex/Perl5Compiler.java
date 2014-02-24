@@ -256,6 +256,7 @@ public final class Perl5Compiler implements PatternCompiler {
    * In effect, this method is the analog of the Perl5 quotemeta() builtin
    * method.
    * <p>
+ * @param expression Expression
    * @return A String containing a Perl5 regular expression corresponding to
    *         a literal interpretation of the pattern.
    */
@@ -276,7 +277,8 @@ public final class Perl5Compiler implements PatternCompiler {
   }
 
   // determines if {\d+,\d*} is the next part of the string
-  private static boolean __parseRepetition(final char[] str, int offset) {
+  private static boolean __parseRepetition(final char[] str, final int off) {
+    int offset = off;
     if(str[offset] != '{') {
 		return false;
 	}
@@ -305,9 +307,9 @@ public final class Perl5Compiler implements PatternCompiler {
     return true;
   }
 
-  private static int __parseHex(final char[] str, int offset, int maxLength,
-				final int[] scanned)
-  {
+  private static int __parseHex(final char[] str, final int off, final int ml, final int[] scanned) {
+	int maxLength = ml;
+	int offset = off;
     int val = 0, index;
 
     scanned[0] = 0;
@@ -342,12 +344,12 @@ public final class Perl5Compiler implements PatternCompiler {
 
   private static void __setModifierFlag(final char[] flags, final char ch) {
     switch(ch) {
-    case 'i' : flags[0] |= __CASE_INSENSITIVE; return;
-    case 'g' : flags[0] |= __GLOBAL; return;
-    case 'o' : flags[0] |= __KEEP; return;
-    case 'm' : flags[0] |= __MULTILINE; return;
-    case 's' : flags[0] |= __SINGLELINE; return;
-    case 'x' : flags[0] |= __EXTENDED; return;
+	    case 'i' : flags[0] |= __CASE_INSENSITIVE; return;
+	    case 'g' : flags[0] |= __GLOBAL; return;
+	    case 'o' : flags[0] |= __KEEP; return;
+	    case 'm' : flags[0] |= __MULTILINE; return;
+	    case 's' : flags[0] |= __SINGLELINE; return;
+	    case 'x' : flags[0] |= __EXTENDED; return;
     }
   }
 
@@ -400,7 +402,8 @@ public final class Perl5Compiler implements PatternCompiler {
 
 
   // Insert an operator at a given offset.
-  private void __programInsertOperator(final char operator, int operand) {
+  private void __programInsertOperator(final char operator, final int oper) {
+	int operand = oper;
     int src, dest, offset;
 
     offset = OpCode._opType[operator] == OpCode._CURLY ? 2 : 0;
@@ -741,8 +744,8 @@ public final class Perl5Compiler implements PatternCompiler {
 	  if(num > 9 && num >= this.__numParentheses) {
 	    doDefault = true;
 	    break tryAgain;
-	  } else {
-	    // A backreference may only occur AFTER its group
+	  }
+		// A backreference may only occur AFTER its group
 	    if(num >= this.__numParentheses) {
 			throw new MalformedPatternException("Invalid backreference: \\" + //$NON-NLS-1$
 							  num);
@@ -758,7 +761,6 @@ public final class Perl5Compiler implements PatternCompiler {
 
 	    this.__input._decrement();
 	    __getNextChar();
-	  }
 	  break;
 	case '\0':
 	case CharStringPointer._END_OF_STRING:
