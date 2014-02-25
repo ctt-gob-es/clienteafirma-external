@@ -55,7 +55,6 @@
  * <http://www.apache.org/>.
  */
 
-
 package org.apache.oro.util;
 
 import java.util.HashMap;
@@ -63,13 +62,11 @@ import java.util.Iterator;
 
 /**
  * This is the base class for all cache implementations provided in the
- * org.apache.oro.util package.  To derive a subclass from GenericCache
- * only the ... methods
- * need be overridden.
- * Although 4 subclasses of GenericCache are provided with this
- * package, users may not derive subclasses from this class.
- * Rather, users should create their own implmentations of the
- * {@link Cache} interface.
+ * org.apache.oro.util package. To derive a subclass from GenericCache only the
+ * ... methods need be overridden. Although 4 subclasses of GenericCache are
+ * provided with this package, users may not derive subclasses from this class.
+ * Rather, users should create their own implmentations of the {@link Cache}
+ * interface.
  *
  * @version @version@
  * @since 1.0
@@ -80,73 +77,86 @@ public abstract class GenericCache implements Cache, java.io.Serializable {
 
 	private static final long serialVersionUID = 6123461456560210078L;
 
-/**
-   * The default capacity to be used by the GenericCache subclasses
-   * provided with this package.  Its value is 20.
-   */
-  public static final int DEFAULT_CAPACITY = 20;
+	/**
+	 * The default capacity to be used by the GenericCache subclasses provided
+	 * with this package. Its value is 20.
+	 */
+	public static final int DEFAULT_CAPACITY = 20;
 
-  int _numEntries;
-  GenericCacheEntry[] _cache;
-  HashMap<Object, Object> _table;
+	int _numEntries;
+	GenericCacheEntry[] _cache;
+	HashMap<Object, Object> _table;
 
-  /**
-   * The primary constructor for GenericCache.  It has default
-   * access so it will only be used within the package.  It initializes
-   * _table to a Hashtable of capacity equal to the capacity argument,
-   * _cache to an array of size equal to the capacity argument, and
-   * _numEntries to 0.
-   * <p>
-   * @param capacity The maximum capacity of the cache.
-   */
-  GenericCache(int capacity) {
-    this._numEntries = 0;
-    this._table    = new HashMap<Object, Object>(capacity);
-    this._cache    = new GenericCacheEntry[capacity];
+	/**
+	 * The primary constructor for GenericCache. It has default access so it
+	 * will only be used within the package. It initializes _table to a
+	 * Hashtable of capacity equal to the capacity argument, _cache to an array
+	 * of size equal to the capacity argument, and _numEntries to 0.
+	 * <p>
+	 *
+	 * @param cap The maximum capacity of the cache.
+	 */
+	GenericCache(final int cap) {
+		int capacity = cap;
+		this._numEntries = 0;
+		this._table = new HashMap<Object, Object>(capacity);
+		this._cache = new GenericCacheEntry[capacity];
 
-    while(--capacity >= 0) {
-		this._cache[capacity] = new GenericCacheEntry(capacity);
-	}
-  }
-
-  @Override
-public abstract void addElement(Object key, Object value);
-
-  @Override
-public synchronized Object getElement(final Object key) {
-    Object obj;
-
-    obj = this._table.get(key);
-
-    if(obj != null) {
-		return ((GenericCacheEntry)obj)._value;
+		while (--capacity >= 0) {
+			this._cache[capacity] = new GenericCacheEntry(capacity);
+		}
 	}
 
-    return null;
-  }
+	@Override
+	public abstract void addElement(Object key, Object value);
 
-  public final Iterator keys() {
-    return this._table.keySet().iterator();
-  }
+	@Override
+	public synchronized Object getElement(final Object key) {
+		Object obj;
 
-  /**
-   * Returns the number of elements in the cache, not to be confused with
-   * the {@link #capacity()} which returns the number
-   * of elements that can be held in the cache at one time.
-   * <p>
-   * @return  The current size of the cache (i.e., the number of elements
-   *          currently cached).
-   */
-  @Override
-public final int size() { return this._numEntries; }
+		obj = this._table.get(key);
 
-  /**
-   * Returns the maximum number of elements that can be cached at one time.
-   * <p>
-   * @return The maximum number of elements that can be cached at one time.
-   */
-  @Override
-public final int capacity() { return this._cache.length; }
+		if (obj != null) {
+			return ((GenericCacheEntry) obj)._value;
+		}
 
-  public final boolean isFull() { return this._numEntries >= this._cache.length; }
+		return null;
+	}
+
+	/** Gets the cache objects names.
+	 * @return Object names (keys) */
+	public final Iterator<Object> keys() {
+		return this._table.keySet().iterator();
+	}
+
+	/**
+	 * Returns the number of elements in the cache, not to be confused with the
+	 * {@link #capacity()} which returns the number of elements that can be held
+	 * in the cache at one time.
+	 * <p>
+	 *
+	 * @return The current size of the cache (i.e., the number of elements
+	 *         currently cached).
+	 */
+	@Override
+	public final int size() {
+		return this._numEntries;
+	}
+
+	/**
+	 * Returns the maximum number of elements that can be cached at one time.
+	 * <p>
+	 *
+	 * @return The maximum number of elements that can be cached at one time.
+	 */
+	@Override
+	public final int capacity() {
+		return this._cache.length;
+	}
+
+	/** Checks if the cache is full.
+	 * @return <code>true</code> if the cache is full, <code>false</code> otherwise */
+	public final boolean isFull() {
+		return this._numEntries >= this._cache.length;
+	}
 }
