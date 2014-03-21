@@ -184,7 +184,6 @@ class ArabicLigaturizer {
                     break;
             }
             if (retval == 1) {
-                oldchar.lignum++;
             }
             return retval;
         }
@@ -233,23 +232,19 @@ class ArabicLigaturizer {
 		}
 
         string.append(s.basechar);
-        s.lignum--;
         if (s.mark1 != 0) {
             if ((level & ar_novowel) == 0) {
                 string.append(s.mark1);
-                s.lignum--;
             }
             else {
-                s.lignum--;
             }
         }
         if (s.vowel != 0) {
             if ((level & ar_novowel) == 0) {
                 string.append(s.vowel);
-                s.lignum--;
             }
             else {                       /* vowel elimination */
-                s.lignum--;
+
             }
         }
 //        while (s.lignum > 0) {                           /* NULL-insertion for Langbox-font */
@@ -482,8 +477,6 @@ class ArabicLigaturizer {
                 curchar = new charstruct();
                 curchar.basechar = nextletter;
                 curchar.numshapes = nc;
-                curchar.lignum++;
-                //          (*len) += unligature (&curchar, level);
             }
             else if (join == 1) {
             }
@@ -772,12 +765,14 @@ class ArabicLigaturizer {
         private static final int DIGIT_TYPE_MASK = 0x0100; // 0x3f00?
 
         private static class charstruct {
-            private char basechar;
+            public charstruct() {
+				// TODO Auto-generated constructor stub
+			}
+			private char basechar;
             private char mark1;               /* has to be initialized to zero */
             private char vowel;
-            private int lignum;           /* is a ligature with lignum aditional characters */
-            private int numshapes = 1;
-        };
+            int numshapes = 1;
+        }
 
 
 }

@@ -123,7 +123,7 @@ public class Base64 {
 
 
     /** Preferred encoding. */
-    private final static String PREFERRED_ENCODING = "UTF-8";
+    private final static String PREFERRED_ENCODING = "UTF-8"; //$NON-NLS-1$
 
 
     // I think I end up not using the BAD_ENCODING indicator.
@@ -332,7 +332,7 @@ public class Base64 {
      * in which case one of them will be picked, though there is
      * no guarantee as to which one will be picked.
      */
-    private final static byte[] getAlphabet( final int options ) {
+    final static byte[] getAlphabet( final int options ) {
         if( (options & URL_SAFE) == URL_SAFE ) {
 			return _URL_SAFE_ALPHABET;
 		} else if( (options & ORDERED) == ORDERED ) {
@@ -351,7 +351,7 @@ public class Base64 {
      * in which case one of them will be picked, though there is
      * no guarantee as to which one will be picked.
      */
-    private final static byte[] getDecodabet( final int options ) {
+    final static byte[] getDecodabet( final int options ) {
         if( (options & URL_SAFE) == URL_SAFE ) {
 			return _URL_SAFE_DECODABET;
 		} else if( (options & ORDERED) == ORDERED ) {
@@ -366,42 +366,6 @@ public class Base64 {
 
     /** Defeats instantiation. */
     private Base64(){}
-
-
-    /**
-     * Encodes or decodes two files from the command line;
-     * <strong>feel free to delete this method (in fact you probably should)
-     * if you're embedding this code into a larger program.</strong>
-     */
-    public final static void main( final String[] args ) {
-        if( args.length < 3 ){
-            usage("Not enough arguments.");
-        }   // end if: args.length < 3
-        else {
-            final String flag = args[0];
-            final String infile = args[1];
-            final String outfile = args[2];
-            if( flag.equals( "-e" ) ){
-                Base64.encodeFileToFile( infile, outfile );
-            }   // end if: encode
-            else if( flag.equals( "-d" ) ) {
-                Base64.decodeFileToFile( infile, outfile );
-            }   // end else if: decode
-            else {
-                usage( "Unknown flag: " + flag );
-            }   // end else
-        }   // end else
-    }   // end main
-
-    /**
-     * Prints command line usage.
-     *
-     * @param msg A message to include with usage info.
-     */
-    private final static void usage( final String msg ) {
-        System.err.println( msg );
-        System.err.println( "Usage: java Base64 -e|-d inputfile outputfile" );
-    }   // end usage
 
 
     /* ********  E N C O D I N G   M E T H O D S  ******** */
@@ -715,10 +679,10 @@ public class Base64 {
 
                 return 3;
             }catch( final Exception e){
-                System.out.println(""+source[srcOffset]+ ": " + DECODABET[ source[ srcOffset     ] ] );
-                System.out.println(""+source[srcOffset+1]+  ": " + DECODABET[ source[ srcOffset + 1 ] ] );
-                System.out.println(""+source[srcOffset+2]+  ": " + DECODABET[ source[ srcOffset + 2 ] ] );
-                System.out.println(""+source[srcOffset+3]+  ": " + DECODABET[ source[ srcOffset + 3 ] ] );
+                System.out.println(""+source[srcOffset]+ ": " + DECODABET[ source[ srcOffset     ] ] ); //$NON-NLS-1$ //$NON-NLS-2$
+                System.out.println(""+source[srcOffset+1]+  ": " + DECODABET[ source[ srcOffset + 1 ] ] ); //$NON-NLS-1$ //$NON-NLS-2$
+                System.out.println(""+source[srcOffset+2]+  ": " + DECODABET[ source[ srcOffset + 2 ] ] ); //$NON-NLS-1$ //$NON-NLS-2$
+                System.out.println(""+source[srcOffset+3]+  ": " + DECODABET[ source[ srcOffset + 3 ] ] ); //$NON-NLS-1$ //$NON-NLS-2$
                 return -1;
             }   // end catch
         }
@@ -772,7 +736,7 @@ public class Base64 {
 
             }   // end if: white space, equals sign or better
             else {
-                System.err.println( "Bad Base64 input character at " + i + ": " + source[i] + "(decimal)" );
+                System.err.println( "Bad Base64 input character at " + i + ": " + source[i] + "(decimal)" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 return null;
             }   // end else:
         }   // each input character
@@ -897,7 +861,7 @@ public class Base64 {
 
             // Check for size of file
             if( file.length() > Integer.MAX_VALUE ) {
-                System.err.println( "File is too big for this convenience method (" + file.length() + " bytes)." );
+                System.err.println( "File is too big for this convenience method (" + file.length() + " bytes)." ); //$NON-NLS-1$ //$NON-NLS-2$
                 return null;
             }   // end if: file too big for int index
             buffer = new byte[ (int)file.length() ];
@@ -918,7 +882,7 @@ public class Base64 {
 
         }   // end try
         catch( final java.io.IOException e ) {
-            System.err.println( "Error decoding from file " + filename );
+            System.err.println( "Error decoding from file " + filename ); //$NON-NLS-1$
         }   // end catch: IOException
         finally {
             try{ bis.close(); } catch( final Exception e) {}
@@ -963,7 +927,7 @@ public class Base64 {
 
         }   // end try
         catch( final java.io.IOException e ) {
-            System.err.println( "Error encoding from file " + filename );
+            System.err.println( "Error encoding from file " + filename ); //$NON-NLS-1$
         }   // end catch: IOException
         finally {
             try{ bis.close(); } catch( final Exception e) {}
@@ -985,7 +949,7 @@ public class Base64 {
         try{
             out = new java.io.BufferedOutputStream(
                     new java.io.FileOutputStream( outfile ) );
-            out.write( encoded.getBytes("US-ASCII") ); // Strict, 7-bit output.
+            out.write( encoded.getBytes("US-ASCII") ); // Strict, 7-bit output. //$NON-NLS-1$
         }   // end try
         catch( final java.io.IOException ex ) {
             ex.printStackTrace();
@@ -1069,7 +1033,7 @@ public class Base64 {
          * @see Base64#DONT_BREAK_LINES
          * @since 2.0
          */
-        private InputStream( final java.io.InputStream in, final int options ) {
+        InputStream( final java.io.InputStream in, final int options ) {
             super( in );
             this.breakLines   = (options & DONT_BREAK_LINES) != DONT_BREAK_LINES;
             this.encode       = (options & ENCODE) == ENCODE;
@@ -1153,7 +1117,7 @@ public class Base64 {
                     }   // end else if: also padded correctly
                     else {
                         // Must have broken out from above.
-                        throw new java.io.IOException( "Improperly padded Base64 input." );
+                        throw new java.io.IOException( "Improperly padded Base64 input." ); //$NON-NLS-1$
                     }   // end
 
                 }   // end else: decode
@@ -1189,7 +1153,7 @@ public class Base64 {
             // Else error
             else {
                 // When JDK1.4 is more accepted, use an assertion here.
-                throw new java.io.IOException( "Error in Base64 code reading stream." );
+                throw new java.io.IOException( "Error in Base64 code reading stream." ); //$NON-NLS-1$
             }   // end else
         }   // end read
 
@@ -1283,7 +1247,7 @@ public class Base64 {
          * @see Base64#DONT_BREAK_LINES
          * @since 1.3
          */
-        private OutputStream( final java.io.OutputStream out, final int options ) {
+        OutputStream( final java.io.OutputStream out, final int options ) {
             super( out );
             this.breakLines   = (options & DONT_BREAK_LINES) != DONT_BREAK_LINES;
             this.encode       = (options & ENCODE) == ENCODE;
@@ -1350,7 +1314,7 @@ public class Base64 {
                     }   // end if: enough to output
                 }   // end if: meaningful base64 character
                 else if( this.decodabet[ theByte & 0x7f ] != WHITE_SPACE_ENC ) {
-                    throw new java.io.IOException( "Invalid character in Base64 data." );
+                    throw new java.io.IOException( "Invalid character in Base64 data." ); //$NON-NLS-1$
                 }   // end else: not white space either
             }   // end else: decoding
         }   // end write
@@ -1393,7 +1357,7 @@ public class Base64 {
                     this.position = 0;
                 }   // end if: encoding
                 else {
-                    throw new java.io.IOException( "Base64 input not properly padded." );
+                    throw new java.io.IOException( "Base64 input not properly padded." ); //$NON-NLS-1$
                 }   // end else: decoding
             }   // end if: buffer partially full
 

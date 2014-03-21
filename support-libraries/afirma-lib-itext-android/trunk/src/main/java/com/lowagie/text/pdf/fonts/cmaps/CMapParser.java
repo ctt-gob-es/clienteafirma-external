@@ -30,7 +30,6 @@
  */
 package com.lowagie.text.pdf.fonts.cmaps;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -48,12 +47,12 @@ import java.util.Map;
  */
 public class CMapParser
 {
-    private static final String BEGIN_CODESPACE_RANGE = "begincodespacerange";
-    private static final String BEGIN_BASE_FONT_CHAR = "beginbfchar";
-    private static final String BEGIN_BASE_FONT_RANGE = "beginbfrange";
+    private static final String BEGIN_CODESPACE_RANGE = "begincodespacerange"; //$NON-NLS-1$
+    private static final String BEGIN_BASE_FONT_CHAR = "beginbfchar"; //$NON-NLS-1$
+    private static final String BEGIN_BASE_FONT_RANGE = "beginbfrange"; //$NON-NLS-1$
 
-    private static final String MARK_END_OF_DICTIONARY = ">>";
-    private static final String MARK_END_OF_ARRAY = "]";
+    private static final String MARK_END_OF_DICTIONARY = ">>"; //$NON-NLS-1$
+    private static final String MARK_END_OF_ARRAY = "]"; //$NON-NLS-1$
 
     private final byte[] tokenParserByteBuffer = new byte[512];
 
@@ -115,8 +114,8 @@ public class CMapParser
                         }
                         else
                         {
-                            throw new IOException( "Error parsing CMap beginbfchar, expected{COSString " +
-                                                   "or COSName} and not " + nextToken );
+                            throw new IOException( "Error parsing CMap beginbfchar, expected{COSString " + //$NON-NLS-1$
+                                                   "or COSName} and not " + nextToken ); //$NON-NLS-1$
                         }
                     }
                 }
@@ -219,7 +218,7 @@ public class CMapParser
                 }
                 else
                 {
-                    throw new IOException( "Error: expected the end of a dictionary.");
+                    throw new IOException( "Error: expected the end of a dictionary."); //$NON-NLS-1$
                 }
                 break;
             }
@@ -280,8 +279,8 @@ public class CMapParser
                         }
                         else
                         {
-                            throw new IOException( "Error: expected hex character and not " +
-                                (char)theNextByte + ":" + theNextByte );
+                            throw new IOException( "Error: expected hex character and not " + //$NON-NLS-1$
+                                (char)theNextByte + ":" + theNextByte ); //$NON-NLS-1$
                         }
                         intValue *= multiplyer;
                         if( multiplyer == 16 )
@@ -408,7 +407,7 @@ public class CMapParser
         }
     }
 
-    private String createStringFromBytes( final byte[] bytes ) throws IOException
+    private static String createStringFromBytes( final byte[] bytes ) throws IOException
     {
         String retval = null;
         if( bytes.length == 1 )
@@ -417,12 +416,12 @@ public class CMapParser
         }
         else
         {
-            retval = new String( bytes, "UTF-16BE" );
+            retval = new String( bytes, "UTF-16BE" ); //$NON-NLS-1$
         }
         return retval;
     }
 
-    private int compare( final byte[] first, final byte[] second )
+    private static int compare( final byte[] first, final byte[] second )
     {
         int retval = 1;
         boolean done = false;
@@ -452,7 +451,7 @@ public class CMapParser
     private class LiteralName
     {
         private final String name;
-        private LiteralName( final String theName )
+        LiteralName( final String theName )
         {
             this.name = theName;
         }
@@ -464,28 +463,10 @@ public class CMapParser
     private class Operator
     {
         private final String op;
-        private Operator( final String theOp )
+        Operator( final String theOp )
         {
             this.op = theOp;
         }
     }
 
-    /**
-     * A simple class to test parsing of cmap files.
-     *
-     * @param args Some command line arguments.
-     *
-     * @throws Exception If there is an error parsing the file.
-     */
-    public static void main( final String[] args ) throws Exception
-    {
-        if( args.length != 1 )
-        {
-            System.err.println( "usage: java org.pdfbox.cmapparser.CMapParser <CMAP File>" );
-            System.exit( -1 );
-        }
-        final CMapParser parser = new CMapParser(  );
-        final CMap result = parser.parse( new FileInputStream( args[0] ) );
-        System.out.println( "Result:" + result );
-    }
 }

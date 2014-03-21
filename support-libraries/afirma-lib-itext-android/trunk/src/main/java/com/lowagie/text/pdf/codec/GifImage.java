@@ -577,7 +577,11 @@ public class GifImage {
     }
 
     private static class GifFrame {
-        private Image image;
+        public GifFrame() {
+			// TODO Auto-generated constructor stub
+		}
+
+		Image image;
 
 
     }

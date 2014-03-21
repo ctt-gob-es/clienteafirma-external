@@ -78,7 +78,7 @@ abstract class PdfContentStreamProcessor {
     /** Stack keeping track of the graphics state. */
     private final Stack gsStack = new Stack();
     /** Text matrix. */
-    private Matrix textMatrix;
+    Matrix textMatrix;
     /** Text line matrix. */
     private Matrix textLineMatrix;
 
@@ -96,31 +96,31 @@ abstract class PdfContentStreamProcessor {
     private void populateOperators(){
         this.operators = new LinkedHashMap();
 
-        this.operators.put("q", new PushGraphicsState());
-        this.operators.put("Q", new PopGraphicsState());
-        this.operators.put("cm", new ModifyCurrentTransformationMatrix());
-        this.operators.put("gs", new ProcessGraphicsStateResource());
+        this.operators.put("q", new PushGraphicsState()); //$NON-NLS-1$
+        this.operators.put("Q", new PopGraphicsState()); //$NON-NLS-1$
+        this.operators.put("cm", new ModifyCurrentTransformationMatrix()); //$NON-NLS-1$
+        this.operators.put("gs", new ProcessGraphicsStateResource()); //$NON-NLS-1$
 
-        this.operators.put("Tc", new SetTextCharacterSpacing());
-        this.operators.put("Tw", new SetTextWordSpacing());
-        this.operators.put("Tz", new SetTextHorizontalScaling());
-        this.operators.put("TL", new SetTextLeading());
-        this.operators.put("Tf", new SetTextFont());
-        this.operators.put("Tr", new SetTextRenderMode());
-        this.operators.put("Ts", new SetTextRise());
+        this.operators.put("Tc", new SetTextCharacterSpacing()); //$NON-NLS-1$
+        this.operators.put("Tw", new SetTextWordSpacing()); //$NON-NLS-1$
+        this.operators.put("Tz", new SetTextHorizontalScaling()); //$NON-NLS-1$
+        this.operators.put("TL", new SetTextLeading()); //$NON-NLS-1$
+        this.operators.put("Tf", new SetTextFont()); //$NON-NLS-1$
+        this.operators.put("Tr", new SetTextRenderMode()); //$NON-NLS-1$
+        this.operators.put("Ts", new SetTextRise()); //$NON-NLS-1$
 
-        this.operators.put("BT", new BeginText());
-        this.operators.put("ET", new EndText());
+        this.operators.put("BT", new BeginText()); //$NON-NLS-1$
+        this.operators.put("ET", new EndText()); //$NON-NLS-1$
 
-        this.operators.put("Td", new TextMoveStartNextLine());
-        this.operators.put("TD", new TextMoveStartNextLineWithLeading());
-        this.operators.put("Tm", new TextSetTextMatrix());
-        this.operators.put("T*", new TextMoveNextLine());
+        this.operators.put("Td", new TextMoveStartNextLine()); //$NON-NLS-1$
+        this.operators.put("TD", new TextMoveStartNextLineWithLeading()); //$NON-NLS-1$
+        this.operators.put("Tm", new TextSetTextMatrix()); //$NON-NLS-1$
+        this.operators.put("T*", new TextMoveNextLine()); //$NON-NLS-1$
 
-        this.operators.put("Tj", new ShowText());
-        this.operators.put("'", new MoveNextLineAndShowText());
-        this.operators.put("\"", new MoveNextLineAndShowTextWithSpacing());
-        this.operators.put("TJ", new ShowTextArray());
+        this.operators.put("Tj", new ShowText()); //$NON-NLS-1$
+        this.operators.put("'", new MoveNextLineAndShowText()); //$NON-NLS-1$
+        this.operators.put("\"", new MoveNextLineAndShowTextWithSpacing()); //$NON-NLS-1$
+        this.operators.put("TJ", new ShowTextArray()); //$NON-NLS-1$
     }
 
     /**
@@ -165,7 +165,7 @@ abstract class PdfContentStreamProcessor {
      * @param operator	the PDF Syntax of the operator
      * @param operands	a list with operands
      */
-    private void invokeOperator(final PdfLiteral operator, final ArrayList operands){
+    void invokeOperator(final PdfLiteral operator, final ArrayList operands){
         final ContentOperator op = (ContentOperator)this.operators.get(operator.toString());
         if (op == null){
             //System.out.println("Skipping operator " + operator);
@@ -288,15 +288,15 @@ abstract class PdfContentStreamProcessor {
 
             final ArrayList twOperands = new ArrayList(1);
             twOperands.add(0, aw);
-            processor.invokeOperator(new PdfLiteral("Tw"), twOperands);
+            processor.invokeOperator(new PdfLiteral("Tw"), twOperands); //$NON-NLS-1$
 
             final ArrayList tcOperands = new ArrayList(1);
             tcOperands.add(0, ac);
-            processor.invokeOperator(new PdfLiteral("Tc"), tcOperands);
+            processor.invokeOperator(new PdfLiteral("Tc"), tcOperands); //$NON-NLS-1$
 
             final ArrayList tickOperands = new ArrayList(1);
             tickOperands.add(0, string);
-            processor.invokeOperator(new PdfLiteral("'"), tickOperands);
+            processor.invokeOperator(new PdfLiteral("'"), tickOperands); //$NON-NLS-1$
         }
     }
 
@@ -306,8 +306,8 @@ abstract class PdfContentStreamProcessor {
     private static class MoveNextLineAndShowText implements ContentOperator{
         @Override
 		public void invoke(final PdfContentStreamProcessor processor, final PdfLiteral operator, final ArrayList operands) {
-            processor.invokeOperator(new PdfLiteral("T*"), new ArrayList(0));
-            processor.invokeOperator(new PdfLiteral("Tj"), operands);
+            processor.invokeOperator(new PdfLiteral("T*"), new ArrayList(0)); //$NON-NLS-1$
+            processor.invokeOperator(new PdfLiteral("Tj"), operands); //$NON-NLS-1$
         }
     }
 
@@ -333,7 +333,7 @@ abstract class PdfContentStreamProcessor {
             final ArrayList tdoperands = new ArrayList(2);
             tdoperands.add(0, new PdfNumber(0));
             tdoperands.add(1, new PdfNumber(processor.gs().leading));
-            processor.invokeOperator(new PdfLiteral("Td"), tdoperands);
+            processor.invokeOperator(new PdfLiteral("Td"), tdoperands); //$NON-NLS-1$
         }
     }
 
@@ -365,8 +365,8 @@ abstract class PdfContentStreamProcessor {
 
             final ArrayList tlOperands = new ArrayList(1);
             tlOperands.add(0, new PdfNumber(-ty));
-            processor.invokeOperator(new PdfLiteral("TL"), tlOperands);
-            processor.invokeOperator(new PdfLiteral("Td"), operands);
+            processor.invokeOperator(new PdfLiteral("TL"), tlOperands); //$NON-NLS-1$
+            processor.invokeOperator(new PdfLiteral("Td"), operands); //$NON-NLS-1$
         }
     }
 
@@ -478,11 +478,11 @@ abstract class PdfContentStreamProcessor {
             final PdfName dictionaryName = (PdfName)operands.get(0);
             final PdfDictionary extGState = processor.resources.getAsDict(PdfName.EXTGSTATE);
             if (extGState == null) {
-				throw new IllegalArgumentException("Resources do not contain ExtGState entry. Unable to process operator " + operator);
+				throw new IllegalArgumentException("Resources do not contain ExtGState entry. Unable to process operator " + operator); //$NON-NLS-1$
 			}
             final PdfDictionary gsDic = extGState.getAsDict(dictionaryName);
             if (gsDic == null) {
-				throw new IllegalArgumentException(dictionaryName + " is an unknown graphics state dictionary");
+				throw new IllegalArgumentException(dictionaryName + " is an unknown graphics state dictionary"); //$NON-NLS-1$
 			}
 
             // at this point, all we care about is the FONT entry in the GS dictionary

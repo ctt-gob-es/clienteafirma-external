@@ -100,7 +100,7 @@ public class PdfContentByte {
         private float scale = 100;
 
         /** The current character spacing */
-        private float charSpace = 0;
+        float charSpace = 0;
 
         /** The current word spacing */
         private float wordSpace = 0;
@@ -108,7 +108,7 @@ public class PdfContentByte {
         GraphicState() {
         }
 
-        private GraphicState(final GraphicState cp) {
+        GraphicState(final GraphicState cp) {
             this.fontDetails = cp.fontDetails;
             this.colorDetails = cp.colorDetails;
             this.size = cp.size;
@@ -168,10 +168,10 @@ public class PdfContentByte {
     protected GraphicState state = new GraphicState();
 
     /** The list were we save/restore the state */
-    private final ArrayList stateList = new ArrayList();
+    private final ArrayList<GraphicState> stateList = new ArrayList<GraphicState>();
 
     /** The list were we save/restore the layer depth */
-    private ArrayList layerDepth;
+    private ArrayList<Integer> layerDepth;
 
     /** The separator between commands.
      */
@@ -180,19 +180,19 @@ public class PdfContentByte {
     private int mcDepth = 0;
     private boolean inText = false;
 
-    private static HashMap abrev = new LinkedHashMap();
+    private static HashMap<PdfName, String> abrev = new LinkedHashMap<PdfName, String>();
 
     static {
-        abrev.put(PdfName.BITSPERCOMPONENT, "/BPC ");
-        abrev.put(PdfName.COLORSPACE, "/CS ");
-        abrev.put(PdfName.DECODE, "/D ");
-        abrev.put(PdfName.DECODEPARMS, "/DP ");
-        abrev.put(PdfName.FILTER, "/F ");
-        abrev.put(PdfName.HEIGHT, "/H ");
-        abrev.put(PdfName.IMAGEMASK, "/IM ");
-        abrev.put(PdfName.INTENT, "/Intent ");
-        abrev.put(PdfName.INTERPOLATE, "/I ");
-        abrev.put(PdfName.WIDTH, "/W ");
+        abrev.put(PdfName.BITSPERCOMPONENT, "/BPC "); //$NON-NLS-1$
+        abrev.put(PdfName.COLORSPACE, "/CS "); //$NON-NLS-1$
+        abrev.put(PdfName.DECODE, "/D "); //$NON-NLS-1$
+        abrev.put(PdfName.DECODEPARMS, "/DP "); //$NON-NLS-1$
+        abrev.put(PdfName.FILTER, "/F "); //$NON-NLS-1$
+        abrev.put(PdfName.HEIGHT, "/H "); //$NON-NLS-1$
+        abrev.put(PdfName.IMAGEMASK, "/IM "); //$NON-NLS-1$
+        abrev.put(PdfName.INTENT, "/Intent "); //$NON-NLS-1$
+        abrev.put(PdfName.INTERPOLATE, "/I "); //$NON-NLS-1$
+        abrev.put(PdfName.WIDTH, "/W "); //$NON-NLS-1$
     }
 
     // constructors
@@ -252,7 +252,7 @@ public class PdfContentByte {
 
     void add(final PdfContentByte other) {
         if (other.writer != null && this.writer != other.writer) {
-			throw new RuntimeException("Inconsistent writers. Are you mixing two documents?");
+			throw new RuntimeException("Inconsistent writers. Are you mixing two documents?"); //$NON-NLS-1$
 		}
         this.content.append(other.content);
     }
@@ -322,7 +322,7 @@ public class PdfContentByte {
 
     public void setFlatness(final float flatness) {
         if (flatness >= 0 && flatness <= 100) {
-            this.content.append(flatness).append(" i").append_i(this.separator);
+            this.content.append(flatness).append(" i").append_i(this.separator); //$NON-NLS-1$
         }
     }
 
@@ -338,7 +338,7 @@ public class PdfContentByte {
 
     public void setLineCap(final int style) {
         if (style >= 0 && style <= 2) {
-            this.content.append(style).append(" J").append_i(this.separator);
+            this.content.append(style).append(" J").append_i(this.separator); //$NON-NLS-1$
         }
     }
 
@@ -354,7 +354,7 @@ public class PdfContentByte {
      */
 
     public void setLineDash(final float phase) {
-        this.content.append("[] ").append(phase).append(" d").append_i(this.separator);
+        this.content.append("[] ").append(phase).append(" d").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -370,7 +370,7 @@ public class PdfContentByte {
      */
 
     public void setLineDash(final float unitsOn, final float phase) {
-        this.content.append("[").append(unitsOn).append("] ").append(phase).append(" d").append_i(this.separator);
+        this.content.append("[").append(unitsOn).append("] ").append(phase).append(" d").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -387,7 +387,7 @@ public class PdfContentByte {
      */
 
     public void setLineDash(final float unitsOn, final float unitsOff, final float phase) {
-        this.content.append("[").append(unitsOn).append(' ').append(unitsOff).append("] ").append(phase).append(" d").append_i(this.separator);
+        this.content.append("[").append(unitsOn).append(' ').append(unitsOff).append("] ").append(phase).append(" d").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
 
@@ -404,7 +404,7 @@ public class PdfContentByte {
 
     public void setLineJoin(final int style) {
         if (style >= 0 && style <= 2) {
-            this.content.append(style).append(" j").append_i(this.separator);
+            this.content.append(style).append(" j").append_i(this.separator); //$NON-NLS-1$
         }
     }
 
@@ -418,7 +418,7 @@ public class PdfContentByte {
      */
 
     public void setLineWidth(final float w) {
-        this.content.append(w).append(" w").append_i(this.separator);
+        this.content.append(w).append(" w").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -434,7 +434,7 @@ public class PdfContentByte {
 
     public void setMiterLimit(final float miterLimit) {
         if (miterLimit > 1) {
-            this.content.append(miterLimit).append(" M").append_i(this.separator);
+            this.content.append(miterLimit).append(" M").append_i(this.separator); //$NON-NLS-1$
         }
     }
 
@@ -445,7 +445,7 @@ public class PdfContentByte {
      */
 
     public void clip() {
-        this.content.append("W").append_i(this.separator);
+        this.content.append("W").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -454,7 +454,7 @@ public class PdfContentByte {
      */
 
     public void eoClip() {
-        this.content.append("W*").append_i(this.separator);
+        this.content.append("W*").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -467,7 +467,7 @@ public class PdfContentByte {
      */
 
     public void setGrayFill(final float gray) {
-        this.content.append(gray).append(" g").append_i(this.separator);
+        this.content.append(gray).append(" g").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -475,7 +475,7 @@ public class PdfContentByte {
      */
 
     public void resetGrayFill() {
-        this.content.append("0 g").append_i(this.separator);
+        this.content.append("0 g").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -488,7 +488,7 @@ public class PdfContentByte {
      */
 
     public void setGrayStroke(final float gray) {
-        this.content.append(gray).append(" G").append_i(this.separator);
+        this.content.append(gray).append(" G").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -496,7 +496,7 @@ public class PdfContentByte {
      */
 
     public void resetGrayStroke() {
-        this.content.append("0 G").append_i(this.separator);
+        this.content.append("0 G").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -541,7 +541,7 @@ public class PdfContentByte {
 
     public void setRGBColorFillF(final float red, final float green, final float blue) {
         HelperRGB(red, green, blue);
-        this.content.append(" rg").append_i(this.separator);
+        this.content.append(" rg").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -549,7 +549,7 @@ public class PdfContentByte {
      */
 
     public void resetRGBColorFill() {
-        this.content.append("0 g").append_i(this.separator);
+        this.content.append("0 g").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -568,7 +568,7 @@ public class PdfContentByte {
 
     public void setRGBColorStrokeF(final float red, final float green, final float blue) {
         HelperRGB(red, green, blue);
-        this.content.append(" RG").append_i(this.separator);
+        this.content.append(" RG").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -577,7 +577,7 @@ public class PdfContentByte {
      */
 
     public void resetRGBColorStroke() {
-        this.content.append("0 G").append_i(this.separator);
+        this.content.append("0 G").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -629,7 +629,7 @@ public class PdfContentByte {
 
     public void setCMYKColorFillF(final float cyan, final float magenta, final float yellow, final float black) {
         HelperCMYK(cyan, magenta, yellow, black);
-        this.content.append(" k").append_i(this.separator);
+        this.content.append(" k").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -638,7 +638,7 @@ public class PdfContentByte {
      */
 
     public void resetCMYKColorFill() {
-        this.content.append("0 0 0 1 k").append_i(this.separator);
+        this.content.append("0 0 0 1 k").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -658,7 +658,7 @@ public class PdfContentByte {
 
     public void setCMYKColorStrokeF(final float cyan, final float magenta, final float yellow, final float black) {
         HelperCMYK(cyan, magenta, yellow, black);
-        this.content.append(" K").append_i(this.separator);
+        this.content.append(" K").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -667,7 +667,7 @@ public class PdfContentByte {
      */
 
     public void resetCMYKColorStroke() {
-        this.content.append("0 0 0 1 K").append_i(this.separator);
+        this.content.append("0 0 0 1 K").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -678,7 +678,7 @@ public class PdfContentByte {
      */
 
     public void moveTo(final float x, final float y) {
-        this.content.append(x).append(' ').append(y).append(" m").append_i(this.separator);
+        this.content.append(x).append(' ').append(y).append(" m").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -690,7 +690,7 @@ public class PdfContentByte {
      */
 
     public void lineTo(final float x, final float y) {
-        this.content.append(x).append(' ').append(y).append(" l").append_i(this.separator);
+        this.content.append(x).append(' ').append(y).append(" l").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -705,7 +705,7 @@ public class PdfContentByte {
      */
 
     public void curveTo(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3) {
-        this.content.append(x1).append(' ').append(y1).append(' ').append(x2).append(' ').append(y2).append(' ').append(x3).append(' ').append(y3).append(" c").append_i(this.separator);
+        this.content.append(x1).append(' ').append(y1).append(' ').append(x2).append(' ').append(y2).append(' ').append(x3).append(' ').append(y3).append(" c").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -718,7 +718,7 @@ public class PdfContentByte {
      */
 
     void curveTo(final float x2, final float y2, final float x3, final float y3) {
-        this.content.append(x2).append(' ').append(y2).append(' ').append(x3).append(' ').append(y3).append(" v").append_i(this.separator);
+        this.content.append(x2).append(' ').append(y2).append(' ').append(x3).append(' ').append(y3).append(" v").append_i(this.separator); //$NON-NLS-1$
     }
 
 
@@ -737,7 +737,7 @@ public class PdfContentByte {
      */
 
     public void rectangle(final float x, final float y, final float w, final float h) {
-        this.content.append(x).append(' ').append(y).append(' ').append(w).append(' ').append(h).append(" re").append_i(this.separator);
+        this.content.append(x).append(' ').append(y).append(' ').append(w).append(' ').append(h).append(" re").append_i(this.separator); //$NON-NLS-1$
     }
 
     private boolean compareColors(final Color c1, final Color c2) {
@@ -981,7 +981,7 @@ public class PdfContentByte {
      */
 
     public void closePath() {
-        this.content.append("h").append_i(this.separator);
+        this.content.append("h").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -989,7 +989,7 @@ public class PdfContentByte {
      */
 
     public void newPath() {
-        this.content.append("n").append_i(this.separator);
+        this.content.append("n").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -997,7 +997,7 @@ public class PdfContentByte {
      */
 
     public void stroke() {
-        this.content.append("S").append_i(this.separator);
+        this.content.append("S").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1005,7 +1005,7 @@ public class PdfContentByte {
      */
 
     public void closePathStroke() {
-        this.content.append("s").append_i(this.separator);
+        this.content.append("s").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1013,7 +1013,7 @@ public class PdfContentByte {
      */
 
     public void fill() {
-        this.content.append("f").append_i(this.separator);
+        this.content.append("f").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1021,7 +1021,7 @@ public class PdfContentByte {
      */
 
     public void eoFill() {
-        this.content.append("f*").append_i(this.separator);
+        this.content.append("f*").append_i(this.separator); //$NON-NLS-1$
     }
 
 
@@ -1031,7 +1031,7 @@ public class PdfContentByte {
      */
 
     public void closePathFillStroke() {
-        this.content.append("b").append_i(this.separator);
+        this.content.append("b").append_i(this.separator); //$NON-NLS-1$
     }
 
 
@@ -1041,7 +1041,7 @@ public class PdfContentByte {
      */
 
     public void closePathEoFillStroke() {
-        this.content.append("b*").append_i(this.separator);
+        this.content.append("b*").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1063,7 +1063,7 @@ public class PdfContentByte {
      */
     private void addImage(final Image image, final boolean inlineImage) throws DocumentException {
         if (!image.hasAbsoluteY()) {
-			throw new DocumentException("The image must have absolute positioning.");
+			throw new DocumentException("The image must have absolute positioning."); //$NON-NLS-1$
 		}
         final float matrix[] = image.matrix();
         matrix[Image.CX] = image.getAbsoluteX() - matrix[Image.CX];
@@ -1115,16 +1115,16 @@ public class PdfContentByte {
                 addTemplate(template, a / w, b / w, c / h, d / h, e, f);
             }
             else {
-                this.content.append("q ");
+                this.content.append("q "); //$NON-NLS-1$
                 this.content.append(a).append(' ');
                 this.content.append(b).append(' ');
                 this.content.append(c).append(' ');
                 this.content.append(d).append(' ');
                 this.content.append(e).append(' ');
-                this.content.append(f).append(" cm");
+                this.content.append(f).append(" cm"); //$NON-NLS-1$
                 if (inlineImage) {
-                    this.content.append("\nBI\n");
-                    final PdfImage pimage = new PdfImage(image, "", null);
+                    this.content.append("\nBI\n"); //$NON-NLS-1$
+                    final PdfImage pimage = new PdfImage(image, "", null); //$NON-NLS-1$
                     if (image instanceof ImgJBIG2) {
                     	final byte[] globals = ((ImgJBIG2)image).getGlobalBytes();
                     	if (globals != null) {
@@ -1136,7 +1136,7 @@ public class PdfContentByte {
                     for (final Object element : pimage.getKeys()) {
                         final PdfName key = (PdfName)element;
                         PdfObject value = pimage.get(key);
-                        final String s = (String)abrev.get(key);
+                        final String s = abrev.get(key);
                         if (s == null) {
 							continue;
 						}
@@ -1163,9 +1163,9 @@ public class PdfContentByte {
                         value.toPdf(null, this.content);
                         this.content.append('\n');
                     }
-                    this.content.append("ID\n");
+                    this.content.append("ID\n"); //$NON-NLS-1$
                     pimage.writeContent(this.content);
-                    this.content.append("\nEI\nQ").append_i(this.separator);
+                    this.content.append("\nEI\nQ").append_i(this.separator); //$NON-NLS-1$
                 }
                 else {
                     PdfName name;
@@ -1177,7 +1177,7 @@ public class PdfContentByte {
                     }
                     name = this.writer.addDirectImageSimple(image);
                     name = prs.addXObject(name, this.writer.getImageReference(name));
-                    this.content.append(' ').append(name.getBytes()).append(" Do Q").append_i(this.separator);
+                    this.content.append(' ').append(name.getBytes()).append(" Do Q").append_i(this.separator); //$NON-NLS-1$
                 }
             }
             if (image.hasBorders()) {
@@ -1250,12 +1250,12 @@ public class PdfContentByte {
      */
     public void beginText() {
     	if (this.inText) {
-    		throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+    		throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." ); //$NON-NLS-1$
     	}
     	this.inText = true;
         this.state.xTLM = 0;
         this.state.yTLM = 0;
-        this.content.append("BT").append_i(this.separator);
+        this.content.append("BT").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1263,10 +1263,10 @@ public class PdfContentByte {
      */
     public void endText() {
     	if (!this.inText) {
-    		throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+    		throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." ); //$NON-NLS-1$
     	}
     	this.inText = false;
-        this.content.append("ET").append_i(this.separator);
+        this.content.append("ET").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1274,7 +1274,7 @@ public class PdfContentByte {
      * <CODE>restoreState</CODE> must be balanced.
      */
     public void saveState() {
-        this.content.append("q").append_i(this.separator);
+        this.content.append("q").append_i(this.separator); //$NON-NLS-1$
         this.stateList.add(new GraphicState(this.state));
     }
 
@@ -1283,12 +1283,12 @@ public class PdfContentByte {
      * <CODE>restoreState</CODE> must be balanced.
      */
     public void restoreState() {
-        this.content.append("Q").append_i(this.separator);
+        this.content.append("Q").append_i(this.separator); //$NON-NLS-1$
         final int idx = this.stateList.size() - 1;
         if (idx < 0) {
-			throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators.");
+			throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators."); //$NON-NLS-1$
 		}
-        this.state = (GraphicState)this.stateList.get(idx);
+        this.state = this.stateList.get(idx);
         this.stateList.remove(idx);
     }
 
@@ -1299,7 +1299,7 @@ public class PdfContentByte {
      */
     public void setCharacterSpacing(final float charSpace) {
         this.state.charSpace = charSpace;
-        this.content.append(charSpace).append(" Tc").append_i(this.separator);
+        this.content.append(charSpace).append(" Tc").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1309,7 +1309,7 @@ public class PdfContentByte {
      */
     public void setWordSpacing(final float wordSpace) {
         this.state.wordSpace = wordSpace;
-        this.content.append(wordSpace).append(" Tw").append_i(this.separator);
+        this.content.append(wordSpace).append(" Tw").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1319,7 +1319,7 @@ public class PdfContentByte {
      */
     public void setHorizontalScaling(final float scale) {
         this.state.scale = scale;
-        this.content.append(scale).append(" Tz").append_i(this.separator);
+        this.content.append(scale).append(" Tz").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1332,7 +1332,7 @@ public class PdfContentByte {
      */
     public void setLeading(final float leading) {
         this.state.leading = leading;
-        this.content.append(leading).append(" TL").append_i(this.separator);
+        this.content.append(leading).append(" TL").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1344,14 +1344,14 @@ public class PdfContentByte {
     public void setFontAndSize(final BaseFont bf, final float size) {
         checkWriter();
         if (size < 0.0001f && size > -0.0001f) {
-			throw new IllegalArgumentException("Font size too small: " + size);
+			throw new IllegalArgumentException("Font size too small: " + size); //$NON-NLS-1$
 		}
         this.state.size = size;
         this.state.fontDetails = this.writer.addSimple(bf);
         final PageResources prs = getPageResources();
         PdfName name = this.state.fontDetails.getFontName();
         name = prs.addFont(name, this.state.fontDetails.getIndirectReference());
-        this.content.append(name.getBytes()).append(' ').append(size).append(" Tf").append_i(this.separator);
+        this.content.append(name.getBytes()).append(' ').append(size).append(" Tf").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1360,7 +1360,7 @@ public class PdfContentByte {
      * @param       rendering               a parameter
      */
     public void setTextRenderingMode(final int rendering) {
-        this.content.append(rendering).append(" Tr").append_i(this.separator);
+        this.content.append(rendering).append(" Tr").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1371,7 +1371,7 @@ public class PdfContentByte {
      * @param       rise                a parameter
      */
     public void setTextRise(final float rise) {
-        this.content.append(rise).append(" Ts").append_i(this.separator);
+        this.content.append(rise).append(" Ts").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1382,7 +1382,7 @@ public class PdfContentByte {
      */
     private void showText2(final String text) {
         if (this.state.fontDetails == null) {
-			throw new NullPointerException("Font and size must be set before writing any text");
+			throw new NullPointerException("Font and size must be set before writing any text"); //$NON-NLS-1$
 		}
         final byte b[] = this.state.fontDetails.convertToBytes(text);
         escapeString(b, this.content);
@@ -1395,7 +1395,7 @@ public class PdfContentByte {
      */
     public void showText(final String text) {
         showText2(text);
-        this.content.append("Tj").append_i(this.separator);
+        this.content.append("Tj").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1436,7 +1436,7 @@ public class PdfContentByte {
      */
     private void showTextKerned(final String text) {
         if (this.state.fontDetails == null) {
-			throw new NullPointerException("Font and size must be set before writing any text");
+			throw new NullPointerException("Font and size must be set before writing any text"); //$NON-NLS-1$
 		}
         final BaseFont bf = this.state.fontDetails.getBaseFont();
         if (bf.hasKernPairs()) {
@@ -1467,7 +1467,7 @@ public class PdfContentByte {
         this.state.yTLM = y;
         this.content.append(a).append(' ').append(b).append_i(' ')
         .append(c).append_i(' ').append(d).append_i(' ')
-        .append(x).append_i(' ').append(y).append(" Tm").append_i(this.separator);
+        .append(x).append_i(' ').append(y).append(" Tm").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1491,7 +1491,7 @@ public class PdfContentByte {
     void moveText(final float x, final float y) {
         this.state.xTLM += x;
         this.state.yTLM += y;
-        this.content.append(x).append(' ').append(y).append(" Td").append_i(this.separator);
+        this.content.append(x).append(' ').append(y).append(" Td").append_i(this.separator); //$NON-NLS-1$
     }
 
 
@@ -1530,19 +1530,19 @@ public class PdfContentByte {
         for (final byte c : b) {
             switch (c) {
                 case '\r':
-                    content.append("\\r");
+                    content.append("\\r"); //$NON-NLS-1$
                     break;
                 case '\n':
-                    content.append("\\n");
+                    content.append("\\n"); //$NON-NLS-1$
                     break;
                 case '\t':
-                    content.append("\\t");
+                    content.append("\\t"); //$NON-NLS-1$
                     break;
                 case '\b':
-                    content.append("\\b");
+                    content.append("\\b"); //$NON-NLS-1$
                     break;
                 case '\f':
-                    content.append("\\f");
+                    content.append("\\f"); //$NON-NLS-1$
                     break;
                 case '(':
                 case ')':
@@ -1553,7 +1553,7 @@ public class PdfContentByte {
                     content.append_i(c);
             }
         }
-        content.append(")");
+        content.append(")"); //$NON-NLS-1$
     }
 
 
@@ -1622,7 +1622,7 @@ public class PdfContentByte {
 
     private void showTextAligned(final int alignment, final String text, float x, float y, final float rotation, final boolean kerned) {
         if (this.state.fontDetails == null) {
-			throw new NullPointerException("Font and size must be set before writing any text");
+			throw new NullPointerException("Font and size must be set before writing any text"); //$NON-NLS-1$
 		}
         if (rotation == 0) {
             switch (alignment) {
@@ -1680,7 +1680,7 @@ public class PdfContentByte {
      **/
     public void concatCTM(final float a, final float b, final float c, final float d, final float e, final float f) {
         this.content.append(a).append(' ').append(b).append(' ').append(c).append(' ');
-        this.content.append(d).append(' ').append(e).append(' ').append(f).append(" cm").append_i(this.separator);
+        this.content.append(d).append(' ').append(e).append(' ').append(f).append(" cm").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1707,7 +1707,7 @@ public class PdfContentByte {
      * @param extent angle extent in degrees
      * @return a list of float[] with the bezier curves
      */
-    public static ArrayList bezierArc(float x1, float y1, float x2, float y2, final float startAng, final float extent) {
+    public static ArrayList<float[]> bezierArc(float x1, float y1, float x2, float y2, final float startAng, final float extent) {
         float tmp;
         if (x1 > x2) {
             tmp = x1;
@@ -1736,7 +1736,7 @@ public class PdfContentByte {
         final float ry = (y2-y1)/2f;
         final float halfAng = (float)(fragAngle * Math.PI / 360.);
         final float kappa = (float)Math.abs(4. / 3. * (1. - Math.cos(halfAng)) / Math.sin(halfAng));
-        final ArrayList pointList = new ArrayList();
+        final ArrayList<float[]> pointList = new ArrayList<float[]>();
         for (int i = 0; i < Nfrag; ++i) {
             final float theta0 = (float)((startAng + i*fragAngle) * Math.PI / 180.);
             final float theta1 = (float)((startAng + (i+1)*fragAngle) * Math.PI / 180.);
@@ -1781,14 +1781,14 @@ public class PdfContentByte {
      * @param extent angle extent in degrees
      */
     public void arc(final float x1, final float y1, final float x2, final float y2, final float startAng, final float extent) {
-        final ArrayList ar = bezierArc(x1, y1, x2, y2, startAng, extent);
+        final ArrayList<float[]> ar = bezierArc(x1, y1, x2, y2, startAng, extent);
         if (ar.isEmpty()) {
 			return;
 		}
-        float pt[] = (float [])ar.get(0);
+        float pt[] = ar.get(0);
         moveTo(pt[0], pt[1]);
         for (int k = 0; k < ar.size(); ++k) {
-            pt = (float [])ar.get(k);
+            pt = ar.get(k);
             curveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
         }
     }
@@ -1809,7 +1809,7 @@ public class PdfContentByte {
     private PdfPatternPainter createPattern(final float width, final float height, final float xstep, final float ystep) {
         checkWriter();
         if ( xstep == 0.0f || ystep == 0.0f ) {
-			throw new RuntimeException("XStep or YStep can not be ZERO.");
+			throw new RuntimeException("XStep or YStep can not be ZERO."); //$NON-NLS-1$
 		}
         final PdfPatternPainter painter = new PdfPatternPainter(this.writer);
         painter.setWidth(width);
@@ -1846,7 +1846,7 @@ public class PdfContentByte {
     private PdfPatternPainter createPattern(final float width, final float height, final float xstep, final float ystep, final Color color) {
         checkWriter();
         if ( xstep == 0.0f || ystep == 0.0f ) {
-			throw new RuntimeException("XStep or YStep can not be ZERO.");
+			throw new RuntimeException("XStep or YStep can not be ZERO."); //$NON-NLS-1$
 		}
         final PdfPatternPainter painter = new PdfPatternPainter(this.writer, color);
         painter.setWidth(width);
@@ -1900,28 +1900,28 @@ public class PdfContentByte {
         PdfName name = this.writer.addDirectTemplateSimple(template, null);
         final PageResources prs = getPageResources();
         name = prs.addXObject(name, template.getIndirectReference());
-        this.content.append("q ");
+        this.content.append("q "); //$NON-NLS-1$
         this.content.append(a).append(' ');
         this.content.append(b).append(' ');
         this.content.append(c).append(' ');
         this.content.append(d).append(' ');
         this.content.append(e).append(' ');
-        this.content.append(f).append(" cm ");
-        this.content.append(name.getBytes()).append(" Do Q").append_i(this.separator);
+        this.content.append(f).append(" cm "); //$NON-NLS-1$
+        this.content.append(name.getBytes()).append(" Do Q").append_i(this.separator); //$NON-NLS-1$
     }
 
     void addTemplateReference(final PdfIndirectReference template, PdfName name, final float a, final float b, final float c, final float d, final float e, final float f) {
         checkWriter();
         final PageResources prs = getPageResources();
         name = prs.addXObject(name, template);
-        this.content.append("q ");
+        this.content.append("q "); //$NON-NLS-1$
         this.content.append(a).append(' ');
         this.content.append(b).append(' ');
         this.content.append(c).append(' ');
         this.content.append(d).append(' ');
         this.content.append(e).append(' ');
-        this.content.append(f).append(" cm ");
-        this.content.append(name.getBytes()).append(" Do Q").append_i(this.separator);
+        this.content.append(f).append(" cm "); //$NON-NLS-1$
+        this.content.append(name.getBytes()).append(" Do Q").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -1961,7 +1961,7 @@ public class PdfContentByte {
         this.content.append((float)(yellow & 0xFF) / 0xFF);
         this.content.append(' ');
         this.content.append((float)(black & 0xFF) / 0xFF);
-        this.content.append(" k").append_i(this.separator);
+        this.content.append(" k").append_i(this.separator); //$NON-NLS-1$
     }
     /**
      * Changes the current color for stroking paths (device dependent colors!).
@@ -1988,7 +1988,7 @@ public class PdfContentByte {
         this.content.append((float)(yellow & 0xFF) / 0xFF);
         this.content.append(' ');
         this.content.append((float)(black & 0xFF) / 0xFF);
-        this.content.append(" K").append_i(this.separator);
+        this.content.append(" K").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -2010,7 +2010,7 @@ public class PdfContentByte {
 
     public void setRGBColorFill(final int red, final int green, final int blue) {
         HelperRGB((float)(red & 0xFF) / 0xFF, (float)(green & 0xFF) / 0xFF, (float)(blue & 0xFF) / 0xFF);
-        this.content.append(" rg").append_i(this.separator);
+        this.content.append(" rg").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -2031,7 +2031,7 @@ public class PdfContentByte {
 
     public void setRGBColorStroke(final int red, final int green, final int blue) {
         HelperRGB((float)(red & 0xFF) / 0xFF, (float)(green & 0xFF) / 0xFF, (float)(blue & 0xFF) / 0xFF);
-        this.content.append(" RG").append_i(this.separator);
+        this.content.append(" RG").append_i(this.separator); //$NON-NLS-1$
     }
 
     /** Sets the stroke color. <CODE>color</CODE> can be an
@@ -2119,7 +2119,7 @@ public class PdfContentByte {
         final PageResources prs = getPageResources();
         PdfName name = this.state.colorDetails.getColorName();
         name = prs.addColor(name, this.state.colorDetails.getIndirectReference());
-        this.content.append(name.getBytes()).append(" cs ").append(tint).append(" scn").append_i(this.separator);
+        this.content.append(name.getBytes()).append(" cs ").append(tint).append(" scn").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Sets the stroke color to a spot color.
@@ -2133,7 +2133,7 @@ public class PdfContentByte {
         final PageResources prs = getPageResources();
         PdfName name = this.state.colorDetails.getColorName();
         name = prs.addColor(name, this.state.colorDetails.getIndirectReference());
-        this.content.append(name.getBytes()).append(" CS ").append(tint).append(" SCN").append_i(this.separator);
+        this.content.append(name.getBytes()).append(" CS ").append(tint).append(" SCN").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Sets the fill color to a pattern. The pattern can be
@@ -2149,7 +2149,7 @@ public class PdfContentByte {
         final PageResources prs = getPageResources();
         PdfName name = this.writer.addSimplePattern(p);
         name = prs.addPattern(name, p.getIndirectReference());
-        this.content.append(PdfName.PATTERN.getBytes()).append(" cs ").append(name.getBytes()).append(" scn").append_i(this.separator);
+        this.content.append(PdfName.PATTERN.getBytes()).append(" cs ").append(name.getBytes()).append(" scn").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Outputs the color values to the content.
@@ -2180,7 +2180,7 @@ public class PdfContentByte {
                 this.content.append(tint);
                 break;
             default:
-                throw new RuntimeException("Invalid color type.");
+                throw new RuntimeException("Invalid color type."); //$NON-NLS-1$
         }
     }
 
@@ -2204,16 +2204,16 @@ public class PdfContentByte {
     public void setPatternFill(final PdfPatternPainter p, final Color color, final float tint) {
         checkWriter();
         if (!p.isStencil()) {
-			throw new RuntimeException("An uncolored pattern was expected.");
+			throw new RuntimeException("An uncolored pattern was expected."); //$NON-NLS-1$
 		}
         final PageResources prs = getPageResources();
         PdfName name = this.writer.addSimplePattern(p);
         name = prs.addPattern(name, p.getIndirectReference());
         final ColorDetails csDetail = this.writer.addSimplePatternColorspace(color);
         final PdfName cName = prs.addColor(csDetail.getColorName(), csDetail.getIndirectReference());
-        this.content.append(cName.getBytes()).append(" cs").append_i(this.separator);
+        this.content.append(cName.getBytes()).append(" cs").append_i(this.separator); //$NON-NLS-1$
         outputColorNumbers(color, tint);
-        this.content.append(' ').append(name.getBytes()).append(" scn").append_i(this.separator);
+        this.content.append(' ').append(name.getBytes()).append(" scn").append_i(this.separator); //$NON-NLS-1$
     }
 
     /** Sets the stroke color to an uncolored pattern.
@@ -2236,16 +2236,16 @@ public class PdfContentByte {
     public void setPatternStroke(final PdfPatternPainter p, final Color color, final float tint) {
         checkWriter();
         if (!p.isStencil()) {
-			throw new RuntimeException("An uncolored pattern was expected.");
+			throw new RuntimeException("An uncolored pattern was expected."); //$NON-NLS-1$
 		}
         final PageResources prs = getPageResources();
         PdfName name = this.writer.addSimplePattern(p);
         name = prs.addPattern(name, p.getIndirectReference());
         final ColorDetails csDetail = this.writer.addSimplePatternColorspace(color);
         final PdfName cName = prs.addColor(csDetail.getColorName(), csDetail.getIndirectReference());
-        this.content.append(cName.getBytes()).append(" CS").append_i(this.separator);
+        this.content.append(cName.getBytes()).append(" CS").append_i(this.separator); //$NON-NLS-1$
         outputColorNumbers(color, tint);
-        this.content.append(' ').append(name.getBytes()).append(" SCN").append_i(this.separator);
+        this.content.append(' ').append(name.getBytes()).append(" SCN").append_i(this.separator); //$NON-NLS-1$
     }
 
     /** Sets the stroke color to a pattern. The pattern can be
@@ -2261,7 +2261,7 @@ public class PdfContentByte {
         final PageResources prs = getPageResources();
         PdfName name = this.writer.addSimplePattern(p);
         name = prs.addPattern(name, p.getIndirectReference());
-        this.content.append(PdfName.PATTERN.getBytes()).append(" CS ").append(name.getBytes()).append(" SCN").append_i(this.separator);
+        this.content.append(PdfName.PATTERN.getBytes()).append(" CS ").append(name.getBytes()).append(" SCN").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -2272,7 +2272,7 @@ public class PdfContentByte {
         this.writer.addSimpleShading(shading);
         final PageResources prs = getPageResources();
         final PdfName name = prs.addShading(shading.getShadingName(), shading.getShadingReference());
-        this.content.append(name.getBytes()).append(" sh").append_i(this.separator);
+        this.content.append(name.getBytes()).append(" sh").append_i(this.separator); //$NON-NLS-1$
         final ColorDetails details = shading.getColorDetails();
         if (details != null) {
 			prs.addColor(details.getColorName(), details.getIndirectReference());
@@ -2289,7 +2289,7 @@ public class PdfContentByte {
         this.writer.addSimpleShadingPattern(shading);
         final PageResources prs = getPageResources();
         final PdfName name = prs.addPattern(shading.getPatternName(), shading.getPatternReference());
-        this.content.append(PdfName.PATTERN.getBytes()).append(" cs ").append(name.getBytes()).append(" scn").append_i(this.separator);
+        this.content.append(PdfName.PATTERN.getBytes()).append(" cs ").append(name.getBytes()).append(" scn").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
         final ColorDetails details = shading.getColorDetails();
         if (details != null) {
 			prs.addColor(details.getColorName(), details.getIndirectReference());
@@ -2304,7 +2304,7 @@ public class PdfContentByte {
         this.writer.addSimpleShadingPattern(shading);
         final PageResources prs = getPageResources();
         final PdfName name = prs.addPattern(shading.getPatternName(), shading.getPatternReference());
-        this.content.append(PdfName.PATTERN.getBytes()).append(" CS ").append(name.getBytes()).append(" SCN").append_i(this.separator);
+        this.content.append(PdfName.PATTERN.getBytes()).append(" CS ").append(name.getBytes()).append(" SCN").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
         final ColorDetails details = shading.getColorDetails();
         if (details != null) {
 			prs.addColor(details.getColorName(), details.getIndirectReference());
@@ -2316,7 +2316,7 @@ public class PdfContentByte {
      */
     protected void checkWriter() {
         if (this.writer == null) {
-			throw new NullPointerException("The writer in PdfContentByte is null.");
+			throw new NullPointerException("The writer in PdfContentByte is null."); //$NON-NLS-1$
 		}
     }
 
@@ -2326,9 +2326,9 @@ public class PdfContentByte {
      */
     void showText(final PdfTextArray text) {
         if (this.state.fontDetails == null) {
-			throw new NullPointerException("Font and size must be set before writing any text");
+			throw new NullPointerException("Font and size must be set before writing any text"); //$NON-NLS-1$
 		}
-        this.content.append("[");
+        this.content.append("["); //$NON-NLS-1$
         final ArrayList arrayList = text.getArrayList();
         boolean lastWasNumber = false;
         for (int k = 0; k < arrayList.size(); ++k) {
@@ -2346,7 +2346,7 @@ public class PdfContentByte {
                 this.content.append(((Float)obj).floatValue());
             }
         }
-        this.content.append("]TJ").append_i(this.separator);
+        this.content.append("]TJ").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -2452,7 +2452,7 @@ public class PdfContentByte {
      */
     private void checkNoPattern(final PdfTemplate t) {
         if (t.getType() == PdfTemplate.TYPE_PATTERN) {
-			throw new RuntimeException("Invalid use of a pattern. A template was expected.");
+			throw new RuntimeException("Invalid use of a pattern. A template was expected."); //$NON-NLS-1$
 		}
     }
 
@@ -2603,7 +2603,7 @@ public class PdfContentByte {
         final PdfObject obj[] = this.writer.addSimpleExtGState(gstate);
         final PageResources prs = getPageResources();
         final PdfName name = prs.addExtGState((PdfName)obj[0], (PdfIndirectReference)obj[1]);
-        this.content.append(name.getBytes()).append(" gs").append_i(this.separator);
+        this.content.append(name.getBytes()).append(" gs").append_i(this.separator); //$NON-NLS-1$
     }
 
     /**
@@ -2616,10 +2616,10 @@ public class PdfContentByte {
      */
     private void beginLayer(final PdfOCG layer) {
         if (layer instanceof PdfLayer && ((PdfLayer)layer).getTitle() != null) {
-			throw new IllegalArgumentException("A title is not a layer");
+			throw new IllegalArgumentException("A title is not a layer"); //$NON-NLS-1$
 		}
         if (this.layerDepth == null) {
-			this.layerDepth = new ArrayList();
+			this.layerDepth = new ArrayList<Integer>();
 		}
         if (layer instanceof PdfLayerMembership) {
             this.layerDepth.add(new Integer(1));
@@ -2642,7 +2642,7 @@ public class PdfContentByte {
         PdfName name = (PdfName)this.writer.addSimpleProperty(layer, layer.getRef())[0];
         final PageResources prs = getPageResources();
         name = prs.addProperty(name, layer.getRef());
-        this.content.append("/OC ").append(name.getBytes()).append(" BDC").append_i(this.separator);
+        this.content.append("/OC ").append(name.getBytes()).append(" BDC").append_i(this.separator); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -2651,13 +2651,13 @@ public class PdfContentByte {
     private void endLayer() {
         int n = 1;
         if (this.layerDepth != null && !this.layerDepth.isEmpty()) {
-            n = ((Integer)this.layerDepth.get(this.layerDepth.size() - 1)).intValue();
+            n = this.layerDepth.get(this.layerDepth.size() - 1).intValue();
             this.layerDepth.remove(this.layerDepth.size() - 1);
         } else {
-        	throw new IllegalPdfSyntaxException("Unbalanced layer operators." );
+        	throw new IllegalPdfSyntaxException("Unbalanced layer operators." ); //$NON-NLS-1$
         }
         while (n-- > 0) {
-			this.content.append("EMC").append_i(this.separator);
+			this.content.append("EMC").append_i(this.separator); //$NON-NLS-1$
 		}
     }
 
@@ -2678,7 +2678,7 @@ public class PdfContentByte {
      */
     private void beginMarkedContentSequence(final PdfName tag, final PdfDictionary property, final boolean inline) {
         if (property == null) {
-            this.content.append(tag.getBytes()).append(" BMC").append_i(this.separator);
+            this.content.append(tag.getBytes()).append(" BMC").append_i(this.separator); //$NON-NLS-1$
             return;
         }
         this.content.append(tag.getBytes()).append(' ');
@@ -2701,7 +2701,7 @@ public class PdfContentByte {
             name = prs.addProperty(name, (PdfIndirectReference)objs[1]);
             this.content.append(name.getBytes());
         }
-        this.content.append(" BDC").append_i(this.separator);
+        this.content.append(" BDC").append_i(this.separator); //$NON-NLS-1$
         ++this.mcDepth;
     }
 
@@ -2720,16 +2720,16 @@ public class PdfContentByte {
      */
     private void sanityCheck() {
     	if (this.mcDepth != 0) {
-    		throw new IllegalPdfSyntaxException("Unbalanced marked content operators." );
+    		throw new IllegalPdfSyntaxException("Unbalanced marked content operators." ); //$NON-NLS-1$
     	}
     	if (this.inText) {
-    		throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+    		throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." ); //$NON-NLS-1$
     	}
     	if (this.layerDepth != null && !this.layerDepth.isEmpty()) {
-    		throw new IllegalPdfSyntaxException("Unbalanced layer operators." );
+    		throw new IllegalPdfSyntaxException("Unbalanced layer operators." ); //$NON-NLS-1$
     	}
     	if (!this.stateList.isEmpty()) {
-    		throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators." );
+    		throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators." ); //$NON-NLS-1$
     	}
     }
 }
