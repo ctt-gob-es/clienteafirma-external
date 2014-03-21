@@ -295,7 +295,7 @@ class IntHashtable implements Cloneable {
      */
     private static class Entry {
         private final int hash;
-        private final int key;
+        final int key;
         private int value;
         private Entry next;
 
@@ -307,20 +307,13 @@ class IntHashtable implements Cloneable {
          * @param value The value for this key
          * @param next A reference to the next entry in the table
          */
-        private Entry(final int hash, final int key, final int value, final Entry next) {
+        Entry(final int hash, final int key, final int value, final Entry next) {
             this.hash = hash;
             this.key = key;
             this.value = value;
             this.next = next;
         }
 
-        // extra methods for inner class Entry by Paulo
-        public int getKey() {
-        	return this.key;
-        }
-        public int getValue() {
-        	return this.value;
-        }
         @Override
 		protected Object clone() {
         	final Entry entry = new Entry(this.hash, this.key, this.value, this.next != null ? (Entry)this.next.clone() : null);

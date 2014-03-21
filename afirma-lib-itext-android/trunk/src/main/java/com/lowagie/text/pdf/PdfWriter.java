@@ -378,7 +378,7 @@ public class PdfWriter extends DocWriter implements
             return add(object, ref.getNumber());
         }
 
-        private PdfIndirectObject add(final PdfObject object, final PdfIndirectReference ref, final boolean inObjStm) throws IOException {
+        PdfIndirectObject add(final PdfObject object, final PdfIndirectReference ref, final boolean inObjStm) throws IOException {
             return add(object, ref.getNumber(), inObjStm);
         }
 
@@ -396,17 +396,15 @@ public class PdfWriter extends DocWriter implements
                 }
                 return indirect;
             }
-            else {
-                final PdfIndirectObject indirect = new PdfIndirectObject(refNumber, object, this.writer);
-                final PdfCrossReference pxref = new PdfCrossReference(refNumber, this.position);
-                if (!this.xrefs.add(pxref)) {
-                    this.xrefs.remove(pxref);
-                    this.xrefs.add(pxref);
-                }
-                indirect.writeTo(this.writer.getOs());
-                this.position = this.writer.getOs().getCounter();
-                return indirect;
-            }
+			final PdfIndirectObject indirect = new PdfIndirectObject(refNumber, object, this.writer);
+			final PdfCrossReference pxref = new PdfCrossReference(refNumber, this.position);
+			if (!this.xrefs.add(pxref)) {
+			    this.xrefs.remove(pxref);
+			    this.xrefs.add(pxref);
+			}
+			indirect.writeTo(this.writer.getOs());
+			this.position = this.writer.getOs().getCounter();
+			return indirect;
         }
 
         /**

@@ -98,13 +98,12 @@ class JBIG2SegmentReader {
 
 
 
-	private final SortedMap segments = new TreeMap();
-	private final SortedMap pages = new TreeMap();
-	private final SortedSet globals = new TreeSet();
+	private final SortedMap<Integer, JBIG2Segment> segments = new TreeMap<Integer, JBIG2Segment>();
+	private final SortedMap<Integer, JBIG2Page> pages = new TreeMap<Integer, JBIG2Page>();
+	private final SortedSet<JBIG2Segment> globals = new TreeSet<JBIG2Segment>();
 	private final RandomAccessFileOrArray ra;
 	private boolean sequential;
 	private boolean number_of_pages_known;
-	private int number_of_pages = -1;
 	private boolean read = false;
 
 	/**
@@ -113,20 +112,16 @@ class JBIG2SegmentReader {
 	 */
 	private static class JBIG2Segment implements Comparable {
 
-		private final int segmentNumber;
+		final int segmentNumber;
 		private long dataLength = -1;
 		private int page = -1;
-		private int[] referredToSegmentNumbers = null;
-		private boolean[] segmentRetentionFlags = null;
 		private int type = -1;
-		private boolean deferredNonRetain = false;
-		private int countOfReferredToSegments = -1;
 		private byte[] data = null;
 		private byte[] headerData = null;
-		private boolean page_association_size = false;
+		boolean page_association_size = false;
 		private int page_association_offset = -1;
 
-		private JBIG2Segment(final int segment_number) {
+		JBIG2Segment(final int segment_number) {
 			this.segmentNumber = segment_number;
 		}
 
@@ -147,12 +142,10 @@ class JBIG2SegmentReader {
 	 */
 	public static class JBIG2Page {
 
-		private final JBIG2SegmentReader sr;
-		private final SortedMap segs = new TreeMap();
+		private final SortedMap<Integer, JBIG2Segment> segs = new TreeMap<Integer, JBIG2Segment>();
 		int pageBitmapWidth = -1;
 		int pageBitmapHeight = -1;
 		private JBIG2Page(final int page, final JBIG2SegmentReader sr) {
-			this.sr = sr;
 		}
 		/**
 		 * return as a single byte array the header-data for each segment in segment number
@@ -164,9 +157,8 @@ class JBIG2SegmentReader {
 		 */
 		public byte[] getData(final boolean for_embedding) throws IOException {
 			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-			for (final Iterator i = this.segs.keySet().iterator(); i.hasNext();  ) {
-				final Integer sn = (Integer) i.next();
-				final JBIG2Segment s = (JBIG2Segment) this.segs.get(sn);
+			for (final Integer sn : this.segs.keySet()) {
+				final JBIG2Segment s = this.segs.get(sn);
 
 				// pdf reference 1.4, section 3.3.6 JBIG2Decode Filter
 				// D.3 Embedded organisation
@@ -201,7 +193,7 @@ class JBIG2SegmentReader {
 
 	}
 
-	public JBIG2SegmentReader(final RandomAccessFileOrArray ra ) throws IOException {
+	public JBIG2SegmentReader(final RandomAccessFileOrArray ra ) {
 		this.ra = ra;
 	}
 
@@ -213,7 +205,7 @@ class JBIG2SegmentReader {
 
 	public void read() throws IOException {
 		if ( this.read ) {
-			throw new IllegalStateException("already attempted a read() on this Jbig2 File");
+			throw new IllegalStateException("already attempted a read() on this Jbig2 File"); //$NON-NLS-1$
 		}
 		this.read = true;
 
@@ -233,9 +225,9 @@ class JBIG2SegmentReader {
 				tmp = readHeader();
 				this.segments.put(new Integer(tmp.segmentNumber), tmp);
 			} while ( tmp.type != END_OF_FILE );
-			final Iterator segs = this.segments.keySet().iterator();
+			final Iterator<Integer> segs = this.segments.keySet().iterator();
 			while ( segs.hasNext() ) {
-				readSegment((JBIG2Segment)this.segments.get(segs.next()));
+				readSegment(this.segments.get(segs.next()));
 			}
 		}
 	}
@@ -258,9 +250,9 @@ class JBIG2SegmentReader {
 			final int page_bitmap_width = this.ra.readInt();
 			final int page_bitmap_height = this.ra.readInt();
 			this.ra.seek(last);
-			final JBIG2Page p = (JBIG2Page)this.pages.get(new Integer(s.page));
+			final JBIG2Page p = this.pages.get(new Integer(s.page));
 			if ( p == null ) {
-				throw new IllegalStateException("referring to widht/height of page we havent seen yet? " + s.page);
+				throw new IllegalStateException("referring to widht/height of page we havent seen yet? " + s.page); //$NON-NLS-1$
 			}
 
 			p.pageBitmapWidth = page_bitmap_width;
@@ -277,7 +269,6 @@ class JBIG2SegmentReader {
 		// 7.2.3
 		final int segment_header_flags = this.ra.read();
 		final boolean deferred_non_retain = ( segment_header_flags & 0x80 ) == 0x80;
-		s.deferredNonRetain = deferred_non_retain;
 		final boolean page_association_size = ( segment_header_flags & 0x40 ) == 0x40;
 		final int segment_type = segment_header_flags & 0x3f;
 		s.type = segment_type;
@@ -313,11 +304,8 @@ class JBIG2SegmentReader {
 			}
 
 		} else if ( count_of_referred_to_segments == 5 || count_of_referred_to_segments == 6 ) {
-			throw new IllegalStateException("count of referred-to segments had bad value in header for segment " + segment_number + " starting at " + ptr);
+			throw new IllegalStateException("count of referred-to segments had bad value in header for segment " + segment_number + " starting at " + ptr); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		s.segmentRetentionFlags = segment_retention_flags;
-		s.countOfReferredToSegments = count_of_referred_to_segments;
-
 		// 7.2.5
 		referred_to_segment_numbers = new int[count_of_referred_to_segments+1];
 		for ( int i = 1; i <= count_of_referred_to_segments; i++ ) {
@@ -329,8 +317,6 @@ class JBIG2SegmentReader {
 				referred_to_segment_numbers[i] = (int)this.ra.readUnsignedInt(); // TODO wtf ack
 			}
 		}
-		s.referredToSegmentNumbers = referred_to_segment_numbers;
-
 		// 7.2.6
 		int segment_page_association;
 		final int page_association_offset = this.ra.getFilePointer() - ptr;
@@ -340,7 +326,7 @@ class JBIG2SegmentReader {
 			segment_page_association = this.ra.read();
 		}
 		if ( segment_page_association < 0 ) {
-			throw new IllegalStateException("page " + segment_page_association + " invalid for segment " + segment_number + " starting at " + ptr);
+			throw new IllegalStateException("page " + segment_page_association + " invalid for segment " + segment_number + " starting at " + ptr); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		s.page = segment_page_association;
 		// so we can change the page association at embedding time.
@@ -351,7 +337,7 @@ class JBIG2SegmentReader {
 			this.pages.put(new Integer(segment_page_association), new JBIG2Page(segment_page_association, this));
 		}
 		if ( segment_page_association > 0 ) {
-			((JBIG2Page)this.pages.get(new Integer(segment_page_association))).addSegment(s);
+			this.pages.get(new Integer(segment_page_association)).addSegment(s);
 		} else {
 			this.globals.add(s);
 		}
@@ -379,7 +365,7 @@ class JBIG2SegmentReader {
 
 		for ( int i = 0; i < idstring.length; i++ ) {
 			if ( idstring[i] != refidstring[i] ) {
-				throw new IllegalStateException("file header idstring not good at byte " + i);
+				throw new IllegalStateException("file header idstring not good at byte " + i); //$NON-NLS-1$
 			}
 		}
 
@@ -389,11 +375,11 @@ class JBIG2SegmentReader {
 		this.number_of_pages_known = ( fileheaderflags & 0x2) == 0x0;
 
 		if ( (fileheaderflags & 0xfc) != 0x0 ) {
-			throw new IllegalStateException("file header flags bits 2-7 not 0");
+			throw new IllegalStateException("file header flags bits 2-7 not 0"); //$NON-NLS-1$
 		}
 
 		if ( this.number_of_pages_known ) {
-			this.number_of_pages = this.ra.readInt();
+			this.ra.readInt();
 		}
 	}
 
@@ -406,14 +392,13 @@ class JBIG2SegmentReader {
 
 
 	JBIG2Page getPage(final int page) {
-		return (JBIG2Page)this.pages.get(new Integer(page));
+		return this.pages.get(new Integer(page));
 	}
 
 	byte[] getGlobal(final boolean for_embedding) {
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			for (final Iterator gitr = this.globals.iterator(); gitr.hasNext();) {
-				final JBIG2Segment s = (JBIG2Segment)gitr.next();
+			for (final JBIG2Segment s : this.globals) {
 				if ( for_embedding &&
 						( s.type == END_OF_FILE || s.type == END_OF_PAGE ) ) {
 					continue;
@@ -434,9 +419,9 @@ class JBIG2SegmentReader {
 	@Override
 	public String toString() {
 		if ( this.read ) {
-			return "Jbig2SegmentReader: number of pages: " + this.numberOfPages();
+			return "Jbig2SegmentReader: number of pages: " + this.numberOfPages(); //$NON-NLS-1$
 		} else {
-			return "Jbig2SegmentReader in indeterminate state.";
+			return "Jbig2SegmentReader in indeterminate state."; //$NON-NLS-1$
 		}
 	}
 }
