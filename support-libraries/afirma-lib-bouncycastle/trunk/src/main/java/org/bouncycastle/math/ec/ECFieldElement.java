@@ -3,14 +3,17 @@ package org.bouncycastle.math.ec;
 import java.math.BigInteger;
 import java.util.Random;
 
+import org.bouncycastle.util.Arrays;
+import org.bouncycastle.util.BigIntegers;
+
 public abstract class ECFieldElement
     implements ECConstants
 {
-
     public abstract BigInteger     toBigInteger();
     public abstract String         getFieldName();
     public abstract int            getFieldSize();
     public abstract ECFieldElement add(ECFieldElement b);
+    public abstract ECFieldElement addOne();
     public abstract ECFieldElement subtract(ECFieldElement b);
     public abstract ECFieldElement multiply(ECFieldElement b);
     public abstract ECFieldElement divide(ECFieldElement b);
@@ -19,27 +22,99 @@ public abstract class ECFieldElement
     public abstract ECFieldElement invert();
     public abstract ECFieldElement sqrt();
 
+    public int bitLength()
+    {
+        return toBigInteger().bitLength();
+    }
+
+    public boolean isZero()
+    {
+        return 0 == toBigInteger().signum();
+    }
+
+    public boolean testBitZero()
+    {
+        return toBigInteger().testBit(0);
+    }
+
     public String toString()
     {
-        return this.toBigInteger().toString(2);
+        return this.toBigInteger().toString(16);
+    }
+
+    public byte[] getEncoded()
+    {
+        return BigIntegers.asUnsignedByteArray((getFieldSize() + 7) / 8, toBigInteger());
     }
 
     public static class Fp extends ECFieldElement
     {
-        BigInteger x;
+        BigInteger q, r, x;
 
-        BigInteger q;
-        
+//        static int[] calculateNaf(BigInteger p)
+//        {
+//            int[] naf = WNafUtil.generateCompactNaf(p);
+//
+//            int bit = 0;
+//            for (int i = 0; i < naf.length; ++i)
+//            {
+//                int ni = naf[i];
+//                int digit = ni >> 16, zeroes = ni & 0xFFFF;
+//
+//                bit += zeroes;
+//                naf[i] = digit < 0 ? ~bit : bit;
+//                ++bit;
+//            }
+//
+//            int last = naf.length - 1;
+//            if (last > 0 && last <= 16)
+//            {
+//                int top = naf[last], top2 = naf[last - 1];
+//                if (top2 < 0)
+//                {
+//                    top2 = ~top2;
+//                }
+//                if (top - top2 >= 64)
+//                {
+//                    return naf;
+//                }
+//            }
+//
+//            return null;
+//        }
+
+        static BigInteger calculateResidue(BigInteger p)
+        {
+            int bitLength = p.bitLength();
+            if (bitLength > 128)
+            {
+                BigInteger firstWord = p.shiftRight(bitLength - 64);
+                if (firstWord.longValue() == -1L)
+                {
+                    return ONE.shiftLeft(bitLength).subtract(p);
+                }
+            }
+            return null;
+        }
+
+        /**
+         * @deprecated Use ECCurve.fromBigInteger to construct field elements
+         */
         public Fp(BigInteger q, BigInteger x)
         {
-            this.x = x;
-            
-            if (x.compareTo(q) >= 0)
+            this(q, calculateResidue(q), x);
+        }
+
+        Fp(BigInteger q, BigInteger r, BigInteger x)
+        {
+            if (x == null || x.signum() < 0 || x.compareTo(q) >= 0)
             {
-                throw new IllegalArgumentException("x value too large in field element");
+                throw new IllegalArgumentException("x value invalid in Fp field element");
             }
 
             this.q = q;
+            this.r = r;
+            this.x = x;
         }
 
         public BigInteger toBigInteger()
@@ -66,40 +141,70 @@ public abstract class ECFieldElement
         {
             return q;
         }
-        
+
         public ECFieldElement add(ECFieldElement b)
         {
-            return new Fp(q, x.add(b.toBigInteger()).mod(q));
+            return new Fp(q, r, modAdd(x, b.toBigInteger()));
+        }
+
+        public ECFieldElement addOne()
+        {
+            BigInteger x2 = x.add(ECConstants.ONE);
+            if (x2.compareTo(q) == 0)
+            {
+                x2 = ECConstants.ZERO;
+            }
+            return new Fp(q, r, x2);
         }
 
         public ECFieldElement subtract(ECFieldElement b)
         {
-            return new Fp(q, x.subtract(b.toBigInteger()).mod(q));
+            BigInteger x2 = b.toBigInteger();
+            BigInteger x3 = x.subtract(x2);
+            if (x3.signum() < 0)
+            {
+                x3 = x3.add(q);
+            }
+            return new Fp(q, r, x3);
         }
 
         public ECFieldElement multiply(ECFieldElement b)
         {
-            return new Fp(q, x.multiply(b.toBigInteger()).mod(q));
+            return new Fp(q, r, modMult(x, b.toBigInteger()));
         }
 
         public ECFieldElement divide(ECFieldElement b)
         {
-            return new Fp(q, x.multiply(b.toBigInteger().modInverse(q)).mod(q));
+            return new Fp(q, modMult(x, b.toBigInteger().modInverse(q)));
         }
 
         public ECFieldElement negate()
         {
-            return new Fp(q, x.negate().mod(q));
+            BigInteger x2;
+            if (x.signum() == 0)
+            {
+                x2 = x;
+            }
+            else if (ONE.equals(r))
+            {
+                x2 = q.xor(x);
+            }
+            else
+            {
+                x2 = q.subtract(x);
+            }
+            return new Fp(q, r, x2);
         }
 
         public ECFieldElement square()
         {
-            return new Fp(q, x.multiply(x).mod(q));
+            return new Fp(q, r, modMult(x, x));
         }
 
         public ECFieldElement invert()
         {
-            return new Fp(q, x.modInverse(q));
+            // TODO Modular inversion can be faster for a (Generalized) Mersenne Prime.
+            return new Fp(q, r, x.modInverse(q));
         }
 
         // D.1.4 91
@@ -120,7 +225,7 @@ public abstract class ECFieldElement
             if (q.testBit(1))
             {
                 // z = g^(u+1) + p, p = 4u + 3
-                ECFieldElement z = new Fp(q, x.modPow(q.shiftRight(2).add(ECConstants.ONE), q));
+                ECFieldElement z = new Fp(q, r, x.modPow(q.shiftRight(2).add(ECConstants.ONE), q));
 
                 return z.square().equals(this) ? z : null;
             }
@@ -138,7 +243,7 @@ public abstract class ECFieldElement
             BigInteger k = u.shiftLeft(1).add(ECConstants.ONE);
 
             BigInteger Q = this.x;
-            BigInteger fourQ = Q.shiftLeft(2).mod(q);
+            BigInteger fourQ = modDouble(modDouble(Q));
 
             BigInteger U, V;
             Random rand = new Random();
@@ -152,11 +257,11 @@ public abstract class ECFieldElement
                 while (P.compareTo(q) >= 0
                     || !(P.multiply(P).subtract(fourQ).modPow(legendreExponent, q).equals(qMinusOne)));
 
-                BigInteger[] result = lucasSequence(q, P, Q, k);
+                BigInteger[] result = lucasSequence(P, Q, k);
                 U = result[0];
                 V = result[1];
 
-                if (V.multiply(V).mod(q).equals(fourQ))
+                if (modMult(V, V).equals(fourQ))
                 {
                     // Integer division by 2, mod q
                     if (V.testBit(0))
@@ -168,7 +273,7 @@ public abstract class ECFieldElement
 
                     //assert V.multiply(V).mod(q).equals(x);
 
-                    return new ECFieldElement.Fp(q, V);
+                    return new ECFieldElement.Fp(q, r, V);
                 }
             }
             while (U.equals(ECConstants.ONE) || U.equals(qMinusOne));
@@ -230,8 +335,7 @@ public abstract class ECFieldElement
 //            return r.multiply(r).multiply(x.modPow(q.subtract(ECConstants.TWO), q)).subtract(ECConstants.TWO).mod(p);
 //        }
 
-        private static BigInteger[] lucasSequence(
-            BigInteger  p,
+        private BigInteger[] lucasSequence(
             BigInteger  P,
             BigInteger  Q,
             BigInteger  k)
@@ -247,40 +351,122 @@ public abstract class ECFieldElement
 
             for (int j = n - 1; j >= s + 1; --j)
             {
-                Ql = Ql.multiply(Qh).mod(p);
+                Ql = modMult(Ql, Qh);
 
                 if (k.testBit(j))
                 {
-                    Qh = Ql.multiply(Q).mod(p);
-                    Uh = Uh.multiply(Vh).mod(p);
-                    Vl = Vh.multiply(Vl).subtract(P.multiply(Ql)).mod(p);
-                    Vh = Vh.multiply(Vh).subtract(Qh.shiftLeft(1)).mod(p);
+                    Qh = modMult(Ql, Q);
+                    Uh = modMult(Uh, Vh);
+                    Vl = modReduce(Vh.multiply(Vl).subtract(P.multiply(Ql)));
+                    Vh = modReduce(Vh.multiply(Vh).subtract(Qh.shiftLeft(1)));
                 }
                 else
                 {
                     Qh = Ql;
-                    Uh = Uh.multiply(Vl).subtract(Ql).mod(p);
-                    Vh = Vh.multiply(Vl).subtract(P.multiply(Ql)).mod(p);
-                    Vl = Vl.multiply(Vl).subtract(Ql.shiftLeft(1)).mod(p);
+                    Uh = modReduce(Uh.multiply(Vl).subtract(Ql));
+                    Vh = modReduce(Vh.multiply(Vl).subtract(P.multiply(Ql)));
+                    Vl = modReduce(Vl.multiply(Vl).subtract(Ql.shiftLeft(1)));
                 }
             }
 
-            Ql = Ql.multiply(Qh).mod(p);
-            Qh = Ql.multiply(Q).mod(p);
-            Uh = Uh.multiply(Vl).subtract(Ql).mod(p);
-            Vl = Vh.multiply(Vl).subtract(P.multiply(Ql)).mod(p);
-            Ql = Ql.multiply(Qh).mod(p);
+            Ql = modMult(Ql, Qh);
+            Qh = modMult(Ql, Q);
+            Uh = modReduce(Uh.multiply(Vl).subtract(Ql));
+            Vl = modReduce(Vh.multiply(Vl).subtract(P.multiply(Ql)));
+            Ql = modMult(Ql, Qh);
 
             for (int j = 1; j <= s; ++j)
             {
-                Uh = Uh.multiply(Vl).mod(p);
-                Vl = Vl.multiply(Vl).subtract(Ql.shiftLeft(1)).mod(p);
-                Ql = Ql.multiply(Ql).mod(p);
+                Uh = modMult(Uh, Vl);
+                Vl = modReduce(Vl.multiply(Vl).subtract(Ql.shiftLeft(1)));
+                Ql = modMult(Ql, Ql);
             }
 
             return new BigInteger[]{ Uh, Vl };
         }
-        
+
+        protected BigInteger modAdd(BigInteger x1, BigInteger x2)
+        {
+            BigInteger x3 = x1.add(x2);
+            if (x3.compareTo(q) >= 0)
+            {
+                x3 = x3.subtract(q);
+            }
+            return x3;
+        }
+
+        protected BigInteger modDouble(BigInteger x)
+        {
+            BigInteger _2x = x.shiftLeft(1);
+            if (_2x.compareTo(q) >= 0)
+            {
+                _2x = _2x.subtract(q);
+            }
+            return _2x;
+        }
+
+        protected BigInteger modMult(BigInteger x1, BigInteger x2)
+        {
+            return modReduce(x1.multiply(x2));
+        }
+
+        protected BigInteger modReduce(BigInteger x)
+        {
+//            if (naf != null)
+//            {
+//                int last = naf.length - 1;
+//                int bits = naf[last];
+//                while (x.bitLength() > (bits + 1))
+//                {
+//                    BigInteger u = x.shiftRight(bits);
+//                    BigInteger v = x.subtract(u.shiftLeft(bits));
+//
+//                    x = v;
+//
+//                    for (int i = 0; i < last; ++i)
+//                    {
+//                        int ni = naf[i];
+//                        if (ni < 0)
+//                        {
+//                            x = x.add(u.shiftLeft(~ni));
+//                        }
+//                        else
+//                        {
+//                            x = x.subtract(u.shiftLeft(ni));
+//                        }
+//                    }
+//                }
+//                while (x.compareTo(q) >= 0)
+//                {
+//                    x = x.subtract(q);
+//                }
+//            }
+//            else
+            if (r != null)
+            {
+                int qLen = q.bitLength();
+                while (x.bitLength() > (qLen + 1))
+                {
+                    BigInteger u = x.shiftRight(qLen);
+                    BigInteger v = x.subtract(u.shiftLeft(qLen));
+                    if (!r.equals(ONE))
+                    {
+                        u = u.multiply(r);
+                    }
+                    x = u.add(v); 
+                }
+                while (x.compareTo(q) >= 0)
+                {
+                    x = x.subtract(q);
+                }
+            }
+            else
+            {
+                x = x.mod(q);
+            }
+            return x;
+        }
+
         public boolean equals(Object other)
         {
             if (other == this)
@@ -669,7 +855,7 @@ public abstract class ECFieldElement
 //                g1z = g1z.xor(g2z.shiftLeft(j));
 ////                if (g1z.bitLength() > this.m) {
 ////                    throw new ArithmeticException(
-////                            "deg(g1z) >= m, g1z = " + g1z.toString(2));
+////                            "deg(g1z) >= m, g1z = " + g1z.toString(16));
 ////                }
 //            }
 //            return new ECFieldElement.F2m(
@@ -801,41 +987,38 @@ public abstract class ECFieldElement
          */
         private int m;
 
-        /**
-         * TPB: The integer <code>k</code> where <code>x<sup>m</sup> +
-         * x<sup>k</sup> + 1</code> represents the reduction polynomial
-         * <code>f(z)</code>.<br>
-         * PPB: The integer <code>k1</code> where <code>x<sup>m</sup> +
-         * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
-         * represents the reduction polynomial <code>f(z)</code>.<br>
-         */
-        private int k1;
+//        /**
+//         * TPB: The integer <code>k</code> where <code>x<sup>m</sup> +
+//         * x<sup>k</sup> + 1</code> represents the reduction polynomial
+//         * <code>f(z)</code>.<br>
+//         * PPB: The integer <code>k1</code> where <code>x<sup>m</sup> +
+//         * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
+//         * represents the reduction polynomial <code>f(z)</code>.<br>
+//         */
+//        private int k1;
+//
+//        /**
+//         * TPB: Always set to <code>0</code><br>
+//         * PPB: The integer <code>k2</code> where <code>x<sup>m</sup> +
+//         * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
+//         * represents the reduction polynomial <code>f(z)</code>.<br>
+//         */
+//        private int k2;
+//
+//        /**
+//         * TPB: Always set to <code>0</code><br>
+//         * PPB: The integer <code>k3</code> where <code>x<sup>m</sup> +
+//         * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
+//         * represents the reduction polynomial <code>f(z)</code>.<br>
+//         */
+//        private int k3;
+
+        private int[] ks;
 
         /**
-         * TPB: Always set to <code>0</code><br>
-         * PPB: The integer <code>k2</code> where <code>x<sup>m</sup> +
-         * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
-         * represents the reduction polynomial <code>f(z)</code>.<br>
+         * The <code>LongArray</code> holding the bits.
          */
-        private int k2;
-
-        /**
-         * TPB: Always set to <code>0</code><br>
-         * PPB: The integer <code>k3</code> where <code>x<sup>m</sup> +
-         * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
-         * represents the reduction polynomial <code>f(z)</code>.<br>
-         */
-        private int k3;
-
-        /**
-         * The <code>IntArray</code> holding the bits.
-         */
-        private IntArray x;
-
-        /**
-         * The number of <code>int</code>s required to hold <code>m</code> bits.
-         */
-        private int t;
+        private LongArray x;
 
         /**
          * Constructor for PPB.
@@ -851,6 +1034,7 @@ public abstract class ECFieldElement
          * x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
          * represents the reduction polynomial <code>f(z)</code>.
          * @param x The BigInteger representing the value of the field element.
+         * @deprecated Use ECCurve.fromBigInteger to construct field elements
          */
         public F2m(
             int m, 
@@ -859,13 +1043,10 @@ public abstract class ECFieldElement
             int k3,
             BigInteger x)
         {
-            // t = m / 32 rounded up to the next integer
-            t = (m + 31) >> 5;
-            this.x = new IntArray(x, t);
-
             if ((k2 == 0) && (k3 == 0))
             {
                 this.representation = TPB;
+                this.ks = new int[]{ k1 }; 
             }
             else
             {
@@ -880,17 +1061,11 @@ public abstract class ECFieldElement
                             "k2 must be larger than 0");
                 }
                 this.representation = PPB;
-            }
-
-            if (x.signum() < 0)
-            {
-                throw new IllegalArgumentException("x value cannot be negative");
+                this.ks = new int[]{ k1, k2, k3 }; 
             }
 
             this.m = m;
-            this.k1 = k1;
-            this.k2 = k2;
-            this.k3 = k3;
+            this.x = new LongArray(x);
         }
 
         /**
@@ -901,6 +1076,7 @@ public abstract class ECFieldElement
          * x<sup>k</sup> + 1</code> represents the reduction
          * polynomial <code>f(z)</code>.
          * @param x The BigInteger representing the value of the field element.
+         * @deprecated Use ECCurve.fromBigInteger to construct field elements
          */
         public F2m(int m, int k, BigInteger x)
         {
@@ -908,24 +1084,27 @@ public abstract class ECFieldElement
             this(m, k, 0, 0, x);
         }
 
-        private F2m(int m, int k1, int k2, int k3, IntArray x)
+        private F2m(int m, int[] ks, LongArray x)
         {
-            t = (m + 31) >> 5;
-            this.x = x;
             this.m = m;
-            this.k1 = k1;
-            this.k2 = k2;
-            this.k3 = k3;
+            this.representation = (ks.length == 1) ? TPB : PPB;
+            this.ks = ks;
+            this.x = x;
+        }
 
-            if ((k2 == 0) && (k3 == 0))
-            {
-                this.representation = TPB;
-            }
-            else
-            {
-                this.representation = PPB;
-            }
+        public int bitLength()
+        {
+            return x.degree();
+        }
 
+        public boolean isZero()
+        {
+            return x.isZero();
+        }
+
+        public boolean testBitZero()
+        {
+            return x.testBitZero();
         }
 
         public BigInteger toBigInteger()
@@ -967,19 +1146,15 @@ public abstract class ECFieldElement
             ECFieldElement.F2m aF2m = (ECFieldElement.F2m)a;
             ECFieldElement.F2m bF2m = (ECFieldElement.F2m)b;
 
-            if ((aF2m.m != bF2m.m) || (aF2m.k1 != bF2m.k1)
-                    || (aF2m.k2 != bF2m.k2) || (aF2m.k3 != bF2m.k3))
-            {
-                throw new IllegalArgumentException("Field elements are not "
-                        + "elements of the same field F2m");
-            }
-
             if (aF2m.representation != bF2m.representation)
             {
                 // Should never occur
-                throw new IllegalArgumentException(
-                        "One of the field "
-                                + "elements are not elements has incorrect representation");
+                throw new IllegalArgumentException("One of the F2m field elements has incorrect representation");
+            }
+
+            if ((aF2m.m != bF2m.m) || !Arrays.areEqual(aF2m.ks, bF2m.ks))
+            {
+                throw new IllegalArgumentException("Field elements are not elements of the same field F2m");
             }
         }
 
@@ -988,10 +1163,15 @@ public abstract class ECFieldElement
             // No check performed here for performance reasons. Instead the
             // elements involved are checked in ECPoint.F2m
             // checkFieldElements(this, b);
-            IntArray iarrClone = (IntArray)this.x.clone();
+            LongArray iarrClone = (LongArray)this.x.clone();
             F2m bF2m = (F2m)b;
-            iarrClone.addShifted(bF2m.x, 0);
-            return new F2m(m, k1, k2, k3, iarrClone);
+            iarrClone.addShiftedByWords(bF2m.x, 0);
+            return new F2m(m, ks, iarrClone);
+        }
+
+        public ECFieldElement addOne()
+        {
+            return new F2m(m, ks, x.addOne());
         }
 
         public ECFieldElement subtract(final ECFieldElement b)
@@ -1002,17 +1182,14 @@ public abstract class ECFieldElement
 
         public ECFieldElement multiply(final ECFieldElement b)
         {
-            // Right-to-left comb multiplication in the IntArray
+            // Right-to-left comb multiplication in the LongArray
             // Input: Binary polynomials a(z) and b(z) of degree at most m-1
             // Output: c(z) = a(z) * b(z) mod f(z)
 
             // No check performed here for performance reasons. Instead the
             // elements involved are checked in ECPoint.F2m
             // checkFieldElements(this, b);
-            F2m bF2m = (F2m)b;
-            IntArray mult = x.multiply(bF2m.x, m);
-            mult.reduce(m, new int[]{k1, k2, k3});
-            return new F2m(m, k1, k2, k3, mult);
+            return new F2m(m, ks, x.modMultiply(((F2m)b).x, m, ks));
         }
 
         public ECFieldElement divide(final ECFieldElement b)
@@ -1030,80 +1207,12 @@ public abstract class ECFieldElement
 
         public ECFieldElement square()
         {
-            IntArray squared = x.square(m);
-            squared.reduce(m, new int[]{k1, k2, k3});
-            return new F2m(m, k1, k2, k3, squared);
+            return new F2m(m, ks, x.modSquare(m, ks));
         }
-
 
         public ECFieldElement invert()
         {
-            // Inversion in F2m using the extended Euclidean algorithm
-            // Input: A nonzero polynomial a(z) of degree at most m-1
-            // Output: a(z)^(-1) mod f(z)
-
-            // u(z) := a(z)
-            IntArray uz = (IntArray)this.x.clone();
-
-            // v(z) := f(z)
-            IntArray vz = new IntArray(t);
-            vz.setBit(m);
-            vz.setBit(0);
-            vz.setBit(this.k1);
-            if (this.representation == PPB) 
-            {
-                vz.setBit(this.k2);
-                vz.setBit(this.k3);
-            }
-
-            // g1(z) := 1, g2(z) := 0
-            IntArray g1z = new IntArray(t);
-            g1z.setBit(0);
-            IntArray g2z = new IntArray(t);
-
-            // while u != 0
-            while (!uz.isZero())
-//            while (uz.getUsedLength() > 0)
-//            while (uz.bitLength() > 1)
-            {
-                // j := deg(u(z)) - deg(v(z))
-                int j = uz.bitLength() - vz.bitLength();
-
-                // If j < 0 then: u(z) <-> v(z), g1(z) <-> g2(z), j := -j
-                if (j < 0) 
-                {
-                    final IntArray uzCopy = uz;
-                    uz = vz;
-                    vz = uzCopy;
-
-                    final IntArray g1zCopy = g1z;
-                    g1z = g2z;
-                    g2z = g1zCopy;
-
-                    j = -j;
-                }
-
-                // u(z) := u(z) + z^j * v(z)
-                // Note, that no reduction modulo f(z) is required, because
-                // deg(u(z) + z^j * v(z)) <= max(deg(u(z)), j + deg(v(z)))
-                // = max(deg(u(z)), deg(u(z)) - deg(v(z)) + deg(v(z))
-                // = deg(u(z))
-                // uz = uz.xor(vz.shiftLeft(j));
-                // jInt = n / 32
-                int jInt = j >> 5;
-                // jInt = n % 32
-                int jBit = j & 0x1F;
-                IntArray vzShift = vz.shiftLeft(jBit);
-                uz.addShifted(vzShift, jInt);
-
-                // g1(z) := g1(z) + z^j * g2(z)
-//                g1z = g1z.xor(g2z.shiftLeft(j));
-                IntArray g2zShift = g2z.shiftLeft(jBit);
-                g1z.addShifted(g2zShift, jInt);
-                
-            }
-            return new ECFieldElement.F2m(
-                    this.m, this.k1, this.k2, this.k3, g2z);
+            return new ECFieldElement.F2m(this.m, this.ks, this.x.modInverse(m, ks));
         }
 
         public ECFieldElement sqrt()
@@ -1143,7 +1252,7 @@ public abstract class ECFieldElement
          */
         public int getK1()
         {
-            return this.k1;
+            return this.ks[0];
         }
 
         /**
@@ -1154,7 +1263,7 @@ public abstract class ECFieldElement
          */
         public int getK2()
         {
-            return this.k2;
+            return this.ks.length >= 2 ? this.ks[1] : 0;
         }
 
         /**
@@ -1165,7 +1274,7 @@ public abstract class ECFieldElement
          */
         public int getK3()
         {
-            return this.k3;
+            return this.ks.length >= 3 ? this.ks[2] : 0;
         }
 
         public boolean equals(Object anObject)
@@ -1182,15 +1291,15 @@ public abstract class ECFieldElement
 
             ECFieldElement.F2m b = (ECFieldElement.F2m)anObject;
             
-            return ((this.m == b.m) && (this.k1 == b.k1) && (this.k2 == b.k2)
-                && (this.k3 == b.k3)
+            return ((this.m == b.m)
                 && (this.representation == b.representation)
+                && Arrays.areEqual(this.ks, b.ks)
                 && (this.x.equals(b.x)));
         }
 
         public int hashCode()
         {
-            return x.hashCode() ^ m ^ k1 ^ k2 ^ k3;
+            return x.hashCode() ^ m ^ Arrays.hashCode(ks);
         }
     }
 }

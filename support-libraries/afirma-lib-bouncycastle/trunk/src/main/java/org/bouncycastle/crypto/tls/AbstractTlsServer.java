@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.bouncycastle.util.Arrays;
+
 public abstract class AbstractTlsServer
     extends AbstractTlsPeer
     implements TlsServer
 {
-
     protected TlsCipherFactory cipherFactory;
 
     protected TlsServerContext context;
@@ -18,6 +19,8 @@ public abstract class AbstractTlsServer
     protected short[] offeredCompressionMethods;
     protected Hashtable clientExtensions;
 
+    protected short maxFragmentLengthOffered;
+    protected boolean truncatedHMacOffered;
     protected Vector supportedSignatureAlgorithms;
     protected boolean eccCipherSuitesOffered;
     protected int[] namedCurves;
@@ -36,6 +39,16 @@ public abstract class AbstractTlsServer
     public AbstractTlsServer(TlsCipherFactory cipherFactory)
     {
         this.cipherFactory = cipherFactory;
+    }
+
+    protected boolean allowTruncatedHMac()
+    {
+        return false;
+    }
+
+    protected Hashtable checkServerExtensions()
+    {
+        return this.serverExtensions = TlsExtensionsUtils.ensureExtensionsInitialised(this.serverExtensions);
     }
 
     protected abstract int[] getCipherSuites();
@@ -57,7 +70,6 @@ public abstract class AbstractTlsServer
 
     protected boolean supportsClientECCCapabilities(int[] namedCurves, short[] ecPointFormats)
     {
-
         // NOTE: BC supports all the current set of point formats so we don't check them here
 
         if (namedCurves == null)
@@ -106,27 +118,15 @@ public abstract class AbstractTlsServer
         this.offeredCompressionMethods = offeredCompressionMethods;
     }
 
-    public void notifySecureRenegotiation(boolean secureRenegotiation)
-        throws IOException
-    {
-        if (!secureRenegotiation)
-        {
-            /*
-             * RFC 5746 3.6. In this case, some servers may want to terminate the handshake instead
-             * of continuing; see Section 4.3 for discussion.
-             */
-            throw new TlsFatalAlert(AlertDescription.handshake_failure);
-        }
-    }
-
     public void processClientExtensions(Hashtable clientExtensions)
         throws IOException
     {
-
         this.clientExtensions = clientExtensions;
 
         if (clientExtensions != null)
         {
+            this.maxFragmentLengthOffered = TlsExtensionsUtils.getMaxFragmentLengthExtension(clientExtensions);
+            this.truncatedHMacOffered = TlsExtensionsUtils.hasTruncatedHMacExtension(clientExtensions);
 
             this.supportedSignatureAlgorithms = TlsUtils.getSignatureAlgorithmsExtension(clientExtensions);
             if (this.supportedSignatureAlgorithms != null)
@@ -176,7 +176,6 @@ public abstract class AbstractTlsServer
     public int getSelectedCipherSuite()
         throws IOException
     {
-
         /*
          * TODO RFC 5246 7.4.3. In order to negotiate correctly, the server MUST check any candidate
          * cipher suites against the "signature_algorithms" extension before selecting them. This is
@@ -197,7 +196,9 @@ public abstract class AbstractTlsServer
         for (int i = 0; i < cipherSuites.length; ++i)
         {
             int cipherSuite = cipherSuites[i];
-            if (TlsProtocol.arrayContains(this.offeredCipherSuites, cipherSuite)
+
+            // TODO Certain cipher suites may only be available starting at a particular version
+            if (Arrays.contains(this.offeredCipherSuites, cipherSuite)
                 && (eccCipherSuitesEnabled || !TlsECCUtils.isECCCipherSuite(cipherSuite)))
             {
                 return this.selectedCipherSuite = cipherSuite;
@@ -212,7 +213,7 @@ public abstract class AbstractTlsServer
         short[] compressionMethods = getCompressionMethods();
         for (int i = 0; i < compressionMethods.length; ++i)
         {
-            if (TlsProtocol.arrayContains(offeredCompressionMethods, compressionMethods[i]))
+            if (Arrays.contains(offeredCompressionMethods, compressionMethods[i]))
             {
                 return this.selectedCompressionMethod = compressionMethods[i];
             }
@@ -224,6 +225,15 @@ public abstract class AbstractTlsServer
     public Hashtable getServerExtensions()
         throws IOException
     {
+        if (this.maxFragmentLengthOffered >= 0)
+        {
+            TlsExtensionsUtils.addMaxFragmentLengthExtension(checkServerExtensions(), this.maxFragmentLengthOffered);
+        }
+
+        if (this.truncatedHMacOffered && allowTruncatedHMac())
+        {
+            TlsExtensionsUtils.addTruncatedHMacExtension(checkServerExtensions());
+        }
 
         if (this.clientECPointFormats != null && TlsECCUtils.isECCCipherSuite(this.selectedCipherSuite))
         {
@@ -232,15 +242,13 @@ public abstract class AbstractTlsServer
              * message including a Supported Point Formats Extension appends this extension (along
              * with others) to its ServerHello message, enumerating the point formats it can parse.
              */
-            this.serverECPointFormats = new short[]{ECPointFormat.ansiX962_compressed_char2,
-                ECPointFormat.ansiX962_compressed_prime, ECPointFormat.uncompressed};
+            this.serverECPointFormats = new short[]{ ECPointFormat.ansiX962_compressed_char2,
+                ECPointFormat.ansiX962_compressed_prime, ECPointFormat.uncompressed };
 
-            this.serverExtensions = new Hashtable();
-            TlsECCUtils.addSupportedPointFormatsExtension(serverExtensions, serverECPointFormats);
-            return serverExtensions;
+            TlsECCUtils.addSupportedPointFormatsExtension(checkServerExtensions(), serverECPointFormats);
         }
 
-        return null;
+        return serverExtensions;
     }
 
     public Vector getServerSupplementalData()
@@ -249,7 +257,14 @@ public abstract class AbstractTlsServer
         return null;
     }
 
+    public CertificateStatus getCertificateStatus()
+        throws IOException
+    {
+        return null;
+    }
+
     public CertificateRequest getCertificateRequest()
+        throws IOException
     {
         return null;
     }
@@ -295,10 +310,5 @@ public abstract class AbstractTlsServer
          * ticket in the NewSessionTicket handshake message.
          */
         return new NewSessionTicket(0L, TlsUtils.EMPTY_BYTES);
-    }
-
-    public void notifyHandshakeComplete()
-        throws IOException
-    {
     }
 }

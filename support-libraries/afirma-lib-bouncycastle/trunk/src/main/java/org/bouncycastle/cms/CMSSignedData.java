@@ -3,11 +3,6 @@ package org.bouncycastle.cms;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
-import java.security.cert.CertStore;
-import java.security.cert.CertStoreException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,13 +20,10 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.cms.SignedData;
 import org.bouncycastle.asn1.cms.SignerInfo;
-import org.bouncycastle.cert.jcajce.JcaCertStoreBuilder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.SignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.util.Store;
-import org.bouncycastle.x509.NoSuchStoreException;
-import org.bouncycastle.x509.X509Store;
 
 /**
  * general class for handling a pkcs7-signature message.
@@ -69,9 +61,7 @@ public class CMSSignedData
     ContentInfo             contentInfo;
     CMSTypedData            signedContent;
     SignerInformationStore  signerInfoStore;
-    X509Store               attributeStore;
-    X509Store               certificateStore;
-    X509Store               crlStore;
+
     private Map             hashes;
 
     private CMSSignedData(
@@ -266,192 +256,6 @@ public class CMSSignedData
     }
 
     /**
-     * return a X509Store containing the attribute certificates, if any, contained
-     * in this message.
-     *
-     * @param type type of store to create
-     * @param provider name of provider to use
-     * @return a store of attribute certificates
-     * @exception NoSuchProviderException if the provider requested isn't available.
-     * @exception NoSuchStoreException if the store type isn't available.
-     * @exception CMSException if a general exception prevents creation of the X509Store
-     * @deprecated use base Store returning method
-     */
-    public X509Store getAttributeCertificates(
-        String type,
-        String provider)
-        throws NoSuchStoreException, NoSuchProviderException, CMSException
-    {
-        return getAttributeCertificates(type, CMSUtils.getProvider(provider));
-    }
-
-    /**
-     * return a X509Store containing the attribute certificates, if any, contained
-     * in this message.
-     *
-     * @param type type of store to create
-     * @param provider provider to use
-     * @return a store of attribute certificates
-     * @exception NoSuchStoreException if the store type isn't available.
-     * @exception CMSException if a general exception prevents creation of the X509Store
-     * @deprecated use base Store returning method
-     */
-    public X509Store getAttributeCertificates(
-        String type,
-        Provider provider)
-        throws NoSuchStoreException, CMSException
-    {
-        if (attributeStore == null)
-        {
-            attributeStore = HELPER.createAttributeStore(type, provider, this.getAttributeCertificates());
-        }
-
-        return attributeStore;
-    }
-
-    /**
-     * return a X509Store containing the public key certificates, if any, contained
-     * in this message.
-     *
-     * @param type type of store to create
-     * @param provider name of provider to use
-     * @return a store of public key certificates
-     * @exception NoSuchProviderException if the provider requested isn't available.
-     * @exception NoSuchStoreException if the store type isn't available.
-     * @exception CMSException if a general exception prevents creation of the X509Store
-     * @deprecated use base Store returning method
-     */
-    public X509Store getCertificates(
-        String type,
-        String provider)
-        throws NoSuchStoreException, NoSuchProviderException, CMSException
-    {
-        return getCertificates(type, CMSUtils.getProvider(provider));
-    }
-
-    /**
-     * return a X509Store containing the public key certificates, if any, contained
-     * in this message.
-     *
-     * @param type type of store to create
-     * @param provider provider to use
-     * @return a store of public key certificates
-     * @exception NoSuchStoreException if the store type isn't available.
-     * @exception CMSException if a general exception prevents creation of the X509Store
-     * @deprecated use base Store returning method
-     */
-    public X509Store getCertificates(
-        String type,
-        Provider provider)
-        throws NoSuchStoreException, CMSException
-    {
-        if (certificateStore == null)
-        {
-            certificateStore = HELPER.createCertificateStore(type, provider, this.getCertificates());
-        }
-
-        return certificateStore;
-    }
-
-    /**
-     * return a X509Store containing CRLs, if any, contained
-     * in this message.
-     *
-     * @param type type of store to create
-     * @param provider name of provider to use
-     * @return a store of CRLs
-     * @exception NoSuchProviderException if the provider requested isn't available.
-     * @exception NoSuchStoreException if the store type isn't available.
-     * @exception CMSException if a general exception prevents creation of the X509Store
-     * @deprecated use base Store returning method
-     */
-    public X509Store getCRLs(
-        String type,
-        String provider)
-        throws NoSuchStoreException, NoSuchProviderException, CMSException
-    {
-        return getCRLs(type, CMSUtils.getProvider(provider));
-    }
-
-    /**
-     * return a X509Store containing CRLs, if any, contained
-     * in this message.
-     *
-     * @param type type of store to create
-     * @param provider provider to use
-     * @return a store of CRLs
-     * @exception NoSuchStoreException if the store type isn't available.
-     * @exception CMSException if a general exception prevents creation of the X509Store
-     * @deprecated use base Store returning method
-     */
-    public X509Store getCRLs(
-        String type,
-        Provider provider)
-        throws NoSuchStoreException, CMSException
-    {
-        if (crlStore == null)
-        {
-            crlStore = HELPER.createCRLsStore(type, provider, getCRLs());
-        }
-
-        return crlStore;
-    }
-  
-    /**
-     * return a CertStore containing the certificates and CRLs associated with
-     * this message.
-     *
-     * @exception NoSuchProviderException if the provider requested isn't available.
-     * @exception NoSuchAlgorithmException if the cert store isn't available.
-     * @exception CMSException if a general exception prevents creation of the CertStore
-     * @deprecated use base Store returning method and org.bouncycastle.cert.jcajce.JcaCertStoreBuilder
-     */
-    public CertStore getCertificatesAndCRLs(
-        String  type,
-        String  provider)
-        throws NoSuchAlgorithmException, NoSuchProviderException, CMSException
-    {
-        return getCertificatesAndCRLs(type, CMSUtils.getProvider(provider));
-    }
-
-    /**
-     * return a CertStore containing the certificates and CRLs associated with
-     * this message.
-     *
-     * @exception NoSuchAlgorithmException if the cert store isn't available.
-     * @exception CMSException if a general exception prevents creation of the CertStore
-     * @deprecated use base Store returning method and org.bouncycastle.cert.jcajce.JcaCertStoreBuilder
-     */
-    public CertStore getCertificatesAndCRLs(
-        String  type,
-        Provider  provider)
-        throws NoSuchAlgorithmException, CMSException
-    {
-        try
-        {
-            JcaCertStoreBuilder certStoreBuilder = new JcaCertStoreBuilder().setType(type);
-
-            if (provider != null)
-            {
-                certStoreBuilder.setProvider(provider);
-            }
-
-            certStoreBuilder.addCertificates(this.getCertificates());
-            certStoreBuilder.addCRLs(this.getCRLs());
-
-            return certStoreBuilder.build();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw e;
-        }
-        catch (Exception e)
-        {
-            throw new CMSException("exception creating CertStore: " + e.getMessage(), e);
-        }
-    }
-
-    /**
      * Return any X.509 certificate objects in this SignedData structure as a Store of X509CertificateHolder objects.
      *
      * @return a Store of X509CertificateHolder objects.
@@ -508,15 +312,6 @@ public class CMSSignedData
     public CMSTypedData getSignedContent()
     {
         return signedContent;
-    }
-
-    /**
-     * return the ContentInfo
-     * @deprecated use toASN1Structure()
-     */
-    public ContentInfo getContentInfo()
-    {
-        return contentInfo;
     }
 
     /**
@@ -660,77 +455,6 @@ public class CMSSignedData
         vec.add(signers);
         
         cms.signedData = SignedData.getInstance(new BERSequence(vec));
-        
-        //
-        // replace the contentInfo with the new one
-        //
-        cms.contentInfo = new ContentInfo(cms.contentInfo.getContentType(), cms.signedData);
-        
-        return cms;
-    }
-
-    /**
-     * Replace the certificate and CRL information associated with this
-     * CMSSignedData object with the new one passed in.
-     * 
-     * @param signedData the signed data object to be used as a base.
-     * @param certsAndCrls the new certificates and CRLs to be used.
-     * @return a new signed data object.
-     * @exception CMSException if there is an error processing the CertStore
-     * @deprecated use method taking Store arguments.
-     */
-    public static CMSSignedData replaceCertificatesAndCRLs(
-        CMSSignedData   signedData,
-        CertStore       certsAndCrls)
-        throws CMSException
-    {
-        //
-        // copy
-        //
-        CMSSignedData   cms = new CMSSignedData(signedData);
-        
-        //
-        // replace the certs and crls in the SignedData object
-        //
-        ASN1Set             certs = null;
-        ASN1Set             crls = null;
-
-        try
-        {
-            ASN1Set set = CMSUtils.createBerSetFromList(CMSUtils.getCertificatesFromStore(certsAndCrls));
-
-            if (set.size() != 0)
-            {
-                certs = set;
-            }
-        }
-        catch (CertStoreException e)
-        {
-            throw new CMSException("error getting certs from certStore", e);
-        }
-
-        try
-        {
-            ASN1Set set = CMSUtils.createBerSetFromList(CMSUtils.getCRLsFromStore(certsAndCrls));
-
-            if (set.size() != 0)
-            {
-                crls = set;
-            }
-        }
-        catch (CertStoreException e)
-        {
-            throw new CMSException("error getting crls from certStore", e);
-        }
-        
-        //
-        // replace the CMS structure.
-        //
-        cms.signedData = new SignedData(signedData.signedData.getDigestAlgorithms(), 
-                                   signedData.signedData.getEncapContentInfo(),
-                                   certs,
-                                   crls,
-                                   signedData.signedData.getSignerInfos());
         
         //
         // replace the contentInfo with the new one

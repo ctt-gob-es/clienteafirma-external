@@ -1,6 +1,7 @@
 package org.bouncycastle.asn1.x500.style;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -19,8 +20,6 @@ import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 public class BCStyle
     implements X500NameStyle
 {
-    public static final X500NameStyle INSTANCE = new BCStyle();
-
     /**
      * country code - StringType(SIZE(2))
      */
@@ -273,9 +272,18 @@ public class BCStyle
         DefaultLookUp.put("name", NAME);
     }
 
+    /**
+     * Singleton instance.
+     */
+    public static final X500NameStyle INSTANCE = new BCStyle();
+
+    protected final Hashtable defaultLookUp;
+    protected final Hashtable defaultSymbols;
+
     protected BCStyle()
     {
-
+        defaultSymbols = copyHashTable(DefaultSymbols);
+        defaultLookUp = copyHashTable(DefaultLookUp);
     }
     
     public ASN1Encodable stringToValue(ASN1ObjectIdentifier oid, String value)
@@ -322,12 +330,12 @@ public class BCStyle
 
     public String[] oidToAttrNames(ASN1ObjectIdentifier oid)
     {
-        return IETFUtils.findAttrNamesForOID(oid, DefaultLookUp);
+        return IETFUtils.findAttrNamesForOID(oid, defaultLookUp);
     }
 
     public ASN1ObjectIdentifier attrNameToOID(String attrName)
     {
-        return IETFUtils.decodeAttrName(attrName, DefaultLookUp);
+        return IETFUtils.decodeAttrName(attrName, defaultLookUp);
     }
 
     public boolean areEqual(X500Name name1, X500Name name2)
@@ -451,9 +459,23 @@ public class BCStyle
                 buf.append(',');
             }
 
-            IETFUtils.appendRDN(buf, rdns[i], DefaultSymbols);
+            IETFUtils.appendRDN(buf, rdns[i], defaultSymbols);
         }
 
         return buf.toString();
+    }
+
+    private static Hashtable copyHashTable(Hashtable paramsMap)
+    {
+        Hashtable newTable = new Hashtable();
+
+        Enumeration keys = paramsMap.keys();
+        while (keys.hasMoreElements())
+        {
+            Object key = keys.nextElement();
+            newTable.put(key, paramsMap.get(key));
+        }
+
+        return newTable;
     }
 }

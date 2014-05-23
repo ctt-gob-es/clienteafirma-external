@@ -57,6 +57,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.Key;
 import java.security.MessageDigest;
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,6 +73,7 @@ import java.util.zip.InflaterInputStream;
 
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.RecipientInformation;
+import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.PageSize;
@@ -704,7 +706,9 @@ public class PdfReader implements PdfViewerPreferences {
                         final RecipientInformation recipientInfo = (RecipientInformation)recipientCertificatesIt.next();
 
                         if (recipientInfo.getRID().match(this.certificate) && !foundRecipient) {
-                         envelopedData = recipientInfo.getContent(this.certificateKey, this.certificateKeyProvider);
+                         envelopedData = recipientInfo.getContent(
+                    		 new JceKeyTransEnvelopedRecipient((PrivateKey) this.certificateKey)
+                		 );
                          foundRecipient = true;
                         }
                     }

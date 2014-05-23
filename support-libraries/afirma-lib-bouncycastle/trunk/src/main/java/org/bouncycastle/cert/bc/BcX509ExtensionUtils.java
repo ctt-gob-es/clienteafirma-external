@@ -15,7 +15,7 @@ import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.operator.DigestCalculator;
 
-public final class BcX509ExtensionUtils
+public class BcX509ExtensionUtils
     extends X509ExtensionUtils
 {
     /**
@@ -27,13 +27,13 @@ public final class BcX509ExtensionUtils
         super(new SHA1DigestCalculator());
     }
 
-    public BcX509ExtensionUtils(final DigestCalculator calculator)
+    public BcX509ExtensionUtils(DigestCalculator calculator)
     {
         super(calculator);
     }
 
     public AuthorityKeyIdentifier createAuthorityKeyIdentifier(
-        final AsymmetricKeyParameter publicKey)
+        AsymmetricKeyParameter publicKey)
         throws IOException
     {
         return super.createAuthorityKeyIdentifier(SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(publicKey));
@@ -48,10 +48,9 @@ public final class BcX509ExtensionUtils
      * </pre>
      * @param publicKey the key object containing the key identifier is to be based on.
      * @return the key identifier.
-     * @throws IOException
      */
     public SubjectKeyIdentifier createSubjectKeyIdentifier(
-        final AsymmetricKeyParameter publicKey)
+        AsymmetricKeyParameter publicKey)
         throws IOException
     {
         return super.createSubjectKeyIdentifier(SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(publicKey));
@@ -60,36 +59,29 @@ public final class BcX509ExtensionUtils
     private static class SHA1DigestCalculator
         implements DigestCalculator
     {
-        private final ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        private ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
-        public SHA1DigestCalculator() {
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public AlgorithmIdentifier getAlgorithmIdentifier()
+        public AlgorithmIdentifier getAlgorithmIdentifier()
         {
             return new AlgorithmIdentifier(OIWObjectIdentifiers.idSHA1);
         }
 
-        @Override
-		public OutputStream getOutputStream()
+        public OutputStream getOutputStream()
         {
-            return this.bOut;
+            return bOut;
         }
 
-        @Override
-		public byte[] getDigest()
+        public byte[] getDigest()
         {
-            final byte[] bytes = this.bOut.toByteArray();
+            byte[] bytes = bOut.toByteArray();
 
-            this.bOut.reset();
+            bOut.reset();
 
-            final Digest sha1 = new SHA1Digest();
+            Digest sha1 = new SHA1Digest();
 
             sha1.update(bytes, 0, bytes.length);
 
-            final byte[] digest = new byte[sha1.getDigestSize()];
+            byte[] digest = new byte[sha1.getDigestSize()];
 
             sha1.doFinal(digest, 0);
 

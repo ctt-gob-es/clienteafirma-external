@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.DHParameters;
 import org.bouncycastle.crypto.params.DHPrivateKeyParameters;
@@ -20,7 +19,6 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
 public class TlsDHKeyExchange
     extends AbstractTlsKeyExchange
 {
-
     protected static final BigInteger ONE = BigInteger.valueOf(1);
     protected static final BigInteger TWO = BigInteger.valueOf(2);
 
@@ -32,11 +30,11 @@ public class TlsDHKeyExchange
     protected TlsAgreementCredentials agreementCredentials;
     protected DHPrivateKeyParameters dhAgreeClientPrivateKey;
 
+    protected DHPrivateKeyParameters dhAgreeServerPrivateKey;
     protected DHPublicKeyParameters dhAgreeClientPublicKey;
 
     public TlsDHKeyExchange(int keyExchange, Vector supportedSignatureAlgorithms, DHParameters dhParameters)
     {
-
         super(keyExchange, supportedSignatureAlgorithms);
 
         switch (keyExchange)
@@ -77,7 +75,6 @@ public class TlsDHKeyExchange
     public void processServerCertificate(Certificate serverCertificate)
         throws IOException
     {
-
         if (serverCertificate.isEmpty())
         {
             throw new TlsFatalAlert(AlertDescription.bad_certificate);
@@ -99,7 +96,7 @@ public class TlsDHKeyExchange
         {
             try
             {
-                this.dhAgreeServerPublicKey = validateDHPublicKey((DHPublicKeyParameters)this.serverPublicKey);
+                this.dhAgreeServerPublicKey = TlsDHUtils.validateDHPublicKey((DHPublicKeyParameters)this.serverPublicKey);
             }
             catch (ClassCastException e)
             {
@@ -196,27 +193,16 @@ public class TlsDHKeyExchange
             return agreementCredentials.generateAgreement(dhAgreeServerPublicKey);
         }
 
-        return calculateDHBasicAgreement(dhAgreeServerPublicKey, dhAgreeClientPrivateKey);
-    }
+        if (dhAgreeServerPrivateKey != null)
+        {
+            return TlsDHUtils.calculateDHBasicAgreement(dhAgreeClientPublicKey, dhAgreeServerPrivateKey);
+        }
 
-    protected boolean areCompatibleParameters(DHParameters a, DHParameters b)
-    {
-        return a.getP().equals(b.getP()) && a.getG().equals(b.getG());
-    }
+        if (dhAgreeClientPrivateKey != null)
+        {
+            return TlsDHUtils.calculateDHBasicAgreement(dhAgreeServerPublicKey, dhAgreeClientPrivateKey);
+        }
 
-    protected byte[] calculateDHBasicAgreement(DHPublicKeyParameters publicKey, DHPrivateKeyParameters privateKey)
-    {
-        return TlsDHUtils.calculateDHBasicAgreement(publicKey, privateKey);
-    }
-
-    protected AsymmetricCipherKeyPair generateDHKeyPair(DHParameters dhParams)
-    {
-        return TlsDHUtils.generateDHKeyPair(context.getSecureRandom(), dhParams);
-    }
-
-    protected DHPublicKeyParameters validateDHPublicKey(DHPublicKeyParameters key)
-        throws IOException
-    {
-        return TlsDHUtils.validateDHPublicKey(key);
+        throw new TlsFatalAlert(AlertDescription.internal_error);
     }
 }

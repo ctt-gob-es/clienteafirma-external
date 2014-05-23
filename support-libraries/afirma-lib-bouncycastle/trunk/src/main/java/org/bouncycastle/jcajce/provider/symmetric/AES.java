@@ -1,13 +1,18 @@
 package org.bouncycastle.jcajce.provider.symmetric;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.spec.IvParameterSpec;
 
 import org.bouncycastle.asn1.bc.BCObjectIdentifiers;
+import org.bouncycastle.asn1.cms.GCMParameters;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.BufferedBlockCipher;
@@ -15,6 +20,7 @@ import org.bouncycastle.crypto.CipherKeyGenerator;
 import org.bouncycastle.crypto.engines.AESFastEngine;
 import org.bouncycastle.crypto.engines.AESWrapEngine;
 import org.bouncycastle.crypto.engines.RFC3211WrapEngine;
+import org.bouncycastle.crypto.generators.Poly1305KeyGenerator;
 import org.bouncycastle.crypto.macs.CMac;
 import org.bouncycastle.crypto.macs.GMac;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -23,6 +29,7 @@ import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.bouncycastle.crypto.modes.OFBBlockCipher;
 import org.bouncycastle.jcajce.provider.config.ConfigurableProvider;
 import org.bouncycastle.jcajce.provider.symmetric.util.BaseAlgorithmParameterGenerator;
+import org.bouncycastle.jcajce.provider.symmetric.util.BaseAlgorithmParameters;
 import org.bouncycastle.jcajce.provider.symmetric.util.BaseBlockCipher;
 import org.bouncycastle.jcajce.provider.symmetric.util.BaseKeyGenerator;
 import org.bouncycastle.jcajce.provider.symmetric.util.BaseMac;
@@ -31,9 +38,12 @@ import org.bouncycastle.jcajce.provider.symmetric.util.BlockCipherProvider;
 import org.bouncycastle.jcajce.provider.symmetric.util.IvAlgorithmParameters;
 import org.bouncycastle.jcajce.provider.symmetric.util.PBESecretKeyFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Integers;
 
 public final class AES
 {
+    private static final Class gcmSpecClass = lookup("javax.crypto.spec.GCMParameterSpec");
+
     private AES()
     {
     }
@@ -80,6 +90,15 @@ public final class AES
         }
     }
 
+    static public class GCM
+        extends BaseBlockCipher
+    {
+        public GCM()
+        {
+            super(new GCMBlockCipher(new AESFastEngine()));
+        }
+    }
+
     public static class AESCMAC
         extends BaseMac
     {
@@ -95,6 +114,24 @@ public final class AES
         public AESGMAC()
         {
             super(new GMac(new GCMBlockCipher(new AESFastEngine())));
+        }
+    }
+
+    public static class Poly1305
+        extends BaseMac
+    {
+        public Poly1305()
+        {
+            super(new org.bouncycastle.crypto.macs.Poly1305(new AESFastEngine()));
+        }
+    }
+
+    public static class Poly1305KeyGen
+        extends BaseKeyGenerator
+    {
+        public Poly1305KeyGen()
+        {
+            super("Poly1305-AES", 256, new Poly1305KeyGenerator());
         }
     }
 
@@ -325,6 +362,95 @@ public final class AES
         }
     }
 
+    public static class AlgParamsGCM
+        extends BaseAlgorithmParameters
+    {
+        private GCMParameters gcmParams;
+
+        protected void engineInit(AlgorithmParameterSpec paramSpec)
+            throws InvalidParameterSpecException
+        {
+            if (gcmSpecClass != null)
+            {
+                try
+                {
+                    Method tLen = gcmSpecClass.getDeclaredMethod("getTLen", new Class[0]);
+                    Method iv= gcmSpecClass.getDeclaredMethod("getIV", new Class[0]);
+
+
+                    gcmParams = new GCMParameters((byte[])iv.invoke(paramSpec, new Object[0]), ((Integer)tLen.invoke(paramSpec, new Object[0])).intValue());
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidParameterSpecException("Cannot process GCMParameterSpec.");
+                }
+            }
+        }
+
+        protected void engineInit(byte[] params)
+            throws IOException
+        {
+            gcmParams = GCMParameters.getInstance(params);
+        }
+
+        protected void engineInit(byte[] params, String format)
+            throws IOException
+        {
+            if (!isASN1FormatString(format))
+            {
+                throw new IOException("unknown format specified");
+            }
+
+            gcmParams = GCMParameters.getInstance(params);
+        }
+
+        protected byte[] engineGetEncoded()
+            throws IOException
+        {
+            return gcmParams.getEncoded();
+        }
+
+        protected byte[] engineGetEncoded(String format)
+            throws IOException
+        {
+            if (!isASN1FormatString(format))
+            {
+                throw new IOException("unknown format specified");
+            }
+
+            return gcmParams.getEncoded();
+        }
+
+        protected String engineToString()
+        {
+            return "GCM";
+        }
+
+        protected AlgorithmParameterSpec localEngineGetParameterSpec(Class paramSpec)
+            throws InvalidParameterSpecException
+        {
+            if (gcmSpecClass != null)
+            {
+                try
+                {
+                    Constructor constructor = gcmSpecClass.getConstructor(new Class[] { byte[].class, Integer.class });
+
+                    return (AlgorithmParameterSpec)constructor.newInstance(new Object[] { gcmParams.getNonce(), Integers.valueOf(gcmParams.getIcvLen()) });
+                }
+                catch (NoSuchMethodException e)
+                {
+                    throw new InvalidParameterSpecException("no constructor found!");   // should never happen
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidParameterSpecException("construction failed: " + e.getMessage());   // should never happen
+                }
+            }
+
+            throw new InvalidParameterSpecException("unknown parameter spec: " + paramSpec.getName());
+        }
+    }
+
     public static class Mappings
         extends SymmetricAlgorithmProvider
     {
@@ -352,6 +478,11 @@ public final class AES
             provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + NISTObjectIdentifiers.id_aes128_CBC, "AES");
             provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + NISTObjectIdentifiers.id_aes192_CBC, "AES");
             provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + NISTObjectIdentifiers.id_aes256_CBC, "AES");
+
+            provider.addAlgorithm("AlgorithmParameters.GCM", PREFIX + "$AlgParamsGCM");
+            provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + NISTObjectIdentifiers.id_aes128_GCM, "GCM");
+            provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + NISTObjectIdentifiers.id_aes192_GCM, "GCM");
+            provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + NISTObjectIdentifiers.id_aes256_GCM, "GCM");
 
             provider.addAlgorithm("AlgorithmParameterGenerator.AES", PREFIX + "$AlgParamGen");
             provider.addAlgorithm("Alg.Alias.AlgorithmParameterGenerator." + wrongAES128, "AES");
@@ -382,6 +513,11 @@ public final class AES
             provider.addAlgorithm("Alg.Alias.Cipher." + NISTObjectIdentifiers.id_aes192_wrap, "AESWRAP");
             provider.addAlgorithm("Alg.Alias.Cipher." + NISTObjectIdentifiers.id_aes256_wrap, "AESWRAP");
             provider.addAlgorithm("Cipher.AESRFC3211WRAP", PREFIX + "$RFC3211Wrap");
+
+            provider.addAlgorithm("Cipher.GCM", PREFIX + "$GCM");
+            provider.addAlgorithm("Alg.Alias.Cipher." + NISTObjectIdentifiers.id_aes128_GCM, "GCM");
+            provider.addAlgorithm("Alg.Alias.Cipher." + NISTObjectIdentifiers.id_aes192_GCM, "GCM");
+            provider.addAlgorithm("Alg.Alias.Cipher." + NISTObjectIdentifiers.id_aes256_GCM, "GCM");
 
             provider.addAlgorithm("KeyGenerator.AES", PREFIX + "$KeyGen");
             provider.addAlgorithm("KeyGenerator." + wrongAES128, PREFIX + "$KeyGen128");
@@ -484,6 +620,21 @@ public final class AES
             provider.addAlgorithm("Alg.Alias.AlgorithmParameters." + BCObjectIdentifiers.bc_pbe_sha256_pkcs12_aes256_cbc.getId(), "PKCS12PBE");
 
             addGMacAlgorithm(provider, "AES", PREFIX + "$AESGMAC", PREFIX + "$KeyGen128");
+            addPoly1305Algorithm(provider, "AES", PREFIX + "$Poly1305", PREFIX + "$Poly1305KeyGen");
+        }
+    }
+
+    private static Class lookup(String className)
+    {
+        try
+        {
+            Class def = AES.class.getClassLoader().loadClass(className);
+
+            return def;
+        }
+        catch (Exception e)
+        {
+            return null;
         }
     }
 }

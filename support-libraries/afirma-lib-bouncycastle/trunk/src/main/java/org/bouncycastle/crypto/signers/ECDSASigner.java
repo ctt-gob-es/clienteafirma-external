@@ -19,9 +19,28 @@ import org.bouncycastle.math.ec.ECPoint;
 public class ECDSASigner
     implements ECConstants, DSA
 {
-    ECKeyParameters key;
+    private final DSAKCalculator kCalculator;
 
-    SecureRandom    random;
+    private ECKeyParameters key;
+    private SecureRandom    random;
+
+    /**
+     * Default configuration, random K values.
+     */
+    public ECDSASigner()
+    {
+        this.kCalculator = new RandomDSAKCalculator();
+    }
+
+    /**
+     * Configuration with an alternate, possibly deterministic calculator of K.
+     *
+     * @param kCalculator a K value calculator.
+     */
+    public ECDSASigner(DSAKCalculator kCalculator)
+    {
+        this.kCalculator = kCalculator;
+    }
 
     public void init(
         boolean                 forSigning,
@@ -64,24 +83,28 @@ public class ECDSASigner
         BigInteger r = null;
         BigInteger s = null;
 
+        if (kCalculator.isDeterministic())
+        {
+            kCalculator.init(n, ((ECPrivateKeyParameters)key).getD(), message);
+        }
+        else
+        {
+            kCalculator.init(n, random);
+        }
+
         // 5.3.2
         do // generate s
         {
             BigInteger k = null;
-            int        nBitLength = n.bitLength();
 
             do // generate r
             {
-                do
-                {
-                    k = new BigInteger(nBitLength, random);
-                }
-                while (k.equals(ZERO) || k.compareTo(n) >= 0);
+                k = kCalculator.nextK();
 
-                ECPoint p = key.getParameters().getG().multiply(k);
+                ECPoint p = key.getParameters().getG().multiply(k).normalize();
 
                 // 5.3.3
-                BigInteger x = p.getX().toBigInteger();
+                BigInteger x = p.getAffineXCoord().toBigInteger();
 
                 r = x.mod(n);
             }
@@ -135,7 +158,7 @@ public class ECDSASigner
         ECPoint G = key.getParameters().getG();
         ECPoint Q = ((ECPublicKeyParameters)key).getQ();
 
-        ECPoint point = ECAlgorithms.sumOfTwoMultiplies(G, u1, Q, u2);
+        ECPoint point = ECAlgorithms.sumOfTwoMultiplies(G, u1, Q, u2).normalize();
 
         // components must be bogus.
         if (point.isInfinity())
@@ -143,7 +166,7 @@ public class ECDSASigner
             return false;
         }
 
-        BigInteger v = point.getX().toBigInteger().mod(n);
+        BigInteger v = point.getAffineXCoord().toBigInteger().mod(n);
 
         return v.equals(r);
     }
@@ -153,17 +176,11 @@ public class ECDSASigner
         int log2n = n.bitLength();
         int messageBitLength = message.length * 8;
 
-        if (log2n >= messageBitLength)
+        BigInteger e = new BigInteger(1, message);
+        if (log2n < messageBitLength)
         {
-            return new BigInteger(1, message);
+            e = e.shiftRight(messageBitLength - log2n);
         }
-        else
-        {
-            BigInteger trunc = new BigInteger(1, message);
-
-            trunc = trunc.shiftRight(messageBitLength - log2n);
-
-            return trunc;
-        }
+        return e;
     }
 }
