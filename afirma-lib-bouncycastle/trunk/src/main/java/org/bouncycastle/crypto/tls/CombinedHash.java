@@ -8,7 +8,6 @@ import org.bouncycastle.crypto.Digest;
 class CombinedHash
     implements TlsHandshakeHash
 {
-
     protected TlsContext context;
     protected Digest md5;
     protected Digest sha1;
@@ -31,14 +30,33 @@ class CombinedHash
         this.context = context;
     }
 
-    public TlsHandshakeHash commit()
+    public TlsHandshakeHash notifyPRFDetermined()
     {
         return this;
     }
 
-    public TlsHandshakeHash fork()
+    public void trackHashAlgorithm(short hashAlgorithm)
+    {
+        throw new IllegalStateException("CombinedHash only supports calculating the legacy PRF for handshake hash");
+    }
+
+    public void sealHashAlgorithms()
+    {
+    }
+
+    public TlsHandshakeHash stopTracking()
     {
         return new CombinedHash(this);
+    }
+
+    public Digest forkPRFHash()
+    {
+        return new CombinedHash(this);
+    }
+
+    public byte[] getFinalHash(short hashAlgorithm)
+    {
+        throw new IllegalStateException("CombinedHash doesn't support multiple hashes");
     }
 
     /**
@@ -80,7 +98,7 @@ class CombinedHash
      */
     public int doFinal(byte[] out, int outOff)
     {
-        if (context != null && context.getServerVersion().isSSL())
+        if (context != null && TlsUtils.isSSL(context))
         {
             ssl3Complete(md5, SSL3Mac.IPAD, SSL3Mac.OPAD, 48);
             ssl3Complete(sha1, SSL3Mac.IPAD, SSL3Mac.OPAD, 40);
@@ -102,15 +120,15 @@ class CombinedHash
 
     protected void ssl3Complete(Digest d, byte[] ipad, byte[] opad, int padLength)
     {
-        byte[] secret = context.getSecurityParameters().masterSecret;
+        byte[] master_secret = context.getSecurityParameters().masterSecret;
 
-        d.update(secret, 0, secret.length);
+        d.update(master_secret, 0, master_secret.length);
         d.update(ipad, 0, padLength);
 
         byte[] tmp = new byte[d.getDigestSize()];
         d.doFinal(tmp, 0);
 
-        d.update(secret, 0, secret.length);
+        d.update(master_secret, 0, master_secret.length);
         d.update(opad, 0, padLength);
         d.update(tmp, 0, tmp.length);
     }

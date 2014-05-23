@@ -4,21 +4,23 @@ package org.bouncycastle.math.ec;
  * Class holding precomputation data for the WNAF (Window Non-Adjacent Form)
  * algorithm.
  */
-class WNafPreCompInfo implements PreCompInfo
+public class WNafPreCompInfo implements PreCompInfo
 {
     /**
-     * Array holding the precomputed <code>ECPoint</code>s used for the Window
-     * NAF multiplication in <code>
-     * {@link org.bouncycastle.math.ec.multiplier.WNafMultiplier.multiply()
-     * WNafMultiplier.multiply()}</code>.
+     * Array holding the precomputed <code>ECPoint</code>s used for a Window
+     * NAF multiplication.
      */
     private ECPoint[] preComp = null;
 
     /**
+     * Array holding the negations of the precomputed <code>ECPoint</code>s used
+     * for a Window NAF multiplication.
+     */
+    private ECPoint[] preCompNeg = null;
+
+    /**
      * Holds an <code>ECPoint</code> representing twice(this). Used for the
-     * Window NAF multiplication in <code>
-     * {@link org.bouncycastle.math.ec.multiplier.WNafMultiplier.multiply()
-     * WNafMultiplier.multiply()}</code>.
+     * Window NAF multiplication to create or extend the precomputed values.
      */
     private ECPoint twiceP = null;
 
@@ -27,9 +29,19 @@ class WNafPreCompInfo implements PreCompInfo
         return preComp;
     }
 
+    protected ECPoint[] getPreCompNeg()
+    {
+        return preCompNeg;
+    }
+
     protected void setPreComp(ECPoint[] preComp)
     {
         this.preComp = preComp;
+    }
+
+    protected void setPreCompNeg(ECPoint[] preCompNeg)
+    {
+        this.preCompNeg = preCompNeg;
     }
 
     protected ECPoint getTwiceP()
@@ -37,8 +49,8 @@ class WNafPreCompInfo implements PreCompInfo
         return twiceP;
     }
 
-    protected void setTwiceP(ECPoint twiceThis)
+    protected void setTwiceP(ECPoint twiceP)
     {
-        this.twiceP = twiceThis;
+        this.twiceP = twiceP;
     }
 }

@@ -5,6 +5,7 @@ import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.Mac;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.ISO7816d4Padding;
+import org.bouncycastle.crypto.params.KeyParameter;
 
 /**
  * CMAC - as specified at www.nuee.nagoya-u.ac.jp/labs/tiwata/omac/omac.html
@@ -103,25 +104,36 @@ public class CMac implements Mac
         return cipher.getAlgorithmName();
     }
 
+    private static int shiftLeft(byte[] block, byte[] output)
+    {
+        int i = block.length;
+        int bit = 0;
+        while (--i >= 0)
+        {
+            int b = block[i] & 0xff;
+            output[i] = (byte)((b << 1) | bit);
+            bit = (b >>> 7) & 1;
+        }
+        return bit;
+    }
+
     private static byte[] doubleLu(byte[] in)
     {
-        int FirstBit = (in[0] & 0xFF) >> 7;
         byte[] ret = new byte[in.length];
-        for (int i = 0; i < in.length - 1; i++)
-        {
-            ret[i] = (byte)((in[i] << 1) + ((in[i + 1] & 0xFF) >> 7));
-        }
-        ret[in.length - 1] = (byte)(in[in.length - 1] << 1);
-        if (FirstBit == 1)
-        {
-            ret[in.length - 1] ^= in.length == 16 ? CONSTANT_128 : CONSTANT_64;
-        }
+        int carry = shiftLeft(in, ret);
+        int xor = 0xff & (in.length == 16 ? CONSTANT_128 : CONSTANT_64);
+
+        /*
+         * NOTE: This construction is an attempt at a constant-time implementation.
+         */
+        ret[in.length - 1] ^= (xor >>> ((1 - carry) << 3));
+
         return ret;
     }
 
     public void init(CipherParameters params)
     {
-        if (params != null)
+        if (params instanceof KeyParameter)
         {
             cipher.init(true, params);
     
@@ -130,6 +142,10 @@ public class CMac implements Mac
             cipher.processBlock(ZEROES, 0, L, 0);
             Lu = doubleLu(L);
             Lu2 = doubleLu(Lu);
+        } else if (params != null)
+        {
+            // CMAC mode does not permit IV to underlying CBC mode
+            throw new IllegalArgumentException("CMac mode only permits key to be set.");
         }
 
         reset();

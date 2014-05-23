@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
@@ -17,26 +16,21 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
 /**
  * ECDH key exchange (see RFC 4492)
  */
-public class TlsECDHKeyExchange
-    extends AbstractTlsKeyExchange
+public class TlsECDHKeyExchange extends AbstractTlsKeyExchange
 {
-
     protected TlsSigner tlsSigner;
     protected int[] namedCurves;
     protected short[] clientECPointFormats, serverECPointFormats;
 
     protected AsymmetricKeyParameter serverPublicKey;
-    protected ECPublicKeyParameters ecAgreeServerPublicKey;
     protected TlsAgreementCredentials agreementCredentials;
-    protected ECPrivateKeyParameters ecAgreeClientPrivateKey;
 
-    protected ECPrivateKeyParameters ecAgreeServerPrivateKey;
-    protected ECPublicKeyParameters ecAgreeClientPublicKey;
+    protected ECPrivateKeyParameters ecAgreePrivateKey;
+    protected ECPublicKeyParameters ecAgreePublicKey;
 
     public TlsECDHKeyExchange(int keyExchange, Vector supportedSignatureAlgorithms, int[] namedCurves,
-                              short[] clientECPointFormats, short[] serverECPointFormats)
+        short[] clientECPointFormats, short[] serverECPointFormats)
     {
-
         super(keyExchange, supportedSignatureAlgorithms);
 
         switch (keyExchange)
@@ -71,16 +65,13 @@ public class TlsECDHKeyExchange
         }
     }
 
-    public void skipServerCredentials()
-        throws IOException
+    public void skipServerCredentials() throws IOException
     {
         throw new TlsFatalAlert(AlertDescription.unexpected_message);
     }
 
-    public void processServerCertificate(Certificate serverCertificate)
-        throws IOException
+    public void processServerCertificate(Certificate serverCertificate) throws IOException
     {
-
         if (serverCertificate.isEmpty())
         {
             throw new TlsFatalAlert(AlertDescription.bad_certificate);
@@ -102,8 +93,7 @@ public class TlsECDHKeyExchange
         {
             try
             {
-                this.ecAgreeServerPublicKey = TlsECCUtils
-                    .validateECPublicKey((ECPublicKeyParameters)this.serverPublicKey);
+                this.ecAgreePublicKey = TlsECCUtils.validateECPublicKey((ECPublicKeyParameters) this.serverPublicKey);
             }
             catch (ClassCastException e)
             {
@@ -138,8 +128,7 @@ public class TlsECDHKeyExchange
         }
     }
 
-    public void validateCertificateRequest(CertificateRequest certificateRequest)
-        throws IOException
+    public void validateCertificateRequest(CertificateRequest certificateRequest) throws IOException
     {
         /*
          * RFC 4492 3. [...] The ECDSA_fixed_ECDH and RSA_fixed_ECDH mechanisms are usable with
@@ -164,14 +153,13 @@ public class TlsECDHKeyExchange
         }
     }
 
-    public void processClientCredentials(TlsCredentials clientCredentials)
-        throws IOException
+    public void processClientCredentials(TlsCredentials clientCredentials) throws IOException
     {
         if (clientCredentials instanceof TlsAgreementCredentials)
         {
             // TODO Validate client cert has matching parameters (see 'TlsECCUtils.areOnSameCurve')?
 
-            this.agreementCredentials = (TlsAgreementCredentials)clientCredentials;
+            this.agreementCredentials = (TlsAgreementCredentials) clientCredentials;
         }
         else if (clientCredentials instanceof TlsSignerCredentials)
         {
@@ -183,37 +171,24 @@ public class TlsECDHKeyExchange
         }
     }
 
-    public void generateClientKeyExchange(OutputStream output)
-        throws IOException
+    public void generateClientKeyExchange(OutputStream output) throws IOException
     {
-        if (agreementCredentials != null)
+        if (agreementCredentials == null)
         {
-            return;
+            this.ecAgreePrivateKey = TlsECCUtils.generateEphemeralClientKeyExchange(context.getSecureRandom(),
+                serverECPointFormats, ecAgreePublicKey.getParameters(), output);
         }
-
-        AsymmetricCipherKeyPair ecAgreeClientKeyPair = TlsECCUtils.generateECKeyPair(context.getSecureRandom(),
-            ecAgreeServerPublicKey.getParameters());
-        this.ecAgreeClientPrivateKey = (ECPrivateKeyParameters)ecAgreeClientKeyPair.getPrivate();
-
-        byte[] point = TlsECCUtils.serializeECPublicKey(serverECPointFormats,
-            (ECPublicKeyParameters)ecAgreeClientKeyPair.getPublic());
-
-        TlsUtils.writeOpaque8(point, output);
     }
 
-    public void processClientCertificate(Certificate clientCertificate)
-        throws IOException
+    public void processClientCertificate(Certificate clientCertificate) throws IOException
     {
-
         // TODO Extract the public key
         // TODO If the certificate is 'fixed', take the public key as ecAgreeClientPublicKey
     }
 
-    public void processClientKeyExchange(InputStream input)
-        throws IOException
+    public void processClientKeyExchange(InputStream input) throws IOException
     {
-
-        if (ecAgreeClientPublicKey != null)
+        if (ecAgreePublicKey != null)
         {
             // For ecdsa_fixed_ecdh and rsa_fixed_ecdh, the key arrived in the client certificate
             return;
@@ -221,28 +196,22 @@ public class TlsECDHKeyExchange
 
         byte[] point = TlsUtils.readOpaque8(input);
 
-        ECDomainParameters curve_params = this.ecAgreeServerPrivateKey.getParameters();
+        ECDomainParameters curve_params = this.ecAgreePrivateKey.getParameters();
 
-        this.ecAgreeClientPublicKey = TlsECCUtils.validateECPublicKey(TlsECCUtils.deserializeECPublicKey(
+        this.ecAgreePublicKey = TlsECCUtils.validateECPublicKey(TlsECCUtils.deserializeECPublicKey(
             serverECPointFormats, curve_params, point));
     }
 
-    public byte[] generatePremasterSecret()
-        throws IOException
+    public byte[] generatePremasterSecret() throws IOException
     {
         if (agreementCredentials != null)
         {
-            return agreementCredentials.generateAgreement(ecAgreeServerPublicKey);
+            return agreementCredentials.generateAgreement(ecAgreePublicKey);
         }
 
-        if (ecAgreeServerPrivateKey != null)
+        if (ecAgreePrivateKey != null)
         {
-            return TlsECCUtils.calculateECDHBasicAgreement(ecAgreeClientPublicKey, ecAgreeServerPrivateKey);
-        }
-
-        if (ecAgreeClientPrivateKey != null)
-        {
-            return TlsECCUtils.calculateECDHBasicAgreement(ecAgreeServerPublicKey, ecAgreeClientPrivateKey);
+            return TlsECCUtils.calculateECDHBasicAgreement(ecAgreePublicKey, ecAgreePrivateKey);
         }
 
         throw new TlsFatalAlert(AlertDescription.internal_error);

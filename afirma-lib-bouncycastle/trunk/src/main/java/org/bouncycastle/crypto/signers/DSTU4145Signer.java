@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.DSA;
+import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECKeyParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -56,12 +57,17 @@ public class DSTU4145Signer
 
     public BigInteger[] generateSignature(byte[] message)
     {
-        ECFieldElement h = hash2FieldElement(key.getParameters().getCurve(), message);
-        if (h.toBigInteger().signum() == 0)
+        ECDomainParameters parameters = key.getParameters();
+
+        ECCurve curve = parameters.getCurve();
+
+        ECFieldElement h = hash2FieldElement(curve, message);
+        if (h.isZero())
         {
-            h = key.getParameters().getCurve().fromBigInteger(ONE);
+            h = curve.fromBigInteger(ONE);
         }
 
+        BigInteger n = parameters.getN();
         BigInteger e, r, s;
         ECFieldElement Fe, y;
 
@@ -71,17 +77,17 @@ public class DSTU4145Signer
             {
                 do
                 {
-                    e = generateRandomInteger(key.getParameters().getN(), random);
-                    Fe = key.getParameters().getG().multiply(e).getX();
+                    e = generateRandomInteger(n, random);
+                    Fe = parameters.getG().multiply(e).normalize().getAffineXCoord();
                 }
-                while (Fe.toBigInteger().signum() == 0);
+                while (Fe.isZero());
 
                 y = h.multiply(Fe);
-                r = fieldElement2Integer(key.getParameters().getN(), y);
+                r = fieldElement2Integer(n, y);
             }
             while (r.signum() == 0);
 
-            s = r.multiply(((ECPrivateKeyParameters)key).getD()).add(e).mod(key.getParameters().getN());
+            s = r.multiply(((ECPrivateKeyParameters)key).getD()).add(e).mod(n);
         }
         while (s.signum() == 0);
 
@@ -90,22 +96,28 @@ public class DSTU4145Signer
 
     public boolean verifySignature(byte[] message, BigInteger r, BigInteger s)
     {
-        if (r.signum() == 0 || s.signum() == 0)
-        {
-            return false;
-        }
-        if (r.compareTo(key.getParameters().getN()) >= 0 || s.compareTo(key.getParameters().getN()) >= 0)
+        if (r.signum() <= 0 || s.signum() <= 0)
         {
             return false;
         }
 
-        ECFieldElement h = hash2FieldElement(key.getParameters().getCurve(), message);
-        if (h.toBigInteger().signum() == 0)
+        ECDomainParameters parameters = key.getParameters();
+
+        BigInteger n = parameters.getN();
+        if (r.compareTo(n) >= 0 || s.compareTo(n) >= 0)
         {
-            h = key.getParameters().getCurve().fromBigInteger(ONE);
+            return false;
         }
 
-        ECPoint R = ECAlgorithms.sumOfTwoMultiplies(key.getParameters().getG(), s, ((ECPublicKeyParameters)key).getQ(), r);
+        ECCurve curve = parameters.getCurve();
+
+        ECFieldElement h = hash2FieldElement(curve, message);
+        if (h.isZero())
+        {
+            h = curve.fromBigInteger(ONE);
+        }
+
+        ECPoint R = ECAlgorithms.sumOfTwoMultiplies(parameters.getG(), s, ((ECPublicKeyParameters)key).getQ(), r).normalize();
 
         // components must be bogus.
         if (R.isInfinity())
@@ -113,8 +125,8 @@ public class DSTU4145Signer
             return false;
         }
 
-        ECFieldElement y = h.multiply(R.getX());
-        return fieldElement2Integer(key.getParameters().getN(), y).compareTo(r) == 0;
+        ECFieldElement y = h.multiply(R.getAffineXCoord());
+        return fieldElement2Integer(n, y).compareTo(r) == 0;
     }
 
     /**
@@ -142,7 +154,7 @@ public class DSTU4145Signer
         byte[] data = Arrays.clone(hash);
         reverseBytes(data);
         BigInteger num = new BigInteger(1, data);
-        while (num.bitLength() >= curve.getFieldSize())
+        while (num.bitLength() > curve.getFieldSize())
         {
             num = num.clearBit(num.bitLength() - 1);
         }

@@ -9,7 +9,10 @@ import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.bouncycastle.asn1.ASN1Encoding;
+import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.Extensions;
@@ -44,7 +47,68 @@ public class TlsUtils
 
     public static final Integer EXT_signature_algorithms = Integers.valueOf(ExtensionType.signature_algorithms);
 
+    public static void checkUint8(short i) throws IOException
+    {
+        if (!isValidUint8(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
+    public static void checkUint8(int i) throws IOException
+    {
+        if (!isValidUint8(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
+    public static void checkUint16(int i) throws IOException
+    {
+        if (!isValidUint16(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
+    public static void checkUint24(int i) throws IOException
+    {
+        if (!isValidUint24(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
+    public static void checkUint32(long i) throws IOException
+    {
+        if (!isValidUint32(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
+    public static void checkUint48(long i) throws IOException
+    {
+        if (!isValidUint48(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
+    public static void checkUint64(long i) throws IOException
+    {
+        if (!isValidUint64(i))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+    }
+
     public static boolean isValidUint8(short i)
+    {
+        return (i & 0xFF) == i;
+    }
+
+    public static boolean isValidUint8(int i)
     {
         return (i & 0xFF) == i;
     }
@@ -74,13 +138,39 @@ public class TlsUtils
         return true;
     }
 
+    public static boolean isSSL(TlsContext context)
+    {
+        return context.getServerVersion().isSSL();
+    }
+
+    public static boolean isTLSv11(TlsContext context)
+    {
+        return ProtocolVersion.TLSv11.isEqualOrEarlierVersionOf(context.getServerVersion().getEquivalentTLSVersion());
+    }
+
+    public static boolean isTLSv12(TlsContext context)
+    {
+        return ProtocolVersion.TLSv12.isEqualOrEarlierVersionOf(context.getServerVersion().getEquivalentTLSVersion());
+    }
+
     public static void writeUint8(short i, OutputStream output)
         throws IOException
     {
         output.write(i);
     }
 
+    public static void writeUint8(int i, OutputStream output)
+        throws IOException
+    {
+        output.write(i);
+    }
+
     public static void writeUint8(short i, byte[] buf, int offset)
+    {
+        buf[offset] = (byte)i;
+    }
+
+    public static void writeUint8(int i, byte[] buf, int offset)
     {
         buf[offset] = (byte)i;
     }
@@ -130,6 +220,17 @@ public class TlsUtils
         buf[offset + 3] = (byte)(i);
     }
 
+    public static void writeUint48(long i, OutputStream output)
+        throws IOException
+    {
+        output.write((byte)(i >> 40));
+        output.write((byte)(i >> 32));
+        output.write((byte)(i >> 24));
+        output.write((byte)(i >> 16));
+        output.write((byte)(i >> 8));
+        output.write((byte)(i));
+    }
+
     public static void writeUint48(long i, byte[] buf, int offset)
     {
         buf[offset] = (byte)(i >> 40);
@@ -143,14 +244,14 @@ public class TlsUtils
     public static void writeUint64(long i, OutputStream output)
         throws IOException
     {
-        output.write((int)(i >> 56));
-        output.write((int)(i >> 48));
-        output.write((int)(i >> 40));
-        output.write((int)(i >> 32));
-        output.write((int)(i >> 24));
-        output.write((int)(i >> 16));
-        output.write((int)(i >> 8));
-        output.write((int)(i));
+        output.write((byte)(i >> 56));
+        output.write((byte)(i >> 48));
+        output.write((byte)(i >> 40));
+        output.write((byte)(i >> 32));
+        output.write((byte)(i >> 24));
+        output.write((byte)(i >> 16));
+        output.write((byte)(i >> 8));
+        output.write((byte)(i));
     }
 
     public static void writeUint64(long i, byte[] buf, int offset)
@@ -168,13 +269,15 @@ public class TlsUtils
     public static void writeOpaque8(byte[] buf, OutputStream output)
         throws IOException
     {
-        writeUint8((short)buf.length, output);
+        checkUint8(buf.length);
+        writeUint8(buf.length, output);
         output.write(buf);
     }
 
     public static void writeOpaque16(byte[] buf, OutputStream output)
         throws IOException
     {
+        checkUint16(buf.length);
         writeUint16(buf.length, output);
         output.write(buf);
     }
@@ -182,6 +285,7 @@ public class TlsUtils
     public static void writeOpaque24(byte[] buf, OutputStream output)
         throws IOException
     {
+        checkUint24(buf.length);
         writeUint24(buf.length, output);
         output.write(buf);
     }
@@ -195,6 +299,32 @@ public class TlsUtils
         }
     }
 
+    public static void writeUint8Array(short[] uints, byte[] buf, int offset)
+        throws IOException
+    {
+        for (int i = 0; i < uints.length; ++i)
+        {
+            writeUint8(uints[i], buf, offset);
+            ++offset;
+        }
+    }
+
+    public static void writeUint8ArrayWithUint8Length(short[] uints, OutputStream output)
+        throws IOException
+    {
+        checkUint8(uints.length);
+        writeUint8(uints.length, output);
+        writeUint8Array(uints, output);
+    }
+
+    public static void writeUint8ArrayWithUint8Length(short[] uints, byte[] buf, int offset)
+        throws IOException
+    {
+        checkUint8(uints.length);
+        writeUint8(uints.length, buf, offset);
+        writeUint8Array(uints, buf, offset + 1);
+    }
+
     public static void writeUint16Array(int[] uints, OutputStream output)
         throws IOException
     {
@@ -202,6 +332,56 @@ public class TlsUtils
         {
             writeUint16(uints[i], output);
         }
+    }
+
+    public static void writeUint16Array(int[] uints, byte[] buf, int offset)
+        throws IOException
+    {
+        for (int i = 0; i < uints.length; ++i)
+        {
+            writeUint16(uints[i], buf, offset);
+            offset += 2;
+        }
+    }
+
+    public static void writeUint16ArrayWithUint16Length(int[] uints, OutputStream output)
+        throws IOException
+    {
+        int length = 2 * uints.length;
+        checkUint16(length);
+        writeUint16(length, output);
+        writeUint16Array(uints, output);
+    }
+
+    public static void writeUint16ArrayWithUint16Length(int[] uints, byte[] buf, int offset)
+        throws IOException
+    {
+        int length = 2 * uints.length;
+        checkUint16(length);
+        writeUint16(length, buf, offset);
+        writeUint16Array(uints, buf, offset + 2);
+    }
+
+    public static byte[] encodeOpaque8(byte[] buf)
+        throws IOException
+    {
+        checkUint8(buf.length);
+        return Arrays.prepend(buf, (byte)buf.length);
+    }
+
+    public static byte[] encodeUint8ArrayWithUint8Length(short[] uints) throws IOException
+    {
+        byte[] result = new byte[1 + uints.length];
+        writeUint8ArrayWithUint8Length(uints, result, 0);
+        return result;
+    }
+
+    public static byte[] encodeUint16ArrayWithUint16Length(int[] uints) throws IOException
+    {
+        int length = 2 * uints.length;
+        byte[] result = new byte[2 + length];
+        writeUint16ArrayWithUint16Length(uints, result, 0);
+        return result;
     }
 
     public static short readUint8(InputStream input)
@@ -297,6 +477,26 @@ public class TlsUtils
         return ((long)(hi & 0xffffffffL) << 24) | (long)(lo & 0xffffffffL);
     }
 
+    public static byte[] readAllOrNothing(int length, InputStream input)
+        throws IOException
+    {
+        if (length < 1)
+        {
+            return EMPTY_BYTES;
+        }
+        byte[] buf = new byte[length];
+        int read = Streams.readFully(input, buf);
+        if (read == 0)
+        {
+            return null;
+        }
+        if (read != length)
+        {
+            throw new EOFException();
+        }
+        return buf;
+    }
+
     public static byte[] readFully(int length, InputStream input)
         throws IOException
     {
@@ -383,6 +583,12 @@ public class TlsUtils
         return ProtocolVersion.get(i1, i2);
     }
 
+    public static int readVersionRaw(byte[] buf, int offset)
+        throws IOException
+    {
+        return (buf[offset] << 8) | buf[offset + 1];
+    }
+
     public static int readVersionRaw(InputStream input)
         throws IOException
     {
@@ -393,6 +599,36 @@ public class TlsUtils
             throw new EOFException();
         }
         return (i1 << 8) | i2;
+    }
+
+    public static ASN1Primitive readASN1Object(byte[] encoding) throws IOException
+    {
+        ASN1InputStream asn1 = new ASN1InputStream(encoding);
+        ASN1Primitive result = asn1.readObject();
+        if (null == result)
+        {
+            throw new TlsFatalAlert(AlertDescription.decode_error);
+        }
+        if (null != asn1.readObject())
+        {
+            throw new TlsFatalAlert(AlertDescription.decode_error);
+        }
+        return result;
+    }
+
+    public static ASN1Primitive readDERObject(byte[] encoding) throws IOException
+    {
+        /*
+         * NOTE: The current ASN.1 parsing code can't enforce DER-only parsing, but since DER is
+         * canonical, we can check it by re-encoding the result and comparing to the original.
+         */
+        ASN1Primitive result = readASN1Object(encoding);
+        byte[] check = result.getEncoded(ASN1Encoding.DER);
+        if (!Arrays.areEqual(check, encoding))
+        {
+            throw new TlsFatalAlert(AlertDescription.decode_error);
+        }
+        return result;
     }
 
     public static void writeGMTUnixTime(byte[] buf, int offset)
@@ -412,7 +648,6 @@ public class TlsUtils
     }
 
     public static void writeVersion(ProtocolVersion version, byte[] buf, int offset)
-        throws IOException
     {
         buf[offset] = (byte)version.getMajorVersion();
         buf[offset + 1] = (byte)version.getMinorVersion();
@@ -431,6 +666,31 @@ public class TlsUtils
     public static Vector getDefaultRSASignatureAlgorithms()
     {
         return vectorOfOne(new SignatureAndHashAlgorithm(HashAlgorithm.sha1, SignatureAlgorithm.rsa));
+    }
+
+    public static byte[] getExtensionData(Hashtable extensions, Integer extensionType)
+    {
+        return extensions == null ? null : (byte[])extensions.get(extensionType);
+    }
+
+    public static boolean hasExpectedEmptyExtensionData(Hashtable extensions, Integer extensionType,
+        short alertDescription) throws IOException
+    {
+        byte[] extension_data = getExtensionData(extensions, extensionType);
+        if (extension_data == null)
+        {
+            return false;
+        }
+        if (extension_data.length != 0)
+        {
+            throw new TlsFatalAlert(alertDescription);
+        }
+        return true;
+    }
+
+    public static TlsSession importSession(byte[] sessionID, SessionParameters sessionParameters)
+    {
+        return new TlsSessionImpl(sessionID, sessionParameters);
     }
 
     public static boolean isSignatureAlgorithmsExtensionAllowed(ProtocolVersion clientVersion)
@@ -461,17 +721,8 @@ public class TlsUtils
     public static Vector getSignatureAlgorithmsExtension(Hashtable extensions)
         throws IOException
     {
-
-        if (extensions == null)
-        {
-            return null;
-        }
-        byte[] extensionValue = (byte[])extensions.get(EXT_signature_algorithms);
-        if (extensionValue == null)
-        {
-            return null;
-        }
-        return readSignatureAlgorithmsExtension(extensionValue);
+        byte[] extensionData = getExtensionData(extensions, EXT_signature_algorithms);
+        return extensionData == null ? null : readSignatureAlgorithmsExtension(extensionData);
     }
 
     /**
@@ -484,61 +735,94 @@ public class TlsUtils
     public static byte[] createSignatureAlgorithmsExtension(Vector supportedSignatureAlgorithms)
         throws IOException
     {
-
-        if (supportedSignatureAlgorithms == null || supportedSignatureAlgorithms.size() < 1 || supportedSignatureAlgorithms.size() >= (1 << 15))
-        {
-            throw new IllegalArgumentException(
-                "'supportedSignatureAlgorithms' must have length from 1 to (2^15 - 1)");
-        }
-
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
 
         // supported_signature_algorithms
-        TlsUtils.writeUint16(2 * supportedSignatureAlgorithms.size(), buf);
-        for (int i = 0; i < supportedSignatureAlgorithms.size(); ++i)
-        {
-            SignatureAndHashAlgorithm entry = (SignatureAndHashAlgorithm)supportedSignatureAlgorithms.elementAt(i);
-            entry.encode(buf);
-        }
+        encodeSupportedSignatureAlgorithms(supportedSignatureAlgorithms, false, buf);
 
         return buf.toByteArray();
     }
 
     /**
-     * Read a 'signature_algorithms' extension value.
+     * Read 'signature_algorithms' extension data.
      *
-     * @param extensionValue The extension value.
+     * @param extensionData The extension data.
      * @return A {@link Vector} containing at least 1 {@link SignatureAndHashAlgorithm}.
      * @throws IOException
      */
-    public static Vector readSignatureAlgorithmsExtension(byte[] extensionValue)
+    public static Vector readSignatureAlgorithmsExtension(byte[] extensionData)
         throws IOException
     {
-
-        if (extensionValue == null)
+        if (extensionData == null)
         {
-            throw new IllegalArgumentException("'extensionValue' cannot be null");
+            throw new IllegalArgumentException("'extensionData' cannot be null");
         }
 
-        ByteArrayInputStream buf = new ByteArrayInputStream(extensionValue);
+        ByteArrayInputStream buf = new ByteArrayInputStream(extensionData);
 
         // supported_signature_algorithms
-        int length = TlsUtils.readUint16(buf);
+        Vector supported_signature_algorithms = parseSupportedSignatureAlgorithms(false, buf);
+
+        TlsProtocol.assertEmpty(buf);
+
+        return supported_signature_algorithms;
+    }
+
+    public static void encodeSupportedSignatureAlgorithms(Vector supportedSignatureAlgorithms, boolean allowAnonymous,
+        OutputStream output) throws IOException
+    {
+        if (supportedSignatureAlgorithms == null || supportedSignatureAlgorithms.size() < 1
+            || supportedSignatureAlgorithms.size() >= (1 << 15))
+        {
+            throw new IllegalArgumentException(
+                "'supportedSignatureAlgorithms' must have length from 1 to (2^15 - 1)");
+        }
+
+        // supported_signature_algorithms
+        int length = 2 * supportedSignatureAlgorithms.size();
+        TlsUtils.checkUint16(length);
+        TlsUtils.writeUint16(length, output);
+        for (int i = 0; i < supportedSignatureAlgorithms.size(); ++i)
+        {
+            SignatureAndHashAlgorithm entry = (SignatureAndHashAlgorithm)supportedSignatureAlgorithms.elementAt(i);
+            if (!allowAnonymous && entry.getSignature() == SignatureAlgorithm.anonymous)
+            {
+                /*
+                 * RFC 5246 7.4.1.4.1 The "anonymous" value is meaningless in this context but used
+                 * in Section 7.4.3. It MUST NOT appear in this extension.
+                 */
+                throw new IllegalArgumentException(
+                    "SignatureAlgorithm.anonymous MUST NOT appear in the signature_algorithms extension");
+            }
+            entry.encode(output);
+        }
+    }
+
+    public static Vector parseSupportedSignatureAlgorithms(boolean allowAnonymous, InputStream input)
+        throws IOException
+    {
+        // supported_signature_algorithms
+        int length = TlsUtils.readUint16(input);
         if (length < 2 || (length & 1) != 0)
         {
             throw new TlsFatalAlert(AlertDescription.decode_error);
         }
         int count = length / 2;
-        Vector result = new Vector(count);
+        Vector supportedSignatureAlgorithms = new Vector(count);
         for (int i = 0; i < count; ++i)
         {
-            SignatureAndHashAlgorithm entry = SignatureAndHashAlgorithm.parse(buf);
-            result.addElement(entry);
+            SignatureAndHashAlgorithm entry = SignatureAndHashAlgorithm.parse(input);
+            if (!allowAnonymous && entry.getSignature() == SignatureAlgorithm.anonymous)
+            {
+                /*
+                 * RFC 5246 7.4.1.4.1 The "anonymous" value is meaningless in this context but used
+                 * in Section 7.4.3. It MUST NOT appear in this extension.
+                 */
+                throw new TlsFatalAlert(AlertDescription.illegal_parameter);
+            }
+            supportedSignatureAlgorithms.addElement(entry);
         }
-
-        TlsProtocol.assertEmpty(buf);
-
-        return result;
+        return supportedSignatureAlgorithms;
     }
 
     public static byte[] PRF(TlsContext context, byte[] secret, String asciiLabel, byte[] seed, int size)
@@ -557,12 +841,7 @@ public class TlsUtils
 
         if (prfAlgorithm == PRFAlgorithm.tls_prf_legacy)
         {
-            if (!ProtocolVersion.TLSv12.isEqualOrEarlierVersionOf(version.getEquivalentTLSVersion()))
-            {
-                return PRF_legacy(secret, label, labelSeed, size);
-            }
-
-            prfAlgorithm = PRFAlgorithm.tls_prf_sha256;
+            return PRF_legacy(secret, label, labelSeed, size);
         }
 
         Digest prfDigest = createPRFHash(prfAlgorithm);
@@ -646,7 +925,7 @@ public class TlsUtils
         byte[] seed = concat(securityParameters.getServerRandom(),
             securityParameters.getClientRandom());
 
-        if (context.getServerVersion().isSSL())
+        if (isSSL(context))
         {
             return calculateKeyBlock_SSL(master_secret, seed, size);
         }
@@ -690,7 +969,7 @@ public class TlsUtils
         SecurityParameters securityParameters = context.getSecurityParameters();
         byte[] seed = concat(securityParameters.getClientRandom(), securityParameters.getServerRandom());
 
-        if (context.getServerVersion().isSSL())
+        if (isSSL(context))
         {
             return calculateMasterSecret_SSL(pre_master_secret, seed);
         }
@@ -729,7 +1008,7 @@ public class TlsUtils
 
     static byte[] calculateVerifyData(TlsContext context, String asciiLabel, byte[] handshakeHash)
     {
-        if (context.getServerVersion().isSSL())
+        if (isSSL(context))
         {
             return handshakeHash;
         }
@@ -741,7 +1020,7 @@ public class TlsUtils
         return PRF(context, master_secret, asciiLabel, handshakeHash, verify_data_length);
     }
 
-    public static final Digest createHash(int hashAlgorithm)
+    public static final Digest createHash(short hashAlgorithm)
     {
         switch (hashAlgorithm)
         {
@@ -762,7 +1041,7 @@ public class TlsUtils
         }
     }
 
-    public static final Digest cloneHash(int hashAlgorithm, Digest hash)
+    public static final Digest cloneHash(short hashAlgorithm, Digest hash)
     {
         switch (hashAlgorithm)
         {
@@ -820,7 +1099,7 @@ public class TlsUtils
         }
     }
 
-    public static ASN1ObjectIdentifier getOIDForHashAlgorithm(int hashAlgorithm)
+    public static ASN1ObjectIdentifier getOIDForHashAlgorithm(short hashAlgorithm)
     {
         switch (hashAlgorithm)
         {
@@ -910,6 +1189,20 @@ public class TlsUtils
         }
 
         throw new TlsFatalAlert(AlertDescription.unsupported_certificate);
+    }
+
+    static void trackHashAlgorithms(TlsHandshakeHash handshakeHash, Vector supportedSignatureAlgorithms)
+    {
+        if (supportedSignatureAlgorithms != null)
+        {
+            for (int i = 0; i < supportedSignatureAlgorithms.size(); ++i)
+            {
+                SignatureAndHashAlgorithm signatureAndHashAlgorithm = (SignatureAndHashAlgorithm)
+                    supportedSignatureAlgorithms.elementAt(i);
+                short hashAlgorithm = signatureAndHashAlgorithm.getHash();
+                handshakeHash.trackHashAlgorithm(hashAlgorithm);
+            }
+        }
     }
 
     public static boolean hasSigningCapability(short clientCertificateType)

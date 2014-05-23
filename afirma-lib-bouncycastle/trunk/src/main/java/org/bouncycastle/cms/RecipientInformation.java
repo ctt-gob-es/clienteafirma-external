@@ -2,15 +2,10 @@ package org.bouncycastle.cms;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.security.AlgorithmParameters;
-import java.security.Key;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.cms.jcajce.JceAlgorithmIdentifierConverter;
 import org.bouncycastle.util.io.Streams;
 
 public abstract class RecipientInformation
@@ -71,7 +66,7 @@ public abstract class RecipientInformation
      */
     public String getKeyEncryptionAlgOID()
     {
-        return keyEncAlg.getObjectId().getId();
+        return keyEncAlg.getAlgorithm().getId();
     }
 
     /**
@@ -89,68 +84,6 @@ public abstract class RecipientInformation
         catch (Exception e)
         {
             throw new RuntimeException("exception getting encryption parameters " + e);
-        }
-    }
-
-    /**
-     * Return an AlgorithmParameters object giving the encryption parameters
-     * used to encrypt the key this recipient holds.
-     *
-     * @param provider the provider to generate the parameters for.
-     * @return the parameters object, null if there is not one.
-     * @throws CMSException            if the algorithm cannot be found, or the parameters can't be parsed.
-     * @throws NoSuchProviderException if the provider cannot be found.
-     * @deprecated use getKeyEncryptionAlgorithm and JceAlgorithmIdentifierConverter().
-     */
-    public AlgorithmParameters getKeyEncryptionAlgorithmParameters(
-        String provider)
-        throws CMSException, NoSuchProviderException
-    {
-        return new JceAlgorithmIdentifierConverter().setProvider(provider).getAlgorithmParameters(keyEncAlg);
-    }
-
-    /**
-     * Return an AlgorithmParameters object giving the encryption parameters
-     * used to encrypt the key this recipient holds.
-     *
-     * @param provider the provider to generate the parameters for.
-     * @return the parameters object, null if there is not one.
-     * @throws CMSException if the algorithm cannot be found, or the parameters can't be parsed.
-     * @deprecated use getKeyEncryptionAlgorithm and JceAlgorithmIdentifierConverter().
-     */
-    public AlgorithmParameters getKeyEncryptionAlgorithmParameters(
-        Provider provider)
-        throws CMSException
-    {
-        return new JceAlgorithmIdentifierConverter().setProvider(provider).getAlgorithmParameters(keyEncAlg);
-    }
-
-    /**
-     * @deprecated use getContent(Recipient)
-     */
-    public byte[] getContent(
-        Key key,
-        String provider)
-        throws CMSException, NoSuchProviderException
-    {
-        return getContent(key, CMSUtils.getProvider(provider));
-    }
-
-    /**
-     * @deprecated use getContent(Recipient)
-     */
-    public byte[] getContent(
-        Key key,
-        Provider provider)
-        throws CMSException
-    {
-        try
-        {
-            return CMSUtils.streamToByteArray(getContentStream(key, provider).getContentStream());
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("unable to parse internal stream: " + e);
         }
     }
 
@@ -221,24 +154,6 @@ public abstract class RecipientInformation
             throw new CMSException("unable to parse internal stream: " + e.getMessage(), e);
         }
     }
-
-    /**
-     * decrypt the content and return it
-     * @deprecated use getContentStream(Recipient) method
-     */
-    public CMSTypedStream getContentStream(Key key, String provider)
-        throws CMSException, NoSuchProviderException
-    {
-        return getContentStream(key, CMSUtils.getProvider(provider));
-    }
-
-    /**
-     * decrypt the content and return it
-     * @deprecated use getContentStream(Recipient) method
-     */
-    public abstract CMSTypedStream getContentStream(Key key, Provider provider)
-        throws CMSException;
-
 
     /**
      * Return a CMSTypedStream representing the content in the EnvelopedData after recovering the content

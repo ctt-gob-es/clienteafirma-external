@@ -13,7 +13,7 @@ import org.bouncycastle.util.Arrays;
 
 /**
  * An implementation of the "work in progress" Internet-Draft <a
- * href="http://tools.ietf.org/html/draft-irtf-cfrg-ocb-00">The OCB Authenticated-Encryption
+ * href="http://tools.ietf.org/html/draft-irtf-cfrg-ocb-03">The OCB Authenticated-Encryption
  * Algorithm</a>, licensed per:
  * <p/>
  * <blockquote> <a href="http://www.cs.ucdavis.edu/~rogaway/ocb/license1.pdf">License for
@@ -111,7 +111,6 @@ public class OCBBlockCipher
     public void init(boolean forEncryption, CipherParameters parameters)
         throws IllegalArgumentException
     {
-
         this.forEncryption = forEncryption;
         this.macBlock = null;
 
@@ -156,23 +155,18 @@ public class OCBBlockCipher
             N = new byte[0];
         }
 
-        if (N.length > 16 || (N.length == 16 && (N[0] & 0x80) != 0))
+        if (N.length > 15)
         {
-            /*
-             * NOTE: We don't just ignore bit 128 because it would hide from the caller the fact
-             * that two nonces differing only in bit 128 are not different.
-             */
-            throw new IllegalArgumentException("IV must be no more than 127 bits");
+            throw new IllegalArgumentException("IV must be no more than 15 bytes");
         }
 
         /*
          * KEY-DEPENDENT INITIALISATION
          */
 
-        // if keyParam is null we're reusing the last key.
-        if (keyParameter != null)
+        if (keyParameter == null)
         {
-            // TODO
+            // TODO If 'keyParameter' is null we're re-using the last key.
         }
 
         // hashCipher always used in forward mode
@@ -193,17 +187,10 @@ public class OCBBlockCipher
 
         byte[] nonce = new byte[16];
         System.arraycopy(N, 0, nonce, nonce.length - N.length, N.length);
-        if (N.length == 16)
-        {
-            nonce[0] &= 0x80;
-        }
-        else
-        {
-            nonce[15 - N.length] = 1;
-        }
+        nonce[0] = (byte)(macSize << 4);
+        nonce[15 - N.length] |= 1;
 
         int bottom = nonce[15] & 0x3F;
-        // System.out.println("bottom: " + bottom);
 
         byte[] Ktop = new byte[16];
         nonce[15] &= 0xC0;
@@ -314,7 +301,6 @@ public class OCBBlockCipher
     public int processBytes(byte[] input, int inOff, int len, byte[] output, int outOff)
         throws DataLengthException
     {
-
         int resultLen = 0;
 
         for (int i = 0; i < len; ++i)
@@ -334,7 +320,6 @@ public class OCBBlockCipher
         throws IllegalStateException,
         InvalidCipherTextException
     {
-
         /*
          * For decryption, get the tag from the end of the message
          */
@@ -483,7 +468,6 @@ public class OCBBlockCipher
 
     protected void reset(boolean clearMac)
     {
-
         hashCipher.reset();
         mainCipher.reset();
 

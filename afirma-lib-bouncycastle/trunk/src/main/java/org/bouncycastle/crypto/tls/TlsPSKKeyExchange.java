@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.Vector;
 
 import org.bouncycastle.asn1.x509.KeyUsage;
@@ -22,33 +21,42 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
 public class TlsPSKKeyExchange
     extends AbstractTlsKeyExchange
 {
-
     protected TlsPSKIdentity pskIdentity;
+    protected DHParameters dhParameters;
+    protected int[] namedCurves;
+    protected short[] clientECPointFormats, serverECPointFormats;
 
     protected byte[] psk_identity_hint = null;
 
-    protected DHPublicKeyParameters dhAgreeServerPublicKey = null;
-    protected DHPrivateKeyParameters dhAgreeClientPrivateKey = null;
+    protected DHPrivateKeyParameters dhAgreePrivateKey = null;
+    protected DHPublicKeyParameters dhAgreePublicKey = null;
 
     protected AsymmetricKeyParameter serverPublicKey = null;
     protected RSAKeyParameters rsaServerPublicKey = null;
+    protected TlsEncryptionCredentials serverCredentials = null;
     protected byte[] premasterSecret;
 
-    public TlsPSKKeyExchange(int keyExchange, Vector supportedSignatureAlgorithms, TlsPSKIdentity pskIdentity)
+    public TlsPSKKeyExchange(int keyExchange, Vector supportedSignatureAlgorithms, TlsPSKIdentity pskIdentity,
+        DHParameters dhParameters, int[] namedCurves, short[] clientECPointFormats, short[] serverECPointFormats)
     {
         super(keyExchange, supportedSignatureAlgorithms);
 
         switch (keyExchange)
         {
+        case KeyExchangeAlgorithm.DHE_PSK:
+        case KeyExchangeAlgorithm.ECDHE_PSK:
         case KeyExchangeAlgorithm.PSK:
         case KeyExchangeAlgorithm.RSA_PSK:
-        case KeyExchangeAlgorithm.DHE_PSK:
             break;
         default:
             throw new IllegalArgumentException("unsupported key exchange algorithm");
         }
 
         this.pskIdentity = pskIdentity;
+        this.dhParameters = dhParameters;
+        this.namedCurves = namedCurves;
+        this.clientECPointFormats = clientECPointFormats;
+        this.serverECPointFormats = serverECPointFormats;
     }
 
     public void skipServerCredentials()
@@ -60,10 +68,61 @@ public class TlsPSKKeyExchange
         }
     }
 
+    public void processServerCredentials(TlsCredentials serverCredentials)
+        throws IOException
+    {
+        if (!(serverCredentials instanceof TlsEncryptionCredentials))
+        {
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+
+        processServerCertificate(serverCredentials.getCertificate());
+
+        this.serverCredentials = (TlsEncryptionCredentials)serverCredentials;
+    }
+
+    public byte[] generateServerKeyExchange() throws IOException
+    {
+        // TODO[RFC 4279] Need a server-side PSK API to determine hint and resolve identities to keys
+        this.psk_identity_hint = null;
+
+        if (this.psk_identity_hint == null && !requiresServerKeyExchange())
+        {
+            return null;
+        }
+
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+
+        if (this.psk_identity_hint == null)
+        {
+            TlsUtils.writeOpaque16(TlsUtils.EMPTY_BYTES, buf);
+        }
+        else
+        {
+            TlsUtils.writeOpaque16(this.psk_identity_hint, buf);
+        }
+
+        if (this.keyExchange == KeyExchangeAlgorithm.DHE_PSK)
+        {
+            if (this.dhParameters == null)
+            {
+                throw new TlsFatalAlert(AlertDescription.internal_error);
+            }
+
+            this.dhAgreePrivateKey = TlsDHUtils.generateEphemeralServerKeyExchange(context.getSecureRandom(),
+                this.dhParameters, buf);
+        }
+        else if (this.keyExchange == KeyExchangeAlgorithm.ECDHE_PSK)
+        {
+            // TODO[RFC 5489]
+        }
+
+        return buf.toByteArray();
+    }
+
     public void processServerCertificate(Certificate serverCertificate)
         throws IOException
     {
-
         if (keyExchange != KeyExchangeAlgorithm.RSA_PSK)
         {
             throw new TlsFatalAlert(AlertDescription.unexpected_message);
@@ -100,27 +159,30 @@ public class TlsPSKKeyExchange
 
     public boolean requiresServerKeyExchange()
     {
-        return keyExchange == KeyExchangeAlgorithm.DHE_PSK;
+        switch (keyExchange)
+        {
+        case KeyExchangeAlgorithm.DHE_PSK:
+        case KeyExchangeAlgorithm.ECDHE_PSK:
+            return true;
+        default:
+            return false;
+        }
     }
 
     public void processServerKeyExchange(InputStream input)
         throws IOException
     {
-
         this.psk_identity_hint = TlsUtils.readOpaque16(input);
 
         if (this.keyExchange == KeyExchangeAlgorithm.DHE_PSK)
         {
-            byte[] pBytes = TlsUtils.readOpaque16(input);
-            byte[] gBytes = TlsUtils.readOpaque16(input);
-            byte[] YsBytes = TlsUtils.readOpaque16(input);
+            ServerDHParams serverDHParams = ServerDHParams.parse(input);
 
-            BigInteger p = new BigInteger(1, pBytes);
-            BigInteger g = new BigInteger(1, gBytes);
-            BigInteger Ys = new BigInteger(1, YsBytes);
-
-            this.dhAgreeServerPublicKey = TlsDHUtils.validateDHPublicKey(new DHPublicKeyParameters(Ys,
-                new DHParameters(p, g)));
+            this.dhAgreePublicKey = TlsDHUtils.validateDHPublicKey(serverDHParams.getPublicKey());
+        }
+        else if (this.keyExchange == KeyExchangeAlgorithm.ECDHE_PSK)
+        {
+            // TODO[RFC 5489]
         }
     }
 
@@ -139,7 +201,6 @@ public class TlsPSKKeyExchange
     public void generateClientKeyExchange(OutputStream output)
         throws IOException
     {
-
         if (psk_identity_hint == null)
         {
             pskIdentity.skipIdentityHint();
@@ -153,22 +214,26 @@ public class TlsPSKKeyExchange
 
         TlsUtils.writeOpaque16(psk_identity, output);
 
-        if (this.keyExchange == KeyExchangeAlgorithm.RSA_PSK)
+        if (this.keyExchange == KeyExchangeAlgorithm.DHE_PSK)
+        {
+            this.dhAgreePrivateKey = TlsDHUtils.generateEphemeralClientKeyExchange(context.getSecureRandom(),
+                dhAgreePublicKey.getParameters(), output);
+        }
+        else if (this.keyExchange == KeyExchangeAlgorithm.ECDHE_PSK)
+        {
+            // TODO[RFC 5489]
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+        else if (this.keyExchange == KeyExchangeAlgorithm.RSA_PSK)
         {
             this.premasterSecret = TlsRSAUtils.generateEncryptedPreMasterSecret(context, this.rsaServerPublicKey,
                 output);
-        }
-        else if (this.keyExchange == KeyExchangeAlgorithm.DHE_PSK)
-        {
-            this.dhAgreeClientPrivateKey = TlsDHUtils.generateEphemeralClientKeyExchange(context.getSecureRandom(),
-                dhAgreeServerPublicKey.getParameters(), output);
         }
     }
 
     public byte[] generatePremasterSecret()
         throws IOException
     {
-
         byte[] psk = pskIdentity.getPSK();
         byte[] other_secret = generateOtherSecret(psk.length);
 
@@ -178,12 +243,22 @@ public class TlsPSKKeyExchange
         return buf.toByteArray();
     }
 
-    protected byte[] generateOtherSecret(int pskLength)
+    protected byte[] generateOtherSecret(int pskLength) throws IOException
     {
-
         if (this.keyExchange == KeyExchangeAlgorithm.DHE_PSK)
         {
-            return TlsDHUtils.calculateDHBasicAgreement(dhAgreeServerPublicKey, dhAgreeClientPrivateKey);
+            if (dhAgreePrivateKey != null)
+            {
+                return TlsDHUtils.calculateDHBasicAgreement(dhAgreePublicKey, dhAgreePrivateKey);
+            }
+
+            throw new TlsFatalAlert(AlertDescription.internal_error);
+        }
+
+        if (this.keyExchange == KeyExchangeAlgorithm.ECDHE_PSK)
+        {
+            // TODO[RFC 5489]
+            throw new TlsFatalAlert(AlertDescription.internal_error);
         }
 
         if (this.keyExchange == KeyExchangeAlgorithm.RSA_PSK)

@@ -1,7 +1,6 @@
 package org.bouncycastle.crypto.tls;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,7 +8,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Hashtable;
 
-import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
@@ -19,91 +18,63 @@ import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.BigIntegers;
 import org.bouncycastle.util.Integers;
 
 public class TlsECCUtils
 {
-
     public static final Integer EXT_elliptic_curves = Integers.valueOf(ExtensionType.elliptic_curves);
     public static final Integer EXT_ec_point_formats = Integers.valueOf(ExtensionType.ec_point_formats);
 
-    private static final String[] curveNames = new String[]{"sect163k1", "sect163r1", "sect163r2", "sect193r1",
+    private static final String[] curveNames = new String[] { "sect163k1", "sect163r1", "sect163r2", "sect193r1",
         "sect193r2", "sect233k1", "sect233r1", "sect239k1", "sect283k1", "sect283r1", "sect409k1", "sect409r1",
         "sect571k1", "sect571r1", "secp160k1", "secp160r1", "secp160r2", "secp192k1", "secp192r1", "secp224k1",
-        "secp224r1", "secp256k1", "secp256r1", "secp384r1", "secp521r1",};
+        "secp224r1", "secp256k1", "secp256r1", "secp384r1", "secp521r1",
+        "brainpoolP256r1", "brainpoolP384r1", "brainpoolP512r1"};
 
-    public static void addSupportedEllipticCurvesExtension(Hashtable extensions, int[] namedCurves)
-        throws IOException
+    public static void addSupportedEllipticCurvesExtension(Hashtable extensions, int[] namedCurves) throws IOException
     {
-
         extensions.put(EXT_elliptic_curves, createSupportedEllipticCurvesExtension(namedCurves));
     }
 
     public static void addSupportedPointFormatsExtension(Hashtable extensions, short[] ecPointFormats)
         throws IOException
     {
-
         extensions.put(EXT_ec_point_formats, createSupportedPointFormatsExtension(ecPointFormats));
     }
 
-    public static int[] getSupportedEllipticCurvesExtension(Hashtable extensions)
-        throws IOException
+    public static int[] getSupportedEllipticCurvesExtension(Hashtable extensions) throws IOException
     {
-
-        if (extensions == null)
-        {
-            return null;
-        }
-        byte[] extensionValue = (byte[])extensions.get(EXT_elliptic_curves);
-        if (extensionValue == null)
-        {
-            return null;
-        }
-        return readSupportedEllipticCurvesExtension(extensionValue);
+        byte[] extensionData = TlsUtils.getExtensionData(extensions, EXT_elliptic_curves);
+        return extensionData == null ? null : readSupportedEllipticCurvesExtension(extensionData);
     }
 
-    public static short[] getSupportedPointFormatsExtension(Hashtable extensions)
-        throws IOException
+    public static short[] getSupportedPointFormatsExtension(Hashtable extensions) throws IOException
     {
-
-        if (extensions == null)
-        {
-            return null;
-        }
-        byte[] extensionValue = (byte[])extensions.get(EXT_ec_point_formats);
-        if (extensionValue == null)
-        {
-            return null;
-        }
-        return readSupportedPointFormatsExtension(extensionValue);
+        byte[] extensionData = TlsUtils.getExtensionData(extensions, EXT_ec_point_formats);
+        return extensionData == null ? null : readSupportedPointFormatsExtension(extensionData);
     }
 
-    public static byte[] createSupportedEllipticCurvesExtension(int[] namedCurves)
-        throws IOException
+    public static byte[] createSupportedEllipticCurvesExtension(int[] namedCurves) throws IOException
     {
-
         if (namedCurves == null || namedCurves.length < 1)
         {
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
 
-        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        TlsUtils.writeUint16(2 * namedCurves.length, buf);
-        TlsUtils.writeUint16Array(namedCurves, buf);
-        return buf.toByteArray();
+        return TlsUtils.encodeUint16ArrayWithUint16Length(namedCurves);
     }
 
-    public static byte[] createSupportedPointFormatsExtension(short[] ecPointFormats)
-        throws IOException
+    public static byte[] createSupportedPointFormatsExtension(short[] ecPointFormats) throws IOException
     {
-
         if (ecPointFormats == null)
         {
-            ecPointFormats = new short[]{ECPointFormat.uncompressed};
+            ecPointFormats = new short[] { ECPointFormat.uncompressed };
         }
-        else if (!TlsProtocol.arrayContains(ecPointFormats, ECPointFormat.uncompressed))
+        else if (!Arrays.contains(ecPointFormats, ECPointFormat.uncompressed))
         {
             /*
              * RFC 4492 5.1. If the Supported Point Formats Extension is indeed sent, it MUST
@@ -118,22 +89,17 @@ public class TlsECCUtils
             ecPointFormats = tmp;
         }
 
-        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        TlsUtils.writeUint8((short)ecPointFormats.length, buf);
-        TlsUtils.writeUint8Array(ecPointFormats, buf);
-        return buf.toByteArray();
+        return TlsUtils.encodeUint8ArrayWithUint8Length(ecPointFormats);
     }
 
-    public static int[] readSupportedEllipticCurvesExtension(byte[] extensionValue)
-        throws IOException
+    public static int[] readSupportedEllipticCurvesExtension(byte[] extensionData) throws IOException
     {
-
-        if (extensionValue == null)
+        if (extensionData == null)
         {
-            throw new IllegalArgumentException("'extensionValue' cannot be null");
+            throw new IllegalArgumentException("'extensionData' cannot be null");
         }
 
-        ByteArrayInputStream buf = new ByteArrayInputStream(extensionValue);
+        ByteArrayInputStream buf = new ByteArrayInputStream(extensionData);
 
         int length = TlsUtils.readUint16(buf);
         if (length < 2 || (length & 1) != 0)
@@ -148,16 +114,14 @@ public class TlsECCUtils
         return namedCurves;
     }
 
-    public static short[] readSupportedPointFormatsExtension(byte[] extensionValue)
-        throws IOException
+    public static short[] readSupportedPointFormatsExtension(byte[] extensionData) throws IOException
     {
-
-        if (extensionValue == null)
+        if (extensionData == null)
         {
-            throw new IllegalArgumentException("'extensionValue' cannot be null");
+            throw new IllegalArgumentException("'extensionData' cannot be null");
         }
 
-        ByteArrayInputStream buf = new ByteArrayInputStream(extensionValue);
+        ByteArrayInputStream buf = new ByteArrayInputStream(extensionData);
 
         short length = TlsUtils.readUint8(buf);
         if (length < 1)
@@ -169,7 +133,7 @@ public class TlsECCUtils
 
         TlsProtocol.assertEmpty(buf);
 
-        if (!TlsProtocol.arrayContains(ecPointFormats, ECPointFormat.uncompressed))
+        if (!Arrays.contains(ecPointFormats, ECPointFormat.uncompressed))
         {
             /*
              * RFC 4492 5.1. If the Supported Point Formats Extension is indeed sent, it MUST
@@ -195,7 +159,7 @@ public class TlsECCUtils
         }
 
         // Lazily created the first time a particular curve is accessed
-        X9ECParameters ecP = SECNamedCurves.getByName(curveName);
+        X9ECParameters ecP = ECNamedCurveTable.getByName(curveName);
 
         if (ecP == null)
         {
@@ -227,6 +191,9 @@ public class TlsECCUtils
     {
         switch (cipherSuite)
         {
+        /*
+         * RFC 4492
+         */
         case CipherSuite.TLS_ECDH_ECDSA_WITH_NULL_SHA:
         case CipherSuite.TLS_ECDH_ECDSA_WITH_RC4_128_SHA:
         case CipherSuite.TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA:
@@ -252,6 +219,10 @@ public class TlsECCUtils
         case CipherSuite.TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA:
         case CipherSuite.TLS_ECDH_anon_WITH_AES_128_CBC_SHA:
         case CipherSuite.TLS_ECDH_anon_WITH_AES_256_CBC_SHA:
+
+        /*
+         * RFC 5289
+         */
         case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
         case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384:
         case CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256:
@@ -268,7 +239,38 @@ public class TlsECCUtils
         case CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:
         case CipherSuite.TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256:
         case CipherSuite.TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384:
+
+        /*
+         * RFC 5489
+         */
+        case CipherSuite.TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_NULL_SHA:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_NULL_SHA256:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_NULL_SHA384:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_RC4_128_SHA:
+
+        /*
+         * draft-josefsson-salsa20-tls-02 
+         */
+        case CipherSuite.TLS_ECDHE_ECDSA_WITH_ESTREAM_SALSA20_SHA1:
+        case CipherSuite.TLS_ECDHE_ECDSA_WITH_ESTREAM_SALSA20_UMAC96:
+        case CipherSuite.TLS_ECDHE_ECDSA_WITH_SALSA20_SHA1:
+        case CipherSuite.TLS_ECDHE_ECDSA_WITH_SALSA20_UMAC96:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_ESTREAM_SALSA20_SHA1:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_ESTREAM_SALSA20_UMAC96:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_SALSA20_SHA1:
+        case CipherSuite.TLS_ECDHE_PSK_WITH_SALSA20_UMAC96:
+        case CipherSuite.TLS_ECDHE_RSA_WITH_ESTREAM_SALSA20_SHA1:
+        case CipherSuite.TLS_ECDHE_RSA_WITH_ESTREAM_SALSA20_UMAC96:
+        case CipherSuite.TLS_ECDHE_RSA_WITH_SALSA20_SHA1:
+        case CipherSuite.TLS_ECDHE_RSA_WITH_SALSA20_UMAC96:
+
             return true;
+
         default:
             return false;
         }
@@ -307,17 +309,13 @@ public class TlsECCUtils
         return false;
     }
 
-    public static byte[] serializeECFieldElement(int fieldSize, BigInteger x)
-        throws IOException
+    public static byte[] serializeECFieldElement(int fieldSize, BigInteger x) throws IOException
     {
-        int requiredLength = (fieldSize + 7) / 8;
-        return BigIntegers.asUnsignedByteArray(requiredLength, x);
+        return BigIntegers.asUnsignedByteArray((fieldSize + 7) / 8, x);
     }
 
-    public static byte[] serializeECPoint(short[] ecPointFormats, ECPoint point)
-        throws IOException
+    public static byte[] serializeECPoint(short[] ecPointFormats, ECPoint point) throws IOException
     {
-
         ECCurve curve = point.getCurve();
 
         /*
@@ -341,12 +339,10 @@ public class TlsECCUtils
     public static byte[] serializeECPublicKey(short[] ecPointFormats, ECPublicKeyParameters keyParameters)
         throws IOException
     {
-
         return serializeECPoint(ecPointFormats, keyParameters.getQ());
     }
 
-    public static BigInteger deserializeECFieldElement(int fieldSize, byte[] encoding)
-        throws IOException
+    public static BigInteger deserializeECFieldElement(int fieldSize, byte[] encoding) throws IOException
     {
         int requiredLength = (fieldSize + 7) / 8;
         if (encoding.length != requiredLength)
@@ -356,22 +352,20 @@ public class TlsECCUtils
         return new BigInteger(1, encoding);
     }
 
-    public static ECPoint deserializeECPoint(short[] ecPointFormats, ECCurve curve, byte[] encoding)
-        throws IOException
+    public static ECPoint deserializeECPoint(short[] ecPointFormats, ECCurve curve, byte[] encoding) throws IOException
     {
         /*
          * NOTE: Here we implicitly decode compressed or uncompressed encodings. DefaultTlsClient by
          * default is set up to advertise that we can parse any encoding so this works fine, but
          * extra checks might be needed here if that were changed.
          */
+        // TODO Review handling of infinity and hybrid encodings
         return curve.decodePoint(encoding);
     }
 
     public static ECPublicKeyParameters deserializeECPublicKey(short[] ecPointFormats, ECDomainParameters curve_params,
-                                                               byte[] encoding)
-        throws IOException
+        byte[] encoding) throws IOException
     {
-
         try
         {
             ECPoint Y = deserializeECPoint(ecPointFormats, curve_params.getCurve(), encoding);
@@ -385,7 +379,6 @@ public class TlsECCUtils
 
     public static byte[] calculateECDHBasicAgreement(ECPublicKeyParameters publicKey, ECPrivateKeyParameters privateKey)
     {
-
         ECDHBasicAgreement basicAgreement = new ECDHBasicAgreement();
         basicAgreement.init(privateKey);
         BigInteger agreementValue = basicAgreement.calculateAgreement(publicKey);
@@ -400,22 +393,29 @@ public class TlsECCUtils
 
     public static AsymmetricCipherKeyPair generateECKeyPair(SecureRandom random, ECDomainParameters ecParams)
     {
-
         ECKeyPairGenerator keyPairGenerator = new ECKeyPairGenerator();
-        ECKeyGenerationParameters keyGenerationParameters = new ECKeyGenerationParameters(ecParams, random);
-        keyPairGenerator.init(keyGenerationParameters);
+        keyPairGenerator.init(new ECKeyGenerationParameters(ecParams, random));
         return keyPairGenerator.generateKeyPair();
     }
 
-    public static ECPublicKeyParameters validateECPublicKey(ECPublicKeyParameters key)
-        throws IOException
+    public static ECPrivateKeyParameters generateEphemeralClientKeyExchange(SecureRandom random, short[] ecPointFormats,
+        ECDomainParameters ecParams, OutputStream output) throws IOException
+    {
+        AsymmetricCipherKeyPair kp = TlsECCUtils.generateECKeyPair(random, ecParams);
+
+        ECPublicKeyParameters ecPublicKey = (ECPublicKeyParameters) kp.getPublic();
+        writeECPoint(ecPointFormats, ecPublicKey.getQ(), output);
+
+        return (ECPrivateKeyParameters) kp.getPrivate();
+    }
+
+    public static ECPublicKeyParameters validateECPublicKey(ECPublicKeyParameters key) throws IOException
     {
         // TODO Check RFC 4492 for validation
         return key;
     }
 
-    public static int readECExponent(int fieldSize, InputStream input)
-        throws IOException
+    public static int readECExponent(int fieldSize, InputStream input) throws IOException
     {
         BigInteger K = readECParameter(input);
         if (K.bitLength() < 32)
@@ -429,14 +429,12 @@ public class TlsECCUtils
         throw new TlsFatalAlert(AlertDescription.illegal_parameter);
     }
 
-    public static BigInteger readECFieldElement(int fieldSize, InputStream input)
-        throws IOException
+    public static BigInteger readECFieldElement(int fieldSize, InputStream input) throws IOException
     {
         return deserializeECFieldElement(fieldSize, TlsUtils.readOpaque8(input));
     }
 
-    public static BigInteger readECParameter(InputStream input)
-        throws IOException
+    public static BigInteger readECParameter(InputStream input) throws IOException
     {
         // TODO Are leading zeroes okay here?
         return new BigInteger(1, TlsUtils.readOpaque8(input));
@@ -445,7 +443,6 @@ public class TlsECCUtils
     public static ECDomainParameters readECParameters(int[] namedCurves, short[] ecPointFormats, InputStream input)
         throws IOException
     {
-
         try
         {
             short curveType = TlsUtils.readUint8(input);
@@ -454,6 +451,8 @@ public class TlsECCUtils
             {
             case ECCurveType.explicit_prime:
             {
+                checkNamedCurve(namedCurves, NamedCurve.arbitrary_explicit_prime_curves);
+
                 BigInteger prime_p = readECParameter(input);
                 BigInteger a = readECFieldElement(prime_p.bitLength(), input);
                 BigInteger b = readECFieldElement(prime_p.bitLength(), input);
@@ -465,11 +464,12 @@ public class TlsECCUtils
             }
             case ECCurveType.explicit_char2:
             {
+                checkNamedCurve(namedCurves, NamedCurve.arbitrary_explicit_char2_curves);
+
                 int m = TlsUtils.readUint16(input);
                 short basis = TlsUtils.readUint8(input);
                 ECCurve curve;
-                switch (basis)
-                {
+                switch (basis) {
                 case ECBasisType.ec_basis_trinomial:
                 {
                     int k = readECExponent(m, input);
@@ -509,15 +509,7 @@ public class TlsECCUtils
                     throw new TlsFatalAlert(AlertDescription.illegal_parameter);
                 }
 
-                if (!TlsProtocol.arrayContains(namedCurves, namedCurve))
-                {
-                    /*
-                     * RFC 4492 4. [...] servers MUST NOT negotiate the use of an ECC cipher suite
-                     * unless they can complete the handshake while respecting the choice of curves
-                     * and compression techniques specified by the client.
-                     */
-                    throw new TlsFatalAlert(AlertDescription.illegal_parameter);
-                }
+                checkNamedCurve(namedCurves, namedCurve);
 
                 return TlsECCUtils.getParametersForNamedCurve(namedCurve);
             }
@@ -531,47 +523,59 @@ public class TlsECCUtils
         }
     }
 
-    public static void writeECExponent(int k, OutputStream output)
-        throws IOException
+    private static void checkNamedCurve(int[] namedCurves, int namedCurve) throws IOException
+    {
+        if (namedCurves != null && !Arrays.contains(namedCurves, namedCurve))
+        {
+            /*
+             * RFC 4492 4. [...] servers MUST NOT negotiate the use of an ECC cipher suite
+             * unless they can complete the handshake while respecting the choice of curves
+             * and compression techniques specified by the client.
+             */
+            throw new TlsFatalAlert(AlertDescription.illegal_parameter);
+        }
+    }
+
+    public static void writeECExponent(int k, OutputStream output) throws IOException
     {
         BigInteger K = BigInteger.valueOf(k);
         writeECParameter(K, output);
     }
 
-    public static void writeECFieldElement(int fieldSize, BigInteger x, OutputStream output)
-        throws IOException
+    public static void writeECFieldElement(ECFieldElement x, OutputStream output) throws IOException
+    {
+        TlsUtils.writeOpaque8(x.getEncoded(), output);
+    }
+
+    public static void writeECFieldElement(int fieldSize, BigInteger x, OutputStream output) throws IOException
     {
         TlsUtils.writeOpaque8(serializeECFieldElement(fieldSize, x), output);
     }
 
-    public static void writeECParameter(BigInteger x, OutputStream output)
-        throws IOException
+    public static void writeECParameter(BigInteger x, OutputStream output) throws IOException
     {
         TlsUtils.writeOpaque8(BigIntegers.asUnsignedByteArray(x), output);
     }
 
     public static void writeExplicitECParameters(short[] ecPointFormats, ECDomainParameters ecParameters,
-                                                 OutputStream output)
-        throws IOException
+        OutputStream output) throws IOException
     {
-
         ECCurve curve = ecParameters.getCurve();
         if (curve instanceof ECCurve.Fp)
         {
-
             TlsUtils.writeUint8(ECCurveType.explicit_prime, output);
 
-            ECCurve.Fp fp = (ECCurve.Fp)curve;
+            ECCurve.Fp fp = (ECCurve.Fp) curve;
             writeECParameter(fp.getQ(), output);
-
         }
         else if (curve instanceof ECCurve.F2m)
         {
-
             TlsUtils.writeUint8(ECCurveType.explicit_char2, output);
 
-            ECCurve.F2m f2m = (ECCurve.F2m)curve;
-            TlsUtils.writeUint16(f2m.getM(), output);
+            ECCurve.F2m f2m = (ECCurve.F2m) curve;
+            int m = f2m.getM();
+            TlsUtils.checkUint16(m);
+            TlsUtils.writeUint16(m, output);
 
             if (f2m.isTrinomial())
             {
@@ -592,17 +596,20 @@ public class TlsECCUtils
             throw new IllegalArgumentException("'ecParameters' not a known curve type");
         }
 
-        writeECFieldElement(curve.getFieldSize(), curve.getA().toBigInteger(), output);
-        writeECFieldElement(curve.getFieldSize(), curve.getB().toBigInteger(), output);
+        writeECFieldElement(curve.getA(), output);
+        writeECFieldElement(curve.getB(), output);
         TlsUtils.writeOpaque8(serializeECPoint(ecPointFormats, ecParameters.getG()), output);
         writeECParameter(ecParameters.getN(), output);
         writeECParameter(ecParameters.getH(), output);
     }
 
-    public static void writeNamedECParameters(int namedCurve, OutputStream output)
-        throws IOException
+    public static void writeECPoint(short[] ecPointFormats, ECPoint point, OutputStream output) throws IOException
     {
+        TlsUtils.writeOpaque8(TlsECCUtils.serializeECPoint(ecPointFormats, point), output);
+    }
 
+    public static void writeNamedECParameters(int namedCurve, OutputStream output) throws IOException
+    {
         if (!NamedCurve.refersToASpecificNamedCurve(namedCurve))
         {
             /*
@@ -614,6 +621,7 @@ public class TlsECCUtils
         }
 
         TlsUtils.writeUint8(ECCurveType.named_curve, output);
+        TlsUtils.checkUint16(namedCurve);
         TlsUtils.writeUint16(namedCurve, output);
     }
 }

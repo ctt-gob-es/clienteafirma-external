@@ -7,16 +7,13 @@ public class ECAlgorithms
     public static ECPoint sumOfTwoMultiplies(ECPoint P, BigInteger a,
         ECPoint Q, BigInteger b)
     {
-        ECCurve c = P.getCurve();
-        if (!c.equals(Q.getCurve()))
-        {
-            throw new IllegalArgumentException("P and Q must be on same curve");
-        }
+        ECCurve cp = P.getCurve();
+        Q = importPoint(cp, Q);
 
         // Point multiplication for Koblitz curves (using WTNAF) beats Shamir's trick
-        if (c instanceof ECCurve.F2m)
+        if (cp instanceof ECCurve.F2m)
         {
-            ECCurve.F2m f2mCurve = (ECCurve.F2m)c;
+            ECCurve.F2m f2mCurve = (ECCurve.F2m)cp;
             if (f2mCurve.isKoblitz())
             {
                 return P.multiply(a).add(Q.multiply(b));
@@ -48,43 +45,83 @@ public class ECAlgorithms
     public static ECPoint shamirsTrick(ECPoint P, BigInteger k,
         ECPoint Q, BigInteger l)
     {
-        if (!P.getCurve().equals(Q.getCurve()))
-        {
-            throw new IllegalArgumentException("P and Q must be on same curve");
-        }
+        ECCurve cp = P.getCurve();
+        Q = importPoint(cp, Q);
 
         return implShamirsTrick(P, k, Q, l);
     }
 
-    private static ECPoint implShamirsTrick(ECPoint P, BigInteger k,
+    public static ECPoint importPoint(ECCurve c, ECPoint p)
+    {
+        ECCurve cp = p.getCurve();
+        if (!c.equals(cp))
+        {
+            throw new IllegalArgumentException("Point must be on the same curve");
+        }
+        return c.importPoint(p);
+    }
+
+    static void implMontgomeryTrick(ECFieldElement[] zs, int off, int len)
+    {
+        /*
+         * Uses the "Montgomery Trick" to invert many field elements, with only a single actual
+         * field inversion. See e.g. the paper:
+         * "Fast Multi-scalar Multiplication Methods on Elliptic Curves with Precomputation Strategy Using Montgomery Trick"
+         * by Katsuyuki Okeya, Kouichi Sakurai.
+         */
+
+        ECFieldElement[] c = new ECFieldElement[len];
+        c[0] = zs[off];
+
+        int i = 0;
+        while (++i < len)
+        {
+            c[i] = c[i - 1].multiply(zs[off + i]);
+        }
+
+        ECFieldElement u = c[--i].invert();
+
+        while (i > 0)
+        {
+            int j = off + i--;
+            ECFieldElement tmp = zs[j];
+            zs[j] = c[i].multiply(u);
+            u = u.multiply(tmp);
+        }
+
+        zs[off] = u;
+    }
+
+    static ECPoint implShamirsTrick(ECPoint P, BigInteger k,
         ECPoint Q, BigInteger l)
     {
-        int m = Math.max(k.bitLength(), l.bitLength());
-        ECPoint Z = P.add(Q);
-        ECPoint R = P.getCurve().getInfinity();
+        ECCurve curve = P.getCurve();
+        ECPoint infinity = curve.getInfinity();
 
-        for (int i = m - 1; i >= 0; --i)
+        // TODO conjugate co-Z addition (ZADDC) can return both of these
+        ECPoint PaddQ = P.add(Q);
+        ECPoint PsubQ = P.subtract(Q);
+
+        ECPoint[] points = new ECPoint[]{ Q, PsubQ, P, PaddQ };
+        curve.normalizeAll(points);
+
+        ECPoint[] table = new ECPoint[] {
+            points[3].negate(), points[2].negate(), points[1].negate(),
+            points[0].negate(), infinity, points[0],
+            points[1], points[2], points[3] };
+
+        byte[] jsf = WNafUtil.generateJSF(k, l);
+
+        ECPoint R = infinity;
+
+        int i = jsf.length;
+        while (--i >= 0)
         {
-            R = R.twice();
+            int jsfi = jsf[i];
+            int kDigit = (jsfi >> 4), lDigit = ((jsfi << 28) >> 28);
 
-            if (k.testBit(i))
-            {
-                if (l.testBit(i))
-                {
-                    R = R.add(Z);
-                }
-                else
-                {
-                    R = R.add(P);
-                }
-            }
-            else
-            {
-                if (l.testBit(i))
-                {
-                    R = R.add(Q);
-                }
-            }
+            int index = 4 + (kDigit * 3) + lDigit;
+            R = R.twicePlus(table[index]);
         }
 
         return R;

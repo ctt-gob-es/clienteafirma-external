@@ -1,6 +1,7 @@
 package org.bouncycastle.asn1.x500.style;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -16,8 +17,6 @@ import org.bouncycastle.asn1.x500.X500NameStyle;
 public class RFC4519Style
     implements X500NameStyle
 {
-    public static final X500NameStyle INSTANCE = new RFC4519Style();
-
     public static final ASN1ObjectIdentifier businessCategory = new ASN1ObjectIdentifier("2.5.4.15");
     public static final ASN1ObjectIdentifier c = new ASN1ObjectIdentifier("2.5.4.6");
     public static final ASN1ObjectIdentifier cn = new ASN1ObjectIdentifier("2.5.4.3");
@@ -166,9 +165,18 @@ public class RFC4519Style
         // TODO: need to add correct matching for equality comparisons.
     }
 
+    /**
+     * Singleton instance.
+     */
+    public static final X500NameStyle INSTANCE = new RFC4519Style();
+
+    protected final Hashtable defaultLookUp;
+    protected final Hashtable defaultSymbols;
+
     protected RFC4519Style()
     {
-
+        defaultSymbols = copyHashTable(DefaultSymbols);
+        defaultLookUp = copyHashTable(DefaultLookUp);
     }
 
     public ASN1Encodable stringToValue(ASN1ObjectIdentifier oid, String value)
@@ -211,12 +219,12 @@ public class RFC4519Style
 
     public String[] oidToAttrNames(ASN1ObjectIdentifier oid)
     {
-        return IETFUtils.findAttrNamesForOID(oid, DefaultLookUp);
+        return IETFUtils.findAttrNamesForOID(oid, defaultLookUp);
     }
 
     public ASN1ObjectIdentifier attrNameToOID(String attrName)
     {
-        return IETFUtils.decodeAttrName(attrName, DefaultLookUp);
+        return IETFUtils.decodeAttrName(attrName, defaultLookUp);
     }
 
     public boolean areEqual(X500Name name1, X500Name name2)
@@ -350,9 +358,23 @@ public class RFC4519Style
                 buf.append(',');
             }
 
-            IETFUtils.appendRDN(buf, rdns[i], DefaultSymbols);
+            IETFUtils.appendRDN(buf, rdns[i], defaultSymbols);
         }
 
         return buf.toString();
+    }
+
+    private static Hashtable copyHashTable(Hashtable paramsMap)
+    {
+        Hashtable newTable = new Hashtable();
+
+        Enumeration keys = paramsMap.keys();
+        while (keys.hasMoreElements())
+        {
+            Object key = keys.nextElement();
+            newTable.put(key, paramsMap.get(key));
+        }
+
+        return newTable;
     }
 }

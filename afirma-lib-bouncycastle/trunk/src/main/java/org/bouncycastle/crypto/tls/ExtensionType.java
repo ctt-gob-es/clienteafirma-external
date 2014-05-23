@@ -3,7 +3,7 @@ package org.bouncycastle.crypto.tls;
 public class ExtensionType
 {
     /*
-     * RFC 6066 1.1.
+     * RFC 2546 2.3.
      */
     public static final int server_name = 0;
     public static final int max_fragment_length = 1;
@@ -42,6 +42,11 @@ public class ExtensionType
      * RFC 5764 9.
      */
     public static final int use_srtp = 14;
+
+    /*
+     * RFC 6520 6.
+     */
+    public static final int heartbeat = 15;
 
     /*
      * RFC 5746 3.2.

@@ -15,61 +15,57 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
-public final class JcaSimpleSignerInfoVerifierBuilder
+public class JcaSimpleSignerInfoVerifierBuilder
 {
     private Helper helper = new Helper();
 
-    public JcaSimpleSignerInfoVerifierBuilder setProvider(final Provider provider)
+    public JcaSimpleSignerInfoVerifierBuilder setProvider(Provider provider)
     {
         this.helper = new ProviderHelper(provider);
 
         return this;
     }
 
-    public JcaSimpleSignerInfoVerifierBuilder setProvider(final String providerName)
+    public JcaSimpleSignerInfoVerifierBuilder setProvider(String providerName)
     {
         this.helper = new NamedHelper(providerName);
 
         return this;
     }
 
-    public SignerInformationVerifier build(final X509CertificateHolder certHolder)
+    public SignerInformationVerifier build(X509CertificateHolder certHolder)
         throws OperatorCreationException, CertificateException
     {
-        return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(), this.helper.createContentVerifierProvider(certHolder), this.helper.createDigestCalculatorProvider());
+        return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(), helper.createContentVerifierProvider(certHolder), helper.createDigestCalculatorProvider());
     }
 
-    public SignerInformationVerifier build(final X509Certificate certificate)
+    public SignerInformationVerifier build(X509Certificate certificate)
         throws OperatorCreationException
     {
-        return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(), this.helper.createContentVerifierProvider(certificate), this.helper.createDigestCalculatorProvider());
+        return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(), helper.createContentVerifierProvider(certificate), helper.createDigestCalculatorProvider());
     }
 
-    public SignerInformationVerifier build(final PublicKey pubKey)
+    public SignerInformationVerifier build(PublicKey pubKey)
         throws OperatorCreationException
     {
-        return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(), this.helper.createContentVerifierProvider(pubKey), this.helper.createDigestCalculatorProvider());
+        return new SignerInformationVerifier(new DefaultCMSSignatureAlgorithmNameGenerator(), new DefaultSignatureAlgorithmIdentifierFinder(), helper.createContentVerifierProvider(pubKey), helper.createDigestCalculatorProvider());
     }
 
     private class Helper
     {
-        public Helper() {
-			// Vacio
-		}
-
-		ContentVerifierProvider createContentVerifierProvider(final PublicKey publicKey)
+        ContentVerifierProvider createContentVerifierProvider(PublicKey publicKey)
             throws OperatorCreationException
         {
             return new JcaContentVerifierProviderBuilder().build(publicKey);
         }
 
-        ContentVerifierProvider createContentVerifierProvider(final X509Certificate certificate)
+        ContentVerifierProvider createContentVerifierProvider(X509Certificate certificate)
             throws OperatorCreationException
         {
             return new JcaContentVerifierProviderBuilder().build(certificate);
         }
 
-        ContentVerifierProvider createContentVerifierProvider(final X509CertificateHolder certHolder)
+        ContentVerifierProvider createContentVerifierProvider(X509CertificateHolder certHolder)
             throws OperatorCreationException, CertificateException
         {
             return new JcaContentVerifierProviderBuilder().build(certHolder);
@@ -87,37 +83,33 @@ public final class JcaSimpleSignerInfoVerifierBuilder
     {
         private final String providerName;
 
-        public NamedHelper(final String providerName)
+        public NamedHelper(String providerName)
         {
             this.providerName = providerName;
         }
 
-        @Override
-		ContentVerifierProvider createContentVerifierProvider(final PublicKey publicKey)
+        ContentVerifierProvider createContentVerifierProvider(PublicKey publicKey)
             throws OperatorCreationException
         {
-            return new JcaContentVerifierProviderBuilder().setProvider(this.providerName).build(publicKey);
+            return new JcaContentVerifierProviderBuilder().setProvider(providerName).build(publicKey);
         }
 
-        @Override
-		ContentVerifierProvider createContentVerifierProvider(final X509Certificate certificate)
+        ContentVerifierProvider createContentVerifierProvider(X509Certificate certificate)
             throws OperatorCreationException
         {
-            return new JcaContentVerifierProviderBuilder().setProvider(this.providerName).build(certificate);
+            return new JcaContentVerifierProviderBuilder().setProvider(providerName).build(certificate);
         }
 
-        @Override
-		DigestCalculatorProvider createDigestCalculatorProvider()
+        DigestCalculatorProvider createDigestCalculatorProvider()
             throws OperatorCreationException
         {
-            return new JcaDigestCalculatorProviderBuilder().setProvider(this.providerName).build();
+            return new JcaDigestCalculatorProviderBuilder().setProvider(providerName).build();
         }
 
-        @Override
-		ContentVerifierProvider createContentVerifierProvider(final X509CertificateHolder certHolder)
+        ContentVerifierProvider createContentVerifierProvider(X509CertificateHolder certHolder)
             throws OperatorCreationException, CertificateException
         {
-            return new JcaContentVerifierProviderBuilder().setProvider(this.providerName).build(certHolder);
+            return new JcaContentVerifierProviderBuilder().setProvider(providerName).build(certHolder);
         }
     }
 
@@ -126,37 +118,33 @@ public final class JcaSimpleSignerInfoVerifierBuilder
     {
         private final Provider provider;
 
-        public ProviderHelper(final Provider provider)
+        public ProviderHelper(Provider provider)
         {
             this.provider = provider;
         }
 
-        @Override
-		ContentVerifierProvider createContentVerifierProvider(final PublicKey publicKey)
+        ContentVerifierProvider createContentVerifierProvider(PublicKey publicKey)
             throws OperatorCreationException
         {
-            return new JcaContentVerifierProviderBuilder().setProvider(this.provider).build(publicKey);
+            return new JcaContentVerifierProviderBuilder().setProvider(provider).build(publicKey);
         }
 
-        @Override
-		ContentVerifierProvider createContentVerifierProvider(final X509Certificate certificate)
+        ContentVerifierProvider createContentVerifierProvider(X509Certificate certificate)
             throws OperatorCreationException
         {
-            return new JcaContentVerifierProviderBuilder().setProvider(this.provider).build(certificate);
+            return new JcaContentVerifierProviderBuilder().setProvider(provider).build(certificate);
         }
 
-        @Override
-		DigestCalculatorProvider createDigestCalculatorProvider()
+        DigestCalculatorProvider createDigestCalculatorProvider()
             throws OperatorCreationException
         {
-            return new JcaDigestCalculatorProviderBuilder().setProvider(this.provider).build();
+            return new JcaDigestCalculatorProviderBuilder().setProvider(provider).build();
         }
 
-        @Override
-		ContentVerifierProvider createContentVerifierProvider(final X509CertificateHolder certHolder)
+        ContentVerifierProvider createContentVerifierProvider(X509CertificateHolder certHolder)
             throws OperatorCreationException, CertificateException
         {
-            return new JcaContentVerifierProviderBuilder().setProvider(this.provider).build(certHolder);
+            return new JcaContentVerifierProviderBuilder().setProvider(provider).build(certHolder);
         }
     }
 }
