@@ -3502,5 +3502,10 @@ public class PdfReader implements PdfViewerPreferences {
 		}
     }
 
+    /** Indica si esta es la versi&oacute;n deiText modificada para afrima. */
+    public static void isAfirmaModifiedItext() {
+    	// Vacio
+    }
+
 
 }
