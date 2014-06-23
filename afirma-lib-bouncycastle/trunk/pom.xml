@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma</groupId>
 	<artifactId>afirma-lib-bouncycastle</artifactId>
-	<version>1.49</version>
+	<version>1.50</version>
 	<name>afirma-lib-bouncycastle</name>
 
 	<properties>
