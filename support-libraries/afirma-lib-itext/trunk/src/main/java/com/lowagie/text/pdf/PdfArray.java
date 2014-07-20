@@ -221,13 +221,8 @@ public class PdfArray extends PdfObject {
         return (PdfObject) this.arrayList.remove(idx);
     }
 
-    /**
-     * Get the internal arrayList for this PdfArray.  Not Recommended.
-     *
-     * @deprecated
-     * @return the internal ArrayList.  Naughty Naughty.
-     */
-    @Deprecated
+    /** Get the internal arrayList for this PdfArray.  Not Recommended.
+     * @return the internal ArrayList.  Naughty Naughty. */
 	public ArrayList getArrayList() {
         return this.arrayList;
     }
