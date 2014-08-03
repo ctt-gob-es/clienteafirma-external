@@ -1501,7 +1501,7 @@ public class AcroFields {
      *
      * @return the field names that have signatures and are signed
      */
-    public ArrayList getSignatureNames() {
+    public List<String> getSignatureNames() {
         if (this.sigNames != null) {
 			return new ArrayList(this.sigNames.keySet());
 		}
@@ -1581,7 +1581,7 @@ public class AcroFields {
      * @return the signature dictionary keyed by /V or <CODE>null</CODE> if the field is not
      * a signature
      */
-    private PdfDictionary getSignatureDictionary(String name) {
+    public PdfDictionary getSignatureDictionary(String name) {
         getSignatureNames();
         name = getTranslatedFieldName(name);
         if (!this.sigNames.containsKey(name)) {
