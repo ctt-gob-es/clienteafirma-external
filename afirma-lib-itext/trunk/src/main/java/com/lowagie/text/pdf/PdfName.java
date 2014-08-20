@@ -959,7 +959,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name */
     static final PdfName STYLE = new PdfName("Style");
     /** A name */
-    public static final PdfName SUBFILTER = new PdfName("SubFilter");
+    static final PdfName SUBFILTER = new PdfName("SubFilter");
     /** A name */
     public static final PdfName SUBJECT = new PdfName("Subject");
 

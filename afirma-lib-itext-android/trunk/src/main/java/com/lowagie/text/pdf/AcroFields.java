@@ -49,7 +49,6 @@ package com.lowagie.text.pdf;
 import harmony.java.awt.Color;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -226,7 +225,14 @@ public class AcroFields {
         }
         // some tools produce invisible signatures without an entry in the page annotation array
         // look for a single level annotation
-        final PdfNumber sigFlags = top.getAsNumber(PdfName.SIGFLAGS);
+        
+        final PdfNumber sigFlags;
+        if (top != null) {
+        	sigFlags = top.getAsNumber(PdfName.SIGFLAGS);
+        }
+        else {
+        	sigFlags = null;
+        }
         if (sigFlags == null || (sigFlags.intValue() & 1) != 1) {
 			return;
 		}
@@ -345,9 +351,8 @@ public class AcroFields {
 			}
             if ((ff & PdfFormField.FF_RADIO) != 0) {
 				return FIELD_TYPE_RADIOBUTTON;
-			} else {
-				return FIELD_TYPE_CHECKBOX;
 			}
+			return FIELD_TYPE_CHECKBOX;
         }
         else if (PdfName.TX.equals(type)) {
             return FIELD_TYPE_TEXT;
@@ -355,9 +360,8 @@ public class AcroFields {
         else if (PdfName.CH.equals(type)) {
             if ((ff & PdfFormField.FF_COMBO) != 0) {
 				return FIELD_TYPE_COMBO;
-			} else {
-				return FIELD_TYPE_LIST;
 			}
+            return FIELD_TYPE_LIST;
         }
         else if (PdfName.SIG.equals(type)) {
             return FIELD_TYPE_SIGNATURE;
@@ -423,7 +427,7 @@ public class AcroFields {
         }
     }
 
-    private void decodeGenericDictionary(final PdfDictionary merged, final BaseField tx) throws IOException, DocumentException {
+    private void decodeGenericDictionary(final PdfDictionary merged, final BaseField tx) {
         int flags = 0;
         // the text size and color
         final PdfString da = merged.getAsString(PdfName.DA);
@@ -521,11 +525,11 @@ public class AcroFields {
         tx.setVisibility(BaseField.VISIBLE_BUT_DOES_NOT_PRINT);
         if (nfl != null) {
             flags = nfl.intValue();
-            if ((flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) != 0) {
+            if ((flags & PdfAnnotation.FLAGS_PRINT) != 0 && (flags & PdfAnnotation.FLAGS_HIDDEN) != 0) {
 				tx.setVisibility(BaseField.HIDDEN);
-			} else if ((flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_NOVIEW) != 0) {
+			} else if ((flags & PdfAnnotation.FLAGS_PRINT) != 0 && (flags & PdfAnnotation.FLAGS_NOVIEW) != 0) {
 				tx.setVisibility(BaseField.HIDDEN_BUT_PRINTABLE);
-			} else if ((flags & PdfFormField.FLAGS_PRINT) != 0) {
+			} else if ((flags & PdfAnnotation.FLAGS_PRINT) != 0) {
 				tx.setVisibility(BaseField.VISIBLE);
 			}
         }
@@ -666,7 +670,7 @@ public class AcroFields {
         return app;
     }
 
-    private Color getMKColor(final PdfArray ar) {
+    private static Color getMKColor(final PdfArray ar) {
         if (ar == null) {
 			return null;
 		}
@@ -903,7 +907,7 @@ public class AcroFields {
      * @return	true only if the field value was changed
      * @since 2.1.4
      */
-	private boolean setListSelection(final String name, final String[] value) throws IOException, DocumentException {
+	private boolean setListSelection(final String name, final String[] value) {
         final Item item = getFieldItem(name);
         if (item == null) {
 			return false;
@@ -928,7 +932,7 @@ public class AcroFields {
         return true;
 	}
 
-    private boolean isInAP(final PdfDictionary dic, final PdfName check) {
+    private static boolean isInAP(final PdfDictionary dic, final PdfName check) {
         final PdfDictionary appDic = dic.getAsDict(PdfName.AP);
         if (appDic == null) {
 			return false;
@@ -1216,7 +1220,7 @@ public class AcroFields {
          * @param value      if value is null, the key will be removed
          * @param writeFlags ORed together WRITE_* flags
          */
-        private void writeToAll(final PdfName key, final PdfObject value, final int writeFlags) {
+        void writeToAll(final PdfName key, final PdfObject value, final int writeFlags) {
             int i;
             PdfDictionary curDict = null;
             if ((writeFlags & WRITE_MERGED) != 0) {
@@ -1245,7 +1249,7 @@ public class AcroFields {
          * @since 2.1.5
          * @param writeFlags WRITE_MERGED is ignored
          */
-        private void markUsed( final AcroFields parentFields, final int writeFlags ) {
+        void markUsed( final AcroFields parentFields, final int writeFlags ) {
             if ((writeFlags & WRITE_VALUE) != 0) {
                 for (int i = 0; i < size(); ++i) {
                     parentFields.markUsed( getValue( i ) );
@@ -1394,7 +1398,7 @@ public class AcroFields {
          * @since 2.1.5
          * @param widgRef
          */
-        void addWidgetRef(final PdfIndirectReference widgRef) {
+        private void addWidgetRef(final PdfIndirectReference widgRef) {
             this.widget_refs.add(widgRef);
         }
 
@@ -1439,7 +1443,7 @@ public class AcroFields {
          * @since 2.1.5
          * @param pg
          */
-        private void addPage(final int pg) {
+        void addPage(final int pg) {
             this.page.add(new Integer(pg));
         }
 
@@ -1470,28 +1474,8 @@ public class AcroFields {
          * @since 2.1.5
          * @param order
          */
-        private void addTabOrder(final int order) {
+        void addTabOrder(final int order) {
             this.tabOrder.add(new Integer(order));
-        }
-    }
-
-    private static class InstHit {
-        IntHashtable hits;
-        public InstHit(final int inst[]) {
-            if (inst == null) {
-				return;
-			}
-            this.hits = new IntHashtable();
-            for (final int element : inst) {
-				this.hits.put(element, 1);
-			}
-        }
-
-        public boolean isHit(final int n) {
-            if (this.hits == null) {
-				return true;
-			}
-            return this.hits.containsKey(n);
         }
     }
 
@@ -1500,7 +1484,7 @@ public class AcroFields {
      *
      * @return the field names that have signatures and are signed
      */
-    public ArrayList<String> getSignatureNames() {
+    public List<String> getSignatureNames() {
         if (this.sigNames != null) {
 			return new ArrayList<String>(this.sigNames.keySet());
 		}
@@ -1830,61 +1814,7 @@ public class AcroFields {
         stdFieldFontNames.put("STSo", new String[]{"STSong-Light", "UniGB-UCS2-H"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    private static class RevisionStream extends InputStream {
-        private final byte b[] = new byte[1];
-        private final RandomAccessFileOrArray raf;
-        private final int length;
-        private int rangePosition = 0;
-        private boolean closed;
-
-        private RevisionStream(final RandomAccessFileOrArray raf, final int length) {
-            this.raf = raf;
-            this.length = length;
-        }
-
-        @Override
-		public int read() throws IOException {
-            final int n = read(this.b);
-            if (n != 1) {
-				return -1;
-			}
-            return this.b[0] & 0xff;
-        }
-
-        @Override
-		public int read(final byte[] b, final int off, final int len) throws IOException {
-            if (b == null) {
-                throw new NullPointerException();
-            } else if (off < 0 || off > b.length || len < 0 ||
-            off + len > b.length || off + len < 0) {
-                throw new IndexOutOfBoundsException();
-            } else if (len == 0) {
-                return 0;
-            }
-            if (this.rangePosition >= this.length) {
-                close();
-                return -1;
-            }
-            final int elen = Math.min(len, this.length - this.rangePosition);
-            this.raf.readFully(b, off, elen);
-            this.rangePosition += elen;
-            return elen;
-        }
-
-        @Override
-		public void close() throws IOException {
-            if (!this.closed) {
-                this.raf.close();
-                this.closed = true;
-            }
-        }
-    }
-
     private static class SorterComparator implements Comparator {
-        public SorterComparator() {
-			// TODO Auto-generated constructor stub
-		}
-
 		@Override
 		public int compare(final Object o1, final Object o2) {
             final int n1 = ((int[])((Object[])o1)[1])[0];

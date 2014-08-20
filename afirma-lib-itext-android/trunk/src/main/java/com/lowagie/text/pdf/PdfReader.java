@@ -706,8 +706,10 @@ public class PdfReader implements PdfViewerPreferences {
                         final RecipientInformation recipientInfo = (RecipientInformation)recipientCertificatesIt.next();
 
                         if (recipientInfo.getRID().match(this.certificate) && !foundRecipient) {
-                        	envelopedData = recipientInfo.getContent(new JceKeyTransEnvelopedRecipient((PrivateKey) this.certificateKey));
-                        	foundRecipient = true;
+                            envelopedData = recipientInfo.getContent(
+                           		 new JceKeyTransEnvelopedRecipient((PrivateKey) this.certificateKey)
+                       		);
+                            foundRecipient = true;
                         }
                     }
                 }
