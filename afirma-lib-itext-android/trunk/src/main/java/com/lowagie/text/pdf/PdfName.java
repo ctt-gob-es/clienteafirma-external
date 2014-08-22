@@ -524,7 +524,7 @@ public class PdfName extends PdfObject implements Comparable{
     static final PdfName H = new PdfName("H");
 
     /** A name of an attribute. */
-    static final PdfName HEIGHT = new PdfName("Height");
+    public static final PdfName HEIGHT = new PdfName("Height");
     /** A name */
     static final PdfName HELV = new PdfName("Helv");
     /** A name of a base 14 type 1 font */
@@ -1119,7 +1119,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name of an attribute. */
     static final PdfName WIDGET = new PdfName("Widget");
     /** A name of an attribute. */
-    static final PdfName WIDTH = new PdfName("Width");
+    public static final PdfName WIDTH = new PdfName("Width");
     /** A name */
     static final PdfName WIDTHS = new PdfName("Widths");
     /** A name of an encoding */
