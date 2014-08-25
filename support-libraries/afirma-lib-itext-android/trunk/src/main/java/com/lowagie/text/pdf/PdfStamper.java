@@ -55,7 +55,6 @@ import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,7 +79,7 @@ public class PdfStamper
      * The writer
      */
     private final PdfStamperImp stamper;
-    private HashMap moreInfo;
+    private Map moreInfo;
     private boolean hasSignature;
     private PdfSignatureAppearance sigApp;
 
@@ -116,7 +115,7 @@ public class PdfStamper
      * @return the map or <CODE>null</CODE>
      *
      */
-    public HashMap getMoreInfo() {
+    public Map getMoreInfo() {
         return this.moreInfo;
     }
 
@@ -126,7 +125,7 @@ public class PdfStamper
      * @param moreInfo additional entries to the info dictionary
      *
      */
-    public void setMoreInfo(final HashMap moreInfo) {
+    public void setMoreInfo(final Map moreInfo) {
         this.moreInfo = moreInfo;
     }
 

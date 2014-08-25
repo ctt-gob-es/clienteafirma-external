@@ -157,7 +157,7 @@ public class PdfStamperImp extends PdfWriter {
         this.initialXrefSize = reader.getXrefSize();
     }
 
-    void close(final HashMap moreInfo, final Calendar globalDate) throws IOException {
+    void close(final Map moreInfo, final Calendar globalDate) throws IOException {
         if (this.closed) {
 			return;
 		}
