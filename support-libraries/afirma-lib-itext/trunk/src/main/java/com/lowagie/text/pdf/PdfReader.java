@@ -888,7 +888,7 @@ public class PdfReader implements PdfViewerPreferences {
      * @param idx
      * @return aPdfObject
      */
-    PdfObject getPdfObject(final int idx) {
+    public PdfObject getPdfObject(final int idx) {
         try {
             this.lastXrefPartial = -1;
             if (idx < 0 || idx >= this.xrefObj.size()) {
