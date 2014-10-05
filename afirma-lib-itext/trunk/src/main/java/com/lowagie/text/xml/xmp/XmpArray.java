@@ -50,7 +50,6 @@
 package com.lowagie.text.xml.xmp;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * StringBuffer to construct an XMP array.
@@ -61,7 +60,7 @@ public class XmpArray<E> extends ArrayList<E> {
 	/** An array that is unordered. */
 	public static final String UNORDERED = "rdf:Bag";
 	/** An array that is ordered. */
-	static final String ORDERED = "rdf:Seq";
+	public static final String ORDERED = "rdf:Seq";
 	/** An array with alternatives. */
 	static final String ALTERNATIVE = "rdf:Alt";
 
@@ -86,8 +85,8 @@ public class XmpArray<E> extends ArrayList<E> {
 		buf.append(this.type);
 		buf.append('>');
 		String s;
-		for (final Iterator i = iterator(); i.hasNext(); ) {
-			s = (String) i.next();
+		for (final Object element : this) {
+			s = (String) element;
 			buf.append("<rdf:li>");
 			buf.append(XmpSchema.escape(s));
 			buf.append("</rdf:li>");
