@@ -215,7 +215,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name */
     public static final PdfName CENTERWINDOW = new PdfName("CenterWindow");
     /** A name */
-    static final PdfName CERT = new PdfName("Cert");
+    public static final PdfName CERT = new PdfName("Cert");
     /** A name */
     static final PdfName CF = new PdfName("CF");
     /** A name */
@@ -913,7 +913,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name */
     static final PdfName SHIFT_JIS = new PdfName("Shift-JIS");
     /** A name */
-    static final PdfName SIG = new PdfName("Sig");
+    public static final PdfName SIG = new PdfName("Sig");
     /** A name */
     static final PdfName SIGFLAGS = new PdfName("SigFlags");
     /** A name */
@@ -1048,7 +1048,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name */
     static final PdfName TX = new PdfName("Tx");
     /** A name */
-    static final PdfName TYPE = new PdfName("Type");
+    public static final PdfName TYPE = new PdfName("Type");
     /** A name */
     static final PdfName TYPE0 = new PdfName("Type0");
     /** A name */
