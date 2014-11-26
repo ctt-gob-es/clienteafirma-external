@@ -58,12 +58,10 @@ import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 
-/**
- * Supports text, combo and list fields generating the correct appearances.
+/** Supports text, combo and list fields generating the correct appearances.
  * All the option in the Acrobat GUI are supported in an easy to use API.
- * @author Paulo Soares (psoares@consiste.pt)
- */
-class TextField extends BaseField {
+ * @author Paulo Soares (psoares@consiste.pt) */
+public class TextField extends BaseField {
 
     /** Holds value of property defaultText. */
     private String defaultText;
@@ -82,14 +80,12 @@ class TextField extends BaseField {
     private float extraMarginLeft;
     private float extraMarginTop;
 
-    /**
-     * Creates a new <CODE>TextField</CODE>.
+    /** Creates a new <CODE>TextField</CODE>.
      * @param writer the document <CODE>PdfWriter</CODE>
      * @param box the field location and dimensions
      * @param fieldName the field name. If <CODE>null</CODE> only the widget keys
-     * will be included in the field allowing it to be used as a kid field.
-     */
-    TextField(final PdfWriter writer, final Rectangle box, final String fieldName) {
+     * will be included in the field allowing it to be used as a kid field. */
+    public TextField(final PdfWriter writer, final Rectangle box, final String fieldName) {
         super(writer, box, fieldName);
     }
 
