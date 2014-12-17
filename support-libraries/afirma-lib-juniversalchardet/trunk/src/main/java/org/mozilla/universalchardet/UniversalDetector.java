@@ -79,10 +79,7 @@ public class UniversalDetector {
     ////////////////////////////////////////////////////////////////
     // methods
     ////////////////////////////////////////////////////////////////
-    /**
-     * @param listener a listener object that is notified of
-     *         the detected encocoding. Can be null.
-     */
+
     public UniversalDetector() {
         this.escCharsetProber = null;
         this.probers = new CharsetProber[3];
@@ -184,7 +181,7 @@ public class UniversalDetector {
                 }
             } else {
                 if (this.inputState == InputState.PURE_ASCII &&
-                    (c == 0x1B || (c == 0x7B && this.lastChar == 0x7E))) {
+                    (c == 0x1B || c == 0x7B && this.lastChar == 0x7E)) {
                     this.inputState = InputState.ESC_ASCII;
                 }
                 this.lastChar = buf[i];
@@ -202,11 +199,11 @@ public class UniversalDetector {
                 this.detectedCharset = this.escCharsetProber.getCharSetName();
             }
         } else if (this.inputState == InputState.HIGHBYTE) {
-            for (int i=0; i<this.probers.length; ++i) {
-                st = this.probers[i].handleData(buf, offset, length);
+            for (final CharsetProber prober : this.probers) {
+                st = prober.handleData(buf, offset, length);
                 if (st == CharsetProber.ProbingState.FOUND_IT) {
                     this.done = true;
-                    this.detectedCharset = this.probers[i].getCharSetName();
+                    this.detectedCharset = prober.getCharSetName();
                     return;
                 }
             }
@@ -262,9 +259,9 @@ public class UniversalDetector {
             this.escCharsetProber.reset();
         }
 
-        for (int i=0; i<this.probers.length; ++i) {
-            if (this.probers[i] != null) {
-                this.probers[i].reset();
+        for (final CharsetProber prober : this.probers) {
+            if (prober != null) {
+                prober.reset();
             }
         }
     }
