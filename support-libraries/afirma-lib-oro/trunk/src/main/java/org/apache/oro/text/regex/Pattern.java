@@ -71,7 +71,6 @@ package org.apache.oro.text.regex;
  * implementations.  The documentation accompanying a specific implementation
  * will define what other classes a Pattern can interact with.
  *
- * @version @version@
  * @since 1.0
  * @see PatternCompiler
  * @see PatternMatcher

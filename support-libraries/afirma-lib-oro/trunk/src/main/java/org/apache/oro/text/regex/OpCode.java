@@ -62,7 +62,6 @@ package org.apache.oro.text.regex;
  * constants and static methods pertaining to the manipulation of the op-codes
  * used in a compiled regular expression.
  *
- * @version @version@
  * @since 1.0
  */
 final class OpCode {

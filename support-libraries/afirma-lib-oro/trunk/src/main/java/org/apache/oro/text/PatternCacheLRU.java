@@ -70,7 +70,6 @@ import org.apache.oro.util.CacheLRU;
  * the least recently used pattern currently in the cache.  This is probably
  * the best general purpose pattern cache replacement policy.
  *
- * @version @version@
  * @since 1.0
  * @see GenericPatternCache
  */

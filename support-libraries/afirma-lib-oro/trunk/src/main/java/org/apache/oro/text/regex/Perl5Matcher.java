@@ -73,7 +73,6 @@ import java.util.Stack;
  * executing instances of Perl5Matcher, you must compile the patterns with
  * {@link Perl5Compiler#READ_ONLY_MASK}.
  *
- * @version @version@
  * @since 1.0
  * @see PatternMatcher
  * @see Perl5Compiler

@@ -117,7 +117,7 @@ package org.apache.oro.text.regex;
  *   System.out.println("Saved Groups: ");
  *
  *   // Start at 1 because we just printed out group 0
- *   for(int group = 1; group < groups; group++) {
+ *   for(int group = 1; group &lt; groups; group++) {
  *	 System.out.println(group + ": " + result.group(group));
  *	 System.out.println("Begin: " + result.begin(group));
  *	 System.out.println("End: " + result.end(group));
@@ -125,7 +125,6 @@ package org.apache.oro.text.regex;
  * }
  * </pre></blockquote>
  *
- * @version @version@
  * @since 1.0
  * @see PatternMatcher
  */

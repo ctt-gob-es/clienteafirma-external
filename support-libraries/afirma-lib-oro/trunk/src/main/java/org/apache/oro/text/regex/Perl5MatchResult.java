@@ -62,7 +62,6 @@ package org.apache.oro.text.regex;
 /**
  * A class used to store and access the results of a Perl5Pattern match.
  *
- * @version @version@
  * @since 1.0
  * @see PatternMatcher
  * @see Perl5Matcher

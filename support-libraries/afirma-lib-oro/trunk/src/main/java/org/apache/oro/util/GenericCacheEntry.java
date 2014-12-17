@@ -55,18 +55,13 @@
  * <http://www.apache.org/>.
  */
 
-
 package org.apache.oro.util;
 
-
-/**
- * A structure used to store values in a GenericCache.  It
+/** A structure used to store values in a GenericCache.  It
  * is declared with default access to limit it to use only within the
  * package.
- *
- * @version @version@
- * @since 1.0
- */
+
+ * @since 1.0 */
 final class GenericCacheEntry implements java.io.Serializable {
 
 	private static final long serialVersionUID = 8359756019468404576L;

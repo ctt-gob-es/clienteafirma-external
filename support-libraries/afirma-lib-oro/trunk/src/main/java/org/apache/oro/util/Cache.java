@@ -59,12 +59,8 @@
 package org.apache.oro.util;
 
 
-/**
- * An interface defining the basic functions of a cache.
- *
- * @version @version@
- * @since 1.0
- */
+/** An interface defining the basic functions of a cache.
+ * @since 1.0 */
 public interface Cache {
 
 	/** Adds an element to the cache.
