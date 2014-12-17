@@ -69,7 +69,6 @@ package org.apache.oro.text.regex;
  * implementors of the interfaces of this package from subclassing it
  * for their own purposes.
  *
- * @version @version@
  * @since 1.0
  * @see PatternCompiler
  */

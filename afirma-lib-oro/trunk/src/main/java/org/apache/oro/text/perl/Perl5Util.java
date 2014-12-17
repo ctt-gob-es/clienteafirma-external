@@ -164,7 +164,6 @@ import org.apache.oro.util.CacheLRU;
  * should use a thread-local variable and obviate the need for a critical
  * section, please express your views on the oro-dev mailing list.
  *
- * @version @version@
  * @since 1.0
  * @see MalformedPerl5PatternException
  * @see org.apache.oro.text.PatternCache

@@ -73,7 +73,6 @@ import java.io.Serializable;
  * the Serializable interface so that instances may be pre-compiled and
  * saved to disk if desired.
  *
- * @version @version@
  * @since 1.0
  * @see Perl5Compiler
  * @see Perl5Matcher

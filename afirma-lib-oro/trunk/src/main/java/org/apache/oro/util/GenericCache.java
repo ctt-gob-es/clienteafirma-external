@@ -68,7 +68,6 @@ import java.util.Iterator;
  * Rather, users should create their own implmentations of the {@link Cache}
  * interface.
  *
- * @version @version@
  * @since 1.0
  * @see Cache
  * @see CacheLRU

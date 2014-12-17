@@ -77,7 +77,6 @@ package org.apache.oro.text.regex;
  * implementations of the provided interfaces. Therefore the programmer
  * should be careful not to mismatch classes.
  *
- * @version @version@
  * @since 1.0
  * @see Pattern
  * @see PatternCompiler

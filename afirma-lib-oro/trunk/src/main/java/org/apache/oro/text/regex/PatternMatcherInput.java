@@ -112,7 +112,6 @@ package org.apache.oro.text.regex;
  *
  * </blockquote>
  *
- * @version @version@
  * @since 1.0
  * @see PatternMatcher
  */

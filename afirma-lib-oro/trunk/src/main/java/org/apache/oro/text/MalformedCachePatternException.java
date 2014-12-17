@@ -26,13 +26,13 @@
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
- * 4. The names "Apache" and "Apache Software Foundation", "Jakarta-Oro" 
+ * 4. The names "Apache" and "Apache Software Foundation", "Jakarta-Oro"
  *    must not be used to endorse or promote products derived from this
  *    software without prior written permission. For written
  *    permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache" 
- *    or "Jakarta-Oro", nor may "Apache" or "Jakarta-Oro" appear in their 
+ * 5. Products derived from this software may not be called "Apache"
+ *    or "Jakarta-Oro", nor may "Apache" or "Jakarta-Oro" appear in their
  *    name, without prior written permission of the Apache Software Foundation.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
@@ -75,7 +75,6 @@ package org.apache.oro.text;
  * be correct should catch MalformedCachePatternException to ensure
  * reliability.
  *
- * @version @version@
  * @since 1.0
  * @see PatternCache
  */
@@ -95,8 +94,8 @@ public class MalformedCachePatternException extends RuntimeException {
    * <p>
    * @param message  A message indicating the nature of the error.
    */
-  public MalformedCachePatternException(String message) {
-    super(message);                                
+  public MalformedCachePatternException(final String message) {
+    super(message);
   }
 
 }

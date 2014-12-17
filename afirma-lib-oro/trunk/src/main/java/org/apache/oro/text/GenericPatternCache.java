@@ -63,19 +63,16 @@ import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternCompiler;
 import org.apache.oro.util.Cache;
 
-/**
- * This is the base class for all cache implementations provided in the
+/** This is the base class for all cache implementations provided in the
  * org.apache.oro.text package.
  * Although 4 subclasses of GenericPatternCache are provided with this
  * package, users may not derive subclasses from this class.
  * Rather, users should create their own implmentations of the
  * {@link PatternCache} interface.
  *
- * @version @version@
  * @since 1.0
  * @see PatternCache
- * @see PatternCacheLRU
- */
+ * @see PatternCacheLRU */
 public abstract class GenericPatternCache implements PatternCache {
   PatternCompiler _compiler;
   Cache _cache;

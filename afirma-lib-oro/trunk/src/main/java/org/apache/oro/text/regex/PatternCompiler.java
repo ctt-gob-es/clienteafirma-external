@@ -101,7 +101,6 @@ package org.apache.oro.text.regex;
  * the compilation of a pattern.  However, the PatternCompiler method
  * implementations should provide the default behavior of the class.
  *
- * @version @version@
  * @since 1.0
  * @see Pattern
  * @see PatternMatcher

@@ -67,7 +67,6 @@ package org.apache.oro.util;
  * the least recently used value currently in the cache.  This is probably
  * the best general purpose cache replacement policy.
  *
- * @version @version@
  * @since 1.0
  * @see GenericCache
  */

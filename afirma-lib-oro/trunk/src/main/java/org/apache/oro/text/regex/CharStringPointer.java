@@ -65,7 +65,6 @@ package org.apache.oro.text.regex;
  * It is expected that the compiler will inline all the functions.
  *
  * @since 1.0
- * @version @version@
  */
 final class CharStringPointer {
   static final char _END_OF_STRING = Character.MAX_VALUE;
@@ -103,7 +102,7 @@ final class CharStringPointer {
   void _setOffset(final int offset) { this._offset = offset; }
 
   boolean _isAtEnd() {
-    return (this._offset >= this._array.length);
+    return this._offset >= this._array.length;
   }
 
   char _increment(final int inc) {

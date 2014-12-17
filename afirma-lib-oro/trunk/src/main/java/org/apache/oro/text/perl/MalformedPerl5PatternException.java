@@ -75,7 +75,6 @@ import org.apache.oro.text.MalformedCachePatternException;
  * be correct should catch MalformedPerl5PatternException to ensure
  * reliability.
  *
- * @version @version@
  * @since 1.0
  * @see org.apache.oro.text.regex.MalformedPatternException
  */
