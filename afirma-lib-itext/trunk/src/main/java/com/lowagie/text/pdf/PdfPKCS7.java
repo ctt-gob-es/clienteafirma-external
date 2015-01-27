@@ -515,7 +515,7 @@ public class PdfPKCS7 {
             }
             if (this.RSAdata != null || this.digestAttr != null) {
                 if (provider == null || provider.startsWith("SunPKCS11")) {
-					this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()));
+                	this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()));
 				} else {
 					this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()), provider);
 				}

@@ -435,11 +435,13 @@ public class PdfPKCS7 {
                 this.RSAdata = rsaDataContent.getOctets();
             }
 
-            // the signerInfos
+            // The SignerInfos:
+            // SignerInfos ::= SET OF SignerInfo
             int next = 3;
-            while (content.getObjectAt(next) instanceof DERTaggedObject) {
+            while (content.getObjectAt(next) instanceof ASN1TaggedObject) {
 				++next;
 			}
+
             final ASN1Set signerInfos = (ASN1Set)content.getObjectAt(next);
             if (signerInfos.size() != 1) {
 				throw new IllegalArgumentException("This PKCS#7 object has multiple SignerInfos - only one is supported at this time");
@@ -626,10 +628,6 @@ public class PdfPKCS7 {
 			this.sig.update(buf, off, len);
 		}
     }
-
-
-
-
 
     /**
      * Get all the X.509 certificates associated with this PKCS#7 object in no particular order.
