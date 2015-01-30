@@ -45,7 +45,7 @@ import org.mozilla.universalchardet.prober.MBCSGroupProber;
 import org.mozilla.universalchardet.prober.SBCSGroupProber;
 
 
-public class UniversalDetector {
+public final class UniversalDetector {
     ////////////////////////////////////////////////////////////////
     // constants
     ////////////////////////////////////////////////////////////////
@@ -90,8 +90,7 @@ public class UniversalDetector {
         reset();
     }
 
-    public boolean isDone()
-    {
+    public boolean isDone() {
         return this.done;
     }
 
@@ -99,8 +98,7 @@ public class UniversalDetector {
      * @return The detected encoding is returned. If the detector couldn't
      *          determine what encoding was used, null is returned.
      */
-    public String getDetectedCharset()
-    {
+    public String getDetectedCharset() {
         return this.detectedCharset;
     }
 
@@ -131,24 +129,29 @@ public class UniversalDetector {
                 case 0xFE:
                     if (b2 == 0xFF && b3 == 0x00 && b4 == 0x00) {
                         this.detectedCharset = Constants.CHARSET_X_ISO_10646_UCS_4_3412;
-                    } else if (b2 == 0xFF) {
+                    }
+                    else if (b2 == 0xFF) {
                         this.detectedCharset = Constants.CHARSET_UTF_16BE;
                     }
                     break;
                 case 0x00:
                     if (b2 == 0x00 && b3 == 0xFE && b4 == 0xFF) {
                         this.detectedCharset = Constants.CHARSET_UTF_32BE;
-                    } else if (b2 == 0x00 && b3 == 0xFF && b4 == 0xFE) {
+                    }
+                    else if (b2 == 0x00 && b3 == 0xFF && b4 == 0xFE) {
                         this.detectedCharset = Constants.CHARSET_X_ISO_10646_UCS_4_2143;
                     }
                     break;
                 case 0xFF:
                     if (b2 == 0xFE && b3 == 0x00 && b4 == 0x00) {
                         this.detectedCharset = Constants.CHARSET_UTF_32LE;
-                    } else if (b2 == 0xFE) {
+                    }
+                    else if (b2 == 0xFE) {
                         this.detectedCharset = Constants.CHARSET_UTF_16LE;
                     }
                     break;
+                default:
+                	// Vacio, no se hace nada en este caso
                 } // swich end
 
                 if (this.detectedCharset != null) {
@@ -179,7 +182,8 @@ public class UniversalDetector {
                         this.probers[2] = new Latin1Prober();
                     }
                 }
-            } else {
+            }
+            else {
                 if (this.inputState == InputState.PURE_ASCII &&
                     (c == 0x1B || c == 0x7B && this.lastChar == 0x7E)) {
                     this.inputState = InputState.ESC_ASCII;
@@ -198,7 +202,8 @@ public class UniversalDetector {
                 this.done = true;
                 this.detectedCharset = this.escCharsetProber.getCharSetName();
             }
-        } else if (this.inputState == InputState.HIGHBYTE) {
+        }
+        else if (this.inputState == InputState.HIGHBYTE) {
             for (final CharsetProber prober : this.probers) {
                 st = prober.handleData(buf, offset, length);
                 if (st == CharsetProber.ProbingState.FOUND_IT) {
@@ -207,8 +212,6 @@ public class UniversalDetector {
                     return;
                 }
             }
-        } else { // pure ascii
-            // do nothing
         }
     }
 
@@ -239,15 +242,10 @@ public class UniversalDetector {
             if (maxProberConfidence > MINIMUM_THRESHOLD) {
                 this.detectedCharset = this.probers[maxProber].getCharSetName();
             }
-        } else if (this.inputState == InputState.ESC_ASCII) {
-            // do nothing
-        } else {
-            // do nothing
         }
     }
 
-    private void reset()
-    {
+    private void reset() {
         this.done = false;
         this.start = true;
         this.detectedCharset = null;
