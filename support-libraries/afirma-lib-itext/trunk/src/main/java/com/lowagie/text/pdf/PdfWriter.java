@@ -57,6 +57,7 @@ import java.io.OutputStream;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,6 +67,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.lowagie.text.DocWriter;
+import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Image;
@@ -104,6 +106,26 @@ public class PdfWriter extends DocWriter implements
 	PdfXConformance,
 	PdfRunDirection,
 	PdfAnnotations {
+
+    /**
+     * Use this method to get an instance of the <CODE>PdfWriter</CODE>.
+     *
+     * @param	document	The <CODE>Document</CODE> that has to be written
+     * @param	os	The <CODE>OutputStream</CODE> the writer has to write to.
+     * @return	a new <CODE>PdfWriter</CODE>
+     *
+     * @throws	DocumentException on error
+     */
+
+    public static PdfWriter getInstance(final Document document, final OutputStream os)
+    throws DocumentException {
+        final PdfDocument pdf = new PdfDocument(new GregorianCalendar());
+        document.addDocListener(pdf);
+        final PdfWriter writer = new PdfWriter(pdf, os);
+        pdf.addWriter(writer);
+        return writer;
+    }
+
 
 	/**
 	 * The highest generation number possible.
@@ -1640,7 +1662,9 @@ public class PdfWriter extends DocWriter implements
         this.pdf.setXmpMetadata(xmpMetadata);
     }
 
-
+    public void createXmpMetadata() {
+        setXmpMetadata(createXmpMetadataBytes());
+    }
 
     /**
      * @return an XmpMetadata byte array

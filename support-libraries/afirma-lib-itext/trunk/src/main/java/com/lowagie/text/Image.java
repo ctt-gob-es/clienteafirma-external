@@ -582,7 +582,7 @@ public abstract class Image extends Rectangle {
 	 * @return an Image object
 	 * @throws BadElementException
 	 */
-	private static Image getInstance(final PdfTemplate template)
+	public static Image getInstance(final PdfTemplate template)
 			throws BadElementException {
 		return new ImgTemplate(template);
 	}

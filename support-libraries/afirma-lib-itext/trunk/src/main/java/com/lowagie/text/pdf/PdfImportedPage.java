@@ -57,7 +57,7 @@ import com.lowagie.text.Image;
  *
  * @author Paulo Soares (psoares@consiste.pt)
  */
-class PdfImportedPage extends com.lowagie.text.pdf.PdfTemplate {
+public final class PdfImportedPage extends com.lowagie.text.pdf.PdfTemplate {
 
     private final PdfReaderInstance readerInstance;
     private final int pageNumber;
