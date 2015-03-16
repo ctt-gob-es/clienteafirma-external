@@ -1930,7 +1930,7 @@ public class PdfContentByte {
      * @param x the x location of this template
      * @param y the y location of this template
      */
-    void addTemplate(final PdfTemplate template, final float x, final float y) {
+    public void addTemplate(final PdfTemplate template, final float x, final float y) {
         addTemplate(template, 1, 0, 0, 1, x, y);
     }
 
