@@ -515,7 +515,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name of an attribute. */
     static final PdfName GROUP = new PdfName("Group");
     /** A name of an attribute. */
-    static final PdfName GTS_PDFA1 = new PdfName("GTS_PDFA1");
+    public static final PdfName GTS_PDFA1 = new PdfName("GTS_PDFA1");
     /** A name of an attribute. */
     public static final PdfName GTS_PDFX = new PdfName("GTS_PDFX");
     /** A name of an attribute. */

@@ -148,7 +148,7 @@ public class PdfVersionImp implements PdfVersion {
 	 * Returns the PDF version as a name.
 	 * @param version	the version character.
 	 */
-	private PdfName getVersionAsName(final char version) {
+	public static PdfName getVersionAsName(final char version) {
 		switch(version) {
 		case PdfWriter.VERSION_1_2:
 			return PdfWriter.PDF_VERSION_1_2;
