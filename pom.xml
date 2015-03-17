@@ -9,7 +9,6 @@
 	<packaging>pom</packaging>
 	
 	<modules>
-		<module>afirma-lib-bouncycastle/trunk</module>
 		<module>afirma-lib-jmimemagic/trunk</module>
 		<module>afirma-lib-juniversalchardet/trunk</module>
 		<module>afirma-lib-oro/trunk</module>
