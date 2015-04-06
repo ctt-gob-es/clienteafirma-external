@@ -62,6 +62,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CRL;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1Enumerated;
@@ -89,6 +91,7 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.ASN1String;
 import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.BERTaggedObject;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
@@ -312,9 +315,17 @@ public class PdfPKCS7 {
             this.digest = ((DEROctetString)in.readObject()).getOctets();
             if (provider == null) {
 				this.sig = Signature.getInstance("SHA1withRSA");
-			} else {
+			}
+            else {
 				this.sig = Signature.getInstance("SHA1withRSA", provider);
 			}
+
+            if (this.signCert.getPublicKey() == null) {
+            	throw new CertificateEncodingException(
+        			"El certificado no contiene una clave publica adecuada"
+    			);
+            }
+
             this.sig.initVerify(this.signCert.getPublicKey());
         }
         catch (final Exception e) {
@@ -431,7 +442,17 @@ public class PdfPKCS7 {
             // the possible ID_PKCS7_DATA
             final ASN1Sequence rsaData = (ASN1Sequence)content.getObjectAt(2);
             if (rsaData.size() > 1) {
-                final DEROctetString rsaDataContent = (DEROctetString)((DERTaggedObject)rsaData.getObjectAt(1)).getObject();
+            	final ASN1Encodable encodable = rsaData.getObjectAt(1);
+            	final ASN1OctetString rsaDataContent;
+            	if (encodable instanceof DERTaggedObject) {
+            		rsaDataContent = (ASN1OctetString)((DERTaggedObject)encodable).getObject();
+            	}
+            	else if (encodable instanceof BERTaggedObject) {
+            		rsaDataContent = (ASN1OctetString)((BERTaggedObject)encodable).getObject();
+            	}
+            	else {
+            		throw new IllegalArgumentException("El objeto ASN.1 no es ni BER ni BER ni DER: " + encodable.getClass().getName());
+            	}
                 this.RSAdata = rsaDataContent.getOctets();
             }
 
@@ -447,13 +468,16 @@ public class PdfPKCS7 {
 				throw new IllegalArgumentException("This PKCS#7 object has multiple SignerInfos - only one is supported at this time");
 			}
             final ASN1Sequence signerInfo = (ASN1Sequence)signerInfos.getObjectAt(0);
+
             // the positions that we care are
             //     0 - version
             //     1 - the signing certificate serial number
             //     2 - the digest algorithm
             //     3 or 4 - digestEncryptionAlgorithm
             //     4 or 5 - encryptedDigest
+
             this.signerversion = ((ASN1Integer)signerInfo.getObjectAt(0)).getValue().intValue();
+
             // Get the signing certificate
             final ASN1Sequence issuerAndSerialNumber = (ASN1Sequence)signerInfo.getObjectAt(1);
             final BigInteger serialNumber = ((ASN1Integer)issuerAndSerialNumber.getObjectAt(1)).getValue();
@@ -516,7 +540,8 @@ public class PdfPKCS7 {
             if (this.RSAdata != null || this.digestAttr != null) {
                 if (provider == null || provider.startsWith("SunPKCS11")) {
                 	this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()));
-				} else {
+				}
+                else {
 					this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()), provider);
 				}
             }
@@ -526,8 +551,14 @@ public class PdfPKCS7 {
             else {
 				this.sig = Signature.getInstance(getDigestAlgorithm(), provider);
 			}
-            //TODO: Comprobar por que no hay clave publica en el certificado
-            //this.sig.initVerify(this.signCert.getPublicKey());
+            if (this.signCert.getPublicKey() != null) {
+            	this.sig.initVerify(this.signCert.getPublicKey());
+            }
+            else {
+            	throw new CertificateEncodingException(
+        			"El certificado no contiene una clave publica adecuada"
+    			);
+            }
         }
         catch (final Exception e) {
             throw new ExceptionConverter(e);
@@ -598,7 +629,8 @@ public class PdfPKCS7 {
             this.RSAdata = new byte[0];
             if (provider == null || provider.startsWith("SunPKCS11")) {
 				this.messageDigest = MessageDigest.getInstance(getHashAlgorithm());
-			} else {
+			}
+            else {
 				this.messageDigest = MessageDigest.getInstance(getHashAlgorithm(), provider);
 			}
         }
@@ -606,7 +638,8 @@ public class PdfPKCS7 {
         if (privKey != null) {
             if (provider == null) {
 				this.sig = Signature.getInstance(getDigestAlgorithm());
-			} else {
+			}
+            else {
 				this.sig = Signature.getInstance(getDigestAlgorithm(), provider);
 			}
 
@@ -624,7 +657,8 @@ public class PdfPKCS7 {
     void update(final byte[] buf, final int off, final int len) throws SignatureException {
         if (this.RSAdata != null || this.digestAttr != null) {
 			this.messageDigest.update(buf, off, len);
-		} else {
+		}
+        else {
 			this.sig.update(buf, off, len);
 		}
     }
