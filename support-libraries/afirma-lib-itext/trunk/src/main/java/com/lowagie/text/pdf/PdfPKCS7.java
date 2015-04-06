@@ -320,13 +320,10 @@ public class PdfPKCS7 {
 				this.sig = Signature.getInstance("SHA1withRSA", provider);
 			}
 
-            if (this.signCert.getPublicKey() == null) {
-            	throw new CertificateEncodingException(
-        			"El certificado no contiene una clave publica adecuada"
-    			);
+            if (this.signCert.getPublicKey() != null) {
+                this.sig.initVerify(this.signCert.getPublicKey());
             }
 
-            this.sig.initVerify(this.signCert.getPublicKey());
         }
         catch (final Exception e) {
             throw new ExceptionConverter(e);
@@ -554,11 +551,7 @@ public class PdfPKCS7 {
             if (this.signCert.getPublicKey() != null) {
             	this.sig.initVerify(this.signCert.getPublicKey());
             }
-            else {
-            	throw new CertificateEncodingException(
-        			"El certificado no contiene una clave publica adecuada"
-    			);
-            }
+
         }
         catch (final Exception e) {
             throw new ExceptionConverter(e);
