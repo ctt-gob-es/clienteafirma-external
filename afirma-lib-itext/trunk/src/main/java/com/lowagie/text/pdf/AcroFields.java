@@ -1649,7 +1649,8 @@ public class AcroFields {
             if (sub.equals(PdfName.ADBE_X509_RSA_SHA1)) {
                 final PdfString cert = v.getAsString(PdfName.CERT);
                 pk = new PdfPKCS7(contents.getOriginalBytes(), cert.getBytes(), provider);
-            } else {
+            }
+            else {
 				pk = new PdfPKCS7(contents.getOriginalBytes(), provider);
 			}
             updateByteRange(pk, v);
@@ -1659,11 +1660,12 @@ public class AcroFields {
 			}
             final PdfObject obj = PdfReader.getPdfObject(v.get(PdfName.NAME));
             if (obj != null) {
-              if (obj.isString()) {
-				pk.setSignName(((PdfString)obj).toUnicodeString());
-			} else if(obj.isName()) {
-				pk.setSignName(PdfName.decodeName(obj.toString()));
-			}
+            	if (obj.isString()) {
+            		pk.setSignName(((PdfString)obj).toUnicodeString());
+            	}
+            	else if(obj.isName()) {
+            		pk.setSignName(PdfName.decodeName(obj.toString()));
+            	}
             }
             str = v.getAsString(PdfName.REASON);
             if (str != null) {
