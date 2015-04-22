@@ -58,11 +58,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CRL;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -320,8 +322,17 @@ public class PdfPKCS7 {
 				this.sig = Signature.getInstance("SHA1withRSA", provider);
 			}
 
-            if (this.signCert.getPublicKey() != null) {
-                this.sig.initVerify(this.signCert.getPublicKey());
+            PublicKey publicKey = this.signCert.getPublicKey();
+            if (publicKey == null) {
+            	publicKey = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(this.signCert.getEncoded())).getPublicKey();
+            }
+            if (publicKey != null) {
+            	this.sig.initVerify(publicKey);
+            }
+            else {
+            	throw new CertificateEncodingException(
+        			"El certificado no contiene una clave publica adecuada"
+    			);
             }
 
         }
@@ -548,8 +559,18 @@ public class PdfPKCS7 {
             else {
 				this.sig = Signature.getInstance(getDigestAlgorithm(), provider);
 			}
-            if (this.signCert.getPublicKey() != null) {
-            	this.sig.initVerify(this.signCert.getPublicKey());
+
+            PublicKey publicKey = this.signCert.getPublicKey();
+            if (publicKey == null) {
+            	publicKey = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(this.signCert.getEncoded())).getPublicKey();
+            }
+            if (publicKey != null) {
+            	this.sig.initVerify(publicKey);
+            }
+            else {
+            	throw new CertificateEncodingException(
+        			"El certificado no contiene una clave publica adecuada"
+    			);
             }
 
         }
