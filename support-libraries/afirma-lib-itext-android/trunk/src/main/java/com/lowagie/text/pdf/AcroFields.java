@@ -225,7 +225,7 @@ public class AcroFields {
         }
         // some tools produce invisible signatures without an entry in the page annotation array
         // look for a single level annotation
-        
+
         final PdfNumber sigFlags;
         if (top != null) {
         	sigFlags = top.getAsNumber(PdfName.SIGFLAGS);
@@ -361,7 +361,7 @@ public class AcroFields {
             if ((ff & PdfFormField.FF_COMBO) != 0) {
 				return FIELD_TYPE_COMBO;
 			}
-            return FIELD_TYPE_LIST;
+			return FIELD_TYPE_LIST;
         }
         else if (PdfName.SIG.equals(type)) {
             return FIELD_TYPE_SIGNATURE;
@@ -1660,11 +1660,12 @@ public class AcroFields {
 			}
             final PdfObject obj = PdfReader.getPdfObject(v.get(PdfName.NAME));
             if (obj != null) {
-              if (obj.isString()) {
-				pk.setSignName(((PdfString)obj).toUnicodeString());
-			} else if(obj.isName()) {
-				pk.setSignName(PdfName.decodeName(obj.toString()));
-			}
+            	if (obj.isString()) {
+            		pk.setSignName(((PdfString)obj).toUnicodeString());
+            	}
+            	else if(obj.isName()) {
+            		pk.setSignName(PdfName.decodeName(obj.toString()));
+            	}
             }
             str = v.getAsString(PdfName.REASON);
             if (str != null) {
@@ -1815,7 +1816,7 @@ public class AcroFields {
     }
 
     private static class SorterComparator implements Comparator {
-		@Override
+        @Override
 		public int compare(final Object o1, final Object o2) {
             final int n1 = ((int[])((Object[])o1)[1])[0];
             final int n2 = ((int[])((Object[])o2)[1])[0];
