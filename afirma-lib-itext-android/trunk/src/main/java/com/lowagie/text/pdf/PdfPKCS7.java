@@ -68,6 +68,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -1523,4 +1524,29 @@ public class PdfPKCS7 {
 
 		throw new IllegalArgumentException("Algoritmo de huella digital no soportado: " + pseudoName); //$NON-NLS-1$
 	}
+
+    /** Verify the digest.
+     * @throws SignatureException on error
+     * @return <CODE>true</CODE> if the signature checks out, <CODE>false</CODE> otherwise. */
+    public boolean verify() throws SignatureException {
+        if (this.verified) {
+			return this.verifyResult;
+		}
+        if (this.sigAttr != null) {
+            this.sig.update(this.sigAttr);
+            if (this.RSAdata != null) {
+                final byte msd[] = this.messageDigest.digest();
+                this.messageDigest.update(msd);
+            }
+            this.verifyResult = Arrays.equals(this.messageDigest.digest(), this.digestAttr) && this.sig.verify(this.digest);
+        }
+        else {
+            if (this.RSAdata != null) {
+				this.sig.update(this.messageDigest.digest());
+			}
+            this.verifyResult = this.sig.verify(this.digest);
+        }
+        this.verified = true;
+        return this.verifyResult;
+    }
 }
