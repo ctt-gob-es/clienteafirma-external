@@ -377,14 +377,14 @@ public class PdfSignatureAppearance {
             String text;
             if (this.layer2Text == null) {
                 final StringBuffer buf = new StringBuffer();
-                buf.append("Digitally signed by ").append(PdfPKCS7.getSubjectFields((X509Certificate)this.certChain[0]).getField("CN")).append('\n'); //$NON-NLS-1$ //$NON-NLS-2$
-                final SimpleDateFormat sd = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z"); //$NON-NLS-1$
-                buf.append("Date: ").append(sd.format(this.signDate.getTime())); //$NON-NLS-1$
+                buf.append("Firmado por ").append(PdfPKCS7.getSubjectFields((X509Certificate)this.certChain[0]).getField("CN")).append('\n'); //$NON-NLS-1$ //$NON-NLS-2$
+                final SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z"); //$NON-NLS-1$
+                buf.append("Fecha: ").append(sd.format(this.signDate.getTime())); //$NON-NLS-1$
                 if (this.reason != null) {
-					buf.append('\n').append("Reason: ").append(this.reason); //$NON-NLS-1$
+					buf.append('\n').append("Motivo: ").append(this.reason); //$NON-NLS-1$
 				}
                 if (this.location != null) {
-					buf.append('\n').append("Location: ").append(this.location); //$NON-NLS-1$
+					buf.append('\n').append("Lugar de firma: ").append(this.location); //$NON-NLS-1$
 				}
                 text = buf.toString();
             } else {
@@ -802,8 +802,8 @@ public class PdfSignatureAppearance {
 			}
             n1 += "."; //$NON-NLS-1$
             found = true;
-            for (final Iterator it = af.getFields().keySet().iterator(); it.hasNext();) {
-                final String fn = (String)it.next();
+            for (final Object element : af.getFields().keySet()) {
+                final String fn = (String)element;
                 if (fn.startsWith(n1)) {
                     found = false;
                     break;
