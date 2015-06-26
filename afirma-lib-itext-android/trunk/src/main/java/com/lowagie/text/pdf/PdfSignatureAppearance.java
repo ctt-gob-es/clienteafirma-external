@@ -58,7 +58,7 @@ import java.security.PrivateKey;
 import java.security.cert.CRL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -378,9 +378,10 @@ public class PdfSignatureAppearance {
             if (this.layer2Text == null) {
                 final StringBuilder buf = new StringBuilder();
                 buf.append("Firmado por ").append(PdfPKCS7.getSubjectFields((X509Certificate)this.certChain[0]).getField("CN")).append('\n'); //$NON-NLS-1$ //$NON-NLS-2$
-                buf.append("Fecha: ").append(DateFormat.getDateTimeInstance().format(this.signDate.getTime())); //$NON-NLS-1$
+                final SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z"); //$NON-NLS-1$
+                buf.append("Fecha: ").append(sd.format(this.signDate.getTime())); //$NON-NLS-1$
                 if (this.reason != null) {
-					buf.append('\n').append("Motivo de la firma: ").append(this.reason); //$NON-NLS-1$
+					buf.append('\n').append("Motivo: ").append(this.reason); //$NON-NLS-1$
 				}
                 if (this.location != null) {
 					buf.append('\n').append("Lugar de firma: ").append(this.location); //$NON-NLS-1$
