@@ -86,14 +86,21 @@ public class PdfSignatureAppearance {
      * The rendering mode is just the description
      */
     public static final int SignatureRenderDescription = 0;
+
     /**
      * The rendering mode is the name of the signer and the description
      */
     private static final int SignatureRenderNameAndDescription = 1;
+
     /**
      * The rendering mode is an image and the description
      */
     private static final int SignatureRenderGraphicAndDescription = 2;
+
+    /**
+     * The self signed filter.
+     */
+    public static final PdfName SELF_SIGNED = PdfName.ADOBE_PPKLITE;
 
     public static final int NOT_CERTIFIED = 0;
     public static final int CERTIFIED_NO_CHANGES_ALLOWED = 1;
@@ -627,7 +634,19 @@ public class PdfSignatureAppearance {
         }
     }
 
-
+    /**
+     * Sets the digest/signature to an external calculated value.
+     * @param digest the digest. This is the actual signature
+     * @param RSAdata the extra data that goes into the data tag in PKCS#7
+     * @param digestEncryptionAlgorithm the encryption algorithm. It may must be <CODE>null</CODE> if the <CODE>digest</CODE>
+     * is also <CODE>null</CODE>. If the <CODE>digest</CODE> is not <CODE>null</CODE>
+     * then it may be "RSA" or "DSA"
+     */
+    public void setExternalDigest(final byte digest[], final byte RSAdata[], final String digestEncryptionAlgorithm) {
+        this.externalDigest = digest;
+        this.externalRSAdata = RSAdata;
+        this.digestEncryptionAlgorithm = digestEncryptionAlgorithm;
+    }
 
     /**
      * Gets the signing reason.
@@ -913,11 +932,14 @@ public class PdfSignatureAppearance {
         if (this.cryptoDictionary == null) {
             if (PdfName.ADOBE_PPKLITE.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.PPKLite(getProvider());
-			} else if (PdfName.ADOBE_PPKMS.equals(getFilter())) {
+			}
+            else if (PdfName.ADOBE_PPKMS.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.PPKMS(getProvider());
-			} else if (PdfName.VERISIGN_PPKVS.equals(getFilter())) {
+			}
+            else if (PdfName.VERISIGN_PPKVS.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.VeriSign(getProvider());
-			} else {
+			}
+            else {
 				throw new IllegalArgumentException("Unknown filter: " + getFilter()); //$NON-NLS-1$
 			}
             this.sigStandard.setExternalDigest(this.externalDigest, this.externalRSAdata, this.digestEncryptionAlgorithm);

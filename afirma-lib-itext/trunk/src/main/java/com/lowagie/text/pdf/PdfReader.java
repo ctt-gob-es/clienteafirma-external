@@ -228,9 +228,15 @@ public class PdfReader implements PdfViewerPreferences {
         readPdf();
     }
 
-
-
-
+    /**
+     * Reads and parses a PDF document.
+     * @param is the <CODE>InputStream</CODE> containing the document. The stream is read to the
+     * end but is not closed
+     * @throws IOException on error
+     */
+    public PdfReader(final InputStream is) throws IOException {
+        this(is, null);
+    }
 
     /** Creates an independent duplicate.
      * @param reader the <CODE>PdfReader</CODE> to duplicate

@@ -116,7 +116,7 @@ public class PRTokeniser {
         this.file = file;
     }
 
-    void seek(final int pos) throws IOException {
+    public void seek(final int pos) throws IOException {
         this.file.seek(pos);
     }
 
@@ -132,7 +132,7 @@ public class PRTokeniser {
         return this.file.length();
     }
 
-    int read() throws IOException {
+    public int read() throws IOException {
         return this.file.read();
     }
 

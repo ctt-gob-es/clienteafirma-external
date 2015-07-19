@@ -191,7 +191,7 @@ public class RandomAccessFileOrArray implements DataInput {
         }
     }
 
-    int read(final byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, int off, int len) throws IOException {
         if (len == 0) {
 			return 0;
 		}
@@ -281,7 +281,7 @@ public class RandomAccessFileOrArray implements DataInput {
         return newpos - pos + adj;
     }
 
-    void reOpen() throws IOException {
+    public void reOpen() throws IOException {
         if (this.filename != null && this.rf == null && this.trf == null) {
             if (this.plainRandomAccess) {
 				this.trf = new RandomAccessFile(this.filename, "r");
