@@ -848,6 +848,10 @@ public class PdfSignatureAppearance {
         preClose(null, globalDate);
     }
 
+    public void preClose() throws IOException, DocumentException {
+    	preClose(null, null);
+    }
+
     /**
      * This is the first method to be called when using external signatures. The general sequence is:
      * preClose(), getDocumentBytes() and close().
