@@ -56,7 +56,7 @@ import com.lowagie.text.ExceptionConverter;
 /**
  * A signature dictionary representation for the standard filters.
  */
-abstract class PdfSigGenericPKCS extends PdfSignature {
+public abstract class PdfSigGenericPKCS extends PdfSignature {
     /**
      * The hash algorithm, for example "SHA1"
      */
