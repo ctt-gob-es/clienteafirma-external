@@ -52,7 +52,7 @@ package com.lowagie.text.xml.xmp;
 /**
  * An implementation of an XmpSchema.
  */
-class PdfA1Schema extends XmpSchema {
+class PdfA2Schema extends XmpSchema {
 
     private static final long serialVersionUID = 5300646133692948168L;
     /** default namespace identifier*/
@@ -65,9 +65,9 @@ class PdfA1Schema extends XmpSchema {
     /** Conformance, A or B. */
     private static final String CONFORMANCE = "pdfaid:conformance";
 
-    public PdfA1Schema() {
+    public PdfA2Schema() {
         super("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"");
-        addPart("2");
+        addPart("1");
     }
 
     /**
