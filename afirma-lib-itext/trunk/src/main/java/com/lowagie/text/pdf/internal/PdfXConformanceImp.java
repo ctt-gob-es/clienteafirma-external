@@ -134,7 +134,8 @@ public class PdfXConformanceImp implements PdfXConformance {
      * @return true of the PDF has to be in conformance with PDFA1
      */
     public boolean isPdfA1() {
-    	return this.pdfxConformance == PdfWriter.PDFA1A || this.pdfxConformance == PdfWriter.PDFA1B;
+    	return this.pdfxConformance == PdfWriter.PDFA1A || this.pdfxConformance == PdfWriter.PDFA1B ||
+    		   this.pdfxConformance == PdfWriter.PDFA2A || this.pdfxConformance == PdfWriter.PDFA2B;
     }
 
     /**

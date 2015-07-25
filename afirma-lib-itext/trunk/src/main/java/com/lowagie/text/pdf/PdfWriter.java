@@ -1716,7 +1716,7 @@ public class PdfWriter extends DocWriter implements
         if (this.crypto != null) {
 			throw new PdfXConformanceException("A PDFX conforming document cannot be encrypted.");
 		}
-        if (pdfx == PDFA1A || pdfx == PDFA1B) {
+        if (pdfx == PDFA1A || pdfx == PDFA1B || pdfx == PDFA2A || pdfx == PDFA2B) {
 			setPdfVersion(VERSION_1_4);
 		}
         else if (pdfx != PDFXNONE) {

@@ -67,7 +67,7 @@ class PdfA1Schema extends XmpSchema {
 
     public PdfA1Schema() {
         super("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"");
-        addPart("2");
+        addPart("1");
     }
 
     /**
