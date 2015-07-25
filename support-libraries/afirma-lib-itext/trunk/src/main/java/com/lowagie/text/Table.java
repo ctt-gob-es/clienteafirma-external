@@ -1240,7 +1240,7 @@ public class Table extends Rectangle implements LargeElement {
      * @return a PdfPTable object
      * @throws BadElementException
      */
-    PdfPTable createPdfPTable() throws BadElementException {
+    public PdfPTable createPdfPTable() throws BadElementException {
     	if (!this.convert2pdfptable) {
     		throw new BadElementException("No error, just an old style table");
     	}

@@ -51,8 +51,11 @@ package com.lowagie.text.pdf;
 
 import java.util.ArrayList;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.ElementListener;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 
 /**
@@ -63,10 +66,10 @@ import com.lowagie.text.Rectangle;
  * a document using <CODE>Document.add</CODE>.
  * @author Steve Appling
  */
-class MultiColumnText implements Element {
+public class MultiColumnText implements Element {
 
     /** special constant for automatic calculation of height */
-    private static final float AUTOMATIC = -1f;
+    public static final float AUTOMATIC = -1f;
 
     /**
      * total desiredHeight of columns.  If <CODE>AUTOMATIC</CODE>, this means fill pages until done.
@@ -103,7 +106,7 @@ class MultiColumnText implements Element {
     /**
      * true if all columns are simple (rectangular)
      */
-    private final boolean simple = true;
+    private boolean simple = true;
 
     private int currentColumn = 0;
 
@@ -127,7 +130,7 @@ class MultiColumnText implements Element {
      *
      * @param height
      */
-    private MultiColumnText(final float height) {
+    public MultiColumnText(final float height) {
         this.columnDefs = new ArrayList();
         this.desiredHeight = height;
         this.top = AUTOMATIC;
@@ -136,7 +139,22 @@ class MultiColumnText implements Element {
         this.totalHeight = 0f;
     }
 
-
+    /**
+     * Construct a MultiColumnText container of the specified height
+     * starting at the specified Y position.
+     *
+     * @param height
+     * @param top
+     */
+    public MultiColumnText(final float top, final float height) {
+        this.columnDefs = new ArrayList();
+        this.desiredHeight = height;
+        this.top = top;
+        this.nextY = top;
+        // canvas will be set later
+        this.columnText = new ColumnText(null);
+        this.totalHeight = 0f;
+    }
 
     /**
      * Indicates that all of the text did not fit in the
@@ -151,9 +169,32 @@ class MultiColumnText implements Element {
         return this.overflow;
     }
 
+    /**
+     * Copy the parameters from the specified ColumnText to use
+     * when rendering.  Parameters like <CODE>setArabicOptions</CODE>
+     * must be set in this way.
+     *
+     * @param sourceColumn
+     */
+    public void useColumnParams(final ColumnText sourceColumn) {
+        // note that canvas will be overwritten later
+        this.columnText.setSimpleVars(sourceColumn);
+    }
 
-
-
+    /**
+     * Add a new column.  The parameters are limits for each column
+     * wall in the format of a sequence of points (x1,y1,x2,y2,...).
+     *
+     * @param left  limits for left column
+     * @param right limits for right column
+     */
+    public void addColumn(final float[] left, final float[] right) {
+        final ColumnDef nextDef = new ColumnDef(left, right);
+        if (!nextDef.isSimple()) {
+			this.simple = false;
+		}
+        this.columnDefs.add(nextDef);
+    }
 
     /**
      * Add a simple rectangular column with specified left
@@ -162,21 +203,151 @@ class MultiColumnText implements Element {
      * @param left  left boundary
      * @param right right boundary
      */
-    private void addSimpleColumn(final float left, final float right) {
+    public void addSimpleColumn(final float left, final float right) {
         final ColumnDef newCol = new ColumnDef(left, right);
         this.columnDefs.add(newCol);
     }
 
+    /**
+     * Add the specified number of evenly spaced rectangular columns.
+     * Columns will be separated by the specified gutterWidth.
+     *
+     * @param left        left boundary of first column
+     * @param right       right boundary of last column
+     * @param gutterWidth width of gutter spacing between columns
+     * @param numColumns  number of columns to add
+     */
+    public void addRegularColumns(final float left, final float right, final float gutterWidth, final int numColumns) {
+        float currX = left;
+        final float width = right - left;
+        final float colWidth = (width - gutterWidth * (numColumns - 1)) / numColumns;
+        for (int i = 0; i < numColumns; i++) {
+            addSimpleColumn(currX, currX + colWidth);
+            currX += colWidth + gutterWidth;
+        }
+    }
+
+    /**
+     * Adds a <CODE>Phrase</CODE> to the current text array.
+     * Will not have any effect if addElement() was called before.
+     * @param phrase the text
+     * @since	2.1.5
+     */
+    public void addText(final Phrase phrase) {
+    	this.columnText.addText(phrase);
+    }
+
+    /**
+     * Adds a <CODE>Chunk</CODE> to the current text array.
+     * Will not have any effect if addElement() was called before.
+     * @param chunk the text
+     * @since	2.1.5
+     */
+    public void addText(final Chunk chunk) {
+    	this.columnText.addText(chunk);
+    }
+
+    /**
+     * Add an element to be rendered in a column.
+     * Note that you can only add a <CODE>Phrase</CODE>
+     * or a <CODE>Chunk</CODE> if the columns are
+     * not all simple.  This is an underlying restriction in
+     * {@link com.lowagie.text.pdf.ColumnText}
+     *
+     * @param element element to add
+     * @throws DocumentException if element can't be added
+     */
+    public void addElement(final Element element) throws DocumentException {
+        if (this.simple) {
+            this.columnText.addElement(element);
+        } else if (element instanceof Phrase) {
+            this.columnText.addText((Phrase) element);
+        } else if (element instanceof Chunk) {
+            this.columnText.addText((Chunk) element);
+        } else {
+            throw new DocumentException("Can't add " + element.getClass() + " to MultiColumnText with complex columns");
+        }
+    }
 
 
+    /**
+     * Write out the columns.  After writing, use
+     * {@link #isOverflow()} to see if all text was written.
+     * @param canvas PdfContentByte to write with
+     * @param document document to write to (only used to get page limit info)
+     * @param documentY starting y position to begin writing at
+     * @return the current height (y position) after writing the columns
+     * @throws DocumentException on error
+     */
+    public float write(final PdfContentByte canvas, final PdfDocument document, float documentY) throws DocumentException {
+        this.document = document;
+        this.columnText.setCanvas(canvas);
+        if (this.columnDefs.isEmpty()) {
+            throw new DocumentException("MultiColumnText has no columns");
+        }
+        this.overflow = false;
+        float currentHeight = 0;
+        boolean done = false;
+        try {
+            while (!done) {
+                if (this.top == AUTOMATIC) {
+                    this.top = document.getVerticalPosition(true); // RS - 07/07/2005 - Get current doc writing position for top of columns on new page.
+                }
+                else if (this.nextY == AUTOMATIC) {
+                    this.nextY = document.getVerticalPosition(true); // RS - 07/07/2005 - - Get current doc writing position for top of columns on new page.
+                }
+                final ColumnDef currentDef = (ColumnDef) this.columnDefs.get(getCurrentColumn());
+                this.columnText.setYLine(this.top);
 
+                float[] left = currentDef.resolvePositions(Rectangle.LEFT);
+                float[] right = currentDef.resolvePositions(Rectangle.RIGHT);
+                if (document.isMarginMirroring() && document.getPageNumber() % 2 == 0){
+                    final float delta = document.rightMargin() - document.left();
+                    left = left.clone();
+                    right = right.clone();
+                    for (int i = 0; i < left.length; i += 2) {
+                        left[i] -= delta;
+                    }
+                    for (int i = 0; i < right.length; i += 2) {
+                        right[i] -= delta;
+                    }
+                }
 
+                currentHeight = Math.max(currentHeight, getHeight(left, right));
 
+                if (currentDef.isSimple()) {
+                    this.columnText.setSimpleColumn(left[2], left[3], right[0], right[1]);
+                } else {
+                    this.columnText.setColumns(left, right);
+                }
 
-
-
-
-
+                final int result = this.columnText.go();
+                if ((result & ColumnText.NO_MORE_TEXT) != 0) {
+                    done = true;
+                    this.top = this.columnText.getYLine();
+                } else if (shiftCurrentColumn()) {
+                    this.top = this.nextY;
+                } else {  // check if we are done because of height
+                    this.totalHeight += currentHeight;
+                    if (this.desiredHeight != AUTOMATIC && this.totalHeight >= this.desiredHeight) {
+                        this.overflow = true;
+                        break;
+                    } else {  // need to start new page and reset the columns
+                        documentY = this.nextY;
+                        newPage();
+                        currentHeight = 0;
+                    }
+                }
+            }
+        } catch (final DocumentException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
+        if (this.desiredHeight == AUTOMATIC && this.columnDefs.size() == 1) {
+        	currentHeight = documentY - this.columnText.getYLine();
+        }
+        return currentHeight;
+    }
 
     private void newPage() throws DocumentException {
         resetCurrentColumn();
@@ -214,7 +385,21 @@ class MultiColumnText implements Element {
     }
 
 
-
+    /**
+     * Processes the element by adding it to an
+     * <CODE>ElementListener</CODE>.
+     *
+     * @param	listener	an <CODE>ElementListener</CODE>
+     * @return	<CODE>true</CODE> if the element was processed successfully
+     */
+    @Override
+	public boolean process(final ElementListener listener) {
+        try {
+            return listener.add(this);
+        } catch (final DocumentException de) {
+            return false;
+        }
+    }
 
     /**
      * Gets the type of the text element.
@@ -270,7 +455,18 @@ class MultiColumnText implements Element {
         }
     }
 
-
+    /**
+     * Moves the text insertion point to the beginning of the next column, issuing a page break if
+     * needed.
+     * @throws DocumentException on error
+     */
+    public void nextColumn() throws DocumentException {
+        this.currentColumn = (this.currentColumn + 1) % this.columnDefs.size();
+        this.top = this.nextY;
+        if (this.currentColumn == 0) {
+            newPage();
+        }
+    }
 
     /**
      * Gets the current column.
@@ -286,7 +482,7 @@ class MultiColumnText implements Element {
     /**
      * Resets the current column.
      */
-    private void resetCurrentColumn() {
+    public void resetCurrentColumn() {
     	this.currentColumn = 0;
     }
 
@@ -294,7 +490,7 @@ class MultiColumnText implements Element {
      * Shifts the current column.
      * @return true if the current column has changed
      */
-    private boolean shiftCurrentColumn() {
+    public boolean shiftCurrentColumn() {
     	if (this.currentColumn + 1 < this.columnDefs.size()) {
             this.currentColumn++;
             return true;

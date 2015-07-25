@@ -57,44 +57,44 @@ import com.lowagie.text.Utilities;
  *
  * @author Paulo Soares (psoares@consiste.pt)
  */
-class BidiLine {
+public class BidiLine {
 
-    private int runDirection;
-    private int pieceSize = 256;
-    private char text[] = new char[this.pieceSize];
-    private PdfChunk detailChunks[] = new PdfChunk[this.pieceSize];
-    private int totalTextLength = 0;
+    protected int runDirection;
+    protected int pieceSize = 256;
+    protected char text[] = new char[this.pieceSize];
+    protected PdfChunk detailChunks[] = new PdfChunk[this.pieceSize];
+    protected int totalTextLength = 0;
 
-    private byte orderLevels[] = new byte[this.pieceSize];
-    private int indexChars[] = new int[this.pieceSize];
+    protected byte orderLevels[] = new byte[this.pieceSize];
+    protected int indexChars[] = new int[this.pieceSize];
 
-    private ArrayList chunks = new ArrayList();
-    private int indexChunk = 0;
-    private int indexChunkChar = 0;
-    private int currentChar = 0;
+    protected ArrayList chunks = new ArrayList();
+    protected int indexChunk = 0;
+    protected int indexChunkChar = 0;
+    protected int currentChar = 0;
 
-    private int storedRunDirection;
-    private char storedText[] = new char[0];
-    private PdfChunk storedDetailChunks[] = new PdfChunk[0];
-    private int storedTotalTextLength = 0;
+    protected int storedRunDirection;
+    protected char storedText[] = new char[0];
+    protected PdfChunk storedDetailChunks[] = new PdfChunk[0];
+    protected int storedTotalTextLength = 0;
 
-    private byte storedOrderLevels[] = new byte[0];
-    private int storedIndexChars[] = new int[0];
+    protected byte storedOrderLevels[] = new byte[0];
+    protected int storedIndexChars[] = new int[0];
 
-    private int storedIndexChunk = 0;
-    private int storedIndexChunkChar = 0;
-    private int storedCurrentChar = 0;
+    protected int storedIndexChunk = 0;
+    protected int storedIndexChunkChar = 0;
+    protected int storedCurrentChar = 0;
 
-    private boolean shortStore;
+    protected boolean shortStore;
 //    protected ArabicShaping arabic = new ArabicShaping(ArabicShaping.LETTERS_SHAPE | ArabicShaping.LENGTH_GROW_SHRINK | ArabicShaping.TEXT_DIRECTION_LOGICAL);
-    private static final IntHashtable mirrorChars = new IntHashtable();
-    private int arabicOptions;
+    protected static final IntHashtable mirrorChars = new IntHashtable();
+    protected int arabicOptions;
 
     /** Creates new BidiLine */
     public BidiLine() {
     }
 
-    BidiLine(final BidiLine org) {
+    public BidiLine(final BidiLine org) {
         this.runDirection = org.runDirection;
         this.pieceSize = org.pieceSize;
         this.text = org.text.clone();
@@ -129,9 +129,13 @@ class BidiLine {
         return this.currentChar >= this.totalTextLength && this.indexChunk >= this.chunks.size();
     }
 
+    public void clearChunks() {
+        this.chunks.clear();
+        this.totalTextLength = 0;
+        this.currentChar = 0;
+    }
 
-
-    private boolean getParagraph(final int runDirection) {
+    public boolean getParagraph(final int runDirection) {
         this.runDirection = runDirection;
         this.currentChar = 0;
         this.totalTextLength = 0;
@@ -199,13 +203,15 @@ class BidiLine {
         return true;
     }
 
-    void addChunk(final PdfChunk chunk) {
+    public void addChunk(final PdfChunk chunk) {
         this.chunks.add(chunk);
     }
 
+    public void addChunks(final ArrayList chunks) {
+        this.chunks.addAll(chunks);
+    }
 
-
-    private void addPiece(final char c, final PdfChunk chunk) {
+    public void addPiece(final char c, final PdfChunk chunk) {
         if (this.totalTextLength >= this.pieceSize) {
             final char tempText[] = this.text;
             final PdfChunk tempDetailChunks[] = this.detailChunks;
@@ -219,7 +225,7 @@ class BidiLine {
         this.detailChunks[this.totalTextLength++] = chunk;
     }
 
-    private void save() {
+    public void save() {
         if (this.indexChunk > 0) {
             if (this.indexChunk >= this.chunks.size()) {
 				this.chunks.clear();
@@ -255,7 +261,7 @@ class BidiLine {
         }
     }
 
-    void restore() {
+    public void restore() {
         this.runDirection = this.storedRunDirection;
         this.totalTextLength = this.storedTotalTextLength;
         this.indexChunk = this.storedIndexChunk;
@@ -272,7 +278,7 @@ class BidiLine {
         }
     }
 
-    private void mirrorGlyphs() {
+    public void mirrorGlyphs() {
         for (int k = 0; k < this.totalTextLength; ++k) {
             if ((this.orderLevels[k] & 1) == 1) {
                 final int mirror = mirrorChars.get(this.text[k]);
@@ -283,7 +289,7 @@ class BidiLine {
         }
     }
 
-    private void doArabicShapping() {
+    public void doArabicShapping() {
         int src = 0;
         int dest = 0;
         for (;;) {
@@ -326,7 +332,7 @@ class BidiLine {
         }
     }
 
-    PdfLine processLine(final float leftX, float width, final int alignment, final int runDirection, final int arabicOptions) {
+    public PdfLine processLine(final float leftX, float width, final int alignment, final int runDirection, final int arabicOptions) {
         this.arabicOptions = arabicOptions;
         save();
         final boolean isRTL = runDirection == PdfWriter.RUN_DIRECTION_RTL;
@@ -448,7 +454,7 @@ class BidiLine {
      * @param lastIdx the last inclusive index to calculate
      * @return the sum of all widths
      */
-    private float getWidth(int startIdx, final int lastIdx) {
+    public float getWidth(int startIdx, final int lastIdx) {
         char c = 0;
         final char uniC;
         PdfChunk ck = null;
@@ -471,11 +477,11 @@ class BidiLine {
         return width;
     }
 
-    private ArrayList createArrayOfPdfChunks(final int startIdx, final int endIdx) {
+    public ArrayList createArrayOfPdfChunks(final int startIdx, final int endIdx) {
         return createArrayOfPdfChunks(startIdx, endIdx, null);
     }
 
-    private ArrayList createArrayOfPdfChunks(int startIdx, final int endIdx, final PdfChunk extraPdfChunk) {
+    public ArrayList createArrayOfPdfChunks(int startIdx, final int endIdx, final PdfChunk extraPdfChunk) {
         final boolean bidi = this.runDirection == PdfWriter.RUN_DIRECTION_LTR || this.runDirection == PdfWriter.RUN_DIRECTION_RTL;
         if (bidi) {
 			reorder(startIdx, endIdx);
@@ -523,7 +529,7 @@ class BidiLine {
         return ar;
     }
 
-    private int[] getWord(final int startIdx, final int idx) {
+    public int[] getWord(final int startIdx, final int idx) {
         int last = idx;
         int first = idx;
         // forward
@@ -545,7 +551,7 @@ class BidiLine {
         return new int[]{first, last};
     }
 
-    private int trimRight(final int startIdx, final int endIdx) {
+    public int trimRight(final int startIdx, final int endIdx) {
         int idx = endIdx;
         char c;
         for (; idx >= startIdx; --idx) {
@@ -557,9 +563,19 @@ class BidiLine {
         return idx;
     }
 
+    public int trimLeft(final int startIdx, final int endIdx) {
+        int idx = startIdx;
+        char c;
+        for (; idx <= endIdx; ++idx) {
+            c = (char)this.detailChunks[idx].getUnicodeEquivalent(this.text[idx]);
+            if (!isWS(c)) {
+				break;
+			}
+        }
+        return idx;
+    }
 
-
-    private int trimRightEx(final int startIdx, final int endIdx) {
+    public int trimRightEx(final int startIdx, final int endIdx) {
         int idx = endIdx;
         char c = 0;
         for (; idx >= startIdx; --idx) {
@@ -571,7 +587,7 @@ class BidiLine {
         return idx;
     }
 
-    private int trimLeftEx(final int startIdx, final int endIdx) {
+    public int trimLeftEx(final int startIdx, final int endIdx) {
         int idx = startIdx;
         char c = 0;
         for (; idx <= endIdx; ++idx) {
@@ -583,7 +599,7 @@ class BidiLine {
         return idx;
     }
 
-    private void reorder(final int start, final int end) {
+    public void reorder(final int start, final int end) {
         byte maxLevel = this.orderLevels[start];
         byte minLevel = maxLevel;
         byte onlyOddLevels = maxLevel;
@@ -629,7 +645,7 @@ class BidiLine {
         }
     }
 
-    private void flip(int start, int end) {
+    public void flip(int start, int end) {
         final int mid = (start + end) / 2;
         --end;
         for (; start < mid; ++start, --end) {
@@ -639,7 +655,7 @@ class BidiLine {
         }
     }
 
-    private static boolean isWS(final char c) {
+    public static boolean isWS(final char c) {
         return c <= ' ';
     }
 

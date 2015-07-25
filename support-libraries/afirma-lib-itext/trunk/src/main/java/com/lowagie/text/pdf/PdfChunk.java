@@ -614,6 +614,23 @@ public class PdfChunk {
         }
         return 0;
     }
+    public float trimFirstSpace()
+    {
+        final BaseFont ft = this.font.getFont();
+        if (ft.getFontType() == BaseFont.FONT_TYPE_CJK && ft.getUnicodeEquivalent(' ') != ' ') {
+            if (this.value.length() > 1 && this.value.startsWith("\u0001")) {
+                this.value = this.value.substring(1);
+                return this.font.width('\u0001');
+            }
+        }
+        else {
+            if (this.value.length() > 1 && this.value.startsWith(" ")) {
+                this.value = this.value.substring(1);
+                return this.font.width(' ');
+            }
+        }
+        return 0;
+    }
 
 
 /**

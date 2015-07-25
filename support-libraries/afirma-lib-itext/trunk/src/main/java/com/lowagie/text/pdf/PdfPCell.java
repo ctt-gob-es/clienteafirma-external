@@ -117,7 +117,7 @@ public class PdfPCell extends Rectangle{
     private boolean useBorderPadding = false;
 
     /** The text in the cell. */
-    private Phrase phrase;
+    protected Phrase phrase;
 
     /**
      * The rotation of the cell. Possible values are
@@ -142,7 +142,7 @@ public class PdfPCell extends Rectangle{
      *
      * @param phrase the text
      */
-    PdfPCell(final Phrase phrase) {
+    public PdfPCell(final Phrase phrase) {
         super(0, 0, 0, 0);
         this.borderWidth = 0.5f;
         this.border = BOX;
@@ -150,7 +150,15 @@ public class PdfPCell extends Rectangle{
         this.column.setLeading(0, 1);
     }
 
-
+    /**
+     * Constructs a <CODE>PdfPCell</CODE> with an <CODE>Image</CODE>.
+     * The default padding is 0.
+     *
+     * @param image the <CODE>Image</CODE>
+     */
+    public PdfPCell(final Image image) {
+        this(image, false);
+    }
 
     /**
      * Constructs a <CODE>PdfPCell</CODE> with an <CODE>Image</CODE>.
@@ -159,7 +167,7 @@ public class PdfPCell extends Rectangle{
      * @param image the <CODE>Image</CODE>
      * @param fit <CODE>true</CODE> to fit the image to the cell
      */
-    PdfPCell(final Image image, final boolean fit) {
+    public PdfPCell(final Image image, final boolean fit) {
         super(0, 0, 0, 0);
         this.borderWidth = 0.5f;
         this.border = BOX;
@@ -194,7 +202,7 @@ public class PdfPCell extends Rectangle{
      * @param style	The style to apply to the cell (you could use getDefaultCell())
      * @since 2.1.0
      */
-    private PdfPCell(final PdfPTable table, final PdfPCell style) {
+    public PdfPCell(final PdfPTable table, final PdfPCell style) {
         super(0, 0, 0, 0);
         this.borderWidth = 0.5f;
         this.border = BOX;
@@ -226,7 +234,7 @@ public class PdfPCell extends Rectangle{
      *
      * @param cell the <CODE>PdfPCell</CODE> to duplicate
      */
-    PdfPCell(final PdfPCell cell) {
+    public PdfPCell(final PdfPCell cell) {
         super(cell.llx, cell.lly, cell.urx, cell.ury);
         cloneNonPositionParameters(cell);
         this.verticalAlignment = cell.verticalAlignment;
@@ -576,7 +584,7 @@ public class PdfPCell extends Rectangle{
      * @return	true is a fixed height was set.
      * @since 2.1.5
      */
-    private boolean hasFixedHeight() {
+    public boolean hasFixedHeight() {
     	return getFixedHeight() > 0;
     }
 
@@ -600,7 +608,15 @@ public class PdfPCell extends Rectangle{
         return this.minimumHeight;
     }
 
-
+    /**
+     * Tells you whether the cell has a minimum height.
+     *
+     * @return	true if a minimum height was set.
+     * @since 2.1.5
+     */
+    public boolean hasMinimumHeight() {
+    	return getMinimumHeight() > 0;
+    }
 
     /**
      * Getter for property noWrap.
@@ -630,7 +646,16 @@ public class PdfPCell extends Rectangle{
         return this.table;
     }
 
-
+    void setTable(final PdfPTable table) {
+        this.table = table;
+        this.column.setText(null);
+        this.image = null;
+        if (table != null) {
+            table.setExtendLastRow(this.verticalAlignment == Element.ALIGN_TOP);
+            this.column.addElement(table);
+            table.setWidthPercentage(100);
+        }
+    }
 
     /**
      * Getter for property colspan.

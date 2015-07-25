@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,15 +63,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.lowagie.text.Anchor;
+import com.lowagie.text.Annotation;
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.ExceptionConverter;
+import com.lowagie.text.Font;
 import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
+import com.lowagie.text.List;
+import com.lowagie.text.ListItem;
+import com.lowagie.text.MarkedObject;
+import com.lowagie.text.MarkedSection;
+import com.lowagie.text.Meta;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.Section;
+import com.lowagie.text.SimpleTable;
 import com.lowagie.text.Table;
 import com.lowagie.text.pdf.collection.PdfCollection;
 import com.lowagie.text.pdf.draw.DrawInterface;
@@ -101,7 +114,6 @@ class PdfDocument extends Document {
      * should be strings.<BR>
      * This object is described in the 'Portable Document Format Reference Manual version 1.3'
      * section 6.10 (page 120-121)
-     * @param globalDate
      * @since	2.0.8 (PdfDocument was package-private before)
      */
 
@@ -111,13 +123,17 @@ class PdfDocument extends Document {
          * Construct a <CODE>PdfInfo</CODE>-object.
          */
 
+        PdfInfo() {
+            super();
+            addProducer();
+            addCreationDate();
+        }
+
         private PdfInfo(final Calendar globalDate) {
             super();
             addProducer();
             addCreationDate(globalDate);
         }
-
-
 
         /**
          * Adds the title of the document.
@@ -129,13 +145,45 @@ class PdfDocument extends Document {
             put(PdfName.TITLE, new PdfString(title, PdfObject.TEXT_UNICODE));
         }
 
+        /**
+         * Adds the subject to the document.
+         *
+         * @param	subject		the subject of the document
+         */
 
+        void addSubject(final String subject) {
+            put(PdfName.SUBJECT, new PdfString(subject, PdfObject.TEXT_UNICODE));
+        }
 
+        /**
+         * Adds some keywords to the document.
+         *
+         * @param	keywords		the keywords of the document
+         */
 
+        void addKeywords(final String keywords) {
+            put(PdfName.KEYWORDS, new PdfString(keywords, PdfObject.TEXT_UNICODE));
+        }
 
+        /**
+         * Adds the name of the author to the document.
+         *
+         * @param	author		the name of the author
+         */
 
+        void addAuthor(final String author) {
+            put(PdfName.AUTHOR, new PdfString(author, PdfObject.TEXT_UNICODE));
+        }
 
+        /**
+         * Adds the name of the creator to the document.
+         *
+         * @param	creator		the name of the creator
+         */
 
+        void addCreator(final String creator) {
+            put(PdfName.CREATOR, new PdfString(creator, PdfObject.TEXT_UNICODE));
+        }
 
         /**
          * Adds the name of the producer to the document.
@@ -145,17 +193,28 @@ class PdfDocument extends Document {
             put(PdfName.PRODUCER, new PdfString(getVersion()));
         }
 
-        /**
-         * Adds the date of creation to the document.
-         */
-
         private void addCreationDate(final Calendar globalDate) {
             final PdfString date = new PdfDate(globalDate);
             put(PdfName.CREATIONDATE, date);
             put(PdfName.MODDATE, date);
         }
 
+        /**
+         * Adds the date of creation to the document.
+         */
 
+        private void addCreationDate() {
+            final PdfString date = new PdfDate(new GregorianCalendar());
+            put(PdfName.CREATIONDATE, date);
+            put(PdfName.MODDATE, date);
+        }
+
+        void addkey(final String key, final String value) {
+            if (key.equals("Producer") || key.equals("CreationDate")) {
+				return;
+			}
+            put(new PdfName(key), new PdfString(value, PdfObject.TEXT_UNICODE));
+        }
     }
 
     /**
@@ -262,6 +321,10 @@ class PdfDocument extends Document {
 
 // CONSTRUCTING A PdfDocument/PdfWriter INSTANCE
 
+    PdfDocument() {
+    	this(new GregorianCalendar());
+    }
+
     /**
      * Constructs a new PDF document.
      * @param globalDate
@@ -329,6 +392,412 @@ class PdfDocument extends Document {
 
     /** This is the current height of the document. */
     private float currentHeight = 0;
+
+    /**
+     * Signals that onParagraph is valid (to avoid that a Chapter/Section title is treated as a Paragraph).
+     * @since 2.1.2
+     */
+    protected boolean isSectionTitle = false;
+
+    /**
+     * Signals that the current leading has to be subtracted from a YMark object when positive.
+     * @since 2.1.2
+     */
+    protected int leadingCount = 0;
+
+    /** The current active <CODE>PdfAction</CODE> when processing an <CODE>Anchor</CODE>. */
+    protected PdfAction anchorAction = null;
+
+    /**
+     * Signals that an <CODE>Element</CODE> was added to the <CODE>Document</CODE>.
+     *
+     * @param element the element to add
+     * @return <CODE>true</CODE> if the element was added, <CODE>false</CODE> if not.
+     * @throws DocumentException when a document isn't open yet, or has been closed
+     */
+    @Override
+	public boolean add(final Element element) throws DocumentException {
+        if (this.writer != null && this.writer.isPaused()) {
+            return false;
+        }
+        try {
+            switch(element.type()) {
+                // Information (headers)
+                case Element.HEADER:
+                    this.info.addkey(((Meta)element).getName(), ((Meta)element).getContent());
+                    break;
+                case Element.TITLE:
+                    this.info.addTitle(((Meta)element).getContent());
+                    break;
+                case Element.SUBJECT:
+                    this.info.addSubject(((Meta)element).getContent());
+                    break;
+                case Element.KEYWORDS:
+                    this.info.addKeywords(((Meta)element).getContent());
+                    break;
+                case Element.AUTHOR:
+                    this.info.addAuthor(((Meta)element).getContent());
+                    break;
+                case Element.CREATOR:
+                    this.info.addCreator(((Meta)element).getContent());
+                    break;
+                case Element.PRODUCER:
+                    // you can not change the name of the producer
+                    this.info.addProducer();
+                    break;
+                case Element.CREATIONDATE:
+                    // you can not set the creation date, only reset it
+                    this.info.addCreationDate();
+                    break;
+
+                // content (text)
+                case Element.CHUNK: {
+                    // if there isn't a current line available, we make one
+                    if (this.line == null) {
+                        carriageReturn();
+                    }
+
+                    // we cast the element to a chunk
+                    PdfChunk chunk = new PdfChunk((Chunk) element, this.anchorAction);
+                    // we try to add the chunk to the line, until we succeed
+                    {
+                        PdfChunk overflow;
+                        while ((overflow = this.line.add(chunk)) != null) {
+                            carriageReturn();
+                            chunk = overflow;
+                            chunk.trimFirstSpace();
+                        }
+                    }
+                    this.pageEmpty = false;
+                    if (chunk.isAttribute(Chunk.NEWPAGE)) {
+                        newPage();
+                    }
+                    break;
+                }
+                case Element.ANCHOR: {
+                	this.leadingCount++;
+                    final Anchor anchor = (Anchor) element;
+                    final String url = anchor.getReference();
+                    this.leading = anchor.getLeading();
+                    if (url != null) {
+                        this.anchorAction = new PdfAction(url);
+                    }
+                    // we process the element
+                    element.process(this);
+                    this.anchorAction = null;
+                    this.leadingCount--;
+                    break;
+                }
+                case Element.ANNOTATION: {
+                    if (this.line == null) {
+                        carriageReturn();
+                    }
+                    final Annotation annot = (Annotation) element;
+                    Rectangle rect = new Rectangle(0, 0);
+                    if (this.line != null) {
+						rect = new Rectangle(annot.llx(indentRight() - this.line.widthLeft()), annot.lly(indentTop() - this.currentHeight), annot.urx(indentRight() - this.line.widthLeft() + 20), annot.ury(indentTop() - this.currentHeight - 20));
+					}
+                    final PdfAnnotation an = PdfAnnotationsImp.convertAnnotation(this.writer, annot, rect);
+                    this.annotationsImp.addPlainAnnotation(an);
+                    this.pageEmpty = false;
+                    break;
+                }
+                case Element.PHRASE: {
+                	this.leadingCount++;
+                    // we cast the element to a phrase and set the leading of the document
+                    this.leading = ((Phrase) element).getLeading();
+                    // we process the element
+                    element.process(this);
+                    this.leadingCount--;
+                    break;
+                }
+                case Element.PARAGRAPH: {
+                	this.leadingCount++;
+                    // we cast the element to a paragraph
+                    final Paragraph paragraph = (Paragraph) element;
+                    addSpacing(paragraph.getSpacingBefore(), this.leading, paragraph.getFont());
+
+                    // we adjust the parameters of the document
+                    this.alignment = paragraph.getAlignment();
+                    this.leading = paragraph.getTotalLeading();
+                    carriageReturn();
+
+                    // we don't want to make orphans/widows
+                    if (this.currentHeight + this.line.height() + this.leading > indentTop() - indentBottom()) {
+                        newPage();
+                    }
+                    this.indentation.indentLeft += paragraph.getIndentationLeft();
+                    this.indentation.indentRight += paragraph.getIndentationRight();
+                    carriageReturn();
+
+                    final PdfPageEvent pageEvent = this.writer.getPageEvent();
+                    if (pageEvent != null && !this.isSectionTitle) {
+						pageEvent.onParagraph(this.writer, this, indentTop() - this.currentHeight);
+					}
+
+                    // if a paragraph has to be kept together, we wrap it in a table object
+                    if (paragraph.getKeepTogether()) {
+                    	carriageReturn();
+                        final PdfPTable table = new PdfPTable(1);
+                        table.setWidthPercentage(100f);
+                        final PdfPCell cell = new PdfPCell();
+                        cell.addElement(paragraph);
+                        cell.setBorder(Table.NO_BORDER);
+                        cell.setPadding(0);
+                        table.addCell(cell);
+                        this.indentation.indentLeft -= paragraph.getIndentationLeft();
+                        this.indentation.indentRight -= paragraph.getIndentationRight();
+                        this.add(table);
+                        this.indentation.indentLeft += paragraph.getIndentationLeft();
+                        this.indentation.indentRight += paragraph.getIndentationRight();
+                    }
+                    else {
+                    	this.line.setExtraIndent(paragraph.getFirstLineIndent());
+                    	element.process(this);
+                        carriageReturn();
+                        addSpacing(paragraph.getSpacingAfter(), paragraph.getTotalLeading(), paragraph.getFont());
+                    }
+
+                    if (pageEvent != null && !this.isSectionTitle) {
+						pageEvent.onParagraphEnd(this.writer, this, indentTop() - this.currentHeight);
+					}
+
+                    this.alignment = Element.ALIGN_LEFT;
+                    this.indentation.indentLeft -= paragraph.getIndentationLeft();
+                    this.indentation.indentRight -= paragraph.getIndentationRight();
+                    carriageReturn();
+                    this.leadingCount--;
+                    break;
+                }
+                case Element.SECTION:
+                case Element.CHAPTER: {
+                    // Chapters and Sections only differ in their constructor
+                    // so we cast both to a Section
+                    final Section section = (Section) element;
+                    final PdfPageEvent pageEvent = this.writer.getPageEvent();
+
+                    final boolean hasTitle = section.isNotAddedYet()
+                    	&& section.getTitle() != null;
+
+                    // if the section is a chapter, we begin a new page
+                    if (section.isTriggerNewPage()) {
+                        newPage();
+                    }
+
+                    if (hasTitle) {
+                    	float fith = indentTop() - this.currentHeight;
+                    	final int rotation = this.pageSize.getRotation();
+                    	if (rotation == 90 || rotation == 180) {
+							fith = this.pageSize.getHeight() - fith;
+						}
+                    	final PdfDestination destination = new PdfDestination(PdfDestination.FITH, fith);
+                    	while (this.currentOutline.level() >= section.getDepth()) {
+                    		this.currentOutline = this.currentOutline.parent();
+                    	}
+                    	final PdfOutline outline = new PdfOutline(this.currentOutline, destination, section.getBookmarkTitle(), section.isBookmarkOpen());
+                    	this.currentOutline = outline;
+                    }
+
+                    // some values are set
+                    carriageReturn();
+                    this.indentation.sectionIndentLeft += section.getIndentationLeft();
+                    this.indentation.sectionIndentRight += section.getIndentationRight();
+
+                    if (section.isNotAddedYet() && pageEvent != null) {
+						if (element.type() == Element.CHAPTER) {
+							pageEvent.onChapter(this.writer, this, indentTop() - this.currentHeight, section.getTitle());
+						} else {
+							pageEvent.onSection(this.writer, this, indentTop() - this.currentHeight, section.getDepth(), section.getTitle());
+						}
+					}
+
+                    // the title of the section (if any has to be printed)
+                    if (hasTitle) {
+                        this.isSectionTitle = true;
+                        add(section.getTitle());
+                        this.isSectionTitle = false;
+                    }
+                    this.indentation.sectionIndentLeft += section.getIndentation();
+                    // we process the section
+                    element.process(this);
+                    flushLines();
+                    // some parameters are set back to normal again
+                    this.indentation.sectionIndentLeft -= section.getIndentationLeft() + section.getIndentation();
+                    this.indentation.sectionIndentRight -= section.getIndentationRight();
+
+                    if (section.isComplete() && pageEvent != null) {
+						if (element.type() == Element.CHAPTER) {
+							pageEvent.onChapterEnd(this.writer, this, indentTop() - this.currentHeight);
+						} else {
+							pageEvent.onSectionEnd(this.writer, this, indentTop() - this.currentHeight);
+						}
+					}
+
+                    break;
+                }
+                case Element.LIST: {
+                    // we cast the element to a List
+                    final List list = (List) element;
+                    if (list.isAlignindent()) {
+                    	list.normalizeIndentation();
+                    }
+                    // we adjust the document
+                    this.indentation.listIndentLeft += list.getIndentationLeft();
+                    this.indentation.indentRight += list.getIndentationRight();
+                    // we process the items in the list
+                    element.process(this);
+                    // some parameters are set back to normal again
+                    this.indentation.listIndentLeft -= list.getIndentationLeft();
+                    this.indentation.indentRight -= list.getIndentationRight();
+                    carriageReturn();
+                    break;
+                }
+                case Element.LISTITEM: {
+                	this.leadingCount++;
+                    // we cast the element to a ListItem
+                    final ListItem listItem = (ListItem) element;
+
+                    addSpacing(listItem.getSpacingBefore(), this.leading, listItem.getFont());
+
+                    // we adjust the document
+                    this.alignment = listItem.getAlignment();
+                    this.indentation.listIndentLeft += listItem.getIndentationLeft();
+                    this.indentation.indentRight += listItem.getIndentationRight();
+                    this.leading = listItem.getTotalLeading();
+                    carriageReturn();
+
+                    // we prepare the current line to be able to show us the listsymbol
+                    this.line.setListItem(listItem);
+                    // we process the item
+                    element.process(this);
+
+                    addSpacing(listItem.getSpacingAfter(), listItem.getTotalLeading(), listItem.getFont());
+
+                    // if the last line is justified, it should be aligned to the left
+                    if (this.line.hasToBeJustified()) {
+                    	this.line.resetAlignment();
+                    }
+                    // some parameters are set back to normal again
+                    carriageReturn();
+                    this.indentation.listIndentLeft -= listItem.getIndentationLeft();
+                    this.indentation.indentRight -= listItem.getIndentationRight();
+                    this.leadingCount--;
+                    break;
+                }
+                case Element.RECTANGLE: {
+                    final Rectangle rectangle = (Rectangle) element;
+                    this.graphics.rectangle(rectangle);
+                    this.pageEmpty = false;
+                    break;
+                }
+                case Element.PTABLE: {
+                    final PdfPTable ptable = (PdfPTable)element;
+                    if (ptable.size() <= ptable.getHeaderRows())
+					 {
+						break; //nothing to do
+					}
+
+                    // before every table, we add a new line and flush all lines
+                    ensureNewLine();
+                    flushLines();
+
+                    addPTable(ptable);
+                    this.pageEmpty = false;
+                    newLine();
+                    break;
+                }
+                case Element.MULTI_COLUMN_TEXT: {
+                    ensureNewLine();
+                    flushLines();
+                    final MultiColumnText multiText = (MultiColumnText) element;
+                    final float height = multiText.write(this.writer.getDirectContent(), this, indentTop() - this.currentHeight);
+                    this.currentHeight += height;
+                    this.text.moveText(0, -1f* height);
+                    this.pageEmpty = false;
+                    break;
+                }
+                case Element.TABLE : {
+                    if (element instanceof SimpleTable) {
+                    	final PdfPTable ptable = ((SimpleTable)element).createPdfPTable();
+                    	if (ptable.size() <= ptable.getHeaderRows())
+						 {
+							break; //nothing to do
+						}
+
+                    	// before every table, we add a new line and flush all lines
+                    	ensureNewLine();
+                    	flushLines();
+                    	addPTable(ptable);
+                    	this.pageEmpty = false;
+                    	break;
+                    } else if (element instanceof Table) {
+                    	try {
+                       		final PdfPTable ptable = ((Table)element).createPdfPTable();
+                       		if (ptable.size() <= ptable.getHeaderRows())
+							 {
+								break; //nothing to do
+							}
+                       		// before every table, we add a new line and flush all lines
+                       		ensureNewLine();
+                       		flushLines();
+                       		addPTable(ptable);
+                       		this.pageEmpty = false;
+                       		break;
+                    	}
+                    	catch(final BadElementException bee) {
+                    		// constructing the PdfTable
+                    		// Before the table, add a blank line using offset or default leading
+                    		float offset = ((Table)element).getOffset();
+                    		if (Float.isNaN(offset)) {
+								offset = this.leading;
+							}
+                    		carriageReturn();
+                    		this.lines.add(new PdfLine(indentLeft(), indentRight(), this.alignment, offset));
+                    		this.currentHeight += offset;
+                    		addPdfTable((Table)element);
+                    	}
+					} else {
+						return false;
+					}
+                    break;
+                }
+                case Element.JPEG:
+                case Element.JPEG2000:
+                case Element.JBIG2:
+                case Element.IMGRAW:
+                case Element.IMGTEMPLATE: {
+                    //carriageReturn(); suggestion by Marc Campforts
+                    add((Image) element);
+                    break;
+                }
+                case Element.YMARK: {
+                    final DrawInterface zh = (DrawInterface)element;
+                    zh.draw(this.graphics, indentLeft(), indentBottom(), indentRight(), indentTop(), indentTop() - this.currentHeight - (this.leadingCount > 0 ? this.leading : 0));
+                    this.pageEmpty = false;
+                    break;
+                }
+                case Element.MARKED: {
+                	MarkedObject mo;
+                	if (element instanceof MarkedSection) {
+                		mo = ((MarkedSection)element).getTitle();
+                		if (mo != null) {
+                			mo.process(this);
+                		}
+                	}
+                	mo = (MarkedObject)element;
+                	mo.process(this);
+                	break;
+                }
+                default:
+                    return false;
+            }
+            this.lastElementType = element.type();
+            return true;
+        }
+        catch(final Exception e) {
+            throw new DocumentException(e);
+        }
+    }
 
 
 //	[L1] DocListener interface
@@ -834,7 +1303,20 @@ class PdfDocument extends Document {
         this.line = new PdfLine(indentLeft(), indentRight(), this.alignment, this.leading);
     }
 
-
+    /**
+     * Gets the current vertical page position.
+     * @param ensureNewLine Tells whether a new line shall be enforced. This may cause side effects
+     *   for elements that do not terminate the lines they've started because those lines will get
+     *   terminated.
+     * @return The current vertical page position.
+     */
+    public float getVerticalPosition(final boolean ensureNewLine) {
+        // ensuring that a new line has been started.
+        if (ensureNewLine) {
+          ensureNewLine();
+        }
+        return top() -  this.currentHeight - this.indentation.indentTop;
+    }
 
     /** Holds the type of the last element, that has been added to the document. */
     private int lastElementType = -1;
@@ -1317,7 +1799,7 @@ class PdfDocument extends Document {
         private float indentLeft = 0;
 
         /** Indentation to the left caused by a section. */
-        private final float sectionIndentLeft = 0;
+        private float sectionIndentLeft = 0;
 
         /** This represents the current indentation of the PDF Elements on the left side. */
         private float listIndentLeft = 0;
@@ -1329,7 +1811,7 @@ class PdfDocument extends Document {
         private float indentRight = 0;
 
         /** Indentation to the right caused by a section. */
-        private final float sectionIndentRight = 0;
+        private float sectionIndentRight = 0;
 
         /** This is the indentation caused by an image on the right. */
         private float imageIndentRight = 0;
@@ -1381,12 +1863,40 @@ class PdfDocument extends Document {
         return bottom(this.indentation.indentBottom);
     }
 
+    /**
+     * Adds extra space.
+     * This method should probably be rewritten.
+     */
+    protected void addSpacing(final float extraspace, final float oldleading, Font f) {
+    	if (extraspace == 0) {
+			return;
+		}
+    	if (this.pageEmpty) {
+			return;
+		}
+    	if (this.currentHeight + this.line.height() + this.leading > indentTop() - indentBottom()) {
+			return;
+		}
+        this.leading = extraspace;
+        carriageReturn();
+        if (f.isUnderlined() || f.isStrikethru()) {
+            f = new Font(f);
+            int style = f.getStyle();
+            style &= ~Font.UNDERLINE;
+            style &= ~Font.STRIKETHRU;
+            f.setStyle(style);
+        }
+        final Chunk space = new Chunk(" ", f);
+        space.process(this);
+        carriageReturn();
+        this.leading = oldleading;
+    }
 
 
 //	Info Dictionary and Catalog
 
     /** some meta information about the Document. */
-    private final PdfInfo info;
+    private PdfInfo info = new PdfInfo();
 
     /**
      * Gets the <CODE>PdfInfo</CODE>-object.
@@ -1466,6 +1976,14 @@ class PdfDocument extends Document {
     /** This is the current <CODE>PdfOutline</CODE> in the hierarchy of outlines. */
     private PdfOutline currentOutline;
 
+    /**
+     * Adds a named outline to the document .
+     * @param outline the outline to be added
+     * @param name the name of this local destination
+     */
+    void addOutline(final PdfOutline outline, final String name) {
+        localDestination(name, outline.getPdfDestination());
+    }
 
 
     /**
@@ -1804,6 +2322,9 @@ class PdfDocument extends Document {
         this.annotationsImp.setSigFlags(f);
     }
 
+    void addCalculationOrder(final PdfFormField formField) {
+        this.annotationsImp.addCalculationOrder(formField);
+    }
 
 
     void addAnnotation(final PdfAnnotation annot) {
@@ -1815,7 +2336,13 @@ class PdfDocument extends Document {
 
     private int markPoint;
 
+	int getMarkPoint() {
+	    return this.markPoint;
+	}
 
+	void incMarkPoint() {
+	    ++this.markPoint;
+	}
 
 
 
@@ -1863,6 +2390,17 @@ class PdfDocument extends Document {
     	}
     }
 
+    /**
+     * Gives the size of a trim, art, crop or bleed box, or null if not defined.
+     * @param boxName crop, trim, art or bleed
+     */
+    Rectangle getBoxSize(final String boxName) {
+    	final PdfRectangle r = (PdfRectangle)this.thisBoxSize.get(boxName);
+    	if (r != null) {
+			return r.getRectangle();
+		}
+    	return null;
+    }
 
 
 //	[U2] empty pages
@@ -1950,6 +2488,19 @@ class PdfDocument extends Document {
     /** This is the position where the image ends. */
     private float imageEnd = -1;
 
+	/**
+	 * Method added by Pelikan Stephan
+	 */
+	public void clearTextWrap() {
+		float tmpHeight = this.imageEnd - this.currentHeight;
+		if (this.line != null) {
+			tmpHeight += this.line.height();
+		}
+		if (this.imageEnd > -1 && tmpHeight > 0) {
+			carriageReturn();
+			this.currentHeight += tmpHeight;
+		}
+	}
 
 
     /** This is the image that could not be shown on a previous page. */
@@ -2039,6 +2590,49 @@ class PdfDocument extends Document {
 
 //	[M4] Adding a PdfPTable
 
+    /** Adds a <CODE>PdfPTable</CODE> to the document.
+     * @param ptable the <CODE>PdfPTable</CODE> to be added to the document.
+     * @throws DocumentException on error
+     */
+    void addPTable(final PdfPTable ptable) throws DocumentException {
+        final ColumnText ct = new ColumnText(this.writer.getDirectContent());
+        // if the table prefers to be on a single page, and it wouldn't
+        //fit on the current page, start a new page.
+        if (ptable.getKeepTogether() && !fitsPage(ptable, 0f) && this.currentHeight > 0)  {
+        	newPage();
+        }
+        // add dummy paragraph if we aren't at the top of a page, so that
+        // spacingBefore will be taken into account by ColumnText
+        if (this.currentHeight > 0) {
+	        final Paragraph p = new Paragraph();
+	        p.setLeading(0);
+	        ct.addElement(p);
+        }
+        ct.addElement(ptable);
+        final boolean he = ptable.isHeadersInEvent();
+        ptable.setHeadersInEvent(true);
+        int loop = 0;
+        while (true) {
+            ct.setSimpleColumn(indentLeft(), indentBottom(), indentRight(), indentTop() - this.currentHeight);
+            final int status = ct.go();
+            if ((status & ColumnText.NO_MORE_TEXT) != 0) {
+                this.text.moveText(0, ct.getYLine() - indentTop() + this.currentHeight);
+                this.currentHeight = indentTop() - ct.getYLine();
+                break;
+            }
+            if (indentTop() - this.currentHeight == ct.getYLine()) {
+				++loop;
+			} else {
+				loop = 0;
+			}
+            if (loop == 3) {
+                add(new Paragraph("ERROR: Infinite table loop"));
+                break;
+            }
+            newPage();
+        }
+        ptable.setHeadersInEvent(he);
+    }
 
 
     /**
@@ -2075,7 +2669,6 @@ class PdfDocument extends Document {
         private float lostTableBottom;
 
         private float maxCellBottom;
-
 
         private Map rowspanMap;
         private final Map pageMap = new LinkedHashMap();
