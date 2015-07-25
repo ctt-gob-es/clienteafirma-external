@@ -363,7 +363,10 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
         PdfObject pobj = null;
         PdfIndirectObject obj = null;
         PdfIndirectReference cidset = null;
-        if (writer.getPDFXConformance() == PdfWriter.PDFA1A || writer.getPDFXConformance() == PdfWriter.PDFA1B) {
+        if (writer.getPDFXConformance() == PdfWriter.PDFA1A ||
+        	writer.getPDFXConformance() == PdfWriter.PDFA1B ||
+        	writer.getPDFXConformance() == PdfWriter.PDFA2A ||
+        	writer.getPDFXConformance() == PdfWriter.PDFA2B) {
             PdfStream stream;
             if (metrics.length == 0) {
                 stream = new PdfStream(new byte[]{(byte)0x80});
