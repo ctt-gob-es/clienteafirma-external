@@ -61,38 +61,38 @@ import com.lowagie.text.ListItem;
  * that fit into 1 line.
  */
 
-class PdfLine {
+public class PdfLine {
 
     // membervariables
 
     /** The arraylist containing the chunks. */
-    private final ArrayList line;
+    protected ArrayList line;
 
     /** The left indentation of the line. */
-    private final float left;
+    protected float left;
 
     /** The width of the line. */
-    private float width;
+    protected float width;
 
     /** The alignment of the line. */
-    private int alignment;
+    protected int alignment;
 
     /** The height of the line. */
     protected float height;
 
     /** The listsymbol (if necessary). */
-    private Chunk listSymbol = null;
+    protected Chunk listSymbol = null;
 
     /** The listsymbol (if necessary). */
-    private float symbolIndent;
+    protected float symbolIndent;
 
     /** <CODE>true</CODE> if the chunk splitting was caused by a newline. */
-    private boolean newlineSplit = false;
+    protected boolean newlineSplit = false;
 
     /** The original width. */
-    private final float originalWidth;
+    protected float originalWidth;
 
-    private boolean isRTL = false;
+    protected boolean isRTL = false;
 
     // constructors
 
@@ -217,7 +217,7 @@ class PdfLine {
      * @return	a value
      */
 
-    int size() {
+    public int size() {
         return this.line.size();
     }
 
@@ -227,7 +227,7 @@ class PdfLine {
      * @return	an <CODE>Iterator</CODE>
      */
 
-    Iterator iterator() {
+    public Iterator iterator() {
         return this.line.iterator();
     }
 
@@ -275,7 +275,7 @@ class PdfLine {
      * @return	<CODE>true</CODE> if the alignment equals <VAR>ALIGN_JUSTIFIED</VAR> and there is some width left.
      */
 
-    boolean hasToBeJustified() {
+    public boolean hasToBeJustified() {
         return (this.alignment == Element.ALIGN_JUSTIFIED || this.alignment == Element.ALIGN_JUSTIFIED_ALL) && this.width != 0;
     }
 
@@ -286,13 +286,17 @@ class PdfLine {
      * that has to be justified, has to be reset to <VAR>ALIGN_LEFT</VAR>.
      */
 
-    void resetAlignment() {
+    public void resetAlignment() {
         if (this.alignment == Element.ALIGN_JUSTIFIED) {
             this.alignment = Element.ALIGN_LEFT;
         }
     }
 
-
+    /** Adds extra indentation to the left (for Paragraph.setFirstLineIndent). */
+    void setExtraIndent(final float extra) {
+    	this.left += extra;
+    	this.width -= extra;
+    }
 
     /**
      * Returns the width that is left, after a maximum of characters is added to the line.
@@ -341,7 +345,7 @@ class PdfLine {
      * @return	a <CODE>PdfChunk</CODE> if the line has a listsymbol; <CODE>null</CODE> otherwise
      */
 
-    Chunk listSymbol() {
+    public Chunk listSymbol() {
         return this.listSymbol;
     }
 
@@ -351,7 +355,7 @@ class PdfLine {
      * @return	a value
      */
 
-    float listIndent() {
+    public float listIndent() {
         return this.symbolIndent;
     }
 
@@ -375,7 +379,7 @@ class PdfLine {
      * @return	the length in UTF32 characters
      * @since	2.1.2
      */
-    int GetLineLengthUtf32() {
+    public int GetLineLengthUtf32() {
         int total = 0;
         for (final Iterator i = this.line.iterator(); i.hasNext();) {
             total += ((PdfChunk)i.next()).lengthUtf32();
@@ -411,7 +415,7 @@ class PdfLine {
      * @param idx the index
      * @return the <CODE>PdfChunk</CODE> or null if beyond the array
      */
-    PdfChunk getChunk(final int idx) {
+    public PdfChunk getChunk(final int idx) {
         if (idx < 0 || idx >= this.line.size()) {
 			return null;
 		}
@@ -491,7 +495,20 @@ class PdfLine {
         return s;
     }
 
-
+    /**
+     * Gets a width corrected with a charSpacing and wordSpacing.
+     * @param charSpacing
+     * @param wordSpacing
+     * @return a corrected width
+     */
+    public float getWidthCorrected(final float charSpacing, final float wordSpacing) {
+        float total = 0;
+        for (int k = 0; k < this.line.size(); ++k) {
+            final PdfChunk ck = (PdfChunk)this.line.get(k);
+            total += ck.getWidthCorrected(charSpacing, wordSpacing);
+        }
+        return total;
+    }
 
 /**
  * Gets the maximum size of the ascender for all the fonts used

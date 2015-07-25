@@ -108,7 +108,8 @@ public interface Element {
 	/** This is a possible type of <CODE>Element </CIDE>. */
 	public static final int CREATIONDATE = 6;
 
-
+	/** This is a possible type of <CODE>Element </CIDE>. */
+	public static final int CREATOR = 7;
 
 	// static membervariables (content)
 
@@ -299,7 +300,16 @@ public interface Element {
 
 	// methods
 
+	/**
+	 * Processes the element by adding it (or the different parts) to an <CODE>
+	 * ElementListener</CODE>.
+	 *
+	 * @param listener
+	 *            an <CODE>ElementListener</CODE>
+	 * @return <CODE>true</CODE> if the element was processed successfully
+	 */
 
+	public boolean process(ElementListener listener);
 
 	/**
 	 * Gets the type of the text element.

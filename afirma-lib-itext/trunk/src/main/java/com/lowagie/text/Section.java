@@ -85,12 +85,12 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	 * A possible number style. The default number style: "1.2.3."
 	 * @since	iText 2.0.8
 	 */
-	private static final int NUMBERSTYLE_DOTTED = 0;
+	public static final int NUMBERSTYLE_DOTTED = 0;
 	/**
 	 * A possible number style. For instance: "1.2.3"
 	 * @since	iText 2.0.8
 	 */
-	private static final int NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT = 1;
+	public static final int NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT = 1;
 
 	/** A serial version uid. */
 	private static final long serialVersionUID = 3324172577544748043L;
@@ -98,10 +98,10 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	// member variables
 
 	/** The title of this section. */
-	private Paragraph title;
+    protected Paragraph title;
 
     /** The bookmark title if different from the content title */
-    private String bookmarkTitle;
+    protected String bookmarkTitle;
 
     /** The number of sectionnumbers that has to be shown before the section title. */
     protected int numberDepth;
@@ -113,22 +113,22 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     protected int numberStyle = NUMBERSTYLE_DOTTED;
 
     /** The indentation of this section on the left side. */
-    private float indentationLeft;
+    protected float indentationLeft;
 
     /** The indentation of this section on the right side. */
-    private float indentationRight;
+    protected float indentationRight;
 
     /** The additional indentation of the content of this section. */
-    private float indentation;
+    protected float indentation;
 
     /** false if the bookmark children are not visible */
-    private boolean bookmarkOpen = true;
+    protected boolean bookmarkOpen = true;
 
     /** true if the section has to trigger a new page */
     protected boolean triggerNewPage = false;
 
     /** This is the number of subsections. */
-    private int subsections = 0;
+    protected int subsections = 0;
 
     /** This is the complete list of sectionnumbers of this section and the parents of this section. */
     protected ArrayList numbers = null;
@@ -137,19 +137,19 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * Indicates if the Section will be complete once added to the document.
      * @since	iText 2.0.8
      */
-    private boolean complete = true;
+    protected boolean complete = true;
 
     /**
      * Indicates if the Section was added completely to the document.
      * @since	iText 2.0.8
      */
-    private boolean addedCompletely = false;
+    protected boolean addedCompletely = false;
 
     /**
      * Indicates if this is the first time the section was added.
      * @since	iText 2.0.8
      */
-    private boolean notAddedYet = true;
+    protected boolean notAddedYet = true;
 
     // constructors
 
@@ -174,7 +174,27 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 
     // implementation of the Element-methods
 
-
+    /**
+     * Processes the element by adding it (or the different parts) to an
+     * <CODE>ElementListener</CODE>.
+     *
+     * @param	listener		the <CODE>ElementListener</CODE>
+     * @return	<CODE>true</CODE> if the element was processed successfully
+     */
+    @Override
+	public boolean process(final ElementListener listener) {
+        try {
+        	Element element;
+            for (final Iterator i = iterator(); i.hasNext(); ) {
+            	element = (Element)i.next();
+                listener.add(element);
+            }
+            return true;
+        }
+        catch(final DocumentException de) {
+            return false;
+        }
+    }
 
     /**
      * Gets the type of the text element.
@@ -331,7 +351,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @param	numberDepth	the numberDepth of the section
      * @return  a new Section object
      */
-    private Section addSection(final float indentation, final Paragraph title, final int numberDepth) {
+    public Section addSection(final float indentation, final Paragraph title, final int numberDepth) {
     	if (isAddedCompletely()) {
     		throw new IllegalStateException("This LargeElement has already been added to the Document.");
     	}
@@ -342,14 +362,34 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     }
 
     /**
+     * Creates a <CODE>Section</CODE>, adds it to this <CODE>Section</CODE> and returns it.
+     *
+     * @param	indentation	the indentation of the new section
+     * @param	title		the title of the new section
+     * @return  a new Section object
+     */
+    public Section addSection(final float indentation, final Paragraph title) {
+        return addSection(indentation, title, this.numberDepth + 1);
+    }
+
+    /**
      * Creates a <CODE>Section</CODE>, add it to this <CODE>Section</CODE> and returns it.
      *
      * @param	title		the title of the new section
      * @param	numberDepth	the numberDepth of the section
      * @return  a new Section object
      */
-    Section addSection(final Paragraph title, final int numberDepth) {
+    public Section addSection(final Paragraph title, final int numberDepth) {
         return addSection(0, title, numberDepth);
+    }
+
+    /**
+     * Adds a marked section. For use in class MarkedSection only!
+     */
+    public MarkedSection addMarkedSection() {
+    	final MarkedSection section = new MarkedSection(new Section(null, this.numberDepth + 1));
+    	add(section);
+    	return section;
     }
 
     /**
@@ -365,12 +405,35 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     /**
      * Adds a <CODE>Section</CODE> to this <CODE>Section</CODE> and returns it.
      *
+     * @param	indentation	the indentation of the new section
      * @param	title		the title of the new section
      * @param	numberDepth	the numberDepth of the section
      * @return  a new Section object
      */
-    Section addSection(final String title, final int numberDepth) {
+    public Section addSection(final float indentation, final String title, final int numberDepth) {
+        return addSection(indentation, new Paragraph(title), numberDepth);
+    }
+
+    /**
+     * Adds a <CODE>Section</CODE> to this <CODE>Section</CODE> and returns it.
+     *
+     * @param	title		the title of the new section
+     * @param	numberDepth	the numberDepth of the section
+     * @return  a new Section object
+     */
+    public Section addSection(final String title, final int numberDepth) {
         return addSection(new Paragraph(title), numberDepth);
+    }
+
+    /**
+     * Adds a <CODE>Section</CODE> to this <CODE>Section</CODE> and returns it.
+     *
+     * @param	indentation	the indentation of the new section
+     * @param	title		the title of the new section
+     * @return  a new Section object
+     */
+    public Section addSection(final float indentation, final String title) {
+        return addSection(indentation, new Paragraph(title));
     }
 
     /**
@@ -412,7 +475,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @return	a Paragraph object
 	 * @since	iText 2.0.8
      */
-    static Paragraph constructTitle(final Paragraph title, final ArrayList numbers, final int numberDepth, final int numberStyle) {
+    public static Paragraph constructTitle(final Paragraph title, final ArrayList numbers, final int numberDepth, final int numberStyle) {
     	if (title == null) {
     		return null;
     	}
@@ -648,7 +711,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	/**
      * @since	iText 2.0.8
 	 */
-    private void setAddedCompletely(final boolean addedCompletely) {
+	protected void setAddedCompletely(final boolean addedCompletely) {
 		this.addedCompletely = addedCompletely;
 	}
 
@@ -695,4 +758,11 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 		this.complete = complete;
 	}
 
+	/**
+	 * Adds a new page to the section.
+	 * @since	2.1.1
+	 */
+	public void newPage() {
+		this.add(Chunk.NEXTPAGE);
+	}
 }

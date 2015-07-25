@@ -52,7 +52,9 @@ package com.lowagie.text.pdf.draw;
 import java.util.ArrayList;
 
 import com.lowagie.text.Chunk;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.ElementListener;
 import com.lowagie.text.pdf.PdfContentByte;
 
 /**
@@ -62,10 +64,10 @@ import com.lowagie.text.pdf.PdfContentByte;
  * @since	2.1.2
  */
 
-class VerticalPositionMark implements DrawInterface, Element {
+public class VerticalPositionMark implements DrawInterface, Element {
 
     /** Another implementation of the DrawInterface; its draw method will overrule LineSeparator.draw(). */
-    private DrawInterface drawInterface = null;
+    protected DrawInterface drawInterface = null;
 
     /** The offset for the line. */
     protected float offset = 0;
@@ -77,7 +79,16 @@ class VerticalPositionMark implements DrawInterface, Element {
 	public VerticalPositionMark() {
 	}
 
-
+	/**
+	 * Creates a vertical position mark that won't draw anything unless
+	 * you define a DrawInterface.
+	 * @param	drawInterface	the drawInterface for this vertical position mark.
+	 * @param	offset			the offset for this vertical position mark.
+	 */
+	public VerticalPositionMark(final DrawInterface drawInterface, final float offset) {
+		this.drawInterface = drawInterface;
+		this.offset = offset;
+	}
 
 	/**
 	 * @see com.lowagie.text.pdf.draw.DrawInterface#draw(com.lowagie.text.pdf.PdfContentByte, float, float, float, float, float)
@@ -89,7 +100,17 @@ class VerticalPositionMark implements DrawInterface, Element {
 		}
 	}
 
-
+    /**
+     * @see com.lowagie.text.Element#process(com.lowagie.text.ElementListener)
+     */
+    @Override
+	public boolean process(final ElementListener listener) {
+		try {
+			return listener.add(this);
+		} catch (final DocumentException e) {
+			return false;
+		}
+    }
 
     /**
      * @see com.lowagie.text.Element#type()

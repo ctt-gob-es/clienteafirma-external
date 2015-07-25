@@ -52,6 +52,7 @@ package com.lowagie.text;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 /**
@@ -221,7 +222,7 @@ public class Document implements DocListener {
 	 *            the margin on the bottom
  */
 
-    private Document(final Rectangle pageSize, final float marginLeft, final float marginRight,
+	private Document(final Rectangle pageSize, final float marginLeft, final float marginRight,
 			final float marginTop, final float marginBottom) {
         this.pageSize = pageSize;
         this.marginLeft = marginLeft;
@@ -241,6 +242,17 @@ public class Document implements DocListener {
 
     public void addDocListener(final DocListener listener) {
         this.listeners.add(listener);
+    }
+
+	/**
+ * Removes a <CODE>DocListener</CODE> from the <CODE>Document</CODE>.
+ *
+	 * @param listener
+	 *            the DocListener that has to be removed.
+ */
+
+    public void removeDocListener(final DocListener listener) {
+        this.listeners.remove(listener);
     }
 
     // methods implementing the DocListener interface
@@ -502,6 +514,24 @@ public class Document implements DocListener {
     // methods concerning the header or some meta information
 
 	/**
+ * Adds a user defined header to the document.
+ *
+	 * @param name
+	 *            the name of the header
+	 * @param content
+	 *            the content of the header
+ * @return	<CODE>true</CODE> if successful, <CODE>false</CODE> otherwise
+ */
+
+    public boolean addHeader(final String name, final String content) {
+        try {
+            return add(new Header(name, content));
+		} catch (final DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
+
+	/**
  * Adds the title to a Document.
  *
 	 * @param title
@@ -517,7 +547,69 @@ public class Document implements DocListener {
         }
     }
 
+	/**
+ * Adds the subject to a Document.
+ *
+	 * @param subject
+	 *            the subject
+ * @return	<CODE>true</CODE> if successful, <CODE>false</CODE> otherwise
+ */
 
+    public boolean addSubject(final String subject) {
+        try {
+            return add(new Meta(Element.SUBJECT, subject));
+		} catch (final DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
+
+	/**
+ * Adds the keywords to a Document.
+ *
+	 * @param keywords
+	 *            adds the keywords to the document
+ * @return <CODE>true</CODE> if successful, <CODE>false</CODE> otherwise
+ */
+
+    public boolean addKeywords(final String keywords) {
+        try {
+            return add(new Meta(Element.KEYWORDS, keywords));
+		} catch (final DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
+
+	/**
+ * Adds the author to a Document.
+ *
+	 * @param author
+	 *            the name of the author
+ * @return	<CODE>true</CODE> if successful, <CODE>false</CODE> otherwise
+ */
+
+    public boolean addAuthor(final String author) {
+        try {
+            return add(new Meta(Element.AUTHOR, author));
+		} catch (final DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
+
+	/**
+ * Adds the creator to a Document.
+ *
+	 * @param creator
+	 *            the name of the creator
+ * @return	<CODE>true</CODE> if successful, <CODE>false</CODE> otherwise
+ */
+
+    public boolean addCreator(final String creator) {
+        try {
+            return add(new Meta(Element.CREATOR, creator));
+		} catch (final DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
 
 	/**
  * Adds the producer to a Document.
@@ -531,6 +623,10 @@ public class Document implements DocListener {
 		} catch (final DocumentException de) {
             throw new ExceptionConverter(de);
         }
+    }
+
+    public boolean addCreationDate() {
+    	return addCreationDate(new GregorianCalendar());
     }
 
 	/**
@@ -553,10 +649,45 @@ public class Document implements DocListener {
 
     // methods to get the layout of the document.
 
+	/**
+ * Returns the left margin.
+ *
+ * @return	the left margin
+ */
 
+    public float leftMargin() {
+        return this.marginLeft;
+    }
 
+	/**
+ * Return the right margin.
+ *
+ * @return	the right margin
+ */
 
+    public float rightMargin() {
+        return this.marginRight;
+    }
 
+	/**
+ * Returns the top margin.
+ *
+ * @return	the top margin
+ */
+
+    public float topMargin() {
+        return this.marginTop;
+    }
+
+	/**
+ * Returns the bottom margin.
+ *
+ * @return	the bottom margin
+ */
+
+    public float bottomMargin() {
+        return this.marginBottom;
+    }
 
 	/**
  * Returns the lower left x-coordinate.

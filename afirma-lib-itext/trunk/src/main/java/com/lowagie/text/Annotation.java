@@ -49,6 +49,7 @@
 
 package com.lowagie.text;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -65,7 +66,7 @@ public class Annotation implements Element {
 	// membervariables
 
 	/** This is a possible annotation type. */
-	private static final int TEXT = 0;
+	public static final int TEXT = 0;
 
 	/** This is a possible annotation type. */
 	public static final int URL_NET = 1;
@@ -89,10 +90,10 @@ public class Annotation implements Element {
 	public static final int SCREEN = 7;
 
 	/** This is a possible attribute. */
-	private static final String TITLE = "title";
+	public static final String TITLE = "title";
 
 	/** This is a possible attribute. */
-	private static final String CONTENT = "content";
+	public static final String CONTENT = "content";
 
 	/** This is a possible attribute. */
 	public static final String URL = "url";
@@ -122,25 +123,37 @@ public class Annotation implements Element {
 	public static final String DEFAULTDIR = "defaultdir";
 
 	/** This is a possible attribute. */
+	public static final String LLX = "llx";
+
+	/** This is a possible attribute. */
+	public static final String LLY = "lly";
+
+	/** This is a possible attribute. */
+	public static final String URX = "urx";
+
+	/** This is a possible attribute. */
+	public static final String URY = "ury";
+
+	/** This is a possible attribute. */
 	public static final String MIMETYPE = "mime";
 
 	/** This is the type of annotation. */
-	private int annotationtype;
+	protected int annotationtype;
 
 	/** This is the title of the <CODE>Annotation</CODE>. */
-	private HashMap annotationAttributes = new HashMap();
+	protected HashMap annotationAttributes = new HashMap();
 
 	/** This is the lower left x-value */
-	private float llx = Float.NaN;
+	protected float llx = Float.NaN;
 
 	/** This is the lower left y-value */
-	private float lly = Float.NaN;
+	protected float lly = Float.NaN;
 
 	/** This is the upper right x-value */
-	private float urx = Float.NaN;
+	protected float urx = Float.NaN;
 
 	/** This is the upper right y-value */
-	private float ury = Float.NaN;
+	protected float ury = Float.NaN;
 
 	// constructors
 
@@ -184,6 +197,21 @@ public class Annotation implements Element {
 	 *            the title of the annotation
 	 * @param text
 	 *            the content of the annotation
+	 */
+	public Annotation(final String title, final String text) {
+		this.annotationtype = TEXT;
+		this.annotationAttributes.put(TITLE, title);
+		this.annotationAttributes.put(CONTENT, text);
+	}
+
+	/**
+	 * Constructs an <CODE>Annotation</CODE> with a certain title and some
+	 * text.
+	 *
+	 * @param title
+	 *            the title of the annotation
+	 * @param text
+	 *            the content of the annotation
 	 * @param llx
 	 *            the lower left x-value
 	 * @param lly
@@ -199,6 +227,26 @@ public class Annotation implements Element {
 		this.annotationtype = TEXT;
 		this.annotationAttributes.put(TITLE, title);
 		this.annotationAttributes.put(CONTENT, text);
+	}
+
+	/**
+	 * Constructs an <CODE>Annotation</CODE>.
+	 *
+	 * @param llx
+	 *            the lower left x-value
+	 * @param lly
+	 *            the lower left y-value
+	 * @param urx
+	 *            the upper right x-value
+	 * @param ury
+	 *            the upper right y-value
+	 * @param url
+	 *            the external reference
+	 */
+	public Annotation(final float llx, final float lly, final float urx, final float ury, final URL url) {
+		this(llx, lly, urx, ury);
+		this.annotationtype = URL_NET;
+		this.annotationAttributes.put(URL, url);
 	}
 
 	/**
@@ -246,6 +294,30 @@ public class Annotation implements Element {
 	}
 
 	/**
+	 * Creates a Screen annotation to embed media clips
+	 *
+	 * @param llx
+	 * @param lly
+	 * @param urx
+	 * @param ury
+	 * @param moviePath
+	 *            path to the media clip file
+	 * @param mimeType
+	 *            mime type of the media
+	 * @param showOnDisplay
+	 *            if true play on display of the page
+	 */
+	public Annotation(final float llx, final float lly, final float urx, final float ury,
+			final String moviePath, final String mimeType, final boolean showOnDisplay) {
+		this(llx, lly, urx, ury);
+		this.annotationtype = SCREEN;
+		this.annotationAttributes.put(FILE, moviePath);
+		this.annotationAttributes.put(MIMETYPE, mimeType);
+		this.annotationAttributes.put(PARAMETERS, new boolean[] {
+				false /* embedded */, showOnDisplay });
+	}
+
+	/**
 	 * Constructs an <CODE>Annotation</CODE>.
 	 *
 	 * @param llx
@@ -289,6 +361,37 @@ public class Annotation implements Element {
 		this.annotationAttributes.put(NAMED, new Integer(named));
 	}
 
+	/**
+	 * Constructs an <CODE>Annotation</CODE>.
+	 *
+	 * @param llx
+	 *            the lower left x-value
+	 * @param lly
+	 *            the lower left y-value
+	 * @param urx
+	 *            the upper right x-value
+	 * @param ury
+	 *            the upper right y-value
+	 * @param application
+	 *            an external application
+	 * @param parameters
+	 *            parameters to pass to this application
+	 * @param operation
+	 *            the operation to pass to this application
+	 * @param defaultdir
+	 *            the default directory to run this application in
+	 */
+	public Annotation(final float llx, final float lly, final float urx, final float ury,
+			final String application, final String parameters, final String operation,
+			final String defaultdir) {
+		this(llx, lly, urx, ury);
+		this.annotationtype = LAUNCH;
+		this.annotationAttributes.put(APPLICATION, application);
+		this.annotationAttributes.put(PARAMETERS, parameters);
+		this.annotationAttributes.put(OPERATION, operation);
+		this.annotationAttributes.put(DEFAULTDIR, defaultdir);
+	}
+
 	// implementation of the Element-methods
 
 	/**
@@ -301,7 +404,22 @@ public class Annotation implements Element {
 		return Element.ANNOTATION;
 	}
 
-
+	/**
+	 * Processes the element by adding it (or the different parts) to an <CODE>
+	 * ElementListener</CODE>.
+	 *
+	 * @param listener
+	 *            an <CODE>ElementListener</CODE>
+	 * @return <CODE>true</CODE> if the element was processed successfully
+	 */
+	@Override
+	public boolean process(final ElementListener listener) {
+		try {
+			return listener.add(this);
+		} catch (final DocumentException de) {
+			return false;
+		}
+	}
 
 	/**
 	 * Gets all the chunks in this element.
@@ -373,13 +491,61 @@ public class Annotation implements Element {
 		return this.ury;
 	}
 
+	/**
+	 * Returns the lower left x-value.
+	 *
+	 * @param def
+	 *            the default value
+	 * @return a value
+	 */
+	public float llx(final float def) {
+		if (Float.isNaN(this.llx)) {
+			return def;
+		}
+		return this.llx;
+	}
 
+	/**
+	 * Returns the lower left y-value.
+	 *
+	 * @param def
+	 *            the default value
+	 * @return a value
+	 */
+	public float lly(final float def) {
+		if (Float.isNaN(this.lly)) {
+			return def;
+		}
+		return this.lly;
+	}
 
+	/**
+	 * Returns the upper right x-value.
+	 *
+	 * @param def
+	 *            the default value
+	 * @return a value
+	 */
+	public float urx(final float def) {
+		if (Float.isNaN(this.urx)) {
+			return def;
+		}
+		return this.urx;
+	}
 
-
-
-
-
+	/**
+	 * Returns the upper right y-value.
+	 *
+	 * @param def
+	 *            the default value
+	 * @return a value
+	 */
+	public float ury(final float def) {
+		if (Float.isNaN(this.ury)) {
+			return def;
+		}
+		return this.ury;
+	}
 
 	/**
 	 * Returns the type of this <CODE>Annotation</CODE>.

@@ -136,7 +136,7 @@ public class Paragraph extends Phrase {
      *
      * @param	string		a <CODE>String</CODE>
      */
-    Paragraph(final String string) {
+    public Paragraph(final String string) {
         super(string);
     }
 

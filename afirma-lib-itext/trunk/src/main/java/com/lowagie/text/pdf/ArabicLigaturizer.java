@@ -713,18 +713,18 @@ class ArabicLigaturizer {
         };
 
 
-        private static final int ar_novowel = 0x1;
-        private static final int ar_composedtashkeel = 0x4;
-        private static final int ar_lig = 0x8;
+        static final int ar_novowel = 0x1;
+        static final int ar_composedtashkeel = 0x4;
+        static final int ar_lig = 0x8;
         /**
          * Digit shaping option: Replace European digits (U+0030...U+0039) by Arabic-Indic digits.
          */
-        private static final int DIGITS_EN2AN = 0x20;
+        static final int DIGITS_EN2AN = 0x20;
 
         /**
          * Digit shaping option: Replace Arabic-Indic digits by European digits (U+0030...U+0039).
          */
-        private static final int DIGITS_AN2EN = 0x40;
+        static final int DIGITS_AN2EN = 0x40;
 
         /**
          * Digit shaping option:
@@ -735,7 +735,7 @@ class ArabicLigaturizer {
          * letter, so European digits at the start of the text will not change.
          * Compare to DIGITS_ALEN2AN_INIT_AL.
          */
-        private static final int DIGITS_EN2AN_INIT_LR = 0x60;
+        static final int DIGITS_EN2AN_INIT_LR = 0x60;
 
         /**
          * Digit shaping option:
@@ -746,7 +746,7 @@ class ArabicLigaturizer {
          * letter, so European digits at the start of the text will change.
          * Compare to DIGITS_ALEN2AN_INT_LR.
          */
-        private static final int DIGITS_EN2AN_INIT_AL = 0x80;
+        static final int DIGITS_EN2AN_INIT_AL = 0x80;
 
         /** Not a valid option value. */
         private static final int DIGITS_RESERVED = 0xa0;
@@ -759,12 +759,12 @@ class ArabicLigaturizer {
         /**
          * Digit type option: Use Arabic-Indic digits (U+0660...U+0669).
          */
-        private static final int DIGIT_TYPE_AN = 0;
+        static final int DIGIT_TYPE_AN = 0;
 
         /**
          * Digit type option: Use Eastern (Extended) Arabic-Indic digits (U+06f0...U+06f9).
          */
-        private static final int DIGIT_TYPE_AN_EXTENDED = 0x100;
+        static final int DIGIT_TYPE_AN_EXTENDED = 0x100;
 
         /**
          * Bit mask for digit type options.

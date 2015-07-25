@@ -100,10 +100,10 @@ public class Font implements Comparable {
 	public static final int ITALIC = 2;
 
 	/** this is a possible style. */
-	private static final int UNDERLINE = 4;
+	public static final int UNDERLINE = 4;
 
 	/** this is a possible style. */
-	private static final int STRIKETHRU = 8;
+	public static final int STRIKETHRU = 8;
 
 	/** this is a possible style. */
 	static final int BOLDITALIC = BOLD | ITALIC;

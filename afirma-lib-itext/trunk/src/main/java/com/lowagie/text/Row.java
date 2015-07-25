@@ -71,30 +71,30 @@ public class Row implements Element {
     // constants
 
 	/** id of a null element in a Row*/
-	private static final int NULL = 0;
+    public static final int NULL = 0;
 
     /** id of the Cell element in a Row*/
-    private static final int CELL = 1;
+    public static final int CELL = 1;
 
     /** id of the Table element in a Row*/
-    private static final int TABLE = 2;
+    public static final int TABLE = 2;
 
     // member variables
 
     /** This is the number of columns in the <CODE>Row</CODE>. */
-    private final int columns;
+    protected int columns;
 
     /** This is a valid position the <CODE>Row</CODE>. */
-    private int currentColumn;
+    protected int currentColumn;
 
     /** This is the array that keeps track of reserved cells. */
-    private final boolean[] reserved;
+    protected boolean[] reserved;
 
     /** This is the array of Objects (<CODE>Cell</CODE> or <CODE>Table</CODE>). */
-    private final Object[] cells;
+    protected Object[] cells;
 
     /** This is the vertical alignment. */
-    private int horizontalAlignment;
+    protected int horizontalAlignment;
 
     // constructors
 
@@ -112,7 +112,22 @@ public class Row implements Element {
 
     // implementation of the Element-methods
 
-
+    /**
+     * Processes the element by adding it (or the different parts) to a
+     * <CODE>ElementListener</CODE>.
+     *
+     * @param listener  an <CODE>ElementListener</CODE>
+     * @return  <CODE>true</CODE> if the element was processed successfully
+     */
+    @Override
+	public boolean process(final ElementListener listener) {
+        try {
+            return listener.add(this);
+        }
+        catch(final DocumentException de) {
+            return false;
+        }
+    }
 
     /**
      * Gets the type of the text element.
@@ -152,7 +167,53 @@ public class Row implements Element {
 		return false;
 	}
 
+    // method to delete a column
+
+    /**
+     * Returns a <CODE>Row</CODE> that is a copy of this <CODE>Row</CODE>
+     * in which a certain column has been deleted.
+     *
+     * @param column  the number of the column to delete
+     */
+    void deleteColumn(final int column) {
+        if (column >= this.columns || column < 0) {
+            throw new IndexOutOfBoundsException("getCell at illegal index : " + column);
+        }
+        this.columns--;
+        final boolean newReserved[] = new boolean[this.columns];
+        final Object newCells[] = new Cell[this.columns];
+
+        for (int i = 0; i < column; i++) {
+            newReserved[i] = this.reserved[i];
+            newCells[i] = this.cells[i];
+            if (newCells[i] != null && i + ((Cell) newCells[i]).getColspan() > column) {
+                ((Cell) newCells[i]).setColspan(((Cell) this.cells[i]).getColspan() - 1);
+            }
+        }
+        for (int i = column; i < this.columns; i++) {
+            newReserved[i] = this.reserved[i + 1];
+            newCells[i] = this.cells[i + 1];
+        }
+        if (this.cells[column] != null && ((Cell) this.cells[column]).getColspan() > 1) {
+            newCells[column] = this.cells[column];
+            ((Cell) newCells[column]).setColspan(((Cell) newCells[column]).getColspan() - 1);
+        }
+        this.reserved = newReserved;
+        this.cells = newCells;
+    }
+
     // methods
+
+    /**
+     * Adds a <CODE>Cell</CODE> to the <CODE>Row</CODE>.
+     *
+     * @param       element the element to add (currently only Cells and Tables supported)
+     * @return      the column position the <CODE>Cell</CODE> was added,
+     *                      or <CODE>-1</CODE> if the <CODE>element</CODE> couldn't be added.
+     */
+    int addElement(final Object element) {
+        return addElement(element, this.currentColumn);
+    }
 
     /**
      * Adds an element to the <CODE>Row</CODE> at the position given.
@@ -206,6 +267,17 @@ public class Row implements Element {
      * Reserves a <CODE>Cell</CODE> in the <CODE>Row</CODE>.
      *
      * @param   column  the column that has to be reserved.
+     * @return  <CODE>true</CODE> if the column was reserved, <CODE>false</CODE> if not.
+     */
+    boolean reserve(final int column) {
+        return reserve(column, 1);
+    }
+
+
+    /**
+     * Reserves a <CODE>Cell</CODE> in the <CODE>Row</CODE>.
+     *
+     * @param   column  the column that has to be reserved.
      * @param   size    the number of columns
      * @return  <CODE>true</CODE> if the column was reserved, <CODE>false</CODE> if not.
      */
@@ -241,12 +313,30 @@ public class Row implements Element {
     }
 
     /**
+     * Returns the type-id of the element in a Row.
+     *
+     * @param       column  the column of which you'd like to know the type
+     * @return the type-id of the element in the row
+     */
+    int getElementID(final int column) {
+        if (this.cells[column] == null) {
+			return NULL;
+		} else if (Cell.class.isInstance(this.cells[column])) {
+			return CELL;
+		} else if (Table.class.isInstance(this.cells[column])) {
+			return TABLE;
+		}
+
+        return -1;
+    }
+
+    /**
      * Returns the type-id of an Object.
      *
      * @param       element the object of which you'd like to know the type-id, -1 if invalid
      * @return the type-id of an object
      */
-    private int getObjectID(final Object element) {
+    int getObjectID(final Object element) {
         if (element == null) {
 			return NULL;
 		} else if (Cell.class.isInstance(element)) {

@@ -130,7 +130,7 @@ public class PdfContentByte {
     private static final int ALIGN_RIGHT = Element.ALIGN_RIGHT;
 
     /** A possible line cap value */
-    private static final int LINE_CAP_BUTT = 0;
+    public static final int LINE_CAP_BUTT = 0;
 
 
 
