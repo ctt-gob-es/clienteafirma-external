@@ -202,7 +202,7 @@ public class Document implements DocListener {
 	 *            the pageSize
  */
 
-    private Document(final Rectangle pageSize) {
+    public Document(final Rectangle pageSize) {
         this(pageSize, 36, 36, 36, 36);
     }
 

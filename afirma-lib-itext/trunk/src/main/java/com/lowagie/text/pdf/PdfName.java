@@ -664,9 +664,9 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name of an encoding */
     static final PdfName MAC_ROMAN_ENCODING = new PdfName("MacRomanEncoding");
     /** A name */
-    static final PdfName MARKED = new PdfName("Marked");
+    public static final PdfName MARKED = new PdfName("Marked");
     /** A name */
-    static final PdfName MARKINFO = new PdfName("MarkInfo");
+    public static final PdfName MARKINFO = new PdfName("MarkInfo");
     /** A name */
     public static final PdfName MASK = new PdfName("Mask");
 
