@@ -945,7 +945,7 @@ public class PdfPKCS7 {
      * is also <CODE>null</CODE>. If the <CODE>digest</CODE> is not <CODE>null</CODE>
      * then it may be "RSA" or "DSA"
      */
-    void setExternalDigest(final byte digest[], final byte RSAdata[], final String digestEncryptionAlgorithm) {
+    public void setExternalDigest(final byte digest[], final byte RSAdata[], final String digestEncryptionAlgorithm) {
         this.externalDigest = digest;
         this.externalRSAdata = RSAdata;
         if (digestEncryptionAlgorithm != null) {
