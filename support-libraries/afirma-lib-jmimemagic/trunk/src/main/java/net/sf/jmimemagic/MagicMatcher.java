@@ -41,14 +41,18 @@ import java.util.logging.Logger;
 import org.apache.oro.text.perl.Perl5Util;
 
 
-/**
- * This class represents a single match test
- *
+/** This class represents a single match test.
  * @author $Author: arimus $
- * @version $Revision: 1.1 $
- */
+ * @version $Revision: 1.1 $ */
 @SuppressWarnings("javadoc")
 public class MagicMatcher implements Cloneable, Serializable {
+
+	// En Android hay que establecer cual es el controlador SAX
+	static {
+		if (System.getProperty("os.name").contains("inux") && "Dalvik".equals(System.getProperty("java.vm.name"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        	System.setProperty("org.xml.sax.driver","org.xmlpull.v1.sax2.Driver"); //$NON-NLS-1$ //$NON-NLS-2$
+	    }
+	}
 
 	private static final long serialVersionUID = -1109707428218614961L;
 
@@ -64,11 +68,8 @@ public class MagicMatcher implements Cloneable, Serializable {
         return this.match;
     }
 
-    /**
-     * test to see if everything is in order for this match
-     *
-     * @return whether or not this match has enough data to be valid
-     */
+    /** Test to see if everything is in order for this match.
+     * @return whether or not this match has enough data to be valid. */
     public boolean isValid() {
 
         if (this.match == null || this.match.getTest() == null) {
@@ -265,14 +266,16 @@ public class MagicMatcher implements Cloneable, Serializable {
             if (length < 0) {
                 length = 0;
             }
-        } else if (type.equals("detector")) { //$NON-NLS-1$
+        }
+        else if (type.equals("detector")) { //$NON-NLS-1$
             // FIXME - something wrong here, shouldn't have to subtract 1???
             length = data.length - offset - 1;
 
             if (length < 0) {
                 length = 0;
             }
-        } else {
+        }
+        else {
             throw new UnsupportedTypeException("unsupported test type " + type); //$NON-NLS-1$
         }
 
@@ -307,14 +310,7 @@ public class MagicMatcher implements Cloneable, Serializable {
         return null;
     }
 
-    /**
-     * internal test switch
-     *
-     * @param data DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
-    private boolean testInternal(final byte[] data)
-    {
+    private boolean testInternal(final byte[] data) {
 
         if (data.length == 0) {
             return false;
@@ -332,66 +328,61 @@ public class MagicMatcher implements Cloneable, Serializable {
                 buffer = buffer.put(data);
 
                 return testString(buffer);
-            } else if (type.equals("byte")) { //$NON-NLS-1$
+            }
+            else if (type.equals("byte")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
 
                 return testByte(buffer);
-            } else if (type.equals("short")) { //$NON-NLS-1$
+            }
+            else if (type.equals("short")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
 
                 return testShort(buffer);
-            } else if (type.equals("leshort")) { //$NON-NLS-1$
+            }
+            else if (type.equals("leshort")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
 
                 return testShort(buffer);
-            } else if (type.equals("beshort")) { //$NON-NLS-1$
+            }
+            else if (type.equals("beshort")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.BIG_ENDIAN);
 
                 return testShort(buffer);
-            } else if (type.equals("long")) { //$NON-NLS-1$
+            }
+            else if (type.equals("long")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
 
                 return testLong(buffer);
-            } else if (type.equals("lelong")) { //$NON-NLS-1$
+            }
+            else if (type.equals("lelong")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
 
                 return testLong(buffer);
-            } else if (type.equals("belong")) { //$NON-NLS-1$
+            }
+            else if (type.equals("belong")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.BIG_ENDIAN);
-
                 return testLong(buffer);
-            } else if (type.equals("regex")) { //$NON-NLS-1$
+            }
+            else if (type.equals("regex")) { //$NON-NLS-1$
                 return testRegex(new String(data));
-            } else if (type.equals("detector")) { //$NON-NLS-1$
+            }
+            else if (type.equals("detector")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
-
                 return testDetector(buffer);
-
-                //			} else if (type.equals("date")) {
-                //				return testDate(data, BIG_ENDIAN);
-                //			} else if (type.equals("ledate")) {
-                //				return testDate(data, LITTLE_ENDIAN);
-                //			} else if (type.equals("bedate")) {
-                //				return testDate(data, BIG_ENDIAN);
             }
         }
 
         return false;
     }
 
-    /**
-     * test the data against the test byte
-     *
-     * @param data the data we are testing
-     *
-     * @return if we have a match
-     */
-    private boolean testByte(final ByteBuffer data)
-    {
+    /** Test the data against the test byte.
+     * @param data the data we are testing.
+     * @return if we have a match. */
+    private boolean testByte(final ByteBuffer data) {
         final String test = new String(this.match.getTest().array());
         final char comparator = this.match.getComparator();
         final long bitmask = this.match.getBitmask();
@@ -490,29 +481,20 @@ public class MagicMatcher implements Cloneable, Serializable {
             tst = Integer.decode(test).shortValue();
         }
         catch (final NumberFormatException e) {
-
             return false;
-
-            //if (test.length() == 1) {
-            //	tst = new Integer(Character.getNumericValue(test.charAt(0))).shortValue();
-            //}
         }
 
         switch (comparator) {
-        case '=':
-            return val == tst;
-
-        case '!':
-            return val != tst;
-
-        case '>':
-            return val > tst;
-
-        case '<':
-            return val < tst;
-
-        default:
-    		return false;
+	        case '=':
+	            return val == tst;
+	        case '!':
+	            return val != tst;
+	        case '>':
+	            return val > tst;
+	        case '<':
+	            return val < tst;
+	        default:
+	    		return false;
         }
 
     }
@@ -668,18 +650,10 @@ public class MagicMatcher implements Cloneable, Serializable {
      *
      * @return byte arrays (high and low bytes) converted to a long value
      */
-    private static long byteArrayToLong(final ByteBuffer data)
-    {
+    private static long byteArrayToLong(final ByteBuffer data) {
         return data.getInt(0);
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws CloneNotSupportedException DOCUMENT ME!
-     */
     @Override
 	protected Object clone()
         throws CloneNotSupportedException
@@ -702,17 +676,15 @@ public class MagicMatcher implements Cloneable, Serializable {
     }
 
     /** Carga una clase excluyendo de la ruta de b&uacute;squeda de clases las URL que no correspondan con JAR.
-     * @param className Nombre de la clase a cargar
-     * @return Clase cargada
-     * @throws ClassNotFoundException cuando no se encuentra la clase a cargar
-     */
+     * @param className Nombre de la clase a cargar.
+     * @return Clase cargada.
+     * @throws ClassNotFoundException cuando no se encuentra la clase a cargar. */
     static Class<?> classForName(final String className) throws ClassNotFoundException {
         return getCleanClassLoader().loadClass(className);
     }
 
     /** Obtiene un ClassLoader que no incluye URL que no referencien directamente a ficheros JAR.
-     * @return ClassLoader sin URL adicionales a directorios sueltos Web
-     */
+     * @return ClassLoader sin URL adicionales a directorios sueltos Web. */
     private static ClassLoader getCleanClassLoader() {
         ClassLoader classLoader = MagicMatcher.class.getClassLoader();
         if (classLoader instanceof URLClassLoader && !classLoader.getClass().toString().contains("sun.plugin2.applet.JNLP2ClassLoader")) { //$NON-NLS-1$
