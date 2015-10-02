@@ -481,7 +481,7 @@ public class MagicMatcher implements Cloneable, Serializable {
     private boolean testLong(final ByteBuffer data) {
 
         long val = 0;
-        final String test = new String(this.match.getTest().array());
+        final String test = new String(this.match.getTest().array()).trim();
         final char comparator = this.match.getComparator();
         final long bitmask = this.match.getBitmask();
 
