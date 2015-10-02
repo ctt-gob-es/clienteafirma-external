@@ -293,11 +293,8 @@ public class MagicMatcher implements Cloneable, Serializable {
 
                 // set the data on this match
                 if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
-
                     for (int i = 0; i < this.subMatchers.size(); i++) {
-
                         final MagicMatcher m = this.subMatchers.get(i);
-
                         if ((submatch = m.test(data, false)) != null) {
                             match1.addSubMatch(submatch);
                         }
@@ -326,40 +323,33 @@ public class MagicMatcher implements Cloneable, Serializable {
         if (type != null && test.length() > 0) {
             if (type.equals("string")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
-
                 return testString(buffer);
             }
             else if (type.equals("byte")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
-
                 return testByte(buffer);
             }
             else if (type.equals("short")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
-
                 return testShort(buffer);
             }
             else if (type.equals("leshort")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
-
                 return testShort(buffer);
             }
             else if (type.equals("beshort")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.BIG_ENDIAN);
-
                 return testShort(buffer);
             }
             else if (type.equals("long")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
-
                 return testLong(buffer);
             }
             else if (type.equals("lelong")) { //$NON-NLS-1$
                 buffer = buffer.put(data);
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
-
                 return testLong(buffer);
             }
             else if (type.equals("belong")) { //$NON-NLS-1$
@@ -393,20 +383,16 @@ public class MagicMatcher implements Cloneable, Serializable {
         final byte t = (byte) (tst & 0xff);
 
         switch (comparator) {
-        case '=':
-            return t == b;
-
-        case '!':
-            return t != b;
-
-        case '>':
-            return t > b;
-
-        case '<':
-            return t < b;
-
-        default:
-        	return false;
+	        case '=':
+	            return t == b;
+	        case '!':
+	            return t != b;
+	        case '>':
+	            return t > b;
+	        case '<':
+	            return t < b;
+	        default:
+	        	return false;
         }
     }
 
@@ -429,40 +415,30 @@ public class MagicMatcher implements Cloneable, Serializable {
         int i = 0;
 
         for (i = 0; i < t.length; i++) {
-
             if (t[i] != b[i]) {
                 diff = true;
-
                 break;
             }
         }
 
         switch (comparator) {
-        case '=':
-            return !diff;
-
-        case '!':
-            return diff;
-
-        case '>':
-            return t[i] > b[i];
-
-        case '<':
-            return t[i] < b[i];
-
-        default:
-        	return false;
+	        case '=':
+	            return !diff;
+	        case '!':
+	            return diff;
+	        case '>':
+	            return t[i] > b[i];
+	        case '<':
+	            return t[i] < b[i];
+	        default:
+	        	return false;
         }
 
     }
 
-    /**
-     * test the data against a short
-     *
-     * @param data the data we are testing
-     *
-     * @return if we have a match
-     */
+    /** Test the data against a short.
+     * @param data the data we are testing.
+     * @return if we have a match. */
     private boolean testShort(final ByteBuffer data) {
 
         short val = 0;
@@ -499,15 +475,10 @@ public class MagicMatcher implements Cloneable, Serializable {
 
     }
 
-    /**
-     * test the data against a long
-     *
-     * @param data the data we are testing
-     *
-     * @return if we have a match
-     */
-    private boolean testLong(final ByteBuffer data)
-    {
+    /** Test the data against a long.
+     * @param data the data we are testing.
+     * @return if we have a match. */
+    private boolean testLong(final ByteBuffer data) {
 
         long val = 0;
         final String test = new String(this.match.getTest().array());
@@ -519,36 +490,29 @@ public class MagicMatcher implements Cloneable, Serializable {
         // apply bitmask before the comparison
         val = val & bitmask;
 
+        System.out.println("Prueba de '" + test + "' contra long");
+
         final long tst = Long.decode(test).longValue();
 
         switch (comparator) {
-        case '=':
-            return val == tst;
-
-        case '!':
-            return val != tst;
-
-        case '>':
-            return val > tst;
-
-        case '<':
-            return val < tst;
-
-        default:
-        	return false;
+	        case '=':
+	            return val == tst;
+	        case '!':
+	            return val != tst;
+	        case '>':
+	            return val > tst;
+	        case '<':
+	            return val < tst;
+	        default:
+	        	return false;
         }
 
     }
 
-    /**
-     * test the data against a regex
-     *
-     * @param text the data we are testing
-     *
-     * @return if we have a match
-     */
-    private boolean testRegex(final String text)
-    {
+    /** Test the data against a regex.
+     * @param text the data we are testing.
+     * @return if we have a match. */
+    private boolean testRegex(final String text) {
 
         final String test = new String(this.match.getTest().array());
         final char comparator = this.match.getComparator();
@@ -567,17 +531,12 @@ public class MagicMatcher implements Cloneable, Serializable {
             }
             return true;
         }
-
         return false;
     }
 
-    /**
-     * test the data using a detector
-     *
-     * @param data the data we are testing
-     *
-     * @return if we have a match
-     */
+    /** Test the data using a detector.
+     * @param data the data we are testing.
+     * @return if we have a match. */
     private boolean testDetector(final ByteBuffer data) {
 
         final String detectorClassName = new String(this.match.getTest().array());
@@ -594,7 +553,6 @@ public class MagicMatcher implements Cloneable, Serializable {
         	if (types != null && types.length > 0) {
         		// the match object has no mime type set, so set from the detector class processing
         		this.match.setMimeType(types[0]);
-
         		return true;
         	}
         }
@@ -605,11 +563,7 @@ public class MagicMatcher implements Cloneable, Serializable {
         return false;
     }
 
-    /**
-     * Get the extensions for the underlying detectory
-     *
-     * @return DOCUMENT ME!
-     */
+    /** Get the extensions for the underlying detectory. */
     public String[] getDetectorExtensions() {
 
         final String detectorClassName = new String(this.match.getTest().array()).trim();
@@ -632,13 +586,9 @@ public class MagicMatcher implements Cloneable, Serializable {
         return new String[0];
     }
 
-    /**
-     * convert a byte array to a short
-     *
-     * @param data buffer of byte data
-     *
-     * @return byte array converted to a short
-     */
+    /** Convert a byte array to a short.
+     * @param data buffer of byte data.
+     * @return byte array converted to a short. */
     private static short byteArrayToShort(final ByteBuffer data) {
         return data.getShort(0);
     }
