@@ -70,7 +70,7 @@ public class Magic {
                 final MagicMatcher matcher = i.next();
                 final String ext = matcher.getMatch().getExtension();
 
-                if ((ext != null) && !ext.trim().equals("")) { //$NON-NLS-1$
+                if (ext != null && !ext.trim().equals("")) { //$NON-NLS-1$
 					addHint(ext, matcher);
 				}
                 else if (matcher.getMatch().getType().equals("detector")) { //$NON-NLS-1$
@@ -91,8 +91,10 @@ public class Magic {
     }
 
     /** Get a match from a stream of data. */
-	public static MagicMatch getMagicMatch(final byte[] data, final boolean onlyMimeMatch) throws MagicParseException, MagicMatchNotFoundException, MagicException {
-
+	public static MagicMatch getMagicMatch(final byte[] data,
+			                               final boolean onlyMimeMatch) throws MagicParseException,
+			                                                                   MagicMatchNotFoundException,
+			                                                                   MagicException {
         if (!initialized) {
 			initialize();
 		}
