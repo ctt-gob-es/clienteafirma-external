@@ -76,7 +76,7 @@ public final class MagicParser extends DefaultHandler {
             	try {
             		this.parser = XMLReaderFactory.createXMLReader();
             	} catch (final Exception e2) {
-            		throw new MagicParseException("unable to instantiate parser"); //$NON-NLS-1$
+            		throw new MagicParseException("unable to instantiate parser", e2); //$NON-NLS-1$
             	}
             }
 
@@ -248,7 +248,7 @@ public final class MagicParser extends DefaultHandler {
                 }
 
                 // save the property to our map
-                if ((name != null) && (value != null)) {
+                if (name != null && value != null) {
                     if (this.properties == null) {
                         this.properties = new HashMap<String, String>();
                     }
@@ -413,7 +413,7 @@ public final class MagicParser extends DefaultHandler {
                     buf.write(s.charAt(z));
                 }
 
-                if ((end + 4) <= s.length()) {
+                if (end + 4 <= s.length()) {
                     try {
                         chr = Integer.parseInt(s.substring(end + 1, end + 4), 8);
 
