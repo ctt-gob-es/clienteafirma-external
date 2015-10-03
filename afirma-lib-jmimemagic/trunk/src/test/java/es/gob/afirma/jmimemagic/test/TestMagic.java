@@ -4,9 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.Assert;
 import net.sf.jmimemagic.Magic;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /** Prueba directa de JMIMEMagic. */
