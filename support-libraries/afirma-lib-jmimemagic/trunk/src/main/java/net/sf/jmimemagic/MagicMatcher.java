@@ -490,8 +490,6 @@ public class MagicMatcher implements Cloneable, Serializable {
         // apply bitmask before the comparison
         val = val & bitmask;
 
-        System.out.println("Prueba de '" + test + "' contra long");
-
         final long tst = Long.decode(test).longValue();
 
         switch (comparator) {
