@@ -13,5 +13,3 @@
 <!ATTLIST test bitmask CDATA "">
 <!ATTLIST test comparator CDATA "=">
 <!ELEMENT submatch-list (match+)>
-	       
-               
