@@ -25,86 +25,50 @@ package net.sf.jmimemagic;
 import java.io.File;
 import java.util.Map;
 
+/** Detector gen&eacute;rico de tipo de datos. */
+public interface MagicDetector {
 
-/**
- * DOCUMENT ME!
- *
- * @author $Author$
- * @version $Revision$
-  */
-public interface MagicDetector
-{
-    // get the short name of this detector
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String getName();
+    /** Get the short name of this detector.
+     * @return Short name of this detector. */
+    String getName();
 
-    // get the display name of this detector
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String getDisplayName();
+    /** Get the display name of this detector.
+     * @return Display name of this detector. */
+    String getDisplayName();
 
-    // get the version of this plugin
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String getVersion();
+    /** Get the version of this plugin.
+     * @return Version of this plugin. */
+    String getVersion();
 
-    // get a list of types this detector handles
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String[] getHandledTypes();
+    /** Gget a list of types this detector handles.
+     * @return List of types this detector handles. */
+    String[] getHandledTypes();
 
-    // get a list of file extensions this detector typically deals with
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String[] getHandledExtensions();
+    /** Gget a list of file extensions this detector typically deals with.
+     * @return List of file extensions this detector typically deals with. */
+    String[] getHandledExtensions();
 
-    // process the stream and return all matching content types
-    /**
-     * DOCUMENT ME!
-     *
-     * @param data DOCUMENT ME!
-     * @param offset DOCUMENT ME!
-     * @param length DOCUMENT ME!
-     * @param bitmask DOCUMENT ME!
-     * @param comparator DOCUMENT ME!
-     * @param mimeType DOCUMENT ME!
-     * @param params DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String[] process(byte[] data, int offset, int length, long bitmask, char comparator,
+    /** Process the stream and return all matching content types.
+     * @param data
+     * @param offset
+     * @param length
+     * @param bitmask
+     * @param comparator
+     * @param mimeType
+     * @param params
+     * @return Matching content types. */
+    String[] process(byte[] data, int offset, int length, long bitmask, char comparator,
         String mimeType, Map<String, String> params);
 
-    // process the file and return all matching content types
-    /**
-     * DOCUMENT ME!
-     *
-     * @param file DOCUMENT ME!
-     * @param offset DOCUMENT ME!
-     * @param length DOCUMENT ME!
-     * @param bitmask DOCUMENT ME!
-     * @param comparator DOCUMENT ME!
-     * @param mimeType DOCUMENT ME!
-     * @param params DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public String[] process(File file, int offset, int length, long bitmask, char comparator,
+    /** Process the file and return all matching content types.
+     * @param file
+     * @param offset
+     * @param length
+     * @param bitmask
+     * @param comparator
+     * @param mimeType
+     * @param params
+     * @return Matching content types. */
+    String[] process(File file, int offset, int length, long bitmask, char comparator,
         String mimeType, Map<String, String> params);
 }
