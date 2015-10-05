@@ -76,10 +76,10 @@ public class MagicMatcher implements Cloneable, Serializable {
             return false;
         }
 
-        final String type = new String(this.match.getTest().array());
+        final String type = new String(this.match.getTest().array()).trim();
         final char comparator = this.match.getComparator();
         final String description = this.match.getDescription();
-        final String test = new String(this.match.getTest().array());
+        final String test = new String(this.match.getTest().array()).trim();
 
         if (!type.equals("") && comparator != '\0' && //$NON-NLS-1$
                 (comparator == '=' || comparator == '!' || comparator == '>' ||
@@ -230,7 +230,7 @@ public class MagicMatcher implements Cloneable, Serializable {
     public MagicMatch test(final byte[] data,
     		               final boolean onlyMimeMatch) throws IOException,
     		                                                   UnsupportedTypeException {
-        final int offset = this.match.getOffset();
+    	final int offset = this.match.getOffset();
         this.match.getDescription();
         final String type = this.match.getType();
         this.match.getMimeType();
@@ -304,7 +304,8 @@ public class MagicMatcher implements Cloneable, Serializable {
         }
 
         final String type = this.match.getType();
-        final String test = new String(this.match.getTest().array());
+        final String test = new String(this.match.getTest().array()).trim();
+
         this.match.getMimeType();
         this.match.getDescription();
 
@@ -363,7 +364,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      * @param data the data we are testing.
      * @return if we have a match. */
     private boolean testByte(final ByteBuffer data) {
-        final String test = new String(this.match.getTest().array());
+        final String test = new String(this.match.getTest().array()).trim();
         final char comparator = this.match.getComparator();
         final long bitmask = this.match.getBitmask();
 
@@ -432,7 +433,7 @@ public class MagicMatcher implements Cloneable, Serializable {
     private boolean testShort(final ByteBuffer data) {
 
         short val = 0;
-        final String test = new String(this.match.getTest().array());
+        final String test = new String(this.match.getTest().array()).trim();
         final char comparator = this.match.getComparator();
         final long bitmask = this.match.getBitmask();
 
@@ -502,7 +503,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      * @return if we have a match. */
     private boolean testRegex(final String text) {
 
-        final String test = new String(this.match.getTest().array());
+        final String test = new String(this.match.getTest().array()).trim();
         final char comparator = this.match.getComparator();
 
         final Perl5Util utility = new Perl5Util();
@@ -527,7 +528,7 @@ public class MagicMatcher implements Cloneable, Serializable {
      * @return if we have a match. */
     private boolean testDetector(final ByteBuffer data) {
 
-        final String detectorClassName = new String(this.match.getTest().array());
+        final String detectorClassName = new String(this.match.getTest().array()).trim();
 
         try {
         	final Class<?> detectorClass = classForName(detectorClassName);
