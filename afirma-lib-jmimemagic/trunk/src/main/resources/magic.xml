@@ -840,7 +840,7 @@
  <mimetype>application/x-rar-compressed</mimetype>
  <extension>rar</extension>
  <description>RAR compressed file</description>
- <test offset="0" type="string" comparator="=">Rar!</test><!--  0x526172211a0700 -->
+ <test offset="0" type="string" comparator="=">Rar!</test>
 </match>
 <match>
 	<mimetype>???</mimetype>
@@ -2270,12 +2270,6 @@
 	<description>MS Windows Help Data</description>
 	<test offset="0" type="string" comparator="=">?_\003\000</test>
 </match>
-<!--<match>
-	<mimetype>???</mimetype>
-	<extension>???</extension>
-	<description>"compact bitmap" format (Poskanzer)</description>
-	<test offset="0" type="short" comparator="="></test>
-</match>-->
 <match>
 	<mimetype>application/pdf</mimetype>
 	<extension>pdf</extension>
@@ -3498,14 +3492,6 @@
 	<description>HTML Document</description>
 	<test offset="0" type="regex" comparator="=">/^\s*&lt;html&gt;/</test>
 </match>
-<!-- 
-<match>
-	<mimetype>text/plain</mimetype>
-	<extension>.txt</extension>
-	<description>ASCII Text Document</description>
-	<test offset="0" type="regex" comparator="!">/[^[:ascii:][:space:]]/</test>
-</match>
--->
 <match>
 	<mimetype>text/plain</mimetype>
 	<extension></extension>

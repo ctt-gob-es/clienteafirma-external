@@ -100,13 +100,9 @@ public class MagicMatcher implements Cloneable, Serializable {
         this.subMatchers.add(m);
     }
 
-    /**
-     * set all submatches
-     *
-     * @param a a collection of submatches
-     */
-    public void setSubMatchers(final Collection<MagicMatcher> a)
-    {
+    /** Set all submatches.
+     * @param a a collection of submatches. */
+    public void setSubMatchers(final Collection<MagicMatcher> a) {
         this.subMatchers.clear();
         this.subMatchers.addAll(a);
     }
@@ -225,21 +221,15 @@ public class MagicMatcher implements Cloneable, Serializable {
         return match1;
     }
 
-    /**
-     * test to see if this match or any submatches match
-     *
+    /** Test to see if this match or any submatches match.
      * @param data the data that should be used to test the match
-     * @param onlyMimeMatch DOCUMENT ME!
-     *
+     * @param onlyMimeMatch
      * @return the deepest magic match object that matched
-     *
-     * @throws IOException DOCUMENT ME!
-     * @throws UnsupportedTypeException DOCUMENT ME!
-     */
-    public MagicMatch test(final byte[] data, final boolean onlyMimeMatch)
-        throws IOException, UnsupportedTypeException
-    {
-
+     * @throws IOException
+     * @throws UnsupportedTypeException */
+    public MagicMatch test(final byte[] data,
+    		               final boolean onlyMimeMatch) throws IOException,
+    		                                                   UnsupportedTypeException {
         final int offset = this.match.getOffset();
         this.match.getDescription();
         final String type = this.match.getType();

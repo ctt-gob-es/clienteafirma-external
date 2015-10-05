@@ -58,24 +58,21 @@ public final class MagicParser extends DefaultHandler {
     private boolean isTest = false;
 
 
-    /**
-     * parse the xml file and create our MagicMatcher object list
-     *
-     * @throws MagicParseException DOCUMENT ME!
-     */
-    public synchronized void initialize()
-        throws MagicParseException
-    {
+    /** Parse the xml file and create our MagicMatcher object list.
+     * @throws MagicParseException */
+    public synchronized void initialize() throws MagicParseException {
         if (!this.initialized) {
             // use default parser
             try {
             	this.parser = (XMLReader) MagicMatcher.classForName(
-            			"com.sun.org.apache.xerces.internal.parsers.SAXParser").newInstance(); //$NON-NLS-1$
+        			"com.sun.org.apache.xerces.internal.parsers.SAXParser" //$NON-NLS-1$
+    			).newInstance();
             }
             catch (final Exception e) {
             	try {
             		this.parser = XMLReaderFactory.createXMLReader();
-            	} catch (final Exception e2) {
+            	}
+            	catch (final Exception e2) {
             		throw new MagicParseException("unable to instantiate parser", e2); //$NON-NLS-1$
             	}
             }
@@ -111,8 +108,7 @@ public final class MagicParser extends DefaultHandler {
      *
      * @return DOCUMENT ME!
      */
-    public Collection<MagicMatcher> getMatchers()
-    {
+    public Collection<MagicMatcher> getMatchers() {
         return this.matchers;
     }
 
