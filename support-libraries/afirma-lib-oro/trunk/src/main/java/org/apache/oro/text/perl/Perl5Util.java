@@ -239,25 +239,28 @@ public final class Perl5Util implements MatchResult {
     }
   }
 
-  /**
-   * Parses a match expression and returns a compiled pattern.
+  /** Parses a match expression and returns a compiled pattern.
    * First checks the expression cache and if the pattern is not found,
    * then parses the expression and fetches a compiled pattern from the
    * pattern cache.  Otherwise, just uses the pattern found in the
    * expression cache.  __matchPattern is used to parse the expression.
    * <p>
-   * @param pattern  The Perl5 match expression to parse.
+   * @param pat The Perl5 match expression to parse.
    * @exception MalformedPerl5PatternException If there is an error parsing
-   *            the expression.
-   */
-  private Pattern __parseMatchExpression(final String pattern)
-       throws MalformedPerl5PatternException
-  {
+   *            the expression. */
+  private Pattern __parseMatchExpression(final String pat) throws MalformedPerl5PatternException {
+
+	if (pat == null) {
+		throw new IllegalArgumentException("La expresion regular no puede ser nula"); //$NON-NLS-1$
+	}
+
     int index, compileOptions;
     String options, regex;
     MatchResult result;
     Object obj;
     Pattern ret;
+
+    final String pattern = pat.trim();
 
     obj = this.__expressionCache.getElement(pattern);
 
@@ -267,8 +270,9 @@ public final class Perl5Util implements MatchResult {
     try {
       if(obj != null) {
 		return (Pattern)obj;
-	}
-    } catch(final ClassCastException e) {
+	  }
+    }
+    catch(final ClassCastException e) {
       // Fall through and parse expression
     }
 
