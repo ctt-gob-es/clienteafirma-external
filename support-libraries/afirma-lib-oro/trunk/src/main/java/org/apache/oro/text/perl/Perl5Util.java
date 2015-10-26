@@ -54,11 +54,8 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
-// Prueba s
+ 
 package org.apache.oro.text.perl;
-
-// Prueba subida
 
 import org.apache.oro.text.PatternCache;
 import org.apache.oro.text.PatternCacheLRU;
