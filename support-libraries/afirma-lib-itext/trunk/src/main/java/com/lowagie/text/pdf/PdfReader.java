@@ -370,7 +370,7 @@ public class PdfReader implements PdfViewerPreferences {
      * @param index the page number. The first page is 1
      * @return the page size
      */
-    Rectangle getPageSize(final int index) {
+    public Rectangle getPageSize(final int index) {
         return getPageSize(this.pageRefs.getPageNRelease(index));
     }
 
