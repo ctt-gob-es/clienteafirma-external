@@ -345,6 +345,7 @@ public class PdfStamperImp extends PdfWriter {
         final PdfIndirectReference root = new PdfIndirectReference(0, getNewObjectNumber(this.reader, iRoot.getNumber(), 0));
         PdfIndirectReference info = null;
         final PdfDictionary newInfo = new PdfDictionary();
+        // Copia el viejo diccionario en el nuevo
         if (oldInfo != null) {
             for (final Object element : oldInfo.getKeys()) {
                 final PdfName key = (PdfName)element;
@@ -352,25 +353,31 @@ public class PdfStamperImp extends PdfWriter {
                 newInfo.put(key, value);
             }
         }
+        // Introduce los nuevos valores en el dicionario
         if (moreInfo != null) {
             for (final Iterator i = moreInfo.entrySet().iterator(); i.hasNext();) {
                 final Map.Entry entry = (Map.Entry) i.next();
                 final String key = (String) entry.getKey();
                 final PdfName keyName = new PdfName(key);
                 final String value = (String) entry.getValue();
+                // Si el valor estaba, pero vacio, es que queremos borrar la entrada
                 if (value == null) {
 					newInfo.remove(keyName);
-				} else {
+				}
+                // Si la entrada tiene valor, la introducimos
+                else {
 					newInfo.put(keyName, new PdfString(value, PdfObject.TEXT_UNICODE));
 				}
             }
         }
+        // "ModDate" y "Producer" se sobreescriben
         newInfo.put(PdfName.MODDATE, date);
         newInfo.put(PdfName.PRODUCER, new PdfString(producer));
         if (this.append) {
             if (iInfo == null) {
 				info = addToBody(newInfo, false).getIndirectReference();
-			} else {
+			}
+            else {
 				info = addToBody(newInfo, iInfo.getNumber(), false).getIndirectReference();
 			}
         }
