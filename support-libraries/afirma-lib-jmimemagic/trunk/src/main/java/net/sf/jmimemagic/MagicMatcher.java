@@ -546,7 +546,7 @@ public class MagicMatcher implements Cloneable, Serializable {
         	}
         }
         catch (final Throwable e) {
-        	java.util.logging.Logger.getAnonymousLogger().warning(e.toString());
+        	java.util.logging.Logger.getLogger("es.gob.afirma").warning(e.toString()); //$NON-NLS-1$
         }
 
         return false;
