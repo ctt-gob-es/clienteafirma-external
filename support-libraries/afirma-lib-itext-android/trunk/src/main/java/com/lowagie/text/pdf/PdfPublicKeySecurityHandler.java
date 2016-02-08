@@ -105,23 +105,23 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DEROutputStream;
-import org.bouncycastle.asn1.DERSet;
-import org.bouncycastle.asn1.cms.ContentInfo;
-import org.bouncycastle.asn1.cms.EncryptedContentInfo;
-import org.bouncycastle.asn1.cms.EnvelopedData;
-import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
-import org.bouncycastle.asn1.cms.KeyTransRecipientInfo;
-import org.bouncycastle.asn1.cms.RecipientIdentifier;
-import org.bouncycastle.asn1.cms.RecipientInfo;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.TBSCertificateStructure;
+import org.spongycastle.asn1.ASN1InputStream;
+import org.spongycastle.asn1.ASN1ObjectIdentifier;
+import org.spongycastle.asn1.ASN1Primitive;
+import org.spongycastle.asn1.ASN1Set;
+import org.spongycastle.asn1.DEROctetString;
+import org.spongycastle.asn1.DEROutputStream;
+import org.spongycastle.asn1.DERSet;
+import org.spongycastle.asn1.cms.ContentInfo;
+import org.spongycastle.asn1.cms.EncryptedContentInfo;
+import org.spongycastle.asn1.cms.EnvelopedData;
+import org.spongycastle.asn1.cms.IssuerAndSerialNumber;
+import org.spongycastle.asn1.cms.KeyTransRecipientInfo;
+import org.spongycastle.asn1.cms.RecipientIdentifier;
+import org.spongycastle.asn1.cms.RecipientInfo;
+import org.spongycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.spongycastle.asn1.x509.AlgorithmIdentifier;
+import org.spongycastle.asn1.x509.TBSCertificateStructure;
 
 /**
  * @author Aiken Sam (aikensam@ieee.org)
@@ -137,7 +137,7 @@ class PdfPublicKeySecurityHandler {
     public PdfPublicKeySecurityHandler() {
         KeyGenerator key;
         try {
-            key = KeyGenerator.getInstance("AES");
+            key = KeyGenerator.getInstance("AES"); //$NON-NLS-1$
             key.init(192, new SecureRandom());
             final SecretKey sk = key.generateKey();
             System.arraycopy(sk.getEncoded(), 0, this.seed, 0, SEED_LENGTH); // create the 20 bytes seed
@@ -242,11 +242,11 @@ class PdfPublicKeySecurityHandler {
                GeneralSecurityException
     {
 
-        final String s = "1.2.840.113549.3.2";
+        final String s = "1.2.840.113549.3.2"; //$NON-NLS-1$
 
         final AlgorithmParameterGenerator algorithmparametergenerator = AlgorithmParameterGenerator.getInstance(s);
         final AlgorithmParameters algorithmparameters = algorithmparametergenerator.generateParameters();
-        final ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(algorithmparameters.getEncoded("ASN.1"));
+        final ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(algorithmparameters.getEncoded("ASN.1")); //$NON-NLS-1$
         final ASN1InputStream asn1inputstream = new ASN1InputStream(bytearrayinputstream);
         final ASN1Primitive derobject = asn1inputstream.readObject();
         final KeyGenerator keygenerator = KeyGenerator.getInstance(s);
@@ -258,7 +258,7 @@ class PdfPublicKeySecurityHandler {
         final DEROctetString deroctetstring = new DEROctetString(abyte1);
         final KeyTransRecipientInfo keytransrecipientinfo = computeRecipientInfo(cert, secretkey.getEncoded());
         final DERSet derset = new DERSet(new RecipientInfo(keytransrecipientinfo));
-        final AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(new DERObjectIdentifier(s), derobject);
+        final AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(new ASN1ObjectIdentifier(s), derobject);
         final EncryptedContentInfo encryptedcontentinfo =
             new EncryptedContentInfo(PKCSObjectIdentifiers.data, algorithmidentifier, deroctetstring);
         final EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, (ASN1Set)null);
@@ -274,7 +274,7 @@ class PdfPublicKeySecurityHandler {
             new ASN1InputStream(new ByteArrayInputStream(x509certificate.getTBSCertificate()));
         final TBSCertificateStructure tbscertificatestructure =
             TBSCertificateStructure.getInstance(asn1inputstream.readObject());
-        final AlgorithmIdentifier algorithmidentifier = tbscertificatestructure.getSubjectPublicKeyInfo().getAlgorithmId();
+        final AlgorithmIdentifier algorithmidentifier = tbscertificatestructure.getSubjectPublicKeyInfo().getAlgorithm();
         final IssuerAndSerialNumber issuerandserialnumber =
             new IssuerAndSerialNumber(
                 tbscertificatestructure.getIssuer(),

@@ -71,9 +71,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.zip.InflaterInputStream;
 
-import org.bouncycastle.cms.CMSEnvelopedData;
-import org.bouncycastle.cms.RecipientInformation;
-import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
+import org.spongycastle.cms.CMSEnvelopedData;
+import org.spongycastle.cms.RecipientInformation;
+import org.spongycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.PageSize;
@@ -94,8 +94,8 @@ public class PdfReader implements PdfViewerPreferences {
         PdfName.MEDIABOX, PdfName.ROTATE, PdfName.RESOURCES, PdfName.CROPBOX
     };
 
-    private static final byte endstream[] = PdfEncodings.convertToBytes("endstream", null);
-    private static final byte endobj[] = PdfEncodings.convertToBytes("endobj", null);
+    private static final byte endstream[] = PdfEncodings.convertToBytes("endstream", null); //$NON-NLS-1$
+    private static final byte endobj[] = PdfEncodings.convertToBytes("endobj", null); //$NON-NLS-1$
     protected PRTokeniser tokens;
     // Each xref pair is a position
     // type 0 -> -1, 0
@@ -388,15 +388,15 @@ public class PdfReader implements PdfViewerPreferences {
     Rectangle getBoxSize(final int index, final String boxName) {
         final PdfDictionary page = this.pageRefs.getPageNRelease(index);
         PdfArray box = null;
-        if (boxName.equals("trim")) {
+        if (boxName.equals("trim")) { //$NON-NLS-1$
 			box = (PdfArray)getPdfObjectRelease(page.get(PdfName.TRIMBOX));
-		} else if (boxName.equals("art")) {
+		} else if (boxName.equals("art")) { //$NON-NLS-1$
 			box = (PdfArray)getPdfObjectRelease(page.get(PdfName.ARTBOX));
-		} else if (boxName.equals("bleed")) {
+		} else if (boxName.equals("bleed")) { //$NON-NLS-1$
 			box = (PdfArray)getPdfObjectRelease(page.get(PdfName.BLEEDBOX));
-		} else if (boxName.equals("crop")) {
+		} else if (boxName.equals("crop")) { //$NON-NLS-1$
 			box = (PdfArray)getPdfObjectRelease(page.get(PdfName.CROPBOX));
-		} else if (boxName.equals("media")) {
+		} else if (boxName.equals("media")) { //$NON-NLS-1$
 			box = (PdfArray)getPdfObjectRelease(page.get(PdfName.MEDIABOX));
 		}
         if (box == null) {
@@ -464,7 +464,7 @@ public class PdfReader implements PdfViewerPreferences {
                     this.lastXref = -1;
                 }
                 catch (final Exception ne) {
-                    throw new InvalidPdfException("Rebuild failed: " + ne.getMessage() + "; Original message: " + e.getMessage());
+                    throw new InvalidPdfException("Rebuild failed: " + ne.getMessage() + "; Original message: " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
             try {
@@ -513,7 +513,7 @@ public class PdfReader implements PdfViewerPreferences {
                     this.lastXref = -1;
                 }
                 catch (final Exception ne) {
-                    throw new InvalidPdfException("Rebuild failed: " + ne.getMessage() + "; Original message: " + e.getMessage());
+                    throw new InvalidPdfException("Rebuild failed: " + ne.getMessage() + "; Original message: " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
             readDocObjPartial();
@@ -542,7 +542,7 @@ public class PdfReader implements PdfViewerPreferences {
 			return;
 		}
         final PdfObject encDic = this.trailer.get(PdfName.ENCRYPT);
-        if (encDic == null || encDic.toString().equals("null")) {
+        if (encDic == null || encDic.toString().equals("null")) { //$NON-NLS-1$
 			return;
 		}
         this.encryptionError = true;
@@ -585,13 +585,13 @@ public class PdfReader implements PdfViewerPreferences {
 
             o = enc.get(PdfName.P);
             if (!o.isNumber()) {
-				throw new InvalidPdfException("Illegal P value.");
+				throw new InvalidPdfException("Illegal P value."); //$NON-NLS-1$
 			}
             this.pValue = ((PdfNumber)o).intValue();
 
             o = enc.get(PdfName.R);
             if (!o.isNumber()) {
-				throw new InvalidPdfException("Illegal R value.");
+				throw new InvalidPdfException("Illegal R value."); //$NON-NLS-1$
 			}
             this.rValue = ((PdfNumber)o).intValue();
 
@@ -602,37 +602,37 @@ public class PdfReader implements PdfViewerPreferences {
             case 3:
                 o = enc.get(PdfName.LENGTH);
                 if (!o.isNumber()) {
-					throw new InvalidPdfException("Illegal Length value.");
+					throw new InvalidPdfException("Illegal Length value."); //$NON-NLS-1$
 				}
                 lengthValue = ( (PdfNumber) o).intValue();
                 if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0) {
-					throw new InvalidPdfException("Illegal Length value.");
+					throw new InvalidPdfException("Illegal Length value."); //$NON-NLS-1$
 				}
                 cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
                 break;
             case 4:
                 PdfDictionary dic = (PdfDictionary)enc.get(PdfName.CF);
                 if (dic == null) {
-					throw new InvalidPdfException("/CF not found (encryption)");
+					throw new InvalidPdfException("/CF not found (encryption)"); //$NON-NLS-1$
 				}
                 dic = (PdfDictionary)dic.get(PdfName.STDCF);
                 if (dic == null) {
-					throw new InvalidPdfException("/StdCF not found (encryption)");
+					throw new InvalidPdfException("/StdCF not found (encryption)"); //$NON-NLS-1$
 				}
                 if (PdfName.V2.equals(dic.get(PdfName.CFM))) {
 					cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
 				} else if (PdfName.AESV2.equals(dic.get(PdfName.CFM))) {
 					cryptoMode = PdfWriter.ENCRYPTION_AES_128;
 				} else {
-					throw new UnsupportedPdfException("No compatible encryption found");
+					throw new UnsupportedPdfException("No compatible encryption found"); //$NON-NLS-1$
 				}
                 final PdfObject em = enc.get(PdfName.ENCRYPTMETADATA);
-                if (em != null && em.toString().equals("false")) {
+                if (em != null && em.toString().equals("false")) { //$NON-NLS-1$
 					cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
 				}
                 break;
             default:
-            	throw new UnsupportedPdfException("Unknown encryption type R = " + this.rValue);
+            	throw new UnsupportedPdfException("Unknown encryption type R = " + this.rValue); //$NON-NLS-1$
             }
         }
         else if (filter.equals(PdfName.PUBSEC)) {
@@ -642,7 +642,7 @@ public class PdfReader implements PdfViewerPreferences {
 
             o = enc.get(PdfName.V);
             if (!o.isNumber()) {
-				throw new InvalidPdfException("Illegal V value.");
+				throw new InvalidPdfException("Illegal V value."); //$NON-NLS-1$
 			}
             final int vValue = ((PdfNumber)o).intValue();
             switch(vValue) {
@@ -654,11 +654,11 @@ public class PdfReader implements PdfViewerPreferences {
             case 2:
                 o = enc.get(PdfName.LENGTH);
                 if (!o.isNumber()) {
-					throw new InvalidPdfException("Illegal Length value.");
+					throw new InvalidPdfException("Illegal Length value."); //$NON-NLS-1$
 				}
                 lengthValue = ( (PdfNumber) o).intValue();
                 if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0) {
-					throw new InvalidPdfException("Illegal Length value.");
+					throw new InvalidPdfException("Illegal Length value."); //$NON-NLS-1$
 				}
                 cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
                 recipients = (PdfArray)enc.get(PdfName.RECIPIENTS);
@@ -666,11 +666,11 @@ public class PdfReader implements PdfViewerPreferences {
             case 4:
                 PdfDictionary dic = (PdfDictionary)enc.get(PdfName.CF);
                 if (dic == null) {
-					throw new InvalidPdfException("/CF not found (encryption)");
+					throw new InvalidPdfException("/CF not found (encryption)"); //$NON-NLS-1$
 				}
                 dic = (PdfDictionary)dic.get(PdfName.DEFAULTCRYPTFILTER);
                 if (dic == null) {
-					throw new InvalidPdfException("/DefaultCryptFilter not found (encryption)");
+					throw new InvalidPdfException("/DefaultCryptFilter not found (encryption)"); //$NON-NLS-1$
 				}
                 if (PdfName.V2.equals(dic.get(PdfName.CFM))) {
                     cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
@@ -680,17 +680,17 @@ public class PdfReader implements PdfViewerPreferences {
                     cryptoMode = PdfWriter.ENCRYPTION_AES_128;
                     lengthValue = 128;
                 } else {
-					throw new UnsupportedPdfException("No compatible encryption found");
+					throw new UnsupportedPdfException("No compatible encryption found"); //$NON-NLS-1$
 				}
                 final PdfObject em = dic.get(PdfName.ENCRYPTMETADATA);
-                if (em != null && em.toString().equals("false")) {
+                if (em != null && em.toString().equals("false")) { //$NON-NLS-1$
 					cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
 				}
 
                 recipients = (PdfArray)dic.get(PdfName.RECIPIENTS);
                 break;
             default:
-            	throw new UnsupportedPdfException("Unknown encryption type V = " + this.rValue);
+            	throw new UnsupportedPdfException("Unknown encryption type V = " + this.rValue); //$NON-NLS-1$
             }
             for (int i = 0; i<recipients.size(); i++) {
                 final PdfObject recipient = recipients.getPdfObject(i);
@@ -719,13 +719,13 @@ public class PdfReader implements PdfViewerPreferences {
             }
 
             if(!foundRecipient || envelopedData == null) {
-                throw new UnsupportedPdfException("Bad certificate and key.");
+                throw new UnsupportedPdfException("Bad certificate and key."); //$NON-NLS-1$
             }
 
             MessageDigest md = null;
 
             try {
-                md = MessageDigest.getInstance("SHA-1");
+                md = MessageDigest.getInstance("SHA-1"); //$NON-NLS-1$
                 md.update(envelopedData, 0, 20);
                 for (int i = 0; i<recipients.size(); i++) {
                   final byte[] encodedRecipient = recipients.getPdfObject(i).getBytes();
@@ -752,7 +752,7 @@ public class PdfReader implements PdfViewerPreferences {
                 //check by user password
                 this.decrypt.setupByUserPassword(documentID, this.password, oValue, this.pValue);
                 if (!equalsArray(uValue, this.decrypt.userKey, this.rValue == 3 || this.rValue == 4 ? 16 : 32)) {
-                    throw new BadPasswordException("Bad user password");
+                    throw new BadPasswordException("Bad user password"); //$NON-NLS-1$
                 }
             } else {
 				this.ownerPasswordUsed = true;
@@ -992,17 +992,17 @@ public class PdfReader implements PdfViewerPreferences {
         this.tokens.seek(pos);
         this.tokens.nextValidToken();
         if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-			this.tokens.throwError("Invalid object number.");
+			this.tokens.throwError("Invalid object number."); //$NON-NLS-1$
 		}
         this.objNum = this.tokens.intValue();
         this.tokens.nextValidToken();
         if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-			this.tokens.throwError("Invalid generation number.");
+			this.tokens.throwError("Invalid generation number."); //$NON-NLS-1$
 		}
         this.objGen = this.tokens.intValue();
         this.tokens.nextValidToken();
-        if (!this.tokens.getStringValue().equals("obj")) {
-			this.tokens.throwError("Token 'obj' expected.");
+        if (!this.tokens.getStringValue().equals("obj")) { //$NON-NLS-1$
+			this.tokens.throwError("Token 'obj' expected."); //$NON-NLS-1$
 		}
         PdfObject obj;
         try {
@@ -1054,7 +1054,7 @@ public class PdfReader implements PdfViewerPreferences {
                 address = this.tokens.intValue() + first;
             }
             if (!ok) {
-				throw new InvalidPdfException("Error reading ObjStm");
+				throw new InvalidPdfException("Error reading ObjStm"); //$NON-NLS-1$
 			}
             this.tokens.seek(address);
             return readPRObject();
@@ -1078,17 +1078,17 @@ public class PdfReader implements PdfViewerPreferences {
             this.tokens.seek(pos);
             this.tokens.nextValidToken();
             if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-				this.tokens.throwError("Invalid object number.");
+				this.tokens.throwError("Invalid object number."); //$NON-NLS-1$
 			}
             this.objNum = this.tokens.intValue();
             this.tokens.nextValidToken();
             if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-				this.tokens.throwError("Invalid generation number.");
+				this.tokens.throwError("Invalid generation number."); //$NON-NLS-1$
 			}
             this.objGen = this.tokens.intValue();
             this.tokens.nextValidToken();
-            if (!this.tokens.getStringValue().equals("obj")) {
-				this.tokens.throwError("Token 'obj' expected.");
+            if (!this.tokens.getStringValue().equals("obj")) { //$NON-NLS-1$
+				this.tokens.throwError("Token 'obj' expected."); //$NON-NLS-1$
 			}
             PdfObject obj;
             try {
@@ -1132,10 +1132,10 @@ public class PdfReader implements PdfViewerPreferences {
 			} else {
                 this.tokens.seek(start + streamLength);
                 final String line = this.tokens.readString(20);
-                if (!line.startsWith("\nendstream") &&
-                !line.startsWith("\r\nendstream") &&
-                !line.startsWith("\rendstream") &&
-                !line.startsWith("endstream")) {
+                if (!line.startsWith("\nendstream") && //$NON-NLS-1$
+                !line.startsWith("\r\nendstream") && //$NON-NLS-1$
+                !line.startsWith("\rendstream") && //$NON-NLS-1$
+                !line.startsWith("endstream")) { //$NON-NLS-1$
 					calc = true;
 				}
             }
@@ -1157,7 +1157,7 @@ public class PdfReader implements PdfViewerPreferences {
                 if (equalsn(tline, endobj)) {
                     this.tokens.seek(pos - 16);
                     final String s = this.tokens.readString(16);
-                    final int index = s.indexOf("endstream");
+                    final int index = s.indexOf("endstream"); //$NON-NLS-1$
                     if (index >= 0) {
 						pos = pos - 16 + index;
 					}
@@ -1200,7 +1200,7 @@ public class PdfReader implements PdfViewerPreferences {
                 address[k] = this.tokens.intValue() + first;
             }
             if (!ok) {
-				throw new InvalidPdfException("Error reading ObjStm");
+				throw new InvalidPdfException("Error reading ObjStm"); //$NON-NLS-1$
 			}
             for (int k = 0; k < n; ++k) {
                 if (map.containsKey(k)) {
@@ -1258,12 +1258,12 @@ public class PdfReader implements PdfViewerPreferences {
         this.newXrefType = false;
         this.tokens.seek(this.tokens.getStartxref());
         this.tokens.nextToken();
-        if (!this.tokens.getStringValue().equals("startxref")) {
-			throw new InvalidPdfException("startxref not found.");
+        if (!this.tokens.getStringValue().equals("startxref")) { //$NON-NLS-1$
+			throw new InvalidPdfException("startxref not found."); //$NON-NLS-1$
 		}
         this.tokens.nextToken();
         if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-			throw new InvalidPdfException("startxref is not followed by a number.");
+			throw new InvalidPdfException("startxref is not followed by a number."); //$NON-NLS-1$
 		}
         final int startxref = this.tokens.intValue();
         this.lastXref = startxref;
@@ -1291,8 +1291,8 @@ public class PdfReader implements PdfViewerPreferences {
 
     private PdfDictionary readXrefSection() throws IOException {
         this.tokens.nextValidToken();
-        if (!this.tokens.getStringValue().equals("xref")) {
-			this.tokens.throwError("xref subsection not found");
+        if (!this.tokens.getStringValue().equals("xref")) { //$NON-NLS-1$
+			this.tokens.throwError("xref subsection not found"); //$NON-NLS-1$
 		}
         int start = 0;
         int end = 0;
@@ -1300,16 +1300,16 @@ public class PdfReader implements PdfViewerPreferences {
         int gen = 0;
         while (true) {
             this.tokens.nextValidToken();
-            if (this.tokens.getStringValue().equals("trailer")) {
+            if (this.tokens.getStringValue().equals("trailer")) { //$NON-NLS-1$
 				break;
 			}
             if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-				this.tokens.throwError("Object number of the first object in this xref subsection not found");
+				this.tokens.throwError("Object number of the first object in this xref subsection not found"); //$NON-NLS-1$
 			}
             start = this.tokens.intValue();
             this.tokens.nextValidToken();
             if (this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
-				this.tokens.throwError("Number of entries in this xref subsection not found");
+				this.tokens.throwError("Number of entries in this xref subsection not found"); //$NON-NLS-1$
 			}
             end = this.tokens.intValue() + start;
             if (start == 1) { // fix incorrect start number
@@ -1332,19 +1332,19 @@ public class PdfReader implements PdfViewerPreferences {
                 gen = this.tokens.intValue();
                 this.tokens.nextValidToken();
                 final int p = k * 2;
-                if (this.tokens.getStringValue().equals("n")) {
+                if (this.tokens.getStringValue().equals("n")) { //$NON-NLS-1$
                     if (this.xref[p] == 0 && this.xref[p + 1] == 0) {
 //                        if (pos == 0)
 //                            tokens.throwError("File position 0 cross-reference entry in this xref subsection");
                         this.xref[p] = pos;
                     }
                 }
-                else if (this.tokens.getStringValue().equals("f")) {
+                else if (this.tokens.getStringValue().equals("f")) { //$NON-NLS-1$
                     if (this.xref[p] == 0 && this.xref[p + 1] == 0) {
 						this.xref[p] = -1;
 					}
                 } else {
-					this.tokens.throwError("Invalid cross-reference entry in this xref subsection");
+					this.tokens.throwError("Invalid cross-reference entry in this xref subsection"); //$NON-NLS-1$
 				}
             }
         }
@@ -1380,7 +1380,7 @@ public class PdfReader implements PdfViewerPreferences {
         if (!this.tokens.nextToken() || this.tokens.getTokenType() != PRTokeniser.TK_NUMBER) {
 			return false;
 		}
-        if (!this.tokens.nextToken() || !this.tokens.getStringValue().equals("obj")) {
+        if (!this.tokens.nextToken() || !this.tokens.getStringValue().equals("obj")) { //$NON-NLS-1$
 			return false;
 		}
         final PdfObject object = readPRObject();
@@ -1507,7 +1507,7 @@ public class PdfReader implements PdfViewerPreferences {
 				break;
 			}
             if (line[0] == 't') {
-                if (!PdfEncodings.convertToString(line, null).startsWith("trailer")) {
+                if (!PdfEncodings.convertToString(line, null).startsWith("trailer")) { //$NON-NLS-1$
 					continue;
 				}
                 this.tokens.seek(pos);
@@ -1548,7 +1548,7 @@ public class PdfReader implements PdfViewerPreferences {
             }
         }
         if (this.trailer == null) {
-			throw new InvalidPdfException("trailer not found.");
+			throw new InvalidPdfException("trailer not found."); //$NON-NLS-1$
 		}
         this.xref = new int[top * 2];
         for (int k = 0; k < top; ++k) {
@@ -1567,16 +1567,16 @@ public class PdfReader implements PdfViewerPreferences {
 				break;
 			}
             if (this.tokens.getTokenType() != PRTokeniser.TK_NAME) {
-				this.tokens.throwError("Dictionary key is not a name.");
+				this.tokens.throwError("Dictionary key is not a name."); //$NON-NLS-1$
 			}
             final PdfName name = new PdfName(this.tokens.getStringValue(), false);
             final PdfObject obj = readPRObject();
             final int type = obj.type();
             if (-type == PRTokeniser.TK_END_DIC) {
-				this.tokens.throwError("Unexpected '>>'");
+				this.tokens.throwError("Unexpected '>>'"); //$NON-NLS-1$
 			}
             if (-type == PRTokeniser.TK_END_ARRAY) {
-				this.tokens.throwError("Unexpected ']'");
+				this.tokens.throwError("Unexpected ']'"); //$NON-NLS-1$
 			}
             dic.put(name, obj);
         }
@@ -1592,7 +1592,7 @@ public class PdfReader implements PdfViewerPreferences {
 				break;
 			}
             if (-type == PRTokeniser.TK_END_DIC) {
-				this.tokens.throwError("Unexpected '>>'");
+				this.tokens.throwError("Unexpected '>>'"); //$NON-NLS-1$
 			}
             array.add(obj);
         }
@@ -1619,7 +1619,7 @@ public class PdfReader implements PdfViewerPreferences {
                     hasNext = this.tokens.nextToken();
                 } while (hasNext && this.tokens.getTokenType() == PRTokeniser.TK_COMMENT);
 
-                if (hasNext && this.tokens.getStringValue().equals("stream")) {
+                if (hasNext && this.tokens.getStringValue().equals("stream")) { //$NON-NLS-1$
                     //skip whitespaces
                     int ch;
                     do {
@@ -1675,19 +1675,19 @@ public class PdfReader implements PdfViewerPreferences {
                 return ref;
             default:
                 final String sv = this.tokens.getStringValue();
-                if ("null".equals(sv)) {
+                if ("null".equals(sv)) { //$NON-NLS-1$
                     if (this.readDepth == 0) {
                         return new PdfNull();
                     } //else
                     return PdfNull.PDFNULL;
                 }
-                else if ("true".equals(sv)) {
+                else if ("true".equals(sv)) { //$NON-NLS-1$
                     if (this.readDepth == 0) {
                         return new PdfBoolean( true );
                     } //else
                     return PdfBoolean.PDFTRUE;
                 }
-                else if ("false".equals(sv)) {
+                else if ("false".equals(sv)) { //$NON-NLS-1$
                     if (this.readDepth == 0) {
                         return new PdfBoolean( false );
                     } //else
@@ -1813,7 +1813,7 @@ public class PdfReader implements PdfViewerPreferences {
                     break;
                 default:
                     // Error -- unknown filter type
-                    throw new RuntimeException("PNG filter unknown.");
+                    throw new RuntimeException("PNG filter unknown."); //$NON-NLS-1$
             }
             try {
                 fout.write(curr);
@@ -1875,7 +1875,7 @@ public class PdfReader implements PdfViewerPreferences {
 			}
             final int n = PRTokeniser.getHex(ch);
             if (n == -1) {
-				throw new RuntimeException("Illegal character in ASCIIHexDecode.");
+				throw new RuntimeException("Illegal character in ASCIIHexDecode."); //$NON-NLS-1$
 			}
             if (first) {
 				n1 = n;
@@ -1914,7 +1914,7 @@ public class PdfReader implements PdfViewerPreferences {
                 continue;
             }
             if (ch < '!' || ch > 'u') {
-				throw new RuntimeException("Illegal character in ASCII85Decode.");
+				throw new RuntimeException("Illegal character in ASCII85Decode."); //$NON-NLS-1$
 			}
             chn[state] = ch - '!';
             ++state;
@@ -2147,7 +2147,7 @@ public class PdfReader implements PdfViewerPreferences {
         String name;
         for (int j = 0; j < filters.size(); ++j) {
             name = ((PdfName)getPdfObjectRelease((PdfObject)filters.get(j))).toString();
-            if (name.equals("/FlateDecode") || name.equals("/Fl")) {
+            if (name.equals("/FlateDecode") || name.equals("/Fl")) { //$NON-NLS-1$ //$NON-NLS-2$
                 b = FlateDecode(b);
                 PdfObject dicParam = null;
                 if (j < dp.size()) {
@@ -2155,11 +2155,11 @@ public class PdfReader implements PdfViewerPreferences {
                     b = decodePredictor(b, dicParam);
                 }
             }
-            else if (name.equals("/ASCIIHexDecode") || name.equals("/AHx")) {
+            else if (name.equals("/ASCIIHexDecode") || name.equals("/AHx")) { //$NON-NLS-1$ //$NON-NLS-2$
 				b = ASCIIHexDecode(b);
-			} else if (name.equals("/ASCII85Decode") || name.equals("/A85")) {
+			} else if (name.equals("/ASCII85Decode") || name.equals("/A85")) { //$NON-NLS-1$ //$NON-NLS-2$
 				b = ASCII85Decode(b);
-			} else if (name.equals("/LZWDecode")) {
+			} else if (name.equals("/LZWDecode")) { //$NON-NLS-1$
                 b = LZWDecode(b);
                 PdfObject dicParam = null;
                 if (j < dp.size()) {
@@ -2167,9 +2167,9 @@ public class PdfReader implements PdfViewerPreferences {
                     b = decodePredictor(b, dicParam);
                 }
             }
-            else if (name.equals("/Crypt")) {
+            else if (name.equals("/Crypt")) { //$NON-NLS-1$
             } else {
-				throw new UnsupportedPdfException("The filter " + name + " is not supported.");
+				throw new UnsupportedPdfException("The filter " + name + " is not supported."); //$NON-NLS-1$ //$NON-NLS-2$
 			}
         }
         return b;
@@ -2220,7 +2220,7 @@ public class PdfReader implements PdfViewerPreferences {
                 boolean skip = false;
                 for (int k = 0; k < filters.size(); ++k) {
                     final PdfObject obj = getPdfObjectRelease((PdfObject)filters.get(k));
-                    if (obj != null && obj.toString().equals("/Crypt")) {
+                    if (obj != null && obj.toString().equals("/Crypt")) { //$NON-NLS-1$
                         skip = true;
                         break;
                     }
