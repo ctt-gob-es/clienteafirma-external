@@ -48,57 +48,58 @@
  */
 package com.lowagie.text.pdf.crypto;
 
-import org.bouncycastle.crypto.BlockCipher;
-import org.bouncycastle.crypto.engines.AESFastEngine;
-import org.bouncycastle.crypto.modes.CBCBlockCipher;
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
-import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.spongycastle.crypto.BlockCipher;
+import org.spongycastle.crypto.engines.AESFastEngine;
+import org.spongycastle.crypto.modes.CBCBlockCipher;
+import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.crypto.params.ParametersWithIV;
 
 /**
  * Creates an AES Cipher with CBC and padding PKCS5/7.
  * @author Paulo Soares (psoares@consiste.pt)
  */
 public class AESCipher {
-    private PaddedBufferedBlockCipher bp;
-    
+    private final PaddedBufferedBlockCipher bp;
+
     /** Creates a new instance of AESCipher */
-    public AESCipher(boolean forEncryption, byte[] key, byte[] iv) {
-        BlockCipher aes = new AESFastEngine();
-        BlockCipher cbc = new CBCBlockCipher(aes);
-        bp = new PaddedBufferedBlockCipher(cbc);
-        KeyParameter kp = new KeyParameter(key);
-        ParametersWithIV piv = new ParametersWithIV(kp, iv);
-        bp.init(forEncryption, piv);
+    public AESCipher(final boolean forEncryption, final byte[] key, final byte[] iv) {
+        final BlockCipher aes = new AESFastEngine();
+        final BlockCipher cbc = new CBCBlockCipher(aes);
+        this.bp = new PaddedBufferedBlockCipher(cbc);
+        final KeyParameter kp = new KeyParameter(key);
+        final ParametersWithIV piv = new ParametersWithIV(kp, iv);
+        this.bp.init(forEncryption, piv);
     }
-    
-    public byte[] update(byte[] inp, int inpOff, int inpLen) {
-        int neededLen = bp.getUpdateOutputSize(inpLen);
+
+    public byte[] update(final byte[] inp, final int inpOff, final int inpLen) {
+        int neededLen = this.bp.getUpdateOutputSize(inpLen);
         byte[] outp = null;
-        if (neededLen > 0)
-            outp = new byte[neededLen];
-        else
-            neededLen = 0;
-        bp.processBytes(inp, inpOff, inpLen, outp, 0);
+        if (neededLen > 0) {
+			outp = new byte[neededLen];
+		} else {
+			neededLen = 0;
+		}
+        this.bp.processBytes(inp, inpOff, inpLen, outp, 0);
         return outp;
     }
-    
+
     public byte[] doFinal() {
-        int neededLen = bp.getOutputSize(0);
-        byte[] outp = new byte[neededLen];
+        final int neededLen = this.bp.getOutputSize(0);
+        final byte[] outp = new byte[neededLen];
         int n = 0;
         try {
-            n = bp.doFinal(outp, 0);
-        } catch (Exception ex) {
+            n = this.bp.doFinal(outp, 0);
+        } catch (final Exception ex) {
             return outp;
         }
         if (n != outp.length) {
-            byte[] outp2 = new byte[n];
+            final byte[] outp2 = new byte[n];
             System.arraycopy(outp, 0, outp2, 0, n);
             return outp2;
-        }
-        else
-            return outp;
+        } else {
+			return outp;
+		}
     }
-    
+
 }
