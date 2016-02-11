@@ -15,17 +15,23 @@
 	<dependencies>
 	    
 		<dependency>
-			<groupId>org.spongycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.54</version>
+			<groupId>com.madgag.spongycastle</groupId>
+			<artifactId>core</artifactId>
+			<version>1.54.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.madgag.spongycastle</groupId>
+			<artifactId>prov</artifactId>
+			<version>1.54.0.0</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.spongycastle</groupId>
-			<artifactId>bcpkix-jdk15on</artifactId>
-			<version>1.54</version>
+			<groupId>com.madgag.spongycastle</groupId>
+			<artifactId>pkix</artifactId>
+			<version>1.54.0.0</version>
 		</dependency>
-		
+				
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
