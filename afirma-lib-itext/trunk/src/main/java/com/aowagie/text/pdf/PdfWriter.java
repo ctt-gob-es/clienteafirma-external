@@ -782,15 +782,13 @@ public class PdfWriter extends DocWriter implements
         return iobj;
     }
 
-    /**
-     * Use this method to add a PDF object to the PDF body.
+    /** Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
      * @param object
      * @param inObjStm
      * @return a PdfIndirectObject
-     * @throws IOException
-     */
-    PdfIndirectObject addToBody(final PdfObject object, final boolean inObjStm) throws IOException {
+     * @throws IOException */
+    public PdfIndirectObject addToBody(final PdfObject object, final boolean inObjStm) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, inObjStm);
         return iobj;
     }
