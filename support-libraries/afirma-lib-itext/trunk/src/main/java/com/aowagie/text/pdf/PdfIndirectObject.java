@@ -70,7 +70,7 @@ import com.aowagie.text.DocWriter;
  * @see		PdfIndirectReference
  */
 
-class PdfIndirectObject {
+public final class PdfIndirectObject {
 
     // membervariables
 

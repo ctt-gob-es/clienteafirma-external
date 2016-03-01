@@ -150,7 +150,7 @@ public class PdfDate extends PdfString {
      * @param d the date in the format D:YYYYMMDDHHmmSSOHH'mm'
      * @return a formatted date
      */
-    private static String getW3CDate(String d) {
+    public static String getW3CDate(String d) {
         if (d.startsWith("D:")) {
 			d = d.substring(2);
 		}
