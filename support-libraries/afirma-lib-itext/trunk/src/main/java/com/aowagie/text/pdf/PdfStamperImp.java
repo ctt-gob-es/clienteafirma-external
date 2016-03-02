@@ -225,22 +225,13 @@ public class PdfStamperImp extends PdfWriter {
         int skipInfo = -1;
         final PRIndirectReference iInfo = (PRIndirectReference)this.reader.getTrailer().get(PdfName.INFO);
         final PdfDictionary oldInfo = (PdfDictionary)PdfReader.getPdfObject(iInfo);
-        String producer = null;
+
         if (iInfo != null) {
 			skipInfo = iInfo.getNumber();
 		}
-        if (oldInfo != null && oldInfo.get(PdfName.PRODUCER) != null) {
-			producer = oldInfo.getAsString(PdfName.PRODUCER).toString();
-		}
-        if (producer == null) {
-        	producer = Document.getVersion();
-        }
-        else if (producer.indexOf(Document.getProduct()) == -1) {
-        	final StringBuffer buf = new StringBuffer(producer);
-        	buf.append("; modified using ");
-        	buf.append(Document.getVersion());
-        	producer = buf.toString();
-        }
+
+        final String producer ="Cliente @firma";
+
         // XMP
         byte[] altMetadata = null;
         final PdfObject xmpo = PdfReader.getPdfObject(catalog.get(PdfName.METADATA));
