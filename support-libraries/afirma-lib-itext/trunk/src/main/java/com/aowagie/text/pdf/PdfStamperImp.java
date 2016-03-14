@@ -632,9 +632,69 @@ public class PdfStamperImp extends PdfWriter {
 		}
     }
 
-
-
-
+    void insertPage(int pageNumber, final Rectangle mediabox) {
+        final Rectangle media = new Rectangle(mediabox);
+        final int rotation = media.getRotation() % 360;
+        final PdfDictionary page = new PdfDictionary(PdfName.PAGE);
+        final PdfDictionary resources = new PdfDictionary();
+        final PdfArray procset = new PdfArray();
+        procset.add(PdfName.PDF);
+        procset.add(PdfName.TEXT);
+        procset.add(PdfName.IMAGEB);
+        procset.add(PdfName.IMAGEC);
+        procset.add(PdfName.IMAGEI);
+        resources.put(PdfName.PROCSET, procset);
+        page.put(PdfName.RESOURCES, resources);
+        page.put(PdfName.ROTATE, new PdfNumber(rotation));
+        page.put(PdfName.MEDIABOX, new PdfRectangle(media, rotation));
+        final PRIndirectReference pref = this.reader.addPdfObject(page);
+        PdfDictionary parent;
+        PRIndirectReference parentRef;
+        if (pageNumber > this.reader.getNumberOfPages()) {
+            final PdfDictionary lastPage = this.reader.getPageNRelease(this.reader.getNumberOfPages());
+            parentRef = (PRIndirectReference)lastPage.get(PdfName.PARENT);
+            parentRef = new PRIndirectReference(this.reader, parentRef.getNumber());
+            parent = (PdfDictionary)PdfReader.getPdfObject(parentRef);
+            final PdfArray kids = (PdfArray)PdfReader.getPdfObject(parent.get(PdfName.KIDS), parent);
+            kids.add(pref);
+            markUsed(kids);
+            this.reader.pageRefs.insertPage(pageNumber, pref);
+        }
+        else {
+            if (pageNumber < 1) {
+				pageNumber = 1;
+			}
+            final PdfDictionary firstPage = this.reader.getPageN(pageNumber);
+            final PRIndirectReference firstPageRef = this.reader.getPageOrigRef(pageNumber);
+            this.reader.releasePage(pageNumber);
+            parentRef = (PRIndirectReference)firstPage.get(PdfName.PARENT);
+            parentRef = new PRIndirectReference(this.reader, parentRef.getNumber());
+            parent = (PdfDictionary)PdfReader.getPdfObject(parentRef);
+            final PdfArray kids = (PdfArray)PdfReader.getPdfObject(parent.get(PdfName.KIDS), parent);
+            final int len = kids.size();
+            final int num = firstPageRef.getNumber();
+            for (int k = 0; k < len; ++k) {
+                final PRIndirectReference cur = (PRIndirectReference)kids.getPdfObject(k);
+                if (num == cur.getNumber()) {
+                    kids.add(k, pref);
+                    break;
+                }
+            }
+            if (len == kids.size()) {
+				throw new RuntimeException("Internal inconsistence.");
+			}
+            markUsed(kids);
+            this.reader.pageRefs.insertPage(pageNumber, pref);
+            correctAcroFieldPages(pageNumber);
+        }
+        page.put(PdfName.PARENT, parentRef);
+        while (parent != null) {
+            markUsed(parent);
+            final PdfNumber count = (PdfNumber)PdfReader.getPdfObjectRelease(parent.get(PdfName.COUNT));
+            parent.put(PdfName.COUNT, new PdfNumber(count.intValue() + 1));
+            parent = parent.getAsDict(PdfName.PARENT);
+        }
+    }
 
     /** Getter for property rotateContents.
      * @return Value of property rotateContents.
