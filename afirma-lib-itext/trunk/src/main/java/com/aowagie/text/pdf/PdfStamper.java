@@ -61,6 +61,7 @@ import java.util.Map;
 import com.aowagie.text.DocWriter;
 import com.aowagie.text.DocumentException;
 import com.aowagie.text.ExceptionConverter;
+import com.aowagie.text.Rectangle;
 import com.aowagie.text.pdf.interfaces.PdfEncryptionSettings;
 import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
 
@@ -73,8 +74,7 @@ import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
  * flatten them. New fields can be added but not flattened.
  * @author Paulo Soares (psoares@consiste.pt)
  */
-public class PdfStamper
-	implements PdfViewerPreferences, PdfEncryptionSettings {
+public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /**
      * The writer
      */
@@ -129,9 +129,16 @@ public class PdfStamper
         this.moreInfo = moreInfo;
     }
 
-
-
-
+    /**
+     * Inserts a blank page. All the pages above and including <CODE>pageNumber</CODE> will
+     * be shifted up. If <CODE>pageNumber</CODE> is bigger than the total number of pages
+     * the new page will be the last one.
+     * @param pageNumber the page number position where the new page will be inserted
+     * @param mediabox the size of the new page
+     */
+    public void insertPage(final int pageNumber, final Rectangle mediabox) {
+        this.stamper.insertPage(pageNumber, mediabox);
+    }
 
     /**
      * Gets the signing instance. The appearances and other parameters can the be set.
