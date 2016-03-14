@@ -400,7 +400,7 @@ public class PdfWriter extends DocWriter implements
             return add(object, ref.getNumber());
         }
 
-        PdfIndirectObject add(final PdfObject object, final PdfIndirectReference ref, final boolean inObjStm) throws IOException {
+        private PdfIndirectObject add(final PdfObject object, final PdfIndirectReference ref, final boolean inObjStm) throws IOException {
             return add(object, ref.getNumber(), inObjStm);
         }
 
@@ -418,15 +418,17 @@ public class PdfWriter extends DocWriter implements
                 }
                 return indirect;
             }
-			final PdfIndirectObject indirect = new PdfIndirectObject(refNumber, object, this.writer);
-			final PdfCrossReference pxref = new PdfCrossReference(refNumber, this.position);
-			if (!this.xrefs.add(pxref)) {
-			    this.xrefs.remove(pxref);
-			    this.xrefs.add(pxref);
-			}
-			indirect.writeTo(this.writer.getOs());
-			this.position = this.writer.getOs().getCounter();
-			return indirect;
+            else {
+                final PdfIndirectObject indirect = new PdfIndirectObject(refNumber, object, this.writer);
+                final PdfCrossReference pxref = new PdfCrossReference(refNumber, this.position);
+                if (!this.xrefs.add(pxref)) {
+                    this.xrefs.remove(pxref);
+                    this.xrefs.add(pxref);
+                }
+                indirect.writeTo(this.writer.getOs());
+                this.position = this.writer.getOs().getCounter();
+                return indirect;
+            }
         }
 
         /**
@@ -781,15 +783,13 @@ public class PdfWriter extends DocWriter implements
         return iobj;
     }
 
-    /**
-     * Use this method to add a PDF object to the PDF body.
+    /** Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
      * @param object
      * @param inObjStm
      * @return a PdfIndirectObject
-     * @throws IOException
-     */
-    PdfIndirectObject addToBody(final PdfObject object, final boolean inObjStm) throws IOException {
+     * @throws IOException */
+    public PdfIndirectObject addToBody(final PdfObject object, final boolean inObjStm) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, inObjStm);
         return iobj;
     }
@@ -1691,6 +1691,10 @@ public class PdfWriter extends DocWriter implements
     public static final int PDFA1A = 3;
     /** PDFA-1B level. */
     public static final int PDFA1B = 4;
+    /** PDFA-2A level. */
+    public static final int PDFA2A = 5;
+    /** PDFA-2B level. */
+    public static final int PDFA2B = 6;
 
     /** Stores the PDF/X level. */
     private final PdfXConformanceImp pdfxConformance = new PdfXConformanceImp();
@@ -1707,9 +1711,10 @@ public class PdfWriter extends DocWriter implements
         if (this.crypto != null) {
 			throw new PdfXConformanceException("A PDFX conforming document cannot be encrypted.");
 		}
-        if (pdfx == PDFA1A || pdfx == PDFA1B) {
+        if (pdfx == PDFA1A || pdfx == PDFA1B || pdfx == PDFA2A || pdfx == PDFA2B) {
 			setPdfVersion(VERSION_1_4);
-		} else if (pdfx != PDFXNONE) {
+		}
+        else if (pdfx != PDFXNONE) {
 			setPdfVersion(VERSION_1_3);
 		}
         this.pdfxConformance.setPDFXConformance(pdfx);
@@ -1740,7 +1745,7 @@ public class PdfWriter extends DocWriter implements
      * @since 2.1.5
      * @throws IOException on error
      */
-    private void setOutputIntents(final String outputConditionIdentifier, final String outputCondition, final String registryName, final String info, final ICC_Profile colorProfile) throws IOException {
+    public void setOutputIntents(final String outputConditionIdentifier, final String outputCondition, final String registryName, final String info, final ICC_Profile colorProfile) throws IOException {
         getExtraCatalog();
         final PdfDictionary out = new PdfDictionary(PdfName.OUTPUTINTENT);
         if (outputCondition != null) {

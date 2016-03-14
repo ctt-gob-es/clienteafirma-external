@@ -100,8 +100,6 @@ public class Meta implements Element {
 
     // implementation of the Element-methods
 
-    
-
     /**
      * Gets the type of the text element.
      *
@@ -139,6 +137,18 @@ public class Meta implements Element {
 	public boolean isNestable() {
 		return false;
 	}
+
+    // methods
+
+    /**
+     * appends some text to this <CODE>Meta</CODE>.
+     *
+     * @param	string      a <CODE>String</CODE>
+     * @return	a <CODE>StringBuffer</CODE>
+     */
+    public StringBuffer append(final String string) {
+        return this.content.append(string);
+    }
 
     // methods to retrieve information
 
@@ -182,7 +192,7 @@ public class Meta implements Element {
      * @param tag iText tag for meta information
      * @return	the Element value corresponding with the given tag
      */
-    private static int getType(final String tag) {
+    public static int getType(final String tag) {
         if (ElementTags.SUBJECT.equals(tag)) {
             return Element.SUBJECT;
         }

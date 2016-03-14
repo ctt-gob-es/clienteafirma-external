@@ -66,7 +66,7 @@ public class Annotation implements Element {
 	// membervariables
 
 	/** This is a possible annotation type. */
-	private static final int TEXT = 0;
+	public static final int TEXT = 0;
 
 	/** This is a possible annotation type. */
 	public static final int URL_NET = 1;
@@ -90,10 +90,10 @@ public class Annotation implements Element {
 	public static final int SCREEN = 7;
 
 	/** This is a possible attribute. */
-	private static final String TITLE = "title";
+	public static final String TITLE = "title";
 
 	/** This is a possible attribute. */
-	private static final String CONTENT = "content";
+	public static final String CONTENT = "content";
 
 	/** This is a possible attribute. */
 	public static final String URL = "url";

@@ -52,6 +52,7 @@ package com.aowagie.text;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 /**
@@ -202,7 +203,7 @@ public class Document implements DocListener {
 	 *            the pageSize
  */
 
-    private Document(final Rectangle pageSize) {
+    public Document(final Rectangle pageSize) {
         this(pageSize, 36, 36, 36, 36);
     }
 
@@ -221,7 +222,7 @@ public class Document implements DocListener {
 	 *            the margin on the bottom
  */
 
-    private Document(final Rectangle pageSize, final float marginLeft, final float marginRight,
+	private Document(final Rectangle pageSize, final float marginLeft, final float marginRight,
 			final float marginTop, final float marginBottom) {
         this.pageSize = pageSize;
         this.marginLeft = marginLeft;
@@ -241,6 +242,17 @@ public class Document implements DocListener {
 
     public void addDocListener(final DocListener listener) {
         this.listeners.add(listener);
+    }
+
+	/**
+ * Removes a <CODE>DocListener</CODE> from the <CODE>Document</CODE>.
+ *
+	 * @param listener
+	 *            the DocListener that has to be removed.
+ */
+
+    public void removeDocListener(final DocListener listener) {
+        this.listeners.remove(listener);
     }
 
     // methods implementing the DocListener interface
@@ -517,8 +529,6 @@ public class Document implements DocListener {
         }
     }
 
-
-
 	/**
  * Adds the producer to a Document.
  *
@@ -531,6 +541,10 @@ public class Document implements DocListener {
 		} catch (final DocumentException de) {
             throw new ExceptionConverter(de);
         }
+    }
+
+    public boolean addCreationDate() {
+    	return addCreationDate(new GregorianCalendar());
     }
 
 	/**
@@ -553,10 +567,45 @@ public class Document implements DocListener {
 
     // methods to get the layout of the document.
 
+	/**
+ * Returns the left margin.
+ *
+ * @return	the left margin
+ */
 
+    public float leftMargin() {
+        return this.marginLeft;
+    }
 
+	/**
+ * Return the right margin.
+ *
+ * @return	the right margin
+ */
 
+    public float rightMargin() {
+        return this.marginRight;
+    }
 
+	/**
+ * Returns the top margin.
+ *
+ * @return	the top margin
+ */
+
+    public float topMargin() {
+        return this.marginTop;
+    }
+
+	/**
+ * Returns the bottom margin.
+ *
+ * @return	the bottom margin
+ */
+
+    public float bottomMargin() {
+        return this.marginBottom;
+    }
 
 	/**
  * Returns the lower left x-coordinate.
