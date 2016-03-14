@@ -107,7 +107,7 @@ public class PdfWriter extends DocWriter implements
 	PdfRunDirection,
 	PdfAnnotations {
 
-    /**
+	/**
      * Use this method to get an instance of the <CODE>PdfWriter</CODE>.
      *
      * @param	document	The <CODE>Document</CODE> that has to be written
@@ -1686,16 +1686,12 @@ public class PdfWriter extends DocWriter implements
     public static final int PDFX1A2001 = 1;
     /** A PDF/X level. */
     public static final int PDFX32002 = 2;
-
     /** PDFA-1A level. */
     public static final int PDFA1A = 3;
-
     /** PDFA-1B level. */
     public static final int PDFA1B = 4;
-
     /** PDFA-2A level. */
     public static final int PDFA2A = 5;
-
     /** PDFA-2B level. */
     public static final int PDFA2B = 6;
 
