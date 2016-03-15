@@ -61,6 +61,7 @@ import java.util.Map;
 import com.aowagie.text.DocWriter;
 import com.aowagie.text.DocumentException;
 import com.aowagie.text.ExceptionConverter;
+import com.aowagie.text.Rectangle;
 import com.aowagie.text.pdf.interfaces.PdfEncryptionSettings;
 import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
 
@@ -73,8 +74,7 @@ import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
  * flatten them. New fields can be added but not flattened.
  * @author Paulo Soares (psoares@consiste.pt)
  */
-public class PdfStamper
-	implements PdfViewerPreferences, PdfEncryptionSettings {
+public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /**
      * The writer
      */
@@ -129,9 +129,16 @@ public class PdfStamper
         this.moreInfo = moreInfo;
     }
 
-
-
-
+    /**
+     * Inserts a blank page. All the pages above and including <CODE>pageNumber</CODE> will
+     * be shifted up. If <CODE>pageNumber</CODE> is bigger than the total number of pages
+     * the new page will be the last one.
+     * @param pageNumber the page number position where the new page will be inserted
+     * @param mediabox the size of the new page
+     */
+    public void insertPage(final int pageNumber, final Rectangle mediabox) {
+        this.stamper.insertPage(pageNumber, mediabox);
+    }
 
     /**
      * Gets the signing instance. The appearances and other parameters can the be set.
@@ -344,36 +351,20 @@ public class PdfStamper
     	this.stamper.setFreeTextFlattening(flat);
 	}
 
-    /**
-     * Adds an annotation of form field in a specific page. This page number
+    /** Adds an annotation of form field in a specific page. This page number
      * can be overridden with {@link PdfAnnotation#setPlaceInPage(int)}.
      * @param annot the annotation
-     * @param page the page
-     */
-    private void addAnnotation(final PdfAnnotation annot, final int page) {
+     * @param page the page */
+    public void addAnnotation(final PdfAnnotation annot, final int page) {
         this.stamper.addAnnotation(annot, page);
     }
 
-
-
-
-
-    /**
-     * Sets the bookmarks. The list structure is defined in
+    /** Sets the bookmarks. The list structure is defined in
      * {@link SimpleBookmark}.
-     * @param outlines the bookmarks or <CODE>null</CODE> to remove any
-     */
+     * @param outlines the bookmarks or <CODE>null</CODE> to remove any */
     public void setOutlines(final List outlines) {
         this.stamper.setOutlines(outlines);
     }
-
-
-
-
-
-
-
-
 
     /** Adds a file attachment at the document level. Existing attachments will be kept.
      * @param description the file description
@@ -383,15 +374,9 @@ public class PdfStamper
         this.stamper.addFileAttachment(description, fs);
     }
 
-
-
-
-
-    /**
-     * Sets the viewer preferences.
+    /** Sets the viewer preferences.
      * @param preferences the viewer preferences
-     * @see PdfViewerPreferences#setViewerPreferences(int)
-     */
+     * @see PdfViewerPreferences#setViewerPreferences(int) */
     @Override
 	public void setViewerPreferences(final int preferences) {
         this.stamper.setViewerPreferences(preferences);
