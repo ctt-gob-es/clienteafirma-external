@@ -1539,9 +1539,9 @@ public class AcroFields {
      *
      * @return the field names that have blank signatures
      */
-    public ArrayList getBlankSignatureNames() {
+    public ArrayList<String> getBlankSignatureNames() {
         getSignatureNames();
-        final ArrayList sigs = new ArrayList();
+        final ArrayList<String> sigs = new ArrayList<String>();
         for (final Object element : this.fields.entrySet()) {
             final Map.Entry entry = (Map.Entry)element;
             final Item item = (Item)entry.getValue();
@@ -1552,7 +1552,7 @@ public class AcroFields {
             if (this.sigNames.containsKey(entry.getKey())) {
 				continue;
 			}
-            sigs.add(entry.getKey());
+            sigs.add(entry.getKey().toString());
         }
         return sigs;
     }
