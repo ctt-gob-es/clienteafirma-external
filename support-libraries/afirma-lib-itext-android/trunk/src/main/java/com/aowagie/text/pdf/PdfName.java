@@ -558,9 +558,12 @@ public class PdfName extends PdfObject implements Comparable{
     static final PdfName IF = new PdfName("IF");
     /** A name */
     static final PdfName IMAGE = new PdfName("Image");
-
-
-
+    /** A name */
+    public static final PdfName IMAGEB = new PdfName("ImageB");
+    /** A name */
+    public static final PdfName IMAGEC = new PdfName("ImageC");
+    /** A name */
+    public static final PdfName IMAGEI = new PdfName("ImageI");
     /** A name */
     static final PdfName IMAGEMASK = new PdfName("ImageMask");
     /** A name */
@@ -795,7 +798,8 @@ public class PdfName extends PdfObject implements Comparable{
     static final PdfName PATTERN = new PdfName("Pattern");
     /** A name */
     static final PdfName PATTERNTYPE = new PdfName("PatternType");
-
+    /** A name */
+    public static final PdfName PDF = new PdfName("PDF");
 
 
     /** A name */

@@ -124,13 +124,9 @@ public class PdfStream extends PdfDictionary {
 
     // constructors
 
-/**
- * Constructs a <CODE>PdfStream</CODE>-object.
- *
- * @param		bytes			content of the new <CODE>PdfObject</CODE> as an array of <CODE>byte</CODE>.
- */
-
-    PdfStream(final byte[] bytes) {
+	/** Constructs a <CODE>PdfStream</CODE>-object.
+	 * @param bytes content of the new <CODE>PdfObject</CODE> as an array of <CODE>byte</CODE>. */
+    public PdfStream(final byte[] bytes) {
         super();
         this.type = STREAM;
         this.bytes = bytes;

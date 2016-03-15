@@ -109,7 +109,7 @@ public class PdfReader implements PdfViewerPreferences {
     private PdfDictionary rootPages;
     protected PdfDictionary trailer;
     protected PdfDictionary catalog;
-    private PageRefs pageRefs;
+    PageRefs pageRefs;
     private PRAcroForm acroForm = null;
     private boolean acroFormParsed = false;
     private boolean encrypted = false;
@@ -228,9 +228,15 @@ public class PdfReader implements PdfViewerPreferences {
         readPdf();
     }
 
-
-
-
+    /**
+     * Reads and parses a PDF document.
+     * @param is the <CODE>InputStream</CODE> containing the document. The stream is read to the
+     * end but is not closed
+     * @throws IOException on error
+     */
+    public PdfReader(final InputStream is) throws IOException {
+        this(is, null);
+    }
 
     /** Creates an independent duplicate.
      * @param reader the <CODE>PdfReader</CODE> to duplicate
@@ -335,12 +341,12 @@ public class PdfReader implements PdfViewerPreferences {
             return n < 0 ? n + 360 : n;
         }
     }
+
     /** Gets the page size, taking rotation into account. This
      * is a <CODE>Rectangle</CODE> with the value of the /MediaBox and the /Rotate key.
      * @param index the page number. The first page is 1
-     * @return a <CODE>Rectangle</CODE>
-     */
-    Rectangle getPageSizeWithRotation(final int index) {
+     * @return a <CODE>Rectangle</CODE>. */
+    public Rectangle getPageSizeWithRotation(final int index) {
         return getPageSizeWithRotation(this.pageRefs.getPageNRelease(index));
     }
 
@@ -364,7 +370,7 @@ public class PdfReader implements PdfViewerPreferences {
      * @param index the page number. The first page is 1
      * @return the page size
      */
-    Rectangle getPageSize(final int index) {
+    public Rectangle getPageSize(final int index) {
         return getPageSize(this.pageRefs.getPageNRelease(index));
     }
 
@@ -707,7 +713,7 @@ public class PdfReader implements PdfViewerPreferences {
 
                         if (recipientInfo.getRID().match(this.certificate) && !foundRecipient) {
                             envelopedData = recipientInfo.getContent(
-                           		 new JceKeyTransEnvelopedRecipient((PrivateKey) this.certificateKey)
+                            		new JceKeyTransEnvelopedRecipient((PrivateKey) this.certificateKey)
                             );
                             foundRecipient = true;
                         }
@@ -954,7 +960,14 @@ public class PdfReader implements PdfViewerPreferences {
         this.xrefObj.set(idx, obj);
     }
 
-
+    /**
+     * @param obj
+     * @return an indirect reference
+     */
+    public PRIndirectReference addPdfObject(final PdfObject obj) {
+        this.xrefObj.add(obj);
+        return new PRIndirectReference(this, this.xrefObj.size() - 1);
+    }
 
     protected void readPages() throws IOException {
         this.catalog = this.trailer.getAsDict(PdfName.ROOT);
@@ -3109,7 +3122,7 @@ public class PdfReader implements PdfViewerPreferences {
         return this.hybridXref;
     }
 
-    private static class PageRefs {
+    static class PageRefs {
         private final PdfReader reader;
         private IntHashtable refsp;
         private ArrayList refsn;
@@ -3268,7 +3281,32 @@ public class PdfReader implements PdfViewerPreferences {
             this.lastPageRead = -1;
         }
 
-
+        void insertPage(int pageNum, final PRIndirectReference ref) {
+            --pageNum;
+            if (this.refsn != null) {
+                if (pageNum >= this.refsn.size())
+                    this.refsn.add(ref);
+                else
+                    this.refsn.add(pageNum, ref);
+            }
+            else {
+                ++this.sizep;
+                this.lastPageRead = -1;
+                if (pageNum >= size()) {
+                    this.refsp.put(size(), ref.getNumber());
+                }
+                else {
+                    final IntHashtable refs2 = new IntHashtable((this.refsp.size() + 1) * 2);
+                    for (final Iterator it = this.refsp.getEntryIterator(); it.hasNext();) {
+                        final IntHashtable.Entry entry = (IntHashtable.Entry)it.next();
+                        final int p = entry.getKey();
+                        refs2.put(p >= pageNum ? p + 1 : p, entry.getValue());
+                    }
+                    refs2.put(pageNum, ref.getNumber());
+                    this.refsp = refs2;
+                }
+            }
+        }
 
         private void pushPageAttributes(final PdfDictionary nodePages) {
             final PdfDictionary dic = new PdfDictionary();

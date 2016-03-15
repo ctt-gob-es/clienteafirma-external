@@ -81,7 +81,17 @@ class IntHashtable implements Cloneable {
         this(150, 0.75f);
     }
 
-
+    /***
+     * <p>Constructs a new, empty hashtable with the specified initial capacity
+     * and default load factor, which is <code>0.75</code>.</p>
+     *
+     * @param  initialCapacity the initial capacity of the hashtable.
+     * @throws IllegalArgumentException if the initial capacity is less
+     *   than zero.
+     */
+    public IntHashtable(final int initialCapacity) {
+        this(initialCapacity, 0.75f);
+    }
 
     /***
      * <p>Constructs a new, empty hashtable with the specified initial
@@ -293,9 +303,9 @@ class IntHashtable implements Cloneable {
      * <p>Innerclass that acts as a datastructure to create a new entry in the
      * table.</p>
      */
-    private static class Entry {
+    static class Entry {
         private final int hash;
-        final int key;
+        private final int key;
         private int value;
         private Entry next;
 
@@ -307,13 +317,20 @@ class IntHashtable implements Cloneable {
          * @param value The value for this key
          * @param next A reference to the next entry in the table
          */
-        Entry(final int hash, final int key, final int value, final Entry next) {
+        private Entry(final int hash, final int key, final int value, final Entry next) {
             this.hash = hash;
             this.key = key;
             this.value = value;
             this.next = next;
         }
 
+        // extra methods for inner class Entry by Paulo
+        public int getKey() {
+        	return this.key;
+        }
+        public int getValue() {
+        	return this.value;
+        }
         @Override
 		protected Object clone() {
         	final Entry entry = new Entry(this.hash, this.key, this.value, this.next != null ? (Entry)this.next.clone() : null);

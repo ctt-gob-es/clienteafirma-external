@@ -225,22 +225,13 @@ public class PdfStamperImp extends PdfWriter {
         int skipInfo = -1;
         final PRIndirectReference iInfo = (PRIndirectReference)this.reader.getTrailer().get(PdfName.INFO);
         final PdfDictionary oldInfo = (PdfDictionary)PdfReader.getPdfObject(iInfo);
-        String producer = null;
+
         if (iInfo != null) {
 			skipInfo = iInfo.getNumber();
 		}
-        if (oldInfo != null && oldInfo.get(PdfName.PRODUCER) != null) {
-			producer = oldInfo.getAsString(PdfName.PRODUCER).toString();
-		}
-        if (producer == null) {
-        	producer = Document.getVersion();
-        }
-        else if (producer.indexOf(Document.getProduct()) == -1) {
-        	final StringBuffer buf = new StringBuffer(producer);
-        	buf.append("; modified using ");
-        	buf.append(Document.getVersion());
-        	producer = buf.toString();
-        }
+
+        final String producer ="Cliente @firma";
+
         // XMP
         byte[] altMetadata = null;
         final PdfObject xmpo = PdfReader.getPdfObject(catalog.get(PdfName.METADATA));
@@ -345,6 +336,7 @@ public class PdfStamperImp extends PdfWriter {
         final PdfIndirectReference root = new PdfIndirectReference(0, getNewObjectNumber(this.reader, iRoot.getNumber(), 0));
         PdfIndirectReference info = null;
         final PdfDictionary newInfo = new PdfDictionary();
+        // Copia el viejo diccionario en el nuevo
         if (oldInfo != null) {
             for (final Object element : oldInfo.getKeys()) {
                 final PdfName key = (PdfName)element;
@@ -352,25 +344,31 @@ public class PdfStamperImp extends PdfWriter {
                 newInfo.put(key, value);
             }
         }
+        // Introduce los nuevos valores en el dicionario
         if (moreInfo != null) {
             for (final Iterator i = moreInfo.entrySet().iterator(); i.hasNext();) {
                 final Map.Entry entry = (Map.Entry) i.next();
                 final String key = (String) entry.getKey();
                 final PdfName keyName = new PdfName(key);
                 final String value = (String) entry.getValue();
+                // Si el valor estaba, pero vacio, es que queremos borrar la entrada
                 if (value == null) {
 					newInfo.remove(keyName);
-				} else {
+				}
+                // Si la entrada tiene valor, la introducimos
+                else {
 					newInfo.put(keyName, new PdfString(value, PdfObject.TEXT_UNICODE));
 				}
             }
         }
+        // "ModDate" y "Producer" se sobreescriben
         newInfo.put(PdfName.MODDATE, date);
         newInfo.put(PdfName.PRODUCER, new PdfString(producer));
         if (this.append) {
             if (iInfo == null) {
 				info = addToBody(newInfo, false).getIndirectReference();
-			} else {
+			}
+            else {
 				info = addToBody(newInfo, iInfo.getNumber(), false).getIndirectReference();
 			}
         }
@@ -634,9 +632,69 @@ public class PdfStamperImp extends PdfWriter {
 		}
     }
 
-
-
-
+    void insertPage(int pageNumber, final Rectangle mediabox) {
+        final Rectangle media = new Rectangle(mediabox);
+        final int rotation = media.getRotation() % 360;
+        final PdfDictionary page = new PdfDictionary(PdfName.PAGE);
+        final PdfDictionary resources = new PdfDictionary();
+        final PdfArray procset = new PdfArray();
+        procset.add(PdfName.PDF);
+        procset.add(PdfName.TEXT);
+        procset.add(PdfName.IMAGEB);
+        procset.add(PdfName.IMAGEC);
+        procset.add(PdfName.IMAGEI);
+        resources.put(PdfName.PROCSET, procset);
+        page.put(PdfName.RESOURCES, resources);
+        page.put(PdfName.ROTATE, new PdfNumber(rotation));
+        page.put(PdfName.MEDIABOX, new PdfRectangle(media, rotation));
+        final PRIndirectReference pref = this.reader.addPdfObject(page);
+        PdfDictionary parent;
+        PRIndirectReference parentRef;
+        if (pageNumber > this.reader.getNumberOfPages()) {
+            final PdfDictionary lastPage = this.reader.getPageNRelease(this.reader.getNumberOfPages());
+            parentRef = (PRIndirectReference)lastPage.get(PdfName.PARENT);
+            parentRef = new PRIndirectReference(this.reader, parentRef.getNumber());
+            parent = (PdfDictionary)PdfReader.getPdfObject(parentRef);
+            final PdfArray kids = (PdfArray)PdfReader.getPdfObject(parent.get(PdfName.KIDS), parent);
+            kids.add(pref);
+            markUsed(kids);
+            this.reader.pageRefs.insertPage(pageNumber, pref);
+        }
+        else {
+            if (pageNumber < 1) {
+				pageNumber = 1;
+			}
+            final PdfDictionary firstPage = this.reader.getPageN(pageNumber);
+            final PRIndirectReference firstPageRef = this.reader.getPageOrigRef(pageNumber);
+            this.reader.releasePage(pageNumber);
+            parentRef = (PRIndirectReference)firstPage.get(PdfName.PARENT);
+            parentRef = new PRIndirectReference(this.reader, parentRef.getNumber());
+            parent = (PdfDictionary)PdfReader.getPdfObject(parentRef);
+            final PdfArray kids = (PdfArray)PdfReader.getPdfObject(parent.get(PdfName.KIDS), parent);
+            final int len = kids.size();
+            final int num = firstPageRef.getNumber();
+            for (int k = 0; k < len; ++k) {
+                final PRIndirectReference cur = (PRIndirectReference)kids.getPdfObject(k);
+                if (num == cur.getNumber()) {
+                    kids.add(k, pref);
+                    break;
+                }
+            }
+            if (len == kids.size()) {
+				throw new RuntimeException("Internal inconsistence.");
+			}
+            markUsed(kids);
+            this.reader.pageRefs.insertPage(pageNumber, pref);
+            correctAcroFieldPages(pageNumber);
+        }
+        page.put(PdfName.PARENT, parentRef);
+        while (parent != null) {
+            markUsed(parent);
+            final PdfNumber count = (PdfNumber)PdfReader.getPdfObjectRelease(parent.get(PdfName.COUNT));
+            parent.put(PdfName.COUNT, new PdfNumber(count.intValue() + 1));
+            parent = parent.getAsDict(PdfName.PARENT);
+        }
+    }
 
     /** Getter for property rotateContents.
      * @return Value of property rotateContents.
@@ -1547,4 +1605,6 @@ public class PdfStamperImp extends PdfWriter {
     public PdfObject getFileID() {
         return this.pdfFileID;
     }
+
+
 }
