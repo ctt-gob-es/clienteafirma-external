@@ -992,7 +992,7 @@ public class AcroFields {
      * @param name the field name
      * @return the positions or <CODE>null</CODE> if field does not exist
      */
-    private float[] getFieldPositions(final String name) {
+    public float[] getFieldPositions(final String name) {
         final Item item = getFieldItem(name);
         if (item == null) {
 			return null;
