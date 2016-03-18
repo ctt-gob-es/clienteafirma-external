@@ -61,7 +61,7 @@ import com.aowagie.text.ExceptionConverter;
  * Supports custom encodings.
  * @author Paulo Soares (psoares@consiste.pt)
  */
-class PdfEncodings {
+final class PdfEncodings {
     private static final int CIDNONE = 0;
     private static final int CIDRANGE = 1;
     private static final int CIDCHAR = 2;
@@ -403,7 +403,11 @@ class PdfEncodings {
     }
 
     private static void encodeStream(final InputStream in, final ArrayList planes) throws IOException {
-        final BufferedReader rd = new BufferedReader(new InputStreamReader(in, "iso-8859-1"));
+        final BufferedReader rd = new BoundedBufferedReader(
+    		new InputStreamReader(in, "iso-8859-1"),
+    		8192, // MaxLines
+    		8192  // MacLineLen
+		);
         String line = null;
         int state = CIDNONE;
         final byte seqs[] = new byte[7];
