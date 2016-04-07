@@ -49,6 +49,7 @@ package com.aowagie.text.pdf;
 import harmony.java.awt.Color;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1564,7 +1565,7 @@ public class AcroFields {
      * @return the signature dictionary keyed by /V or <CODE>null</CODE> if the field is not
      * a signature
      */
-    private PdfDictionary getSignatureDictionary(String name) {
+    public PdfDictionary getSignatureDictionary(String name) {
         getSignatureNames();
         name = getTranslatedFieldName(name);
         if (!this.sigNames.containsKey(name)) {
@@ -1650,7 +1651,8 @@ public class AcroFields {
             if (sub.equals(PdfName.ADBE_X509_RSA_SHA1)) {
                 final PdfString cert = v.getAsString(PdfName.CERT);
                 pk = new PdfPKCS7(contents.getOriginalBytes(), cert.getBytes(), provider);
-            } else {
+            }
+            else {
 				pk = new PdfPKCS7(contents.getOriginalBytes(), provider);
 			}
             updateByteRange(pk, v);
@@ -1712,7 +1714,7 @@ public class AcroFields {
         }
     }
 
-    void markUsed(final PdfObject obj) {
+    public void markUsed(final PdfObject obj) {
         if (!this.append) {
 			return;
 		}
@@ -1773,9 +1775,41 @@ public class AcroFields {
         this.fieldCache = fieldCache;
     }
 
+    /**
+     * Gets this <CODE>field</CODE> revision.
+     *
+     * @param field the signature field name
+     * @return the revision or zero if it's not a signature field
+     */
+    public int getRevision(String field) {
+        getSignatureNames();
+        field = getTranslatedFieldName(field);
+        if (!this.sigNames.containsKey(field)) {
+			return 0;
+		}
+        return this.sigNames.get(field)[1];
+    }
 
-
-
+    /**
+     * Extracts a revision from the document.
+     *
+     * @param field the signature field name
+     * @return an <CODE>InputStream</CODE> covering the revision. Returns <CODE>null</CODE> if
+     * it's not a signature field
+     * @throws IOException on error
+     */
+    public InputStream extractRevision(String field) throws IOException {
+        getSignatureNames();
+        field = getTranslatedFieldName(field);
+        if (!this.sigNames.containsKey(field)) {
+			return null;
+		}
+        final int length = this.sigNames.get(field)[0];
+        final RandomAccessFileOrArray raf = this.reader.getSafeFile();
+        raf.reOpen();
+        raf.seek(0);
+        return new RevisionStream(raf, length);
+    }
 
     private static final HashMap<String, String[]> stdFieldFontNames = new LinkedHashMap<String, String[]>();
 
@@ -2004,6 +2038,56 @@ public class AcroFields {
             merged.put(key, button.get(key));
         }
         return true;
+    }
+
+    private static class RevisionStream extends InputStream {
+        private final byte b[] = new byte[1];
+        private final RandomAccessFileOrArray raf;
+        private final int length;
+        private int rangePosition = 0;
+        private boolean closed;
+
+        private RevisionStream(final RandomAccessFileOrArray raf, final int length) {
+            this.raf = raf;
+            this.length = length;
+        }
+
+        @Override
+		public int read() throws IOException {
+            final int n = read(this.b);
+            if (n != 1) {
+				return -1;
+			}
+            return this.b[0] & 0xff;
+        }
+
+        @Override
+		public int read(final byte[] b, final int off, final int len) throws IOException {
+            if (b == null) {
+                throw new NullPointerException();
+            } else if (off < 0 || off > b.length || len < 0 ||
+            off + len > b.length || off + len < 0) {
+                throw new IndexOutOfBoundsException();
+            } else if (len == 0) {
+                return 0;
+            }
+            if (this.rangePosition >= this.length) {
+                close();
+                return -1;
+            }
+            final int elen = Math.min(len, this.length - this.rangePosition);
+            this.raf.readFully(b, off, elen);
+            this.rangePosition += elen;
+            return elen;
+        }
+
+        @Override
+		public void close() throws IOException {
+            if (!this.closed) {
+                this.raf.close();
+                this.closed = true;
+            }
+        }
     }
 
 }
