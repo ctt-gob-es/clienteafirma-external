@@ -834,9 +834,9 @@ class XfaForm {
                     final String s = escapeSom(n2.getLocalName());
                     Integer i = (Integer)ss.get(s);
                     if (i == null) {
-						i = new Integer(0);
+						i = Integer.valueOf(0);
 					} else {
-						i = new Integer(i.intValue() + 1);
+						i = Integer.valueOf(i.intValue() + 1);
 					}
                     ss.put(s, i);
                     if (hasChildren(n2)) {
@@ -940,15 +940,15 @@ class XfaForm {
                         }
                         Integer i;
                         if (annon) {
-                            i = new Integer(this.anform);
+                            i = Integer.valueOf(this.anform);
                             ++this.anform;
                         }
                         else {
                             i = (Integer)ss.get(nn);
                             if (i == null) {
-								i = new Integer(0);
+								i = Integer.valueOf(0);
 							} else {
-								i = new Integer(i.intValue() + 1);
+								i = Integer.valueOf(i.intValue() + 1);
 							}
                             ss.put(nn, i);
                         }
@@ -968,9 +968,9 @@ class XfaForm {
                             final String nn = escapeSom(name.getNodeValue());
                             Integer i = (Integer)ff.get(nn);
                             if (i == null) {
-								i = new Integer(0);
+								i = Integer.valueOf(0);
 							} else {
-								i = new Integer(i.intValue() + 1);
+								i = Integer.valueOf(i.intValue() + 1);
 							}
                             ff.put(nn, i);
                             this.stack.push(nn + "[" + i.toString() + "]");

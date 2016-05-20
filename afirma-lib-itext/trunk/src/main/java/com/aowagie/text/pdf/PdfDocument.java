@@ -1363,7 +1363,7 @@ class PdfDocument extends Document {
         PdfFont currentFont = null;
         float displacement = 0;
         PdfLine l;
-        final Float lastBaseFactor = new Float(0);
+        final Float lastBaseFactor = Float.valueOf(0);
         currentValues[1] = lastBaseFactor;
         // looping over all the lines
         for (final Iterator i = this.lines.iterator(); i.hasNext(); ) {
@@ -1785,7 +1785,7 @@ class PdfDocument extends Document {
 			text.moveText(baseXMarker - text.getXTLM(), 0);
 		}
         currentValues[0] = currentFont;
-        currentValues[1] = new Float(lastBaseFactor);
+        currentValues[1] = Float.valueOf(lastBaseFactor);
     }
 
     private final Indentation indentation = new Indentation();
@@ -2689,10 +2689,10 @@ class PdfDocument extends Document {
 
             Integer i = (Integer) this.rowspanMap.get(c);
             if (i == null) {
-                i = new Integer(c.rowspan());
+                i = Integer.valueOf(c.rowspan());
             }
 
-            i = new Integer(i.intValue() - 1);
+            i = Integer.valueOf(i.intValue() - 1);
             this.rowspanMap.put(c, i);
 
             if (i.intValue() < 1) {
@@ -2718,13 +2718,13 @@ class PdfDocument extends Document {
         private int cellRendered(final PdfCell cell, final int pageNumber) {
             Integer i = (Integer) this.pageMap.get(cell);
             if (i == null) {
-                i = new Integer(1);
+                i = Integer.valueOf(1);
             } else {
-                i = new Integer(i.intValue() + 1);
+                i = Integer.valueOf(i.intValue() + 1);
             }
             this.pageMap.put(cell, i);
 
-            final Integer pageInteger = new Integer(pageNumber);
+            final Integer pageInteger = Integer.valueOf(pageNumber);
             Set set = (Set) this.pageMap.get(pageInteger);
 
             if (set == null) {
@@ -2740,13 +2740,13 @@ class PdfDocument extends Document {
         private int numCellRendered(final PdfCell cell) {
             Integer i = (Integer) this.pageMap.get(cell);
             if (i == null) {
-                i = new Integer(0);
+                i = Integer.valueOf(0);
             }
             return i.intValue();
         }
 
         private boolean isCellRenderedOnPage(final PdfCell cell, final int pageNumber) {
-            final Integer pageInteger = new Integer(pageNumber);
+            final Integer pageInteger = Integer.valueOf(pageNumber);
             final Set set = (Set) this.pageMap.get(pageInteger);
 
             if (set != null) {

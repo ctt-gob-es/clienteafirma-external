@@ -300,21 +300,21 @@ class CFFFont {
             final char b0 = getCard8();
             if (b0 == 29) {
                 final int item = getInt();
-                this.args[this.arg_count] = new Integer(item);
+                this.args[this.arg_count] = Integer.valueOf(item);
                 this.arg_count++;
                 //System.err.println(item+" ");
                 continue;
             }
             if (b0 == 28) {
                 final short item = getShort();
-                this.args[this.arg_count] = new Integer(item);
+                this.args[this.arg_count] = Integer.valueOf(item);
                 this.arg_count++;
                 //System.err.println(item+" ");
                 continue;
             }
             if (b0 >= 32 && b0 <= 246) {
                 final byte item = (byte) (b0-139);
-                this.args[this.arg_count] = new Integer(item);
+                this.args[this.arg_count] = Integer.valueOf(item);
                 this.arg_count++;
                 //System.err.println(item+" ");
                 continue;
@@ -322,7 +322,7 @@ class CFFFont {
             if (b0 >= 247 && b0 <= 250) {
                 final char b1 = getCard8();
                 final short item = (short) ((b0-247)*256+b1+108);
-                this.args[this.arg_count] = new Integer(item);
+                this.args[this.arg_count] = Integer.valueOf(item);
                 this.arg_count++;
                 //System.err.println(item+" ");
                 continue;
@@ -330,7 +330,7 @@ class CFFFont {
             if (b0 >= 251 && b0 <= 254) {
                 final char b1 = getCard8();
                 final short item = (short) (-(b0-251)*256-b1-108);
-                this.args[this.arg_count] = new Integer(item);
+                this.args[this.arg_count] = Integer.valueOf(item);
                 this.arg_count++;
                 //System.err.println(item+" ");
                 continue;

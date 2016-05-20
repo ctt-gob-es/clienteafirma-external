@@ -465,7 +465,7 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
     @Override
 	public int[] getMetricsTT(final int c) {
         if (this.cmapExt != null) {
-			return (int[])this.cmapExt.get(new Integer(c));
+			return (int[])this.cmapExt.get(Integer.valueOf(c));
 		}
         HashMap map = null;
         if (this.fontSpecific) {
@@ -478,12 +478,12 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
 		}
         if (this.fontSpecific) {
             if ((c & 0xffffff00) == 0 || (c & 0xffffff00) == 0xf000) {
-				return (int[])map.get(new Integer(c & 0xff));
+				return (int[])map.get(Integer.valueOf(c & 0xff));
 			} else {
 				return null;
 			}
         } else {
-			return (int[])map.get(new Integer(c));
+			return (int[])map.get(Integer.valueOf(c));
 		}
     }
 

@@ -58,11 +58,11 @@ import com.aowagie.text.ExceptionConverter;
  */
 public class DocumentFont extends BaseFont {
     // code, [glyph, width]
-    private HashMap metrics = new HashMap();
+    private final HashMap metrics = new HashMap();
     private String fontName;
     private PRIndirectReference refFont;
     private PdfDictionary font;
-    private IntHashtable uni2byte = new IntHashtable();
+    private final IntHashtable uni2byte = new IntHashtable();
     private IntHashtable diffmap;
     private float Ascender = 800;
     private float CapHeight = 700;
@@ -73,22 +73,22 @@ public class DocumentFont extends BaseFont {
     private float urx = 100;
     private float ury = 900;
     private boolean isType0 = false;
-    
+
     private BaseFont cjkMirror;
-    
+
     private static String cjkNames[] = {"HeiseiMin-W3", "HeiseiKakuGo-W5", "STSong-Light", "MHei-Medium",
         "MSung-Light", "HYGoThic-Medium", "HYSMyeongJo-Medium", "MSungStd-Light", "STSongStd-Light",
         "HYSMyeongJoStd-Medium", "KozMinPro-Regular"};
-        
+
     private static String cjkEncs[] = {"UniJIS-UCS2-H", "UniJIS-UCS2-H", "UniGB-UCS2-H", "UniCNS-UCS2-H",
         "UniCNS-UCS2-H", "UniKS-UCS2-H", "UniKS-UCS2-H", "UniCNS-UCS2-H", "UniGB-UCS2-H",
         "UniKS-UCS2-H", "UniJIS-UCS2-H"};
-        
+
     private static String cjkNames2[] = {"MSungStd-Light", "STSongStd-Light", "HYSMyeongJoStd-Medium", "KozMinPro-Regular"};
-        
+
     private static String cjkEncs2[] = {"UniCNS-UCS2-H", "UniGB-UCS2-H", "UniKS-UCS2-H", "UniJIS-UCS2-H",
         "UniCNS-UTF16-H", "UniGB-UTF16-H", "UniKS-UTF16-H", "UniJIS-UTF16-H"};
-        
+
     private static final int stdEnc[] = {
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -108,196 +108,205 @@ public class DocumentFont extends BaseFont {
         0,230,0,0,0,305,0,0,322,248,339,223,0,0,0,0};
 
     /** Creates a new instance of DocumentFont */
-    DocumentFont(PRIndirectReference refFont) {
-        encoding = "";
-        fontSpecific = false;
+    DocumentFont(final PRIndirectReference refFont) {
+        this.encoding = "";
+        this.fontSpecific = false;
         this.refFont = refFont;
-        fontType = FONT_TYPE_DOCUMENT;
-        font = (PdfDictionary)PdfReader.getPdfObject(refFont);
-        fontName = PdfName.decodeName(font.getAsName(PdfName.BASEFONT).toString());
-        PdfName subType = font.getAsName(PdfName.SUBTYPE);
-        if (PdfName.TYPE1.equals(subType) || PdfName.TRUETYPE.equals(subType))
-            doType1TT();
-        else {
+        this.fontType = FONT_TYPE_DOCUMENT;
+        this.font = (PdfDictionary)PdfReader.getPdfObject(refFont);
+        this.fontName = PdfName.decodeName(this.font.getAsName(PdfName.BASEFONT).toString());
+        final PdfName subType = this.font.getAsName(PdfName.SUBTYPE);
+        if (PdfName.TYPE1.equals(subType) || PdfName.TRUETYPE.equals(subType)) {
+			doType1TT();
+		} else {
             for (int k = 0; k < cjkNames.length; ++k) {
-                if (fontName.startsWith(cjkNames[k])) {
-                    fontName = cjkNames[k];
+                if (this.fontName.startsWith(cjkNames[k])) {
+                    this.fontName = cjkNames[k];
                     try {
-                        cjkMirror = BaseFont.createFont(fontName, cjkEncs[k], false);
+                        this.cjkMirror = BaseFont.createFont(this.fontName, cjkEncs[k], false);
                     }
-                    catch (Exception e) {
+                    catch (final Exception e) {
                         throw new ExceptionConverter(e);
                     }
                     return;
                 }
             }
-            String enc = PdfName.decodeName(font.getAsName(PdfName.ENCODING).toString());
+            final String enc = PdfName.decodeName(this.font.getAsName(PdfName.ENCODING).toString());
             for (int k = 0; k < cjkEncs2.length; ++k) {
                 if (enc.startsWith(cjkEncs2[k])) {
                     try {
-                        if (k > 3)
-                            k -= 4;
-                        cjkMirror = BaseFont.createFont(cjkNames2[k], cjkEncs2[k], false);
+                        if (k > 3) {
+							k -= 4;
+						}
+                        this.cjkMirror = BaseFont.createFont(cjkNames2[k], cjkEncs2[k], false);
                     }
-                    catch (Exception e) {
+                    catch (final Exception e) {
                         throw new ExceptionConverter(e);
                     }
                     return;
                 }
             }
             if (PdfName.TYPE0.equals(subType) && enc.equals("Identity-H")) {
-                processType0(font);
-                isType0 = true;
+                processType0(this.font);
+                this.isType0 = true;
             }
         }
     }
-    
-    private void processType0(PdfDictionary font) {
+
+    private void processType0(final PdfDictionary font) {
         try {
-            PdfObject toUniObject = PdfReader.getPdfObjectRelease(font.get(PdfName.TOUNICODE));
-            PdfArray df = (PdfArray)PdfReader.getPdfObjectRelease(font.get(PdfName.DESCENDANTFONTS));
-            PdfDictionary cidft = (PdfDictionary)PdfReader.getPdfObjectRelease(df.getPdfObject(0));
-            PdfNumber dwo = (PdfNumber)PdfReader.getPdfObjectRelease(cidft.get(PdfName.DW));
+            final PdfObject toUniObject = PdfReader.getPdfObjectRelease(font.get(PdfName.TOUNICODE));
+            final PdfArray df = (PdfArray)PdfReader.getPdfObjectRelease(font.get(PdfName.DESCENDANTFONTS));
+            final PdfDictionary cidft = (PdfDictionary)PdfReader.getPdfObjectRelease(df.getPdfObject(0));
+            final PdfNumber dwo = (PdfNumber)PdfReader.getPdfObjectRelease(cidft.get(PdfName.DW));
             int dw = 1000;
-            if (dwo != null)
-                dw = dwo.intValue();
-            IntHashtable widths = readWidths((PdfArray)PdfReader.getPdfObjectRelease(cidft.get(PdfName.W)));
-            PdfDictionary fontDesc = (PdfDictionary)PdfReader.getPdfObjectRelease(cidft.get(PdfName.FONTDESCRIPTOR));
+            if (dwo != null) {
+				dw = dwo.intValue();
+			}
+            final IntHashtable widths = readWidths((PdfArray)PdfReader.getPdfObjectRelease(cidft.get(PdfName.W)));
+            final PdfDictionary fontDesc = (PdfDictionary)PdfReader.getPdfObjectRelease(cidft.get(PdfName.FONTDESCRIPTOR));
             fillFontDesc(fontDesc);
             if (toUniObject != null){
                 fillMetrics(PdfReader.getStreamBytes((PRStream)toUniObject), widths, dw);
             }
-            
-        } catch (Exception e) {
+
+        } catch (final Exception e) {
             throw new ExceptionConverter(e);
         }
     }
-    
-    private IntHashtable readWidths(PdfArray ws) {
-        IntHashtable hh = new IntHashtable();
-        if (ws == null)
-            return hh;
+
+    private IntHashtable readWidths(final PdfArray ws) {
+        final IntHashtable hh = new IntHashtable();
+        if (ws == null) {
+			return hh;
+		}
         for (int k = 0; k < ws.size(); ++k) {
             int c1 = ((PdfNumber)PdfReader.getPdfObjectRelease(ws.getPdfObject(k))).intValue();
-            PdfObject obj = PdfReader.getPdfObjectRelease(ws.getPdfObject(++k));
+            final PdfObject obj = PdfReader.getPdfObjectRelease(ws.getPdfObject(++k));
             if (obj.isArray()) {
-                PdfArray a2 = (PdfArray)obj;
+                final PdfArray a2 = (PdfArray)obj;
                 for (int j = 0; j < a2.size(); ++j) {
-                    int c2 = ((PdfNumber)PdfReader.getPdfObjectRelease(a2.getPdfObject(j))).intValue();
+                    final int c2 = ((PdfNumber)PdfReader.getPdfObjectRelease(a2.getPdfObject(j))).intValue();
                     hh.put(c1++, c2);
                 }
             }
             else {
-                int c2 = ((PdfNumber)obj).intValue();
-                int w = ((PdfNumber)PdfReader.getPdfObjectRelease(ws.getPdfObject(++k))).intValue();
-                for (; c1 <= c2; ++c1)
-                    hh.put(c1, w);
+                final int c2 = ((PdfNumber)obj).intValue();
+                final int w = ((PdfNumber)PdfReader.getPdfObjectRelease(ws.getPdfObject(++k))).intValue();
+                for (; c1 <= c2; ++c1) {
+					hh.put(c1, w);
+				}
             }
         }
         return hh;
     }
-    
-    private String decodeString(PdfString ps) {
-        if (ps.isHexWriting())
-            return PdfEncodings.convertToString(ps.getBytes(), "UnicodeBigUnmarked");
-        else
-            return ps.toUnicodeString();
+
+    private String decodeString(final PdfString ps) {
+        if (ps.isHexWriting()) {
+			return PdfEncodings.convertToString(ps.getBytes(), "UnicodeBigUnmarked");
+		} else {
+			return ps.toUnicodeString();
+		}
     }
-    
-    private void fillMetrics(byte[] touni, IntHashtable widths, int dw) {
+
+    private void fillMetrics(final byte[] touni, final IntHashtable widths, final int dw) {
         try {
-            PdfContentParser ps = new PdfContentParser(new PRTokeniser(touni));
+            final PdfContentParser ps = new PdfContentParser(new PRTokeniser(touni));
             PdfObject ob = null;
             PdfObject last = null;
             while ((ob = ps.readPRObject()) != null) {
                 if (ob.type() == PdfContentParser.COMMAND_TYPE) {
                     if (ob.toString().equals("beginbfchar")) {
-                        int n = ((PdfNumber)last).intValue();
+                        final int n = ((PdfNumber)last).intValue();
                         for (int k = 0; k < n; ++k) {
-                            String cid = decodeString((PdfString)ps.readPRObject());
-                            String uni = decodeString((PdfString)ps.readPRObject());
+                            final String cid = decodeString((PdfString)ps.readPRObject());
+                            final String uni = decodeString((PdfString)ps.readPRObject());
                             if (uni.length() == 1) {
-                                int cidc = cid.charAt(0);
-                                int unic = uni.charAt(uni.length() - 1);
+                                final int cidc = cid.charAt(0);
+                                final int unic = uni.charAt(uni.length() - 1);
                                 int w = dw;
-                                if (widths.containsKey(cidc))
-                                    w = widths.get(cidc);
-                                metrics.put(new Integer(unic), new int[]{cidc, w});
+                                if (widths.containsKey(cidc)) {
+									w = widths.get(cidc);
+								}
+                                this.metrics.put(Integer.valueOf(unic), new int[]{cidc, w});
                             }
                         }
                     }
                     else if (ob.toString().equals("beginbfrange")) {
-                        int n = ((PdfNumber)last).intValue();
+                        final int n = ((PdfNumber)last).intValue();
                         for (int k = 0; k < n; ++k) {
-                            String cid1 = decodeString((PdfString)ps.readPRObject());
-                            String cid2 = decodeString((PdfString)ps.readPRObject());
+                            final String cid1 = decodeString((PdfString)ps.readPRObject());
+                            final String cid2 = decodeString((PdfString)ps.readPRObject());
                             int cid1c = cid1.charAt(0);
-                            int cid2c = cid2.charAt(0);
-                            PdfObject ob2 = ps.readPRObject();
+                            final int cid2c = cid2.charAt(0);
+                            final PdfObject ob2 = ps.readPRObject();
                             if (ob2.isString()) {
-                                String uni = decodeString((PdfString)ob2);
+                                final String uni = decodeString((PdfString)ob2);
                                 if (uni.length() == 1) {
                                     int unic = uni.charAt(uni.length() - 1);
                                     for (; cid1c <= cid2c; cid1c++, unic++) {
                                         int w = dw;
-                                        if (widths.containsKey(cid1c))
-                                            w = widths.get(cid1c);
-                                        metrics.put(new Integer(unic), new int[]{cid1c, w});
+                                        if (widths.containsKey(cid1c)) {
+											w = widths.get(cid1c);
+										}
+                                        this.metrics.put(Integer.valueOf(unic), new int[]{cid1c, w});
                                     }
                                 }
                             }
                             else {
-                                PdfArray a = (PdfArray)ob2;
+                                final PdfArray a = (PdfArray)ob2;
                                 for (int j = 0; j < a.size(); ++j, ++cid1c) {
-                                    String uni = decodeString(a.getAsString(j));
+                                    final String uni = decodeString(a.getAsString(j));
                                     if (uni.length() == 1) {
-                                        int unic = uni.charAt(uni.length() - 1);
+                                        final int unic = uni.charAt(uni.length() - 1);
                                         int w = dw;
-                                        if (widths.containsKey(cid1c))
-                                            w = widths.get(cid1c);
-                                        metrics.put(new Integer(unic), new int[]{cid1c, w});
+                                        if (widths.containsKey(cid1c)) {
+											w = widths.get(cid1c);
+										}
+                                        this.metrics.put(Integer.valueOf(unic), new int[]{cid1c, w});
                                     }
                                 }
                             }
-                        }                        
+                        }
                     }
-                }
-                else
-                    last = ob;
+                } else {
+					last = ob;
+				}
             }
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             throw new ExceptionConverter(e);
         }
     }
-    
+
     private void doType1TT() {
-        PdfObject enc = PdfReader.getPdfObject(font.get(PdfName.ENCODING));
-        if (enc == null)
-            fillEncoding(null);
-        else {
-            if (enc.isName())
-                fillEncoding((PdfName)enc);
-            else {
-                PdfDictionary encDic = (PdfDictionary)enc;
+        PdfObject enc = PdfReader.getPdfObject(this.font.get(PdfName.ENCODING));
+        if (enc == null) {
+			fillEncoding(null);
+		} else {
+            if (enc.isName()) {
+				fillEncoding((PdfName)enc);
+			} else {
+                final PdfDictionary encDic = (PdfDictionary)enc;
                 enc = PdfReader.getPdfObject(encDic.get(PdfName.BASEENCODING));
-                if (enc == null)
-                    fillEncoding(null);
-                else
-                    fillEncoding((PdfName)enc);
-                PdfArray diffs = encDic.getAsArray(PdfName.DIFFERENCES);
+                if (enc == null) {
+					fillEncoding(null);
+				} else {
+					fillEncoding((PdfName)enc);
+				}
+                final PdfArray diffs = encDic.getAsArray(PdfName.DIFFERENCES);
                 if (diffs != null) {
-                    diffmap = new IntHashtable();
+                    this.diffmap = new IntHashtable();
                     int currentNumber = 0;
                     for (int k = 0; k < diffs.size(); ++k) {
-                        PdfObject obj = diffs.getPdfObject(k);
-                        if (obj.isNumber())
-                            currentNumber = ((PdfNumber)obj).intValue();
-                        else {
-                            int c[] = GlyphList.nameToUnicode(PdfName.decodeName(((PdfName)obj).toString()));
+                        final PdfObject obj = diffs.getPdfObject(k);
+                        if (obj.isNumber()) {
+							currentNumber = ((PdfNumber)obj).intValue();
+						} else {
+                            final int c[] = GlyphList.nameToUnicode(PdfName.decodeName(((PdfName)obj).toString()));
                             if (c != null && c.length > 0) {
-                                uni2byte.put(c[0], currentNumber);
-                                diffmap.put(c[0], currentNumber);
+                                this.uni2byte.put(c[0], currentNumber);
+                                this.diffmap.put(c[0], currentNumber);
                             }
                             ++currentNumber;
                         }
@@ -305,103 +314,110 @@ public class DocumentFont extends BaseFont {
                 }
             }
         }
-        PdfArray newWidths = font.getAsArray(PdfName.WIDTHS);
-        PdfNumber first = font.getAsNumber(PdfName.FIRSTCHAR);
-        PdfNumber last = font.getAsNumber(PdfName.LASTCHAR);
-        if (BuiltinFonts14.containsKey(fontName)) {
+        final PdfArray newWidths = this.font.getAsArray(PdfName.WIDTHS);
+        final PdfNumber first = this.font.getAsNumber(PdfName.FIRSTCHAR);
+        final PdfNumber last = this.font.getAsNumber(PdfName.LASTCHAR);
+        if (BuiltinFonts14.containsKey(this.fontName)) {
             BaseFont bf;
             try {
-                bf = BaseFont.createFont(fontName, WINANSI, false);
+                bf = BaseFont.createFont(this.fontName, WINANSI, false);
             }
-            catch (Exception e) {
+            catch (final Exception e) {
                 throw new ExceptionConverter(e);
             }
-            int e[] = uni2byte.toOrderedKeys();
+            int e[] = this.uni2byte.toOrderedKeys();
             for (int k = 0; k < e.length; ++k) {
-                int n = uni2byte.get(e[k]);
-                widths[n] = bf.getRawWidth(n, GlyphList.unicodeToName(e[k]));
+                final int n = this.uni2byte.get(e[k]);
+                this.widths[n] = bf.getRawWidth(n, GlyphList.unicodeToName(e[k]));
             }
-            if (diffmap != null) { //widths for diffmap must override existing ones
-                e = diffmap.toOrderedKeys();
+            if (this.diffmap != null) { //widths for diffmap must override existing ones
+                e = this.diffmap.toOrderedKeys();
                 for (int k = 0; k < e.length; ++k) {
-                    int n = diffmap.get(e[k]);
-                    widths[n] = bf.getRawWidth(n, GlyphList.unicodeToName(e[k]));
+                    final int n = this.diffmap.get(e[k]);
+                    this.widths[n] = bf.getRawWidth(n, GlyphList.unicodeToName(e[k]));
                 }
-                diffmap = null;
+                this.diffmap = null;
             }
-            Ascender = bf.getFontDescriptor(ASCENT, 1000);
-            CapHeight = bf.getFontDescriptor(CAPHEIGHT, 1000);
-            Descender = bf.getFontDescriptor(DESCENT, 1000);
-            ItalicAngle = bf.getFontDescriptor(ITALICANGLE, 1000);
-            llx = bf.getFontDescriptor(BBOXLLX, 1000);
-            lly = bf.getFontDescriptor(BBOXLLY, 1000);
-            urx = bf.getFontDescriptor(BBOXURX, 1000);
-            ury = bf.getFontDescriptor(BBOXURY, 1000);
+            this.Ascender = bf.getFontDescriptor(ASCENT, 1000);
+            this.CapHeight = bf.getFontDescriptor(CAPHEIGHT, 1000);
+            this.Descender = bf.getFontDescriptor(DESCENT, 1000);
+            this.ItalicAngle = bf.getFontDescriptor(ITALICANGLE, 1000);
+            this.llx = bf.getFontDescriptor(BBOXLLX, 1000);
+            this.lly = bf.getFontDescriptor(BBOXLLY, 1000);
+            this.urx = bf.getFontDescriptor(BBOXURX, 1000);
+            this.ury = bf.getFontDescriptor(BBOXURY, 1000);
         }
         if (first != null && last != null && newWidths != null) {
-            int f = first.intValue();
+            final int f = first.intValue();
             for (int k = 0; k < newWidths.size(); ++k) {
-                widths[f + k] = newWidths.getAsNumber(k).intValue();
+                this.widths[f + k] = newWidths.getAsNumber(k).intValue();
             }
         }
-        fillFontDesc(font.getAsDict(PdfName.FONTDESCRIPTOR));
+        fillFontDesc(this.font.getAsDict(PdfName.FONTDESCRIPTOR));
     }
-    
-    private void fillFontDesc(PdfDictionary fontDesc) {
-        if (fontDesc == null)
-            return;
+
+    private void fillFontDesc(final PdfDictionary fontDesc) {
+        if (fontDesc == null) {
+			return;
+		}
         PdfNumber v = fontDesc.getAsNumber(PdfName.ASCENT);
-        if (v != null)
-            Ascender = v.floatValue();
+        if (v != null) {
+			this.Ascender = v.floatValue();
+		}
         v = fontDesc.getAsNumber(PdfName.CAPHEIGHT);
-        if (v != null)
-            CapHeight = v.floatValue();
+        if (v != null) {
+			this.CapHeight = v.floatValue();
+		}
         v = fontDesc.getAsNumber(PdfName.DESCENT);
-        if (v != null)
-            Descender = v.floatValue();
+        if (v != null) {
+			this.Descender = v.floatValue();
+		}
         v = fontDesc.getAsNumber(PdfName.ITALICANGLE);
-        if (v != null)
-            ItalicAngle = v.floatValue();
-        PdfArray bbox = fontDesc.getAsArray(PdfName.FONTBBOX);
+        if (v != null) {
+			this.ItalicAngle = v.floatValue();
+		}
+        final PdfArray bbox = fontDesc.getAsArray(PdfName.FONTBBOX);
         if (bbox != null) {
-            llx = bbox.getAsNumber(0).floatValue();
-            lly = bbox.getAsNumber(1).floatValue();
-            urx = bbox.getAsNumber(2).floatValue();
-            ury = bbox.getAsNumber(3).floatValue();
-            if (llx > urx) {
-                float t = llx;
-                llx = urx;
-                urx = t;
+            this.llx = bbox.getAsNumber(0).floatValue();
+            this.lly = bbox.getAsNumber(1).floatValue();
+            this.urx = bbox.getAsNumber(2).floatValue();
+            this.ury = bbox.getAsNumber(3).floatValue();
+            if (this.llx > this.urx) {
+                final float t = this.llx;
+                this.llx = this.urx;
+                this.urx = t;
             }
-            if (lly > ury) {
-                float t = lly;
-                lly = ury;
-                ury = t;
+            if (this.lly > this.ury) {
+                final float t = this.lly;
+                this.lly = this.ury;
+                this.ury = t;
             }
         }
     }
-    
-    private void fillEncoding(PdfName encoding) {
+
+    private void fillEncoding(final PdfName encoding) {
         if (PdfName.MAC_ROMAN_ENCODING.equals(encoding) || PdfName.WIN_ANSI_ENCODING.equals(encoding)) {
-            byte b[] = new byte[256];
-            for (int k = 0; k < 256; ++k)
-                b[k] = (byte)k;
-            String enc = WINANSI;
-            if (PdfName.MAC_ROMAN_ENCODING.equals(encoding))
-                enc = MACROMAN;
-            String cv = PdfEncodings.convertToString(b, enc);
-            char arr[] = cv.toCharArray();
+            final byte b[] = new byte[256];
             for (int k = 0; k < 256; ++k) {
-                uni2byte.put(arr[k], k);
+				b[k] = (byte)k;
+			}
+            String enc = WINANSI;
+            if (PdfName.MAC_ROMAN_ENCODING.equals(encoding)) {
+				enc = MACROMAN;
+			}
+            final String cv = PdfEncodings.convertToString(b, enc);
+            final char arr[] = cv.toCharArray();
+            for (int k = 0; k < 256; ++k) {
+                this.uni2byte.put(arr[k], k);
             }
         }
         else {
             for (int k = 0; k < 256; ++k) {
-                uni2byte.put(stdEnc[k], k);
+                this.uni2byte.put(stdEnc[k], k);
             }
         }
     }
-    
+
     /** Gets the family name of the font. If it is a True Type font
      * each array element will have {Platform ID, Platform Encoding ID,
      * Language ID, font name}. The interpretation of this values can be
@@ -411,10 +427,11 @@ public class DocumentFont extends BaseFont {
      * @return the family name of the font
      *
      */
-    public String[][] getFamilyFontName() {
+    @Override
+	public String[][] getFamilyFontName() {
         return getFullFontName();
     }
-    
+
     /** Gets the font parameter identified by <CODE>key</CODE>. Valid values
      * for <CODE>key</CODE> are <CODE>ASCENT</CODE>, <CODE>CAPHEIGHT</CODE>, <CODE>DESCENT</CODE>,
      * <CODE>ITALICANGLE</CODE>, <CODE>BBOXLLX</CODE>, <CODE>BBOXLLY</CODE>, <CODE>BBOXURX</CODE>
@@ -424,36 +441,38 @@ public class DocumentFont extends BaseFont {
      * @return the parameter in points
      *
      */
-    public float getFontDescriptor(int key, float fontSize) {
-        if (cjkMirror != null)
-            return cjkMirror.getFontDescriptor(key, fontSize);
+    @Override
+	public float getFontDescriptor(final int key, final float fontSize) {
+        if (this.cjkMirror != null) {
+			return this.cjkMirror.getFontDescriptor(key, fontSize);
+		}
         switch (key) {
             case AWT_ASCENT:
             case ASCENT:
-                return Ascender * fontSize / 1000;
+                return this.Ascender * fontSize / 1000;
             case CAPHEIGHT:
-                return CapHeight * fontSize / 1000;
+                return this.CapHeight * fontSize / 1000;
             case AWT_DESCENT:
             case DESCENT:
-                return Descender * fontSize / 1000;
+                return this.Descender * fontSize / 1000;
             case ITALICANGLE:
-                return ItalicAngle;
+                return this.ItalicAngle;
             case BBOXLLX:
-                return llx * fontSize / 1000;
+                return this.llx * fontSize / 1000;
             case BBOXLLY:
-                return lly * fontSize / 1000;
+                return this.lly * fontSize / 1000;
             case BBOXURX:
-                return urx * fontSize / 1000;
+                return this.urx * fontSize / 1000;
             case BBOXURY:
-                return ury * fontSize / 1000;
+                return this.ury * fontSize / 1000;
             case AWT_LEADING:
                 return 0;
             case AWT_MAXADVANCE:
-                return (urx - llx) * fontSize / 1000;
+                return (this.urx - this.llx) * fontSize / 1000;
         }
         return 0;
     }
-    
+
     /** Gets the full name of the font. If it is a True Type font
      * each array element will have {Platform ID, Platform Encoding ID,
      * Language ID, font name}. The interpretation of this values can be
@@ -463,10 +482,11 @@ public class DocumentFont extends BaseFont {
      * @return the full name of the font
      *
      */
-    public String[][] getFullFontName() {
-        return new String[][]{{"", "", "", fontName}};
+    @Override
+	public String[][] getFullFontName() {
+        return new String[][]{{"", "", "", this.fontName}};
     }
-    
+
     /** Gets all the entries of the names-table. If it is a True Type font
      * each array element will have {Name ID, Platform ID, Platform Encoding ID,
      * Language ID, font name}. The interpretation of this values can be
@@ -476,8 +496,9 @@ public class DocumentFont extends BaseFont {
      * @return the full name of the font
      * @since 2.0.8
      */
-    public String[][] getAllNameEntries() {
-        return new String[][]{{"4", "", "", "", fontName}};
+    @Override
+	public String[][] getAllNameEntries() {
+        return new String[][]{{"4", "", "", "", this.fontName}};
     }
 
     /** Gets the kerning between two Unicode chars.
@@ -486,18 +507,20 @@ public class DocumentFont extends BaseFont {
      * @return the kerning to be applied
      *
      */
-    public int getKerning(int char1, int char2) {
+    @Override
+	public int getKerning(final int char1, final int char2) {
         return 0;
     }
-    
+
     /** Gets the postscript font name.
      * @return the postscript font name
      *
      */
-    public String getPostscriptFontName() {
-        return fontName;
+    @Override
+	public String getPostscriptFontName() {
+        return this.fontName;
     }
-    
+
     /** Gets the width from the font according to the Unicode char <CODE>c</CODE>
      * or the <CODE>name</CODE>. If the <CODE>name</CODE> is null it's a symbolic font.
      * @param c the unicode char
@@ -505,18 +528,20 @@ public class DocumentFont extends BaseFont {
      * @return the width of the char
      *
      */
-    int getRawWidth(int c, String name) {
+    @Override
+	int getRawWidth(final int c, final String name) {
         return 0;
     }
-    
+
     /** Checks if the font has any kerning pairs.
      * @return <CODE>true</CODE> if the font has any kerning pairs
      *
      */
-    public boolean hasKernPairs() {
+    @Override
+	public boolean hasKernPairs() {
         return false;
     }
-    
+
     /** Outputs to the writer the font dictionaries and streams.
      * @param writer the writer for this document
      * @param ref the font indirect reference
@@ -525,15 +550,17 @@ public class DocumentFont extends BaseFont {
      * @throws DocumentException error in generating the object
      *
      */
-    void writeFont(PdfWriter writer, PdfIndirectReference ref, Object[] params) throws DocumentException, IOException {
+    @Override
+	void writeFont(final PdfWriter writer, final PdfIndirectReference ref, final Object[] params) throws DocumentException, IOException {
     }
-    
+
     /**
      * Always returns null.
      * @return	null
      * @since	2.1.3
      */
-    public PdfStream getFullFontStream() {
+    @Override
+	public PdfStream getFullFontStream() {
     	return null;
     }
 
@@ -542,140 +569,153 @@ public class DocumentFont extends BaseFont {
      * @param char1 the unicode <CODE>char</CODE> to get the width of
      * @return the width in normalized 1000 units
      */
-    public int getWidth(int char1) {
-        if (cjkMirror != null)
-            return cjkMirror.getWidth(char1);
-        else if (isType0) {
-            int[] ws = (int[])metrics.get(new Integer(char1));
-            if (ws != null)
-                return ws[1];
-            else
-                return 0;
-        }
-        else
-            return super.getWidth(char1);
+    @Override
+	public int getWidth(final int char1) {
+        if (this.cjkMirror != null) {
+			return this.cjkMirror.getWidth(char1);
+		} else if (this.isType0) {
+            final int[] ws = (int[])this.metrics.get(Integer.valueOf(char1));
+            if (ws != null) {
+				return ws[1];
+			} else {
+				return 0;
+			}
+        } else {
+			return super.getWidth(char1);
+		}
     }
-    
-    public int getWidth(String text) {
-        if (cjkMirror != null)
-            return cjkMirror.getWidth(text);
-        else if (isType0) {
-            char[] chars = text.toCharArray();
-            int len = chars.length;
+
+    @Override
+	public int getWidth(final String text) {
+        if (this.cjkMirror != null) {
+			return this.cjkMirror.getWidth(text);
+		} else if (this.isType0) {
+            final char[] chars = text.toCharArray();
+            final int len = chars.length;
             int total = 0;
             for (int k = 0; k < len; ++k) {
-                int[] ws = (int[])metrics.get(new Integer(chars[k]));
-                if (ws != null)
-                    total += ws[1];
+                final int[] ws = (int[])this.metrics.get(Integer.valueOf(chars[k]));
+                if (ws != null) {
+					total += ws[1];
+				}
             }
             return total;
-        }
-        else
-            return super.getWidth(text);
+        } else {
+			return super.getWidth(text);
+		}
     }
-    
-    byte[] convertToBytes(String text) {
-        if (cjkMirror != null)
-            return PdfEncodings.convertToBytes(text, CJKFont.CJK_ENCODING);
-        else if (isType0) {
-            char[] chars = text.toCharArray();
-            int len = chars.length;
-            byte[] b = new byte[len * 2];
+
+    @Override
+	byte[] convertToBytes(final String text) {
+        if (this.cjkMirror != null) {
+			return PdfEncodings.convertToBytes(text, CJKFont.CJK_ENCODING);
+		} else if (this.isType0) {
+            final char[] chars = text.toCharArray();
+            final int len = chars.length;
+            final byte[] b = new byte[len * 2];
             int bptr = 0;
             for (int k = 0; k < len; ++k) {
-                int[] ws = (int[])metrics.get(new Integer(chars[k]));
+                final int[] ws = (int[])this.metrics.get(Integer.valueOf(chars[k]));
                 if (ws != null) {
-                    int g = ws[0];
+                    final int g = ws[0];
                     b[bptr++] = (byte)(g / 256);
                     b[bptr++] = (byte)(g);
                 }
             }
-            if (bptr == b.length)
-                return b;
-            else {
-                byte[] nb = new byte[bptr];
+            if (bptr == b.length) {
+				return b;
+			} else {
+                final byte[] nb = new byte[bptr];
                 System.arraycopy(b, 0, nb, 0, bptr);
                 return nb;
             }
         }
         else {
-            char cc[] = text.toCharArray();
-            byte b[] = new byte[cc.length];
+            final char cc[] = text.toCharArray();
+            final byte b[] = new byte[cc.length];
             int ptr = 0;
             for (int k = 0; k < cc.length; ++k) {
-                if (uni2byte.containsKey(cc[k]))
-                    b[ptr++] = (byte)uni2byte.get(cc[k]);
+                if (this.uni2byte.containsKey(cc[k])) {
+					b[ptr++] = (byte)this.uni2byte.get(cc[k]);
+				}
             }
-            if (ptr == b.length)
-                return b;
-            else {
-                byte[] b2 = new byte[ptr];
+            if (ptr == b.length) {
+				return b;
+			} else {
+                final byte[] b2 = new byte[ptr];
                 System.arraycopy(b, 0, b2, 0, ptr);
                 return b2;
             }
         }
     }
-    
-    byte[] convertToBytes(int char1) {
-        if (cjkMirror != null)
-            return PdfEncodings.convertToBytes((char)char1, CJKFont.CJK_ENCODING);
-        else if (isType0) {
-            int[] ws = (int[])metrics.get(new Integer(char1));
+
+    @Override
+	byte[] convertToBytes(final int char1) {
+        if (this.cjkMirror != null) {
+			return PdfEncodings.convertToBytes((char)char1, CJKFont.CJK_ENCODING);
+		} else if (this.isType0) {
+            final int[] ws = (int[])this.metrics.get(Integer.valueOf(char1));
             if (ws != null) {
-                int g = ws[0];
+                final int g = ws[0];
                 return new byte[]{(byte)(g / 256), (byte)(g)};
-            }
-            else
-                return new byte[0];
+            } else {
+				return new byte[0];
+			}
         }
         else {
-            if (uni2byte.containsKey(char1))
-                return new byte[]{(byte)uni2byte.get(char1)};
-            else
-                return new byte[0];
+            if (this.uni2byte.containsKey(char1)) {
+				return new byte[]{(byte)this.uni2byte.get(char1)};
+			} else {
+				return new byte[0];
+			}
         }
     }
-    
+
     PdfIndirectReference getIndirectReference() {
-        return refFont;
+        return this.refFont;
     }
-    
-    public boolean charExists(int c) {
-        if (cjkMirror != null)
-            return cjkMirror.charExists(c);
-        else if (isType0) {
-            return metrics.containsKey(new Integer(c));
-        }
-        else
-            return super.charExists(c);
+
+    @Override
+	public boolean charExists(final int c) {
+        if (this.cjkMirror != null) {
+			return this.cjkMirror.charExists(c);
+		} else if (this.isType0) {
+            return this.metrics.containsKey(Integer.valueOf(c));
+        } else {
+			return super.charExists(c);
+		}
     }
-    
+
     /**
      * Sets the font name that will appear in the pdf font dictionary.
      * It does nothing in this case as the font is already in the document.
      * @param name the new font name
-     */    
-    public void setPostscriptFontName(String name) {
+     */
+    @Override
+	public void setPostscriptFontName(final String name) {
     }
-    
-    public boolean setKerning(int char1, int char2, int kern) {
+
+    @Override
+	public boolean setKerning(final int char1, final int char2, final int kern) {
         return false;
     }
-    
-    public int[] getCharBBox(int c) {
+
+    @Override
+	public int[] getCharBBox(final int c) {
         return null;
     }
-    
-    protected int[] getRawCharBBox(int c, String name) {
+
+    @Override
+	protected int[] getRawCharBBox(final int c, final String name) {
         return null;
     }
-    
+
     /**
      * Exposes the unicode - > CID map that is constructed from the font's encoding
      * @return the unicode to CID map
      * @since 2.1.7
      */
     IntHashtable getUni2Byte(){
-        return uni2byte;
+        return this.uni2byte;
     }
 }

@@ -89,7 +89,7 @@ public class Chapter extends Section {
 	private Chapter(final Paragraph title, final int number) {
         super(title, 1);
         this.numbers = new ArrayList();
-        this.numbers.add(new Integer(number));
+        this.numbers.add(Integer.valueOf(number));
         this.triggerNewPage = true;
     }
 

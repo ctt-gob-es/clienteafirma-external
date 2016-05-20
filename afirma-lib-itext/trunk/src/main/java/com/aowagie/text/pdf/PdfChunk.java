@@ -210,7 +210,7 @@ public class PdfChunk {
         else {
             // bold simulation
             if ((style & Font.BOLD) != 0) {
-				this.attributes.put(Chunk.TEXTRENDERMODE, new Object[]{new Integer(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE), new Float(size / 30f), null});
+				this.attributes.put(Chunk.TEXTRENDERMODE, new Object[]{Integer.valueOf(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE), Float.valueOf(size / 30f), null});
 			}
             // italic simulation
             if ((style & Font.ITALIC) != 0) {
@@ -711,7 +711,7 @@ public class PdfChunk {
     void adjustLeft(final float newValue) {
     	final Object[] o = (Object[])this.attributes.get(Chunk.TAB);
     	if (o != null) {
-    		this.attributes.put(Chunk.TAB, new Object[]{o[0], o[1], o[2], new Float(newValue)});
+    		this.attributes.put(Chunk.TAB, new Object[]{o[0], o[1], o[2], Float.valueOf(newValue)});
     	}
     }
 

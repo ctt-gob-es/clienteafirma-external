@@ -2621,7 +2621,7 @@ public class PdfContentByte {
 			this.layerDepth = new ArrayList();
 		}
         if (layer instanceof PdfLayerMembership) {
-            this.layerDepth.add(new Integer(1));
+            this.layerDepth.add(Integer.valueOf(1));
             beginLayer2(layer);
             return;
         }
@@ -2634,7 +2634,7 @@ public class PdfContentByte {
             }
             la = la.getParent();
         }
-        this.layerDepth.add(new Integer(n));
+        this.layerDepth.add(Integer.valueOf(n));
     }
 
     private void beginLayer2(final PdfOCG layer) {

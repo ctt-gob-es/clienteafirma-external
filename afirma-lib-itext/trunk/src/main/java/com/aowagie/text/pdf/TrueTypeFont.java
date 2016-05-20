@@ -882,7 +882,7 @@ class TrueTypeFont extends BaseFont {
                 final int[] r = new int[2];
                 r[0] = startGlyphID;
                 r[1] = getGlyphWidth(r[0]);
-                h.put(new Integer(i), r);
+                h.put(Integer.valueOf(i), r);
                 startGlyphID++;
             }
         }
@@ -901,7 +901,7 @@ class TrueTypeFont extends BaseFont {
             final int r[] = new int[2];
             r[0] = this.rf.readUnsignedByte();
             r[1] = getGlyphWidth(r[0]);
-            h.put(new Integer(k), r);
+            h.put(Integer.valueOf(k), r);
         }
         return h;
     }
@@ -954,7 +954,7 @@ class TrueTypeFont extends BaseFont {
                 final int r[] = new int[2];
                 r[0] = glyph;
                 r[1] = getGlyphWidth(r[0]);
-                h.put(new Integer(this.fontSpecific ? (j & 0xff00) == 0xf000 ? j & 0xff : j : j), r);
+                h.put(Integer.valueOf(this.fontSpecific ? (j & 0xff00) == 0xf000 ? j & 0xff : j : j), r);
             }
         }
         return h;
@@ -975,7 +975,7 @@ class TrueTypeFont extends BaseFont {
             final int r[] = new int[2];
             r[0] = this.rf.readUnsignedShort();
             r[1] = getGlyphWidth(r[0]);
-            h.put(new Integer(k + start_code), r);
+            h.put(Integer.valueOf(k + start_code), r);
         }
         return h;
     }
@@ -1221,7 +1221,7 @@ class TrueTypeFont extends BaseFont {
             for (final Iterator it = usemap.entrySet().iterator(); it.hasNext();) {
                 final Map.Entry e = (Map.Entry)it.next();
                 final int[] v = (int[])e.getValue();
-                final Integer gi = new Integer(v[0]);
+                final Integer gi = Integer.valueOf(v[0]);
                 if (longTag.containsKey(gi)) {
 					continue;
 				}
@@ -1293,7 +1293,7 @@ class TrueTypeFont extends BaseFont {
 							}
                         }
                         if (metrics != null) {
-							glyphs.put(new Integer(metrics[0]), null);
+							glyphs.put(Integer.valueOf(metrics[0]), null);
 						}
                     }
                 }
@@ -1424,19 +1424,19 @@ class TrueTypeFont extends BaseFont {
      */
     public int[] getMetricsTT(final int c) {
         if (this.cmapExt != null) {
-			return (int[])this.cmapExt.get(new Integer(c));
+			return (int[])this.cmapExt.get(Integer.valueOf(c));
 		}
         if (!this.fontSpecific && this.cmap31 != null) {
-			return (int[])this.cmap31.get(new Integer(c));
+			return (int[])this.cmap31.get(Integer.valueOf(c));
 		}
         if (this.fontSpecific && this.cmap10 != null) {
-			return (int[])this.cmap10.get(new Integer(c));
+			return (int[])this.cmap10.get(Integer.valueOf(c));
 		}
         if (this.cmap31 != null) {
-			return (int[])this.cmap31.get(new Integer(c));
+			return (int[])this.cmap31.get(Integer.valueOf(c));
 		}
         if (this.cmap10 != null) {
-			return (int[])this.cmap10.get(new Integer(c));
+			return (int[])this.cmap10.get(Integer.valueOf(c));
 		}
         return null;
     }
@@ -1566,7 +1566,7 @@ class TrueTypeFont extends BaseFont {
         if (map == null) {
 			return null;
 		}
-        final int metric[] = (int[])map.get(new Integer(c));
+        final int metric[] = (int[])map.get(Integer.valueOf(c));
         if (metric == null || this.bboxes == null) {
 			return null;
 		}

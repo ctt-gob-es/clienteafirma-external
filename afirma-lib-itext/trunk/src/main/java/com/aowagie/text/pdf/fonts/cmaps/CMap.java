@@ -77,7 +77,7 @@ public class CMap
         if( length == 1 )
         {
 
-            key = new Integer( (code[offset]+256)%256 );
+            key = Integer.valueOf( (code[offset]+256)%256 );
             result = (String)this.singleByteMappings.get( key );
         }
         else if( length == 2 )
@@ -85,7 +85,7 @@ public class CMap
             int intKey = (code[offset]+256)%256;
             intKey <<= 8;
             intKey += (code[offset+1]+256)%256;
-            key = new Integer( intKey );
+            key = Integer.valueOf( intKey );
 
             result = (String)this.doubleByteMappings.get( key );
         }
@@ -105,14 +105,14 @@ public class CMap
     {
         if( src.length == 1 )
         {
-            this.singleByteMappings.put( new Integer( src[0] ), dest );
+            this.singleByteMappings.put( Integer.valueOf( src[0] ), dest );
         }
         else if( src.length == 2 )
         {
             int intSrc = src[0]&0xFF;
             intSrc <<= 8;
             intSrc |= src[1]&0xFF;
-            this.doubleByteMappings.put( new Integer( intSrc ), dest );
+            this.doubleByteMappings.put( Integer.valueOf( intSrc ), dest );
         }
         else
         {

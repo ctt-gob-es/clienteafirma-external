@@ -347,11 +347,11 @@ public class CMapParser
                 final String value = buffer.toString();
                 if( value.indexOf( '.' ) >=0 )
                 {
-                    retval = new Double( value );
+                    retval = Double.valueOf( value );
                 }
                 else
                 {
-                    retval = new Integer( buffer.toString() );
+                    retval = Integer.valueOf( buffer.toString() );
                 }
                 break;
             }

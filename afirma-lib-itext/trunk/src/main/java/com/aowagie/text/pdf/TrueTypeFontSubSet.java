@@ -340,7 +340,7 @@ class TrueTypeFontSubSet {
         if (tableLocation == null) {
 			throw new DocumentException("Table 'glyf' does not exist in " + this.fileName);
 		}
-        final Integer glyph0 = new Integer(0);
+        final Integer glyph0 = Integer.valueOf(0);
         if (!this.glyphsUsed.containsKey(glyph0)) {
             this.glyphsUsed.put(glyph0, null);
             this.glyphsInList.add(glyph0);
@@ -365,7 +365,7 @@ class TrueTypeFontSubSet {
         this.rf.skipBytes(8);
         for(;;) {
             final int flags = this.rf.readUnsignedShort();
-            final Integer cGlyph = new Integer(this.rf.readUnsignedShort());
+            final Integer cGlyph = Integer.valueOf(this.rf.readUnsignedShort());
             if (!this.glyphsUsed.containsKey(cGlyph)) {
                 this.glyphsUsed.put(cGlyph, null);
                 this.glyphsInList.add(cGlyph);

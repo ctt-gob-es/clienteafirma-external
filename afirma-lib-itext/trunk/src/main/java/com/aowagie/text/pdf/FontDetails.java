@@ -211,7 +211,7 @@ class FontDetails {
                             if (metrics == null) {
 								continue;
 							}
-                            this.longTag.put(new Integer(metrics[0]), new int[]{metrics[0], metrics[1], this.ttu.getUnicodeDifferences(b[k] & 0xff)});
+                            this.longTag.put(Integer.valueOf(metrics[0]), new int[]{metrics[0], metrics[1], this.ttu.getUnicodeDifferences(b[k] & 0xff)});
                             glyph[i++] = (char)metrics[0];
                         }
                     }
@@ -230,7 +230,7 @@ class FontDetails {
 								continue;
 							}
                     		final int m0 = metrics[0];
-                    		final Integer gl = new Integer(m0);
+                    		final Integer gl = Integer.valueOf(m0);
                     		if (!this.longTag.containsKey(gl)) {
 								this.longTag.put(gl, new int[]{m0, metrics[1], val});
 							}
@@ -277,7 +277,7 @@ class FontDetails {
                         firstChar = 255;
                         lastChar = 255;
                     }
-                    this.baseFont.writeFont(writer, this.indirectReference, new Object[]{new Integer(firstChar), new Integer(lastChar), this.shortTag, Boolean.valueOf(this.subset)});
+                    this.baseFont.writeFont(writer, this.indirectReference, new Object[]{Integer.valueOf(firstChar), Integer.valueOf(lastChar), this.shortTag, Boolean.valueOf(this.subset)});
                     break;
                 }
                 case BaseFont.FONT_TYPE_CJK:

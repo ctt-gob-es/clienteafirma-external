@@ -461,7 +461,7 @@ final class SimpleBookmark implements SimpleXMLDocHandler {
             createOutlineAction(outline, map, writer, namedAsNames);
             writer.addToBody(outline, refs[ptr]);
         }
-        return new Object[]{refs[0], refs[refs.length - 1], new Integer(count)};
+        return new Object[]{refs[0], refs[refs.length - 1], Integer.valueOf(count)};
     }
 
     /**

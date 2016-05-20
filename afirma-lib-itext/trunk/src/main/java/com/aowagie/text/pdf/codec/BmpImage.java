@@ -275,8 +275,8 @@ public class BmpImage {
         final int planes = readWord(this.inputStream);
         this.bitsPerPixel = readWord(this.inputStream);
 
-        this.properties.put("color_planes", new Integer(planes));
-        this.properties.put("bits_per_pixel", new Integer(this.bitsPerPixel));
+        this.properties.put("color_planes", Integer.valueOf(planes));
+        this.properties.put("bits_per_pixel", Integer.valueOf(this.bitsPerPixel));
 
         // As BMP always has 3 rgb bands, except for Version 5,
         // which is bgra
@@ -347,10 +347,10 @@ public class BmpImage {
                     break;
             }
 
-            this.properties.put("x_pixels_per_meter", new Long(this.xPelsPerMeter));
-            this.properties.put("y_pixels_per_meter", new Long(this.yPelsPerMeter));
-            this.properties.put("colors_used", new Long(colorsUsed));
-            this.properties.put("colors_important", new Long(colorsImportant));
+            this.properties.put("x_pixels_per_meter", Long.valueOf(this.xPelsPerMeter));
+            this.properties.put("y_pixels_per_meter", Long.valueOf(this.yPelsPerMeter));
+            this.properties.put("colors_used", Long.valueOf(colorsUsed));
+            this.properties.put("colors_important", Long.valueOf(colorsImportant));
 
             if (size == 40) {
                 // Windows 3.x and Windows NT
@@ -373,17 +373,17 @@ public class BmpImage {
                             this.redMask = 0x7C00;
                             this.greenMask = 0x3E0;
                             this.blueMask = 0x1F;
-                            this.properties.put("red_mask", new Integer(this.redMask));
-                            this.properties.put("green_mask", new Integer(this.greenMask));
-                            this.properties.put("blue_mask", new Integer(this.blueMask));
+                            this.properties.put("red_mask", Integer.valueOf(this.redMask));
+                            this.properties.put("green_mask", Integer.valueOf(this.greenMask));
+                            this.properties.put("blue_mask", Integer.valueOf(this.blueMask));
                         } else if (this.bitsPerPixel == 32) {
                             this.imageType = VERSION_3_NT_32_BIT;
                             this.redMask   = 0x00FF0000;
                             this.greenMask = 0x0000FF00;
                             this.blueMask  = 0x000000FF;
-                            this.properties.put("red_mask", new Integer(this.redMask));
-                            this.properties.put("green_mask", new Integer(this.greenMask));
-                            this.properties.put("blue_mask", new Integer(this.blueMask));
+                            this.properties.put("red_mask", Integer.valueOf(this.redMask));
+                            this.properties.put("green_mask", Integer.valueOf(this.greenMask));
+                            this.properties.put("blue_mask", Integer.valueOf(this.blueMask));
                         }
 
                         // Read in the palette
@@ -424,9 +424,9 @@ public class BmpImage {
                         this.greenMask = (int)readDWord(this.inputStream);
                         this.blueMask = (int)readDWord(this.inputStream);
 
-                        this.properties.put("red_mask", new Integer(this.redMask));
-                        this.properties.put("green_mask", new Integer(this.greenMask));
-                        this.properties.put("blue_mask", new Integer(this.blueMask));
+                        this.properties.put("red_mask", Integer.valueOf(this.redMask));
+                        this.properties.put("green_mask", Integer.valueOf(this.greenMask));
+                        this.properties.put("blue_mask", Integer.valueOf(this.blueMask));
 
                         if (colorsUsed != 0) {
                             // there is a palette
@@ -490,10 +490,10 @@ public class BmpImage {
                     }
                 }
 
-                this.properties.put("red_mask", new Integer(this.redMask));
-                this.properties.put("green_mask", new Integer(this.greenMask));
-                this.properties.put("blue_mask", new Integer(this.blueMask));
-                this.properties.put("alpha_mask", new Integer(this.alphaMask));
+                this.properties.put("red_mask", Integer.valueOf(this.redMask));
+                this.properties.put("green_mask", Integer.valueOf(this.greenMask));
+                this.properties.put("blue_mask", Integer.valueOf(this.blueMask));
+                this.properties.put("alpha_mask", Integer.valueOf(this.alphaMask));
 
                 // Read in the palette
                 final int numberOfEntries = (int)((this.bitmapOffset-14-size) / 4);
@@ -521,18 +521,18 @@ public class BmpImage {
                     case LCS_CALIBRATED_RGB:
                         // All the new fields are valid only for this case
                         this.properties.put("color_space", "LCS_CALIBRATED_RGB");
-                        this.properties.put("redX", new Integer(redX));
-                        this.properties.put("redY", new Integer(redY));
-                        this.properties.put("redZ", new Integer(redZ));
-                        this.properties.put("greenX", new Integer(greenX));
-                        this.properties.put("greenY", new Integer(greenY));
-                        this.properties.put("greenZ", new Integer(greenZ));
-                        this.properties.put("blueX", new Integer(blueX));
-                        this.properties.put("blueY", new Integer(blueY));
-                        this.properties.put("blueZ", new Integer(blueZ));
-                        this.properties.put("gamma_red", new Long(gammaRed));
-                        this.properties.put("gamma_green", new Long(gammaGreen));
-                        this.properties.put("gamma_blue", new Long(gammaBlue));
+                        this.properties.put("redX", Integer.valueOf(redX));
+                        this.properties.put("redY", Integer.valueOf(redY));
+                        this.properties.put("redZ", Integer.valueOf(redZ));
+                        this.properties.put("greenX", Integer.valueOf(greenX));
+                        this.properties.put("greenY", Integer.valueOf(greenY));
+                        this.properties.put("greenZ", Integer.valueOf(greenZ));
+                        this.properties.put("blueX", Integer.valueOf(blueX));
+                        this.properties.put("blueY", Integer.valueOf(blueY));
+                        this.properties.put("blueZ", Integer.valueOf(blueZ));
+                        this.properties.put("gamma_red", Long.valueOf(gammaRed));
+                        this.properties.put("gamma_green", Long.valueOf(gammaGreen));
+                        this.properties.put("gamma_blue", Long.valueOf(gammaBlue));
 
                         // break;
                         throw new

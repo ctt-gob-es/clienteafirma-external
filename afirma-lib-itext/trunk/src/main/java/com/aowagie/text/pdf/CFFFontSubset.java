@@ -333,7 +333,7 @@ class CFFFontSubset extends CFFFont {
 			// Pop the glyph's FD
 			final int FD = FDSelect[glyph];
 			// Put the FD index into the FDArrayUsed HashMap
-			this.FDArrayUsed.put(new Integer(FD),null);
+			this.FDArrayUsed.put(Integer.valueOf(FD),null);
 		}
 	}
 
@@ -676,10 +676,10 @@ class CFFFontSubset extends CFFFont {
             		// Calc the index of the Subrs
             		final int Subr = ((Integer)TopElement).intValue() + LBias;
             		// If the subr isn't in the HashMap -> Put in
-        			if (!hSubr.containsKey(new Integer (Subr)))
+        			if (!hSubr.containsKey(Integer.valueOf(Subr)))
             		{
-            			hSubr.put(new Integer(Subr),null);
-            			lSubr.add(new Integer(Subr));
+            			hSubr.put(Integer.valueOf(Subr),null);
+            			lSubr.add(Integer.valueOf(Subr));
             		}
         			CalcHints(LSubrsOffsets[Subr],LSubrsOffsets[Subr+1],LBias,GBias,LSubrsOffsets);
         			seek(pos);
@@ -694,10 +694,10 @@ class CFFFontSubset extends CFFFont {
 	        		// Calc the index of the Subrs
 	        		final int Subr = ((Integer)TopElement).intValue() + GBias;
 	        		// If the subr isn't in the HashMap -> Put in
-	        		if (!this.hGSubrsUsed.containsKey(new Integer (Subr)))
+	        		if (!this.hGSubrsUsed.containsKey(Integer.valueOf(Subr)))
 	        		{
-	        			this.hGSubrsUsed.put(new Integer(Subr),null);
-	        			this.lGSubrsUsed.add(new Integer(Subr));
+	        			this.hGSubrsUsed.put(Integer.valueOf(Subr),null);
+	        			this.lGSubrsUsed.add(Integer.valueOf(Subr));
 	        		}
 	        		CalcHints(this.gsubrOffsets[Subr],this.gsubrOffsets[Subr+1],LBias,GBias,LSubrsOffsets);
 	        		seek(pos);
@@ -830,27 +830,27 @@ class CFFFontSubset extends CFFFont {
             {
             	final int first = getCard8();
             	final int second = getCard8();
-            	this.args[this.arg_count] = new Integer(first<<8 | second);
+            	this.args[this.arg_count] = Integer.valueOf(first<<8 | second);
             	this.arg_count++;
             	continue;
             }
             if (b0 >= 32 && b0 <= 246) // The byte read is the byte;
             {
-            	this.args[this.arg_count] = new Integer(b0 - 139);
+            	this.args[this.arg_count] = Integer.valueOf(b0 - 139);
             	this.arg_count++;
             	continue;
             }
             if (b0 >= 247 && b0 <= 250) // The byte read and the next byte constitute a short int
             {
             	final int w = getCard8();
-            	this.args[this.arg_count] = new Integer((b0-247)*256 + w + 108);
+            	this.args[this.arg_count] = Integer.valueOf((b0-247)*256 + w + 108);
             	this.arg_count++;
             	continue;
             }
             if (b0 >= 251 && b0 <= 254)// Same as above except negative
             {
             	final int w = getCard8();
-            	this.args[this.arg_count] = new Integer(-(b0-251)*256 - w - 108);
+            	this.args[this.arg_count] = Integer.valueOf(-(b0-251)*256 - w - 108);
             	this.arg_count++;
             	continue;
             }
@@ -860,7 +860,7 @@ class CFFFontSubset extends CFFFont {
             	final int second = getCard8();
             	final int third = getCard8();
             	final int fourth = getCard8();
-            	this.args[this.arg_count] = new Integer(first<<24 | second<<16 | third<<8 | fourth);
+            	this.args[this.arg_count] = Integer.valueOf(first<<24 | second<<16 | third<<8 | fourth);
             	this.arg_count++;
             	continue;
             }
@@ -971,7 +971,7 @@ class CFFFontSubset extends CFFFont {
 			NewOffsets[i] = Offset;
 			// If the object in the offset is also present in the used
 			// HashMap then increment the offset var by its size
-			if (Used.containsKey(new Integer(i))) {
+			if (Used.containsKey(Integer.valueOf(i))) {
 				Offset += Offsets[i+1] - Offsets[i];
 			} else {
 				// Else the same offset is kept in i+1.
@@ -1477,7 +1477,7 @@ class CFFFontSubset extends CFFFont {
 	    // Else do nothing
 	    // At the end of each object mark its ending (Even if wasn't written)
 		for (int k=0; k<this.fonts[Font].FDArrayOffsets.length-1; k++) {
-			if (this.FDArrayUsed.containsKey(new Integer (k)))
+			if (this.FDArrayUsed.containsKey(Integer.valueOf(k)))
 			{
 				// Goto beginning of objects
 	            seek(this.fonts[Font].FDArrayOffsets[k]);
@@ -1531,7 +1531,7 @@ class CFFFontSubset extends CFFFont {
 	    // Else do nothing
 		for (int i=0;i<this.fonts[Font].fdprivateOffsets.length;i++)
 		{
-			if (this.FDArrayUsed.containsKey(new Integer (i)))
+			if (this.FDArrayUsed.containsKey(Integer.valueOf(i)))
 			{
 				// Mark beginning
 		        this.OutputList.addLast(new MarkerItem(fdPrivate[i]));

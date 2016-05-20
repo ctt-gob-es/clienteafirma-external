@@ -85,14 +85,14 @@ class PdfTextArray{
     void add(final float number) {
         if (number != 0) {
             if (this.lastNum != null) {
-                this.lastNum = new Float(number + this.lastNum.floatValue());
+                this.lastNum = Float.valueOf(number + this.lastNum.floatValue());
                 if (this.lastNum.floatValue() != 0) {
                     replaceLast(this.lastNum);
                 } else {
                     this.arrayList.remove(this.arrayList.size() - 1);
                 }
             } else {
-                this.lastNum = new Float(number);
+                this.lastNum = Float.valueOf(number);
                 this.arrayList.add(this.lastNum);
             }
 

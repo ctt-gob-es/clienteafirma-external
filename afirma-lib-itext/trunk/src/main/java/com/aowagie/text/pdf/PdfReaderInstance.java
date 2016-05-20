@@ -87,7 +87,7 @@ class PdfReaderInstance {
         if (pageNumber < 1 || pageNumber > this.reader.getNumberOfPages()) {
 			throw new IllegalArgumentException("Invalid page number: " + pageNumber);
 		}
-        final Integer i = new Integer(pageNumber);
+        final Integer i = Integer.valueOf(pageNumber);
         PdfImportedPage pageT = (PdfImportedPage)this.importedPages.get(i);
         if (pageT == null) {
             pageT = new PdfImportedPage(this, this.writer, pageNumber);
@@ -99,7 +99,7 @@ class PdfReaderInstance {
     int getNewObjectNumber(final int number, final int generation) {
         if (this.myXref[number] == 0) {
             this.myXref[number] = this.writer.getIndirectReferenceNumber();
-            this.nextRound.add(new Integer(number));
+            this.nextRound.add(Integer.valueOf(number));
         }
         return this.myXref[number];
     }
@@ -137,7 +137,7 @@ class PdfReaderInstance {
         dic.put(PdfName.RESOURCES, PdfReader.getPdfObjectRelease(page.get(PdfName.RESOURCES)));
         dic.put(PdfName.TYPE, PdfName.XOBJECT);
         dic.put(PdfName.SUBTYPE, PdfName.FORM);
-        final PdfImportedPage impPage = (PdfImportedPage)this.importedPages.get(new Integer(pageNumber));
+        final PdfImportedPage impPage = (PdfImportedPage)this.importedPages.get(Integer.valueOf(pageNumber));
         dic.put(PdfName.BBOX, new PdfRectangle(impPage.getBoundingBox()));
         final PdfArray matrix = impPage.getMatrix();
         if (matrix == null) {

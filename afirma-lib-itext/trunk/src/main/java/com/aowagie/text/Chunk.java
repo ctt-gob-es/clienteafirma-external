@@ -199,8 +199,8 @@ public class Chunk implements Element {
 		this(OBJECT_REPLACEMENT_CHARACTER, new Font());
 		final Image copyImage = Image.getInstance(image);
 		copyImage.setAbsolutePosition(Float.NaN, Float.NaN);
-		setAttribute(IMAGE, new Object[] { copyImage, new Float(offsetX),
-				new Float(offsetY), Boolean.FALSE });
+		setAttribute(IMAGE, new Object[] { copyImage, Float.valueOf(offsetX),
+				Float.valueOf(offsetY), Boolean.FALSE });
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class Chunk implements Element {
 		if (tabPosition < 0) {
 			throw new IllegalArgumentException("A tab position may not be lower than 0; yours is " + tabPosition);
 		}
-		setAttribute(TAB, new Object[] {separator, new Float(tabPosition), Boolean.valueOf(newline), new Float(0)});
+		setAttribute(TAB, new Object[] {separator, Float.valueOf(tabPosition), Boolean.valueOf(newline), Float.valueOf(0)});
 	}
 
 	/**
@@ -279,8 +279,8 @@ public class Chunk implements Element {
 	public Chunk(final Image image, final float offsetX, final float offsetY,
 			final boolean changeLeading) {
 		this(OBJECT_REPLACEMENT_CHARACTER, new Font());
-		setAttribute(IMAGE, new Object[] { image, new Float(offsetX),
-				new Float(offsetY), Boolean.valueOf(changeLeading) });
+		setAttribute(IMAGE, new Object[] { image, Float.valueOf(offsetX),
+				Float.valueOf(offsetY), Boolean.valueOf(changeLeading) });
 	}
 
 	// implementation of the Element-methods
@@ -467,7 +467,7 @@ public class Chunk implements Element {
 	 * @return this <CODE>Chunk</CODE>
 	 */
 	public Chunk setHorizontalScaling(final float scale) {
-		return setAttribute(HSCALE, new Float(scale));
+		return setAttribute(HSCALE, Float.valueOf(scale));
 	}
 
 	/**
@@ -557,7 +557,7 @@ public class Chunk implements Element {
 	 */
 
 	public Chunk setTextRise(final float rise) {
-		return setAttribute(SUBSUPSCRIPT, new Float(rise));
+		return setAttribute(SUBSUPSCRIPT, Float.valueOf(rise));
 	}
 
 	/**
@@ -651,8 +651,8 @@ public class Chunk implements Element {
 	 */
 	public Chunk setTextRenderMode(final int mode, final float strokeWidth,
 			final Color strokeColor) {
-		return setAttribute(TEXTRENDERMODE, new Object[] { new Integer(mode),
-				new Float(strokeWidth), strokeColor });
+		return setAttribute(TEXTRENDERMODE, new Object[] { Integer.valueOf(mode),
+				Float.valueOf(strokeWidth), strokeColor });
 	}
 
 	/** Key for split character. */
@@ -713,7 +713,7 @@ public class Chunk implements Element {
 
 	public Chunk setRemoteGoto(final String filename, final int page) {
 		return setAttribute(REMOTEGOTO, new Object[] { filename,
-				new Integer(page) });
+				Integer.valueOf(page) });
 	}
 
 	/** Key for local goto. */

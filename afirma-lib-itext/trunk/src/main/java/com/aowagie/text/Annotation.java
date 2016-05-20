@@ -338,7 +338,7 @@ public class Annotation implements Element {
 		this(llx, lly, urx, ury);
 		this.annotationtype = FILE_PAGE;
 		this.annotationAttributes.put(FILE, file);
-		this.annotationAttributes.put(PAGE, new Integer(page));
+		this.annotationAttributes.put(PAGE, Integer.valueOf(page));
 	}
 
 	/**
@@ -358,7 +358,7 @@ public class Annotation implements Element {
 	public Annotation(final float llx, final float lly, final float urx, final float ury, final int named) {
 		this(llx, lly, urx, ury);
 		this.annotationtype = NAMED_DEST;
-		this.annotationAttributes.put(NAMED, new Integer(named));
+		this.annotationAttributes.put(NAMED, Integer.valueOf(named));
 	}
 
 	/**

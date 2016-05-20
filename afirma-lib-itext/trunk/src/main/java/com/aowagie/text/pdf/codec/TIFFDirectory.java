@@ -212,7 +212,7 @@ class TIFFDirectory extends Object implements Serializable {
             }
 
             if (processTag) {
-            this.fieldIndex.put(new Integer(tag), new Integer(i));
+            this.fieldIndex.put(Integer.valueOf(tag), Integer.valueOf(i));
             Object obj = null;
 
             switch (type) {
@@ -350,7 +350,7 @@ class TIFFDirectory extends Object implements Serializable {
      * or null if the tag is not present.
      */
     TIFFField getField(final int tag) {
-        final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
+        final Integer i = (Integer)this.fieldIndex.get(Integer.valueOf(tag));
         if (i == null) {
             return null;
         } else {
@@ -362,7 +362,7 @@ class TIFFDirectory extends Object implements Serializable {
      * Returns true if a tag appears in the directory.
      */
     boolean isTagPresent(final int tag) {
-        return this.fieldIndex.containsKey(new Integer(tag));
+        return this.fieldIndex.containsKey(Integer.valueOf(tag));
     }
 
     /**
@@ -396,7 +396,7 @@ class TIFFDirectory extends Object implements Serializable {
      * TIFF_UNDEFINED.
      */
     private byte getFieldAsByte(final int tag, final int index) {
-        final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
+        final Integer i = (Integer)this.fieldIndex.get(Integer.valueOf(tag));
         final byte [] b = this.fields[i.intValue()].getAsBytes();
         return b[index];
     }
@@ -410,7 +410,7 @@ class TIFFDirectory extends Object implements Serializable {
      * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
      */
     private long getFieldAsLong(final int tag, final int index) {
-        final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
+        final Integer i = (Integer)this.fieldIndex.get(Integer.valueOf(tag));
         return this.fields[i.intValue()].getAsLong(index);
     }
 
@@ -431,7 +431,7 @@ class TIFFDirectory extends Object implements Serializable {
      * TIFF_ASCII).
      */
     private float getFieldAsFloat(final int tag, final int index) {
-        final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
+        final Integer i = (Integer)this.fieldIndex.get(Integer.valueOf(tag));
         return this.fields[i.intValue()].getAsFloat(index);
     }
 
@@ -444,7 +444,7 @@ class TIFFDirectory extends Object implements Serializable {
      * TIFF_ASCII).
      */
     private double getFieldAsDouble(final int tag, final int index) {
-        final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
+        final Integer i = (Integer)this.fieldIndex.get(Integer.valueOf(tag));
         return this.fields[i.intValue()].getAsDouble(index);
     }
 

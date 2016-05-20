@@ -196,7 +196,7 @@ class JBIG2SegmentReader {
 			return os.toByteArray();
 		}
 		private void addSegment(final JBIG2Segment s) {
-			this.segs.put(new Integer(s.segmentNumber), s);
+			this.segs.put(Integer.valueOf(s.segmentNumber), s);
 		}
 
 	}
@@ -224,14 +224,14 @@ class JBIG2SegmentReader {
 			do {
 				final JBIG2Segment tmp = readHeader();
 				readSegment(tmp);
-				this.segments.put(new Integer(tmp.segmentNumber), tmp);
+				this.segments.put(Integer.valueOf(tmp.segmentNumber), tmp);
 			} while ( this.ra.getFilePointer() < this.ra.length() );
 		} else {
 			// D.2
 			JBIG2Segment tmp;
 			do {
 				tmp = readHeader();
-				this.segments.put(new Integer(tmp.segmentNumber), tmp);
+				this.segments.put(Integer.valueOf(tmp.segmentNumber), tmp);
 			} while ( tmp.type != END_OF_FILE );
 			final Iterator segs = this.segments.keySet().iterator();
 			while ( segs.hasNext() ) {
@@ -258,7 +258,7 @@ class JBIG2SegmentReader {
 			final int page_bitmap_width = this.ra.readInt();
 			final int page_bitmap_height = this.ra.readInt();
 			this.ra.seek(last);
-			final JBIG2Page p = (JBIG2Page)this.pages.get(new Integer(s.page));
+			final JBIG2Page p = (JBIG2Page)this.pages.get(Integer.valueOf(s.page));
 			if ( p == null ) {
 				throw new IllegalStateException("referring to widht/height of page we havent seen yet? " + s.page);
 			}
@@ -347,11 +347,11 @@ class JBIG2SegmentReader {
 		s.page_association_size = page_association_size;
 		s.page_association_offset = page_association_offset;
 
-		if ( segment_page_association > 0 && ! this.pages.containsKey(new Integer(segment_page_association)) ) {
-			this.pages.put(new Integer(segment_page_association), new JBIG2Page(segment_page_association, this));
+		if ( segment_page_association > 0 && ! this.pages.containsKey(Integer.valueOf(segment_page_association)) ) {
+			this.pages.put(Integer.valueOf(segment_page_association), new JBIG2Page(segment_page_association, this));
 		}
 		if ( segment_page_association > 0 ) {
-			((JBIG2Page)this.pages.get(new Integer(segment_page_association))).addSegment(s);
+			((JBIG2Page)this.pages.get(Integer.valueOf(segment_page_association))).addSegment(s);
 		} else {
 			this.globals.add(s);
 		}
@@ -406,7 +406,7 @@ class JBIG2SegmentReader {
 
 
 	JBIG2Page getPage(final int page) {
-		return (JBIG2Page)this.pages.get(new Integer(page));
+		return (JBIG2Page)this.pages.get(Integer.valueOf(page));
 	}
 
 	byte[] getGlobal(final boolean for_embedding) {

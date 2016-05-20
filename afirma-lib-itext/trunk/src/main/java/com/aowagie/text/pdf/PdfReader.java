@@ -1479,7 +1479,7 @@ public class PdfReader implements PdfViewerPreferences {
                                 this.objStmToOffset.put(field2, 0);
                             }
                             else {
-                                final Integer on = new Integer(field2);
+                                final Integer on = Integer.valueOf(field2);
                                 IntHashtable seq = (IntHashtable)this.objStmMark.get(on);
                                 if (seq == null) {
                                     seq = new IntHashtable();
@@ -2905,9 +2905,9 @@ public class PdfReader implements PdfViewerPreferences {
                         }
                     }
                     if (objs == null) {
-						state.push(new Object[]{ar, new Integer(k + 1)});
+						state.push(new Object[]{ar, Integer.valueOf(k + 1)});
 					} else {
-                        objs[1] = new Integer(k + 1);
+                        objs[1] = Integer.valueOf(k + 1);
                         state.push(objs);
                     }
                     state.push(v);
@@ -2926,9 +2926,9 @@ public class PdfReader implements PdfViewerPreferences {
                         }
                     }
                     if (objs == null) {
-						state.push(new Object[]{keys, dic, new Integer(k + 1)});
+						state.push(new Object[]{keys, dic, Integer.valueOf(k + 1)});
 					} else {
-                        objs[2] = new Integer(k + 1);
+                        objs[2] = Integer.valueOf(k + 1);
                         state.push(objs);
                     }
                     state.push(v);
@@ -3284,10 +3284,11 @@ public class PdfReader implements PdfViewerPreferences {
         void insertPage(int pageNum, final PRIndirectReference ref) {
             --pageNum;
             if (this.refsn != null) {
-                if (pageNum >= this.refsn.size())
-                    this.refsn.add(ref);
-                else
-                    this.refsn.add(pageNum, ref);
+                if (pageNum >= this.refsn.size()) {
+					this.refsn.add(ref);
+				} else {
+					this.refsn.add(pageNum, ref);
+				}
             }
             else {
                 ++this.sizep;

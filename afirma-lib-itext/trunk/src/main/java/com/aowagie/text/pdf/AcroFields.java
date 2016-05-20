@@ -387,12 +387,12 @@ public class AcroFields {
                     if (operator.equals("Tf")) { //$NON-NLS-1$
                         if (stack.size() >= 2) {
                             ret[DA_FONT] = stack.get(stack.size() - 2);
-                            ret[DA_SIZE] = new Float(stack.get(stack.size() - 1));
+                            ret[DA_SIZE] = Float.valueOf(stack.get(stack.size() - 1));
                         }
                     }
                     else if (operator.equals("g")) { //$NON-NLS-1$
                         if (stack.size() >= 1) {
-                            final float gray = new Float(stack.get(stack.size() - 1)).floatValue();
+                            final float gray = Float.valueOf(stack.get(stack.size() - 1)).floatValue();
                             if (gray != 0) {
 								ret[DA_COLOR] = new GrayColor(gray);
 							}
@@ -400,18 +400,18 @@ public class AcroFields {
                     }
                     else if (operator.equals("rg")) { //$NON-NLS-1$
                         if (stack.size() >= 3) {
-                            final float red = new Float(stack.get(stack.size() - 3)).floatValue();
-                            final float green = new Float(stack.get(stack.size() - 2)).floatValue();
-                            final float blue = new Float(stack.get(stack.size() - 1)).floatValue();
+                            final float red = Float.valueOf(stack.get(stack.size() - 3)).floatValue();
+                            final float green = Float.valueOf(stack.get(stack.size() - 2)).floatValue();
+                            final float blue = Float.valueOf(stack.get(stack.size() - 1)).floatValue();
                             ret[DA_COLOR] = new Color(red, green, blue);
                         }
                     }
                     else if (operator.equals("k")) { //$NON-NLS-1$
                         if (stack.size() >= 4) {
-                            final float cyan = new Float(stack.get(stack.size() - 4)).floatValue();
-                            final float magenta = new Float(stack.get(stack.size() - 3)).floatValue();
-                            final float yellow = new Float(stack.get(stack.size() - 2)).floatValue();
-                            final float black = new Float(stack.get(stack.size() - 1)).floatValue();
+                            final float cyan = Float.valueOf(stack.get(stack.size() - 4)).floatValue();
+                            final float magenta = Float.valueOf(stack.get(stack.size() - 3)).floatValue();
+                            final float yellow = Float.valueOf(stack.get(stack.size() - 2)).floatValue();
+                            final float black = Float.valueOf(stack.get(stack.size() - 1)).floatValue();
                             ret[DA_COLOR] = new CMYKColor(cyan, magenta, yellow, black);
                         }
                     }
@@ -449,7 +449,7 @@ public class AcroFields {
                             final PRIndirectReference por = (PRIndirectReference)po;
                             final BaseFont bp = new DocumentFont((PRIndirectReference)po);
                             tx.setFont(bp);
-                            final Integer porkey = new Integer(por.getNumber());
+                            final Integer porkey = Integer.valueOf(por.getNumber());
                             BaseFont porf = this.extensionFonts.get(porkey);
                             if (porf == null) {
                                 if (!this.extensionFonts.containsKey(porkey)) {
@@ -1444,7 +1444,7 @@ public class AcroFields {
          * @param pg
          */
         void addPage(final int pg) {
-            this.page.add(new Integer(pg));
+            this.page.add(Integer.valueOf(pg));
         }
 
         /**
@@ -1454,7 +1454,7 @@ public class AcroFields {
          * @param idx
          */
         void forcePage(final int idx, final int pg) {
-            this.page.set(idx, new Integer( pg ));
+            this.page.set(idx, Integer.valueOf( pg ));
         }
 
         /**
@@ -1475,7 +1475,7 @@ public class AcroFields {
          * @param order
          */
         void addTabOrder(final int order) {
-            this.tabOrder.add(new Integer(order));
+            this.tabOrder.add(Integer.valueOf(order));
         }
     }
 

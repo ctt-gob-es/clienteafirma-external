@@ -832,7 +832,7 @@ public class ColumnText {
         float ratio = this.spaceCharRatio;
         final Object currentValues[] = new Object[2];
         PdfFont currentFont = null;
-        final Float lastBaseFactor = new Float(0);
+        final Float lastBaseFactor = Float.valueOf(0);
         currentValues[1] = lastBaseFactor;
         PdfDocument pdf = null;
         PdfContentByte graphics = null;
@@ -1268,7 +1268,7 @@ public class ColumnText {
 						}
                     }
                     else if (obj instanceof com.aowagie.text.List) {
-                        stack.push(new Object[]{list, new Integer(k), new Float(listIndentation)});
+                        stack.push(new Object[]{list, Integer.valueOf(k), Float.valueOf(listIndentation)});
                         list = (com.aowagie.text.List)obj;
                         items = list.getItems();
                         listIndentation += list.getIndentationLeft();

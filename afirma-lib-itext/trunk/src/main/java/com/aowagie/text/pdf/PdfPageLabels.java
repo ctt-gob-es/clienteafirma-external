@@ -104,7 +104,7 @@ class PdfPageLabels {
         if (firstPage != 1) {
 			dic.put(PdfName.ST, new PdfNumber(firstPage));
 		}
-        this.map.put(new Integer(page - 1), dic);
+        this.map.put(Integer.valueOf(page - 1), dic);
     }
 
 

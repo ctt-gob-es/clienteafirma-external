@@ -510,7 +510,7 @@ public final class SimpleXMLParser {
      * @param	s	a state to add to the stack
      */
     private void saveState(final int s) {
-    	this.stack.push(new Integer(s));
+    	this.stack.push(Integer.valueOf(s));
     }
     /**
      * Flushes the text that is currently in the buffer.
