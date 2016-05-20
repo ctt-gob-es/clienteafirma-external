@@ -111,20 +111,20 @@ public final class Perl5Compiler implements PatternCompiler {
 
 	static {
 		__hashPOSIX = new HashMap<String, Character>();
-		__hashPOSIX.put("alnum", new Character(OpCode._ALNUMC)); //$NON-NLS-1$
-		__hashPOSIX.put("word", new Character(OpCode._ALNUM)); //$NON-NLS-1$
-		__hashPOSIX.put("alpha", new Character(OpCode._ALPHA)); //$NON-NLS-1$
-		__hashPOSIX.put("blank", new Character(OpCode._BLANK)); //$NON-NLS-1$
-		__hashPOSIX.put("cntrl", new Character(OpCode._CNTRL)); //$NON-NLS-1$
-		__hashPOSIX.put("digit", new Character(OpCode._DIGIT)); //$NON-NLS-1$
-		__hashPOSIX.put("graph", new Character(OpCode._GRAPH)); //$NON-NLS-1$
-		__hashPOSIX.put("lower", new Character(OpCode._LOWER)); //$NON-NLS-1$
-		__hashPOSIX.put("print", new Character(OpCode._PRINT)); //$NON-NLS-1$
-		__hashPOSIX.put("punct", new Character(OpCode._PUNCT)); //$NON-NLS-1$
-		__hashPOSIX.put("space", new Character(OpCode._SPACE)); //$NON-NLS-1$
-		__hashPOSIX.put("upper", new Character(OpCode._UPPER)); //$NON-NLS-1$
-		__hashPOSIX.put("xdigit", new Character(OpCode._XDIGIT)); //$NON-NLS-1$
-		__hashPOSIX.put("ascii", new Character(OpCode._ASCII)); //$NON-NLS-1$
+		__hashPOSIX.put("alnum", Character.valueOf(OpCode._ALNUMC)); //$NON-NLS-1$
+		__hashPOSIX.put("word", Character.valueOf(OpCode._ALNUM)); //$NON-NLS-1$
+		__hashPOSIX.put("alpha", Character.valueOf(OpCode._ALPHA)); //$NON-NLS-1$
+		__hashPOSIX.put("blank", Character.valueOf(OpCode._BLANK)); //$NON-NLS-1$
+		__hashPOSIX.put("cntrl", Character.valueOf(OpCode._CNTRL)); //$NON-NLS-1$
+		__hashPOSIX.put("digit", Character.valueOf(OpCode._DIGIT)); //$NON-NLS-1$
+		__hashPOSIX.put("graph", Character.valueOf(OpCode._GRAPH)); //$NON-NLS-1$
+		__hashPOSIX.put("lower", Character.valueOf(OpCode._LOWER)); //$NON-NLS-1$
+		__hashPOSIX.put("print", Character.valueOf(OpCode._PRINT)); //$NON-NLS-1$
+		__hashPOSIX.put("punct", Character.valueOf(OpCode._PUNCT)); //$NON-NLS-1$
+		__hashPOSIX.put("space", Character.valueOf(OpCode._SPACE)); //$NON-NLS-1$
+		__hashPOSIX.put("upper", Character.valueOf(OpCode._UPPER)); //$NON-NLS-1$
+		__hashPOSIX.put("xdigit", Character.valueOf(OpCode._XDIGIT)); //$NON-NLS-1$
+		__hashPOSIX.put("ascii", Character.valueOf(OpCode._ASCII)); //$NON-NLS-1$
 	}
 
 	/**

@@ -113,63 +113,29 @@ public final class MagicParser extends DefaultHandler {
     }
 
     @Override
-	public void startDocument() throws SAXException { /* No implementado */ }
+	public void startDocument() { /* No implementado */ }
 
     @Override
-	public void endDocument() throws SAXException { /* No implementado */ }
+	public void endDocument() { /* No implementado */ }
 
     @Override
-	public void processingInstruction(final String target, final String data) throws SAXException {
+	public void processingInstruction(final String target, final String data) {
         // do nothing
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param ch DOCUMENT ME!
-     * @param offset DOCUMENT ME!
-     * @param length DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
-	public void characters(final char[] ch, final int offset, final int length)
-        throws SAXException
-    {
+	public void characters(final char[] ch, final int offset, final int length) {
         final String value = new String(ch, offset, length);
         this.finalValue += value;
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param ch DOCUMENT ME!
-     * @param offset DOCUMENT ME!
-     * @param length DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
-	public void ignorableWhitespace(final char[] ch, final int offset, final int length)
-        throws SAXException
-    {
+	public void ignorableWhitespace(final char[] ch, final int offset, final int length) {
         // do nothing
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param uri DOCUMENT ME!
-     * @param localName DOCUMENT ME!
-     * @param qname DOCUMENT ME!
-     * @param attributes DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
-	public void startElement(final String uri, final String localName, final String qname, final Attributes attributes)
-        throws SAXException
-    {
+	public void startElement(final String uri, final String localName, final String qname, final Attributes attributes) {
 
         // create a new matcher
         if (localName.equals("match")) { //$NON-NLS-1$
@@ -202,12 +168,12 @@ public final class MagicParser extends DefaultHandler {
 
                     if (attrLocalName.equals("offset")) { //$NON-NLS-1$
                         if (!attrValue.equals("")) { //$NON-NLS-1$
-                            this.match.setOffset(new Integer(attrValue).intValue());
+                            this.match.setOffset(Integer.valueOf(attrValue).intValue());
                         }
                     }
                     else if (attrLocalName.equals("length")) { //$NON-NLS-1$
                         if (!attrValue.equals("")) { //$NON-NLS-1$
-                            this.match.setLength(new Integer(attrValue).intValue());
+                            this.match.setLength(Integer.valueOf(attrValue).intValue());
                         }
                     }
                     else if (attrLocalName.equals("type")) { //$NON-NLS-1$
@@ -265,17 +231,8 @@ public final class MagicParser extends DefaultHandler {
         }
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param uri DOCUMENT ME!
-     * @param localName DOCUMENT ME!
-     * @param qname DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
-	public void endElement(final String uri, final String localName, final String qname) throws SAXException {
+	public void endElement(final String uri, final String localName, final String qname) {
 
         // determine which tag these chars are for and save them
         if (this.isMimeType) {
@@ -346,44 +303,19 @@ public final class MagicParser extends DefaultHandler {
         }
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param ex DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
-	public void warning(final SAXParseException ex)
-        throws SAXException
-    {
+	public void warning(final SAXParseException ex) {
         // FIXME
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param ex DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
 	public void error(final SAXParseException ex) throws SAXException {
         // FIXME
         throw ex;
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param ex DOCUMENT ME!
-     *
-     * @throws SAXException DOCUMENT ME!
-     */
     @Override
-	public void fatalError(final SAXParseException ex)
-        throws SAXException
-    {
+	public void fatalError(final SAXParseException ex) throws SAXException {
         // FIXME
         throw ex;
     }

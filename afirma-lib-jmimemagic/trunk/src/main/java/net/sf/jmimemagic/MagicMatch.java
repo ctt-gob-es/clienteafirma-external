@@ -319,17 +319,8 @@ public class MagicMatch implements Cloneable, Serializable {
         return false;
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws CloneNotSupportedException DOCUMENT ME!
-     */
     @Override
-	protected Object clone()
-        throws CloneNotSupportedException
-    {
+	protected Object clone() {
         final MagicMatch clone = new MagicMatch();
         clone.setBitmask(Long.toString(this.bitmask, 8));
         clone.setComparator("" + this.comparator); //$NON-NLS-1$

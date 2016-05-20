@@ -45,6 +45,7 @@ import org.mozilla.universalchardet.prober.MBCSGroupProber;
 import org.mozilla.universalchardet.prober.SBCSGroupProber;
 
 
+/** UniversalDetector. */
 public final class UniversalDetector {
     ////////////////////////////////////////////////////////////////
     // constants
@@ -80,6 +81,7 @@ public final class UniversalDetector {
     // methods
     ////////////////////////////////////////////////////////////////
 
+    /** Constructor. */
     public UniversalDetector() {
         this.escCharsetProber = null;
         this.probers = new CharsetProber[3];
@@ -90,20 +92,24 @@ public final class UniversalDetector {
         reset();
     }
 
+    /** Gets the completition status.
+     * @return <code>true</code> if it is done, <code>false</code> otherwise. */
     public boolean isDone() {
         return this.done;
     }
 
-    /**
+    /** Gets the detected charset.
      * @return The detected encoding is returned. If the detector couldn't
-     *          determine what encoding was used, null is returned.
-     */
+     *          determine what encoding was used, null is returned. */
     public String getDetectedCharset() {
         return this.detectedCharset;
     }
 
-    public void handleData(final byte[] buf, final int offset, final int length)
-    {
+    /** Handle data.
+     * @param buf Data to handle.
+     * @param offset Initial data offset.
+     * @param length Data length. */
+    public void handleData(final byte[] buf, final int offset, final int length) {
         if (this.done) {
             return;
         }
@@ -215,8 +221,8 @@ public final class UniversalDetector {
         }
     }
 
-    public void dataEnd()
-    {
+    /** Indicate the end of data input. */
+    public void dataEnd() {
         if (!this.gotData) {
             return;
         }
