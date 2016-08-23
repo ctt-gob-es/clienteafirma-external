@@ -73,7 +73,7 @@ public class PdfAnnotation extends PdfDictionary {
     /** flagvalue */
     static final int FLAGS_HIDDEN = 2;
     /** flagvalue */
-    static final int FLAGS_PRINT = 4;
+    public static final int FLAGS_PRINT = 4;
 
 
     /** flagvalue */
