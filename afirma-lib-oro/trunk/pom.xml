@@ -21,8 +21,8 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/tree/master/${project.name}/trunk</connection>
-		<url>https://github.com/ctt-gob-es/clienteafirma-external/tree/master/${project.name}/trunk</url>
+		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external.git</connection>
+		<url>https://github.com/ctt-gob-es/clienteafirma-external.git</url>
 	</scm>
 	
 	<distributionManagement>
