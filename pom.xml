@@ -16,8 +16,8 @@
 	</modules>
 
 	<scm>
-		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
-		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
+		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external</connection>
+		<url>https://github.com/ctt-gob-es/clienteafirma-external</url>
 	  <tag>support-libraries_1.0.0</tag>
   </scm>
 	
