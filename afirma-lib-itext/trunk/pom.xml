@@ -39,10 +39,10 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<scm>
-		<connection>scm:svn:http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/${project.name}/trunk</connection>
-		<url>http://svn-ctt.administracionelectronica.gob.es/svn/clienteafirma/support-libraries/${project.name}/trunk</url>
+		<connection>scm:git:git://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
+		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
 	</scm>
 	
 	<distributionManagement>
