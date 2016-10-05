@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma</groupId>
 	<artifactId>afirma-lib-oro</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5-SNAPSHOT</version>
 	<name>afirma-lib-oro</name>
 
 	<properties>
@@ -22,7 +22,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external.git</connection>
 		<url>https://github.com/ctt-gob-es/clienteafirma-external.git</url>
-    <tag>afirma-lib-oro_0.0.4</tag>
+    <tag>HEAD</tag>
   </scm>
 	
 	<distributionManagement>
