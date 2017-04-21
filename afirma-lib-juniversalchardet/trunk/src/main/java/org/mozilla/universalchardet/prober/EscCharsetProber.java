@@ -44,6 +44,7 @@ import org.mozilla.universalchardet.prober.statemachine.ISO2022JPSMModel;
 import org.mozilla.universalchardet.prober.statemachine.ISO2022KRSMModel;
 import org.mozilla.universalchardet.prober.statemachine.SMModel;
 
+/** Sonda para el juego de carcateres ESC. */
 public class EscCharsetProber extends CharsetProber
 {
     ////////////////////////////////////////////////////////////////
@@ -63,6 +64,8 @@ public class EscCharsetProber extends CharsetProber
     ////////////////////////////////////////////////////////////////
     // methods
     ////////////////////////////////////////////////////////////////
+
+    /** Construye una sonda para el juego de carcateres ESC. */
     public EscCharsetProber()
     {
         super();
@@ -129,8 +132,8 @@ public class EscCharsetProber extends CharsetProber
     public void reset()
     {
         this.state = ProbingState.DETECTING;
-        for (int i=0; i<this.codingSM.length; ++i) {
-            this.codingSM[i].reset();
+        for (final CodingStateMachine element : this.codingSM) {
+            element.reset();
         }
         this.activeSM = this.codingSM.length;
         this.detectedCharset = null;

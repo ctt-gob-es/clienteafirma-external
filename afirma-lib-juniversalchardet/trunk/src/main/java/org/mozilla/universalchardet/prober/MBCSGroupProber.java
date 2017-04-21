@@ -38,6 +38,7 @@
 
 package org.mozilla.universalchardet.prober;
 
+/** Sonda para MBCS. */
 public class MBCSGroupProber extends CharsetProber
 {
     ////////////////////////////////////////////////////////////////
@@ -53,6 +54,8 @@ public class MBCSGroupProber extends CharsetProber
     ////////////////////////////////////////////////////////////////
     // methods
     ////////////////////////////////////////////////////////////////
+
+    /** Construye una sonda para MBCS. */
     public MBCSGroupProber()
     {
         super();

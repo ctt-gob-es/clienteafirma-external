@@ -42,6 +42,7 @@ import java.nio.ByteBuffer;
 
 import org.mozilla.universalchardet.Constants;
 
+/** Sonda para Latin-1. */
 public class Latin1Prober extends CharsetProber
 {
     ////////////////////////////////////////////////////////////////
@@ -70,6 +71,8 @@ public class Latin1Prober extends CharsetProber
     ////////////////////////////////////////////////////////////////
     // methods
     ////////////////////////////////////////////////////////////////
+
+    /** Construye una sonda para Latin-1. */
     public Latin1Prober()
     {
         super();
@@ -94,8 +97,8 @@ public class Latin1Prober extends CharsetProber
 
         float confidence;
         int total = 0;
-        for (int i=0; i<this.freqCounter.length; ++i) {
-            total += this.freqCounter[i];
+        for (final int element : this.freqCounter) {
+            total += element;
         }
 
         if (total <= 0) {
