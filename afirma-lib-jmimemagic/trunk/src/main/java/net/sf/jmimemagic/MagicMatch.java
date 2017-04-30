@@ -348,7 +348,6 @@ public class MagicMatch implements Cloneable, Serializable {
         clone.setTest(ByteBuffer.wrap(this.test));
         clone.setType(this.type);
 
-        // TODO Auto-generated method stub
         return clone;
     }
 }
