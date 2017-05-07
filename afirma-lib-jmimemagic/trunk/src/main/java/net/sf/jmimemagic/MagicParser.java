@@ -27,20 +27,17 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
-/**
- * DOCUMENT ME!
- *
- * @author $Author$
- * @version $Revision$
-  */
+/** Analizador del XML de identificaci&oacute;n de tipos de fichero. */
 public final class MagicParser extends DefaultHandler {
     private static String magicFile = "/magic.xml"; //$NON-NLS-1$
 
@@ -66,11 +63,14 @@ public final class MagicParser extends DefaultHandler {
             try {
             	this.parser = (XMLReader) MagicMatcher.classForName(
         			"com.sun.org.apache.xerces.internal.parsers.SAXParser" //$NON-NLS-1$
-    			).newInstance();
+    			).getDeclaredConstructor().newInstance();
             }
             catch (final Exception e) {
+            	Logger.getLogger("es.gob.afirma").info( //$NON-NLS-1$
+        			"No se ha podido obtener el analizador SAX de Apache Xerces, se usara el por defecto: " + e //$NON-NLS-1$
+    			);
             	try {
-            		this.parser = XMLReaderFactory.createXMLReader();
+            		this.parser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             	}
             	catch (final Exception e2) {
             		throw new MagicParseException("unable to instantiate parser", e2); //$NON-NLS-1$
@@ -96,7 +96,7 @@ public final class MagicParser extends DefaultHandler {
                 // ignore
             }
             catch (final Exception e) {
-                throw new MagicParseException("parse error occurred - " + e.getMessage()); //$NON-NLS-1$
+                throw new MagicParseException("Parse error occurred: " + e); //$NON-NLS-1$
             }
 
             this.initialized = true;

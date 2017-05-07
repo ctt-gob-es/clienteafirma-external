@@ -532,7 +532,7 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         try {
         	final Class<?> detectorClass = classForName(detectorClassName);
-        	final Object detectorObject = detectorClass.newInstance();
+        	final Object detectorObject = detectorClass.getDeclaredConstructor().newInstance();
         	final Method processMethod = detectorClass.getDeclaredMethod("process", byte[].class, //$NON-NLS-1$
         			Integer.TYPE, Integer.TYPE, Long.TYPE, Character.TYPE, String.class, Map.class);
         	final String[] types =  (String[]) processMethod.invoke(detectorObject, data.array(), Integer.valueOf(this.match.getOffset()), Integer.valueOf(this.match.getLength()),
@@ -560,7 +560,7 @@ public class MagicMatcher implements Cloneable, Serializable {
 
         try {
         	final Class<?> detectorClass = classForName(detectorClassName);
-        	final Object detectorObject = detectorClass.newInstance();
+        	final Object detectorObject = detectorClass.getDeclaredConstructor().newInstance();
         	final Method getHandledTypesMethod = detectorClass.getDeclaredMethod("getHandledTypes"); //$NON-NLS-1$
 
         	return (String[]) getHandledTypesMethod.invoke(detectorObject);
