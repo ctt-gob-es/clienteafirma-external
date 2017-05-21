@@ -2251,10 +2251,18 @@ public class PdfWriter extends DocWriter implements
 
 //  [F12] tagged PDF
 
-    private final boolean tagged = false;
+    private boolean tagged = false;
     private PdfStructureTreeRoot structureTreeRoot;
 
-
+    /**
+     * Mark this document for tagging. It must be called before open.
+     */
+    public void setTagged() {
+        if (this.open) {
+			throw new IllegalArgumentException("Tagging must be set before opening the document.");
+		}
+        this.tagged = true;
+    }
 
     /**
      * Check if the document is marked for tagging.

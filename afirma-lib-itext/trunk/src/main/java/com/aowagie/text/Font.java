@@ -712,7 +712,7 @@ public class Font implements Comparable {
 			if (dStyle == style1) {
 				return new Font(this.baseFont, dSize, dStyle, dColor);
 			} else {
-				return FontFactory.getFont(this.getFamilyname(), dSize, dStyle,
+				return FontFactory.getFont(getFamilyname(), dSize, dStyle,
 						dColor);
 			}
 		}

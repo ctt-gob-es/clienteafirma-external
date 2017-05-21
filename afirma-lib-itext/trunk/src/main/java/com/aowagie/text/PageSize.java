@@ -64,6 +64,6 @@ public class PageSize {
     public static final Rectangle LETTER = new RectangleReadOnly(612,792);
 
     /** This is the a4 format */
-    static final Rectangle A4 = new RectangleReadOnly(595,842);
+    public static final Rectangle A4 = new RectangleReadOnly(595,842);
 
 }

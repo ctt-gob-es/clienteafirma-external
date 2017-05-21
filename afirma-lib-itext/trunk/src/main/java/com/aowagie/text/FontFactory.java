@@ -51,6 +51,7 @@ package com.aowagie.text;
 
 import java.awt.Color;
 import java.util.Properties;
+import java.util.Set;
 
 import com.aowagie.text.pdf.BaseFont;
 
@@ -68,54 +69,54 @@ public final class FontFactory {
     public static final String COURIER = BaseFont.COURIER;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String COURIER_BOLD = BaseFont.COURIER_BOLD;
+    public static final String COURIER_BOLD = BaseFont.COURIER_BOLD;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String COURIER_OBLIQUE = BaseFont.COURIER_OBLIQUE;
+    public static final String COURIER_OBLIQUE = BaseFont.COURIER_OBLIQUE;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String COURIER_BOLDOBLIQUE = BaseFont.COURIER_BOLDOBLIQUE;
+    public static final String COURIER_BOLDOBLIQUE = BaseFont.COURIER_BOLDOBLIQUE;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String HELVETICA = BaseFont.HELVETICA;
+    public static final String HELVETICA = BaseFont.HELVETICA;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String HELVETICA_BOLD = BaseFont.HELVETICA_BOLD;
+    public static final String HELVETICA_BOLD = BaseFont.HELVETICA_BOLD;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String HELVETICA_OBLIQUE = BaseFont.HELVETICA_OBLIQUE;
+    public static final String HELVETICA_OBLIQUE = BaseFont.HELVETICA_OBLIQUE;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String HELVETICA_BOLDOBLIQUE = BaseFont.HELVETICA_BOLDOBLIQUE;
+    public static final String HELVETICA_BOLDOBLIQUE = BaseFont.HELVETICA_BOLDOBLIQUE;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String SYMBOL = BaseFont.SYMBOL;
+    public static final String SYMBOL = BaseFont.SYMBOL;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String TIMES = "Times";
+    public static final String TIMES = "Times";
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String TIMES_ROMAN = BaseFont.TIMES_ROMAN;
+    public static final String TIMES_ROMAN = BaseFont.TIMES_ROMAN;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String TIMES_BOLD = BaseFont.TIMES_BOLD;
+    public static final String TIMES_BOLD = BaseFont.TIMES_BOLD;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String TIMES_ITALIC = BaseFont.TIMES_ITALIC;
+    public static final String TIMES_ITALIC = BaseFont.TIMES_ITALIC;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String TIMES_BOLDITALIC = BaseFont.TIMES_BOLDITALIC;
+    public static final String TIMES_BOLDITALIC = BaseFont.TIMES_BOLDITALIC;
 
 /** This is a possible value of a base 14 type 1 font */
-    static final String ZAPFDINGBATS = BaseFont.ZAPFDINGBATS;
+    public static final String ZAPFDINGBATS = BaseFont.ZAPFDINGBATS;
 
     private static FontFactoryImp fontImp = new FontFactoryImp();
 
 /** This is the default encoding to use. */
-    private static String defaultEncoding = BaseFont.WINANSI;
+    public static String defaultEncoding = BaseFont.WINANSI;
 
 /** This is the default value of the <VAR>embedded</VAR> variable. */
-    private static boolean defaultEmbedding = BaseFont.NOT_EMBEDDED;
+    public static boolean defaultEmbedding = BaseFont.NOT_EMBEDDED;
 
 /** Creates new FontFactory */
     private FontFactory() {
@@ -133,8 +134,26 @@ public final class FontFactory {
  * @return the Font constructed based on the parameters
  */
 
-    private static Font getFont(final String fontname, final String encoding, final boolean embedded, final float size, final int style, final Color color) {
+    public static Font getFont(final String fontname, final String encoding, final boolean embedded, final float size, final int style, final Color color) {
         return fontImp.getFont(fontname, encoding, embedded, size, style, color);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
+ * @param       embedded    true if the font is to be embedded in the PDF
+ * @param	size	    the size of this font
+ * @param	style	    the style of this font
+ * @param	color	    the <CODE>Color</CODE> of this font.
+ * @param	cached 		true if the font comes from the cache or is added to
+ * 				the cache if new, false if the font is always created new
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final String encoding, final boolean embedded, final float size, final int style, final Color color, final boolean cached) {
+        return fontImp.getFont(fontname, encoding, embedded, size, style, color, cached);
     }
 
 /**
@@ -169,16 +188,260 @@ public final class FontFactory {
  * Constructs a <CODE>Font</CODE>-object.
  *
  * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
+ * @param       embedded    true if the font is to be embedded in the PDF
+ * @param	size	    the size of this font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final String encoding, final boolean embedded, final float size) {
+        return getFont(fontname, encoding, embedded, size, Font.UNDEFINED, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
+ * @param       embedded    true if the font is to be embedded in the PDF
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final String encoding, final boolean embedded) {
+        return getFont(fontname, encoding, embedded, Font.UNDEFINED, Font.UNDEFINED, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
  * @param	size	    the size of this font
  * @param	style	    the style of this font
  * @param	color	    the <CODE>Color</CODE> of this font.
  * @return the Font constructed based on the parameters
  */
 
-    static Font getFont(final String fontname, final float size, final int style, final Color color) {
+    public static Font getFont(final String fontname, final String encoding, final float size, final int style, final Color color) {
+        return getFont(fontname, encoding, defaultEmbedding, size, style, color);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
+ * @param	size	    the size of this font
+ * @param	style	    the style of this font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final String encoding, final float size, final int style) {
+        return getFont(fontname, encoding, defaultEmbedding, size, style, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
+ * @param	size	    the size of this font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final String encoding, final float size) {
+        return getFont(fontname, encoding, defaultEmbedding, size, Font.UNDEFINED, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	encoding    the encoding of the font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final String encoding) {
+        return getFont(fontname, encoding, defaultEmbedding, Font.UNDEFINED, Font.UNDEFINED, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	size	    the size of this font
+ * @param	style	    the style of this font
+ * @param	color	    the <CODE>Color</CODE> of this font.
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final float size, final int style, final Color color) {
         return getFont(fontname, defaultEncoding, defaultEmbedding, size, style, color);
     }
 
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	size	    the size of this font
+ * @param	color	    the <CODE>Color</CODE> of this font.
+ * @return the Font constructed based on the parameters
+ * @since 2.1.0
+ */
 
+    public static Font getFont(final String fontname, final float size, final Color color) {
+        return getFont(fontname, defaultEncoding, defaultEmbedding, size, Font.UNDEFINED, color);
+    }
 
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	size	    the size of this font
+ * @param	style	    the style of this font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final float size, final int style) {
+        return getFont(fontname, defaultEncoding, defaultEmbedding, size, style, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @param	size	    the size of this font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname, final float size) {
+        return getFont(fontname, defaultEncoding, defaultEmbedding, size, Font.UNDEFINED, null);
+    }
+
+/**
+ * Constructs a <CODE>Font</CODE>-object.
+ *
+ * @param	fontname    the name of the font
+ * @return the Font constructed based on the parameters
+ */
+
+    public static Font getFont(final String fontname) {
+        return getFont(fontname, defaultEncoding, defaultEmbedding, Font.UNDEFINED, Font.UNDEFINED, null);
+    }
+
+    /**
+     * Register a font by giving explicitly the font family and name.
+     * @param familyName the font family
+     * @param fullName the font name
+     * @param path the font path
+     */
+    public void registerFamily(final String familyName, final String fullName, final String path) {
+        fontImp.registerFamily(familyName, fullName, path);
+    }
+
+/**
+ * Register a ttf- or a ttc-file.
+ *
+ * @param   path    the path to a ttf- or ttc-file
+ */
+
+    public static void register(final String path) {
+        register(path, null);
+    }
+
+/**
+ * Register a font file and use an alias for the font contained in it.
+ *
+ * @param   path    the path to a font file
+ * @param   alias   the alias you want to use for the font
+ */
+
+    public static void register(final String path, final String alias) {
+        fontImp.register(path, alias);
+    }
+
+    /** Register all the fonts in a directory.
+     * @param dir the directory
+     * @return the number of fonts registered
+     */
+    public static int registerDirectory(final String dir) {
+        return fontImp.registerDirectory(dir);
+    }
+
+    /**
+     * Register all the fonts in a directory and possibly its subdirectories.
+     * @param dir the directory
+     * @param scanSubdirectories recursively scan subdirectories if <code>true</true>
+     * @return the number of fonts registered
+     * @since 2.1.2
+     */
+    public static int registerDirectory(final String dir, final boolean scanSubdirectories) {
+        return fontImp.registerDirectory(dir, scanSubdirectories);
+    }
+
+    /** Register fonts in some probable directories. It usually works in Windows,
+     * Linux and Solaris.
+     * @return the number of fonts registered
+     */
+    public static int registerDirectories() {
+        return fontImp.registerDirectories();
+    }
+
+/**
+ * Gets a set of registered fontnames.
+ * @return a set of registered fonts
+ */
+
+    public static Set getRegisteredFonts() {
+        return fontImp.getRegisteredFonts();
+    }
+
+/**
+ * Gets a set of registered fontnames.
+ * @return a set of registered font families
+ */
+
+    public static Set getRegisteredFamilies() {
+        return fontImp.getRegisteredFamilies();
+    }
+
+/**
+ * Gets a set of registered fontnames.
+ * @param fontname of a font that may or may not be registered
+ * @return true if a given font is registered
+ */
+
+    public static boolean contains(final String fontname) {
+        return fontImp.isRegistered(fontname);
+    }
+
+/**
+ * Checks if a certain font is registered.
+ *
+ * @param   fontname    the name of the font that has to be checked.
+ * @return  true if the font is found
+ */
+
+    public static boolean isRegistered(final String fontname) {
+        return fontImp.isRegistered(fontname);
+    }
+
+    /**
+     * Gets the font factory implementation.
+     * @return the font factory implementation
+     */
+    public static FontFactoryImp getFontImp() {
+        return fontImp;
+    }
+
+    /**
+     * Sets the font factory implementation.
+     * @param fontImp the font factory implementation
+     */
+    public static void setFontImp(final FontFactoryImp fontImp) {
+        if (fontImp == null) {
+			throw new NullPointerException("FontFactoryImp cannot be null.");
+		}
+        FontFactory.fontImp = fontImp;
+    }
 }

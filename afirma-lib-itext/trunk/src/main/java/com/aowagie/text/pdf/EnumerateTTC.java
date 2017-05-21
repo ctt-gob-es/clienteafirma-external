@@ -50,7 +50,7 @@
 package com.aowagie.text.pdf;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import com.aowagie.text.DocumentException;
 /** Enumerates all the fonts inside a True Type Collection.
@@ -59,59 +59,60 @@ import com.aowagie.text.DocumentException;
  */
 class EnumerateTTC extends TrueTypeFont{
 
-    private String[] names;
+    protected String[] names;
 
-    EnumerateTTC(final String ttcFile) throws DocumentException, IOException {
-        this.fileName = ttcFile;
-        this.rf = new RandomAccessFileOrArray(ttcFile);
+    EnumerateTTC(String ttcFile) throws DocumentException, IOException {
+        fileName = ttcFile;
+        rf = new RandomAccessFileOrArray(ttcFile);
         findNames();
     }
 
-
-
-    private void findNames() throws DocumentException, IOException {
-        this.tables = new LinkedHashMap();
-
+    EnumerateTTC(byte ttcArray[]) throws DocumentException, IOException {
+        fileName = "Byte array TTC";
+        rf = new RandomAccessFileOrArray(ttcArray);
+        findNames();
+    }
+    
+    void findNames() throws DocumentException, IOException {
+        tables = new HashMap();
+        
         try {
-            final String mainTag = readStandardString(4);
-            if (!mainTag.equals("ttcf")) {
-				throw new DocumentException(this.fileName + " is not a valid TTC file.");
-			}
-            this.rf.skipBytes(4);
-            final int dirCount = this.rf.readInt();
-            this.names = new String[dirCount];
-            final int dirPos = this.rf.getFilePointer();
+            String mainTag = readStandardString(4);
+            if (!mainTag.equals("ttcf"))
+                throw new DocumentException(fileName + " is not a valid TTC file.");
+            rf.skipBytes(4);
+            int dirCount = rf.readInt();
+            names = new String[dirCount];
+            int dirPos = rf.getFilePointer();
             for (int dirIdx = 0; dirIdx < dirCount; ++dirIdx) {
-                this.tables.clear();
-                this.rf.seek(dirPos);
-                this.rf.skipBytes(dirIdx * 4);
-                this.directoryOffset = this.rf.readInt();
-                this.rf.seek(this.directoryOffset);
-                if (this.rf.readInt() != 0x00010000) {
-					throw new DocumentException(this.fileName + " is not a valid TTF file.");
-				}
-                final int num_tables = this.rf.readUnsignedShort();
-                this.rf.skipBytes(6);
+                tables.clear();
+                rf.seek(dirPos);
+                rf.skipBytes(dirIdx * 4);
+                directoryOffset = rf.readInt();
+                rf.seek(directoryOffset);
+                if (rf.readInt() != 0x00010000)
+                    throw new DocumentException(fileName + " is not a valid TTF file.");
+                int num_tables = rf.readUnsignedShort();
+                rf.skipBytes(6);
                 for (int k = 0; k < num_tables; ++k) {
-                    final String tag = readStandardString(4);
-                    this.rf.skipBytes(4);
-                    final int table_location[] = new int[2];
-                    table_location[0] = this.rf.readInt();
-                    table_location[1] = this.rf.readInt();
-                    this.tables.put(tag, table_location);
+                    String tag = readStandardString(4);
+                    rf.skipBytes(4);
+                    int table_location[] = new int[2];
+                    table_location[0] = rf.readInt();
+                    table_location[1] = rf.readInt();
+                    tables.put(tag, table_location);
                 }
-                this.names[dirIdx] = getBaseFont();
+                names[dirIdx] = getBaseFont();
             }
         }
         finally {
-            if (this.rf != null) {
-				this.rf.close();
-			}
+            if (rf != null)
+                rf.close();
         }
     }
-
+    
     String[] getNames() {
-        return this.names;
+        return names;
     }
 
 }

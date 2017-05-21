@@ -58,10 +58,12 @@ import com.aowagie.text.Font;
 import com.aowagie.text.Phrase;
 import com.aowagie.text.Rectangle;
 
-/** Supports text, combo and list fields generating the correct appearances.
+/**
+ * Supports text, combo and list fields generating the correct appearances.
  * All the option in the Acrobat GUI are supported in an easy to use API.
- * @author Paulo Soares (psoares@consiste.pt) */
-public final class TextField extends BaseField {
+ * @author Paulo Soares (psoares@consiste.pt)
+ */
+public class TextField extends BaseField {
 
     /** Holds value of property defaultText. */
     private String defaultText;
@@ -80,11 +82,13 @@ public final class TextField extends BaseField {
     private float extraMarginLeft;
     private float extraMarginTop;
 
-    /** Creates a new <CODE>TextField</CODE>.
+    /**
+     * Creates a new <CODE>TextField</CODE>.
      * @param writer the document <CODE>PdfWriter</CODE>
      * @param box the field location and dimensions
      * @param fieldName the field name. If <CODE>null</CODE> only the widget keys
-     * will be included in the field allowing it to be used as a kid field. */
+     * will be included in the field allowing it to be used as a kid field.
+     */
     public TextField(final PdfWriter writer, final Rectangle box, final String fieldName) {
         super(writer, box, fieldName);
     }
@@ -135,7 +139,7 @@ public final class TextField extends BaseField {
      * @return String
      * @since	2.1.5
      */
-    private static String removeCRLF(final String text) {
+    public static String removeCRLF(final String text) {
         if (text.indexOf('\n') >= 0 || text.indexOf('\r') >= 0) {
             final char[] p = text.toCharArray();
             final StringBuffer sb = new StringBuffer(p.length);
@@ -165,7 +169,7 @@ public final class TextField extends BaseField {
      * @return String
      * @since	2.1.5
      */
-    private static String obfuscatePassword(final String text) {
+    public static String obfuscatePassword(final String text) {
     	final char[] pchar = new char[text.length()];
     	for (int i = 0; i < text.length(); i++) {
 			pchar[i] = '*';
@@ -511,7 +515,7 @@ public final class TextField extends BaseField {
         return getChoiceField(true);
     }
 
-    private PdfFormField getChoiceField(final boolean isList) throws IOException, DocumentException {
+    protected PdfFormField getChoiceField(final boolean isList) throws IOException, DocumentException {
         this.options &= ~MULTILINE & ~COMB;
         String uchoices[] = this.choices;
         if (uchoices == null) {
@@ -699,7 +703,7 @@ public final class TextField extends BaseField {
      * @param extraMarginLeft the extra margin left
      * @param extraMarginTop the extra margin top
      */
-    void setExtraMargin(final float extraMarginLeft, final float extraMarginTop) {
+    public void setExtraMargin(final float extraMarginLeft, final float extraMarginTop) {
         this.extraMarginLeft = extraMarginLeft;
         this.extraMarginTop = extraMarginTop;
     }
