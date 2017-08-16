@@ -290,7 +290,7 @@ public class PdfWriter extends DocWriter implements
          * Constructs a new <CODE>PdfBody</CODE>.
          * @param writer
          */
-        private PdfBody(final PdfWriter writer) {
+        PdfBody(final PdfWriter writer) {
             this.xrefs = new TreeSet();
             this.xrefs.add(new PdfCrossReference(0, 0, GENERATION_MAX));
             this.position = writer.getOs().getCounter();

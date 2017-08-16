@@ -151,15 +151,24 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         return this.sigApp;
     }
 
-    /**
-     * Closes the document. No more content can be written after the
+    /** Closes the document. No more content can be written after the
      * document is closed.
      * <p>
      * If closing a signed document with an external signature the closing must be done
      * in the <CODE>PdfSignatureAppearance</CODE> instance.
      * @throws DocumentException on error
-     * @throws IOException on error
-     */
+     * @throws IOException on error. */
+    public void close() throws DocumentException, IOException {
+    	close(new GregorianCalendar());
+    }
+
+    /** Closes the document. No more content can be written after the
+     * document is closed.
+     * <p>
+     * If closing a signed document with an external signature the closing must be done
+     * in the <CODE>PdfSignatureAppearance</CODE> instance.
+     * @throws DocumentException on error
+     * @throws IOException on error. */
     public void close(final Calendar globalDate) throws DocumentException, IOException {
         if (!this.hasSignature) {
             this.stamper.close(this.moreInfo, globalDate);

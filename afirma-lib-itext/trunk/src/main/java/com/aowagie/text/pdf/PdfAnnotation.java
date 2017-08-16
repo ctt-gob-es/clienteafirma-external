@@ -423,7 +423,7 @@ public class PdfAnnotation extends PdfDictionary {
         getMK().put(PdfName.R, new PdfNumber(rotation));
     }
 
-    private static PdfArray getMKColor(final Color color) {
+    static PdfArray getMKColor(final Color color) {
         final PdfArray array = new PdfArray();
         final int type = ExtendedColor.getType(color);
         switch (type) {
