@@ -110,7 +110,7 @@ public final class Perl5Compiler implements PatternCompiler {
 	private static final HashMap<String, Character> __hashPOSIX;
 
 	static {
-		__hashPOSIX = new HashMap<String, Character>();
+		__hashPOSIX = new HashMap<>();
 		__hashPOSIX.put("alnum", Character.valueOf(OpCode._ALNUMC)); //$NON-NLS-1$
 		__hashPOSIX.put("word", Character.valueOf(OpCode._ALNUM)); //$NON-NLS-1$
 		__hashPOSIX.put("alpha", Character.valueOf(OpCode._ALPHA)); //$NON-NLS-1$

@@ -45,7 +45,7 @@ import org.apache.oro.text.perl.Perl5Util;
  * @author $Author: arimus $
  * @version $Revision: 1.1 $ */
 @SuppressWarnings("javadoc")
-public class MagicMatcher implements Cloneable, Serializable {
+public final class MagicMatcher implements Cloneable, Serializable {
 
 	// En Android hay que establecer cual es el controlador SAX
 	static {
@@ -56,7 +56,7 @@ public class MagicMatcher implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = -1109707428218614961L;
 
-	private final ArrayList<MagicMatcher> subMatchers = new ArrayList<MagicMatcher>(0);
+	private final ArrayList<MagicMatcher> subMatchers = new ArrayList<>(0);
     private MagicMatch match = null;
 
 
@@ -134,91 +134,91 @@ public class MagicMatcher implements Cloneable, Serializable {
         final String type = this.match.getType();
         this.match.getMimeType();
 
-        final RandomAccessFile file = new RandomAccessFile(f, "r"); //$NON-NLS-1$
+        try (
+    		final RandomAccessFile file = new RandomAccessFile(f, "r"); //$NON-NLS-1$
+		) {
 
-        int length = 0;
+	        int length = 0;
 
-        if (type.equals("byte")) { //$NON-NLS-1$
-            length = 1;
+	        if (type.equals("byte")) { //$NON-NLS-1$
+	            length = 1;
+	        }
+	        else if (type.equals("short") || type.equals("leshort") || type.equals("beshort")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            length = 4;
+	        }
+	        else if (type.equals("long") || type.equals("lelong") || type.equals("belong")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	            length = 8;
+	        }
+	        else if (type.equals("string")) { //$NON-NLS-1$
+	            length = this.match.getTest().capacity();
+	        }
+	        else if (type.equals("regex")) { //$NON-NLS-1$
+	            length = (int) file.length() - offset;
+
+	            if (length < 0) {
+	                length = 0;
+	            }
+	        }
+	        else if (type.equals("detector")) { //$NON-NLS-1$
+	            length = (int) file.length() - offset;
+
+	            if (length < 0) {
+	                length = 0;
+	            }
+	        }
+	        else {
+	            throw new UnsupportedTypeException("unsupported test type '" + type + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+	        }
+
+	        // we know this match won't work since there isn't enough data for the test
+	        if (length > file.length() - offset) {
+	            return null;
+	        }
+
+	        final byte[] buf = new byte[length];
+	        file.seek(offset);
+
+	        int bytesRead = 0;
+	        int size = 0;
+	        boolean done = false;
+
+	        while (!done) {
+	            size = file.read(buf, 0, length - bytesRead);
+
+	            if (size == -1) {
+	                throw new IOException("reached end of file before all bytes were read"); //$NON-NLS-1$
+	            }
+
+	            bytesRead += size;
+
+	            if (bytesRead == length) {
+	                done = true;
+	            }
+	        }
+
+	        MagicMatch match1 = null;
+	        MagicMatch submatch = null;
+
+	        if (testInternal(buf)) {
+	            // set the top level match to this one
+	            match1 = getMatch();
+
+	            // set the data on this match
+	            if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
+
+	                for (int i = 0; i < this.subMatchers.size(); i++) {
+
+	                    final MagicMatcher m = this.subMatchers.get(i);
+
+	                    if ((submatch = m.test(f, false)) != null) {
+	                        match1.addSubMatch(submatch);
+	                    }
+	                }
+	            }
+	        }
+	        return match1;
         }
-        else if (type.equals("short") || type.equals("leshort") || type.equals("beshort")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            length = 4;
-        }
-        else if (type.equals("long") || type.equals("lelong") || type.equals("belong")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            length = 8;
-        }
-        else if (type.equals("string")) { //$NON-NLS-1$
-            length = this.match.getTest().capacity();
-        }
-        else if (type.equals("regex")) { //$NON-NLS-1$
-            length = (int) file.length() - offset;
 
-            if (length < 0) {
-                length = 0;
-            }
-        }
-        else if (type.equals("detector")) { //$NON-NLS-1$
-            length = (int) file.length() - offset;
-
-            if (length < 0) {
-                length = 0;
-            }
-        }
-        else {
-        	file.close();
-            throw new UnsupportedTypeException("unsupported test type '" + type + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
-        // we know this match won't work since there isn't enough data for the test
-        if (length > file.length() - offset) {
-        	file.close();
-            return null;
-        }
-
-        final byte[] buf = new byte[length];
-        file.seek(offset);
-
-        int bytesRead = 0;
-        int size = 0;
-        boolean done = false;
-
-        while (!done) {
-            size = file.read(buf, 0, length - bytesRead);
-
-            if (size == -1) {
-            	file.close();
-                throw new IOException("reached end of file before all bytes were read"); //$NON-NLS-1$
-            }
-
-            bytesRead += size;
-
-            if (bytesRead == length) {
-                done = true;
-            }
-        }
-
-        MagicMatch match1 = null;
-        MagicMatch submatch = null;
-
-        if (testInternal(buf)) {
-            // set the top level match to this one
-            match1 = getMatch();
-
-            // set the data on this match
-            if (onlyMimeMatch == false && this.subMatchers != null && this.subMatchers.size() > 0) {
-
-                for (int i = 0; i < this.subMatchers.size(); i++) {
-
-                    final MagicMatcher m = this.subMatchers.get(i);
-
-                    if ((submatch = m.test(f, false)) != null) {
-                        match1.addSubMatch(submatch);
-                    }
-                }
-            }
-        }
-        file.close();
-        return match1;
     }
 
     /** Test to see if this match or any submatches match.
@@ -602,7 +602,7 @@ public class MagicMatcher implements Cloneable, Serializable {
         clone.setMatch((MagicMatch) this.match.clone());
 
         final Iterator<MagicMatcher> i = this.subMatchers.iterator();
-        final ArrayList<MagicMatcher> sub = new ArrayList<MagicMatcher>();
+        final ArrayList<MagicMatcher> sub = new ArrayList<>();
 
         while (i.hasNext()) {
             final MagicMatcher m = i.next();
@@ -627,7 +627,7 @@ public class MagicMatcher implements Cloneable, Serializable {
     private static ClassLoader getCleanClassLoader() {
         ClassLoader classLoader = MagicMatcher.class.getClassLoader();
         if (classLoader instanceof URLClassLoader && !classLoader.getClass().toString().contains("sun.plugin2.applet.JNLP2ClassLoader")) { //$NON-NLS-1$
-        	final List<URL> urls = new ArrayList<URL>();
+        	final List<URL> urls = new ArrayList<>();
         	for (final URL url : ((URLClassLoader) classLoader).getURLs()) {
         		if (url.toString().endsWith(".jar")) { //$NON-NLS-1$
         			urls.add(url);

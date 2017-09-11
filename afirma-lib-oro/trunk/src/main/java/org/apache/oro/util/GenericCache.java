@@ -98,7 +98,7 @@ public abstract class GenericCache implements Cache, java.io.Serializable {
 	GenericCache(final int cap) {
 		int capacity = cap;
 		this._numEntries = 0;
-		this._table = new HashMap<Object, Object>(capacity);
+		this._table = new HashMap<>(capacity);
 		this._cache = new GenericCacheEntry[capacity];
 
 		while (--capacity >= 0) {

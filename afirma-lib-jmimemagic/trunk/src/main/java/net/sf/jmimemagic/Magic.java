@@ -27,17 +27,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
-/**
- * This class is the primary class for jMimeMagic
+/** This class is the primary class for jMimeMagic
  * @author $Author: arimus $
- * @version $Revision: 1.8 $
- */
+ * @version $Revision: 1.8 $ */
 @SuppressWarnings("javadoc")
-public class Magic {
+public final class Magic {
     private static boolean initialized = false;
     private static MagicParser magicParser = null;
-    private static HashMap<String, ArrayList<MagicMatcher>> hintMap = new HashMap<String, ArrayList<MagicMatcher>>();
+    private static HashMap<String, ArrayList<MagicMatcher>> hintMap = new HashMap<>();
 
     /**
      * Add a hint to use the specified matcher for the given extension
@@ -50,7 +47,7 @@ public class Magic {
             final ArrayList<MagicMatcher> a = hintMap.get(extension);
             a.add(matcher);
         } else {
-            final ArrayList<MagicMatcher> a = new ArrayList<MagicMatcher>();
+            final ArrayList<MagicMatcher> a = new ArrayList<>();
             a.add(matcher);
             hintMap.put(extension, a);
         }
