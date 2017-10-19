@@ -81,6 +81,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -741,7 +742,7 @@ public final class SimpleXMLParser {
         // UTF-8 with a BOM
         final int b2 = b4[2] & 0xFF;
         if (b0 == 0xEF && b1 == 0xBB && b2 == 0xBF) {
-            return "UTF-8";
+            return StandardCharsets.UTF_8.name();
         }
 
         // other encodings
@@ -782,6 +783,6 @@ public final class SimpleXMLParser {
         }
 
         // default encoding
-        return "UTF-8";
+        return StandardCharsets.UTF_8.name();
     }
 }

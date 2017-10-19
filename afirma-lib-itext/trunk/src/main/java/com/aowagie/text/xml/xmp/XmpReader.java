@@ -49,6 +49,7 @@ package com.aowagie.text.xml.xmp;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -171,7 +172,7 @@ public class XmpReader {
 		final XmlDomWriter xw = new XmlDomWriter();
         final ByteArrayOutputStream fout = new ByteArrayOutputStream();
         xw.setOutput(fout, null);
-        fout.write(XmpWriter.XPACKET_PI_BEGIN.getBytes("UTF-8"));
+        fout.write(XmpWriter.XPACKET_PI_BEGIN.getBytes(StandardCharsets.UTF_8));
         fout.flush();
         final NodeList xmpmeta = this.domDocument.getElementsByTagName("x:xmpmeta");
         xw.write(xmpmeta.item(0));

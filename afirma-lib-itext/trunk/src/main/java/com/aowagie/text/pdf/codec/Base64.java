@@ -1,5 +1,7 @@
 package com.aowagie.text.pdf.codec;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
@@ -123,7 +125,7 @@ public class Base64 {
 
 
     /** Preferred encoding. */
-    private final static String PREFERRED_ENCODING = "UTF-8";
+    private final static String PREFERRED_ENCODING = StandardCharsets.UTF_8.name();
 
 
     // I think I end up not using the BAD_ENCODING indicator.
