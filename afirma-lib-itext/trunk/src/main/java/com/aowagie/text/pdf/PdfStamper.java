@@ -72,8 +72,7 @@ import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
  * <p>
  * It is also possible to change the field values and to
  * flatten them. New fields can be added but not flattened.
- * @author Paulo Soares (psoares@consiste.pt)
- */
+ * @author Paulo Soares (psoares@consiste.pt). */
 public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /**
      * The writer
@@ -94,8 +93,17 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         this.stamper = new PdfStamperImp(reader, os, '\0', false, globalDate);
     }
 
-    /**
-     * Starts the process of adding extra content to an existing PDF
+    /** Starts the process of adding extra content to an existing PDF
+     * document.
+     * @param reader the original document. It cannot be reused
+     * @param os the output stream
+     * @throws DocumentException on error
+     * @throws IOException on error. */
+    public PdfStamper(final PdfReader reader, final OutputStream os) throws DocumentException, IOException {
+        this.stamper = new PdfStamperImp(reader, os, '\0', false, new GregorianCalendar());
+    }
+
+    /** Starts the process of adding extra content to an existing PDF
      * document, possibly as a new revision.
      * @param reader the original document. It cannot be reused
      * @param os the output stream
@@ -104,17 +112,14 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * @param append if <CODE>true</CODE> appends the document changes as a new revision. This is
      * only useful for multiple signatures as nothing is gained in speed or memory
      * @throws DocumentException on error
-     * @throws IOException on error
-     */
+     * @throws IOException on error. */
     private PdfStamper(final PdfReader reader, final OutputStream os, final char pdfVersion, final boolean append, final Calendar globalDate) throws DocumentException, IOException {
         this.stamper = new PdfStamperImp(reader, os, pdfVersion, append, globalDate);
     }
 
     /** Gets the optional <CODE>String</CODE> map to add or change values in
      * the info dictionary.
-     * @return the map or <CODE>null</CODE>
-     *
-     */
+     * @return the map or <CODE>null</CODE>. */
     public Map getMoreInfo() {
         return this.moreInfo;
     }
@@ -122,9 +127,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /** An optional <CODE>String</CODE> map to add or change values in
      * the info dictionary. Entries with <CODE>null</CODE>
      * values delete the key in the original info dictionary
-     * @param moreInfo additional entries to the info dictionary
-     *
-     */
+     * @param moreInfo additional entries to the info dictionary. */
     public void setMoreInfo(final Map moreInfo) {
         this.moreInfo = moreInfo;
     }
@@ -148,15 +151,24 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         return this.sigApp;
     }
 
-    /**
-     * Closes the document. No more content can be written after the
+    /** Closes the document. No more content can be written after the
      * document is closed.
      * <p>
      * If closing a signed document with an external signature the closing must be done
      * in the <CODE>PdfSignatureAppearance</CODE> instance.
      * @throws DocumentException on error
-     * @throws IOException on error
-     */
+     * @throws IOException on error. */
+    public void close() throws DocumentException, IOException {
+    	close(new GregorianCalendar());
+    }
+
+    /** Closes the document. No more content can be written after the
+     * document is closed.
+     * <p>
+     * If closing a signed document with an external signature the closing must be done
+     * in the <CODE>PdfSignatureAppearance</CODE> instance.
+     * @throws DocumentException on error
+     * @throws IOException on error. */
     public void close(final Calendar globalDate) throws DocumentException, IOException {
         if (!this.hasSignature) {
             this.stamper.close(this.moreInfo, globalDate);

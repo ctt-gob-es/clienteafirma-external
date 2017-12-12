@@ -57,53 +57,62 @@ import com.aowagie.text.Rectangle;
  */
 public class PdfFormField extends PdfAnnotation {
 
-    static final int FF_READ_ONLY = 1;
-    static final int FF_REQUIRED = 2;
-
-    private static final int FF_NO_TOGGLE_TO_OFF = 16384;
-    static final int FF_RADIO = 32768;
-    static final int FF_PUSHBUTTON = 65536;
-    static final int FF_MULTILINE = 4096;
-    static final int FF_PASSWORD = 8192;
-    static final int FF_COMBO = 131072;
-    static final int FF_EDIT = 262144;
-    static final int FF_FILESELECT = 1048576;
-
-    static final int FF_DONOTSPELLCHECK = 4194304;
-    static final int FF_DONOTSCROLL = 8388608;
-    static final int FF_COMB = 16777216;
-    static final int FF_RADIOSINUNISON = 1 << 25;
-
-    static final int Q_CENTER = 1;
-    static final int Q_RIGHT = 2;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private static PdfName mergeTarget[] = {PdfName.FONT, PdfName.XOBJECT, PdfName.COLORSPACE, PdfName.PATTERN};
+    public static final int FF_READ_ONLY = 1;
+    public static final int FF_REQUIRED = 2;
+    public static final int FF_NO_EXPORT = 4;
+    public static final int FF_NO_TOGGLE_TO_OFF = 16384;
+    public static final int FF_RADIO = 32768;
+    public static final int FF_PUSHBUTTON = 65536;
+    public static final int FF_MULTILINE = 4096;
+    public static final int FF_PASSWORD = 8192;
+    public static final int FF_COMBO = 131072;
+    public static final int FF_EDIT = 262144;
+    public static final int FF_FILESELECT = 1048576;
+    public static final int FF_MULTISELECT = 2097152;
+    public static final int FF_DONOTSPELLCHECK = 4194304;
+    public static final int FF_DONOTSCROLL = 8388608;
+    public static final int FF_COMB = 16777216;
+    public static final int FF_RADIOSINUNISON = 1 << 25;
+    public static final int Q_LEFT = 0;
+    public static final int Q_CENTER = 1;
+    public static final int Q_RIGHT = 2;
+    public static final int MK_NO_ICON = 0;
+    public static final int MK_NO_CAPTION = 1;
+    public static final int MK_CAPTION_BELOW = 2;
+    public static final int MK_CAPTION_ABOVE = 3;
+    public static final int MK_CAPTION_RIGHT = 4;
+    public static final int MK_CAPTION_LEFT = 5;
+    public static final int MK_CAPTION_OVERLAID = 6;
+    public static final PdfName IF_SCALE_ALWAYS = PdfName.A;
+    public static final PdfName IF_SCALE_BIGGER = PdfName.B;
+    public static final PdfName IF_SCALE_SMALLER = PdfName.S;
+    public static final PdfName IF_SCALE_NEVER = PdfName.N;
+    public static final PdfName IF_SCALE_ANAMORPHIC = PdfName.A;
+    public static final PdfName IF_SCALE_PROPORTIONAL = PdfName.P;
+    public static final boolean MULTILINE = true;
+    public static final boolean SINGLELINE = false;
+    public static final boolean PLAINTEXT = false;
+    public static final boolean PASSWORD = true;
+    static PdfName mergeTarget[] = {PdfName.FONT, PdfName.XOBJECT, PdfName.COLORSPACE, PdfName.PATTERN};
 
     /** Holds value of property parent. */
-    private PdfFormField parent;
+    protected PdfFormField parent;
 
-    private ArrayList kids;
+    protected ArrayList kids;
 
+/**
+ * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
+ */
 
+    public PdfFormField(final PdfWriter writer, final float llx, final float lly, final float urx, final float ury, final PdfAction action) {
+        super(writer, llx, lly, urx, ury, action);
+        put(PdfName.TYPE, PdfName.ANNOT);
+        put(PdfName.SUBTYPE, PdfName.WIDGET);
+        this.annotation = true;
+    }
 
     /** Creates new PdfFormField */
-    private PdfFormField(final PdfWriter writer) {
+    protected PdfFormField(final PdfWriter writer) {
         super(writer, null);
         this.form = true;
         this.annotation = false;
@@ -119,7 +128,7 @@ public class PdfFormField extends PdfAnnotation {
 		}
     }
 
-    static PdfFormField createEmpty(final PdfWriter writer) {
+    public static PdfFormField createEmpty(final PdfWriter writer) {
         final PdfFormField field = new PdfFormField(writer);
         return field;
     }
@@ -131,25 +140,25 @@ public class PdfFormField extends PdfAnnotation {
 		}
     }
 
-    private static PdfFormField createButton(final PdfWriter writer, final int flags) {
+    protected static PdfFormField createButton(final PdfWriter writer, final int flags) {
         final PdfFormField field = new PdfFormField(writer);
         field.setButton(flags);
         return field;
     }
 
-    static PdfFormField createPushButton(final PdfWriter writer) {
+    public static PdfFormField createPushButton(final PdfWriter writer) {
         return createButton(writer, FF_PUSHBUTTON);
     }
 
-    static PdfFormField createCheckBox(final PdfWriter writer) {
+    public static PdfFormField createCheckBox(final PdfWriter writer) {
         return createButton(writer, 0);
     }
 
-    static PdfFormField createRadioButton(final PdfWriter writer, final boolean noToggleToOff) {
+    public static PdfFormField createRadioButton(final PdfWriter writer, final boolean noToggleToOff) {
         return createButton(writer, FF_RADIO + (noToggleToOff ? FF_NO_TOGGLE_TO_OFF : 0));
     }
 
-    static PdfFormField createTextField(final PdfWriter writer, final boolean multiline, final boolean password, final int maxLen) {
+    public static PdfFormField createTextField(final PdfWriter writer, final boolean multiline, final boolean password, final int maxLen) {
         final PdfFormField field = new PdfFormField(writer);
         field.put(PdfName.FT, PdfName.TX);
         int flags = multiline ? FF_MULTILINE : 0;
@@ -161,7 +170,7 @@ public class PdfFormField extends PdfAnnotation {
         return field;
     }
 
-    private static PdfFormField createChoice(final PdfWriter writer, final int flags, final PdfArray options, final int topIndex) {
+    protected static PdfFormField createChoice(final PdfWriter writer, final int flags, final PdfArray options, final int topIndex) {
         final PdfFormField field = new PdfFormField(writer);
         field.put(PdfName.FT, PdfName.CH);
         field.put(PdfName.FF, new PdfNumber(flags));
@@ -172,23 +181,23 @@ public class PdfFormField extends PdfAnnotation {
         return field;
     }
 
-    static PdfFormField createList(final PdfWriter writer, final String options[], final int topIndex) {
+    public static PdfFormField createList(final PdfWriter writer, final String options[], final int topIndex) {
         return createChoice(writer, 0, processOptions(options), topIndex);
     }
 
-    static PdfFormField createList(final PdfWriter writer, final String options[][], final int topIndex) {
+    public static PdfFormField createList(final PdfWriter writer, final String options[][], final int topIndex) {
         return createChoice(writer, 0, processOptions(options), topIndex);
     }
 
-    static PdfFormField createCombo(final PdfWriter writer, final boolean edit, final String options[], final int topIndex) {
+    public static PdfFormField createCombo(final PdfWriter writer, final boolean edit, final String options[], final int topIndex) {
         return createChoice(writer, FF_COMBO + (edit ? FF_EDIT : 0), processOptions(options), topIndex);
     }
 
-    static PdfFormField createCombo(final PdfWriter writer, final boolean edit, final String options[][], final int topIndex) {
+    public static PdfFormField createCombo(final PdfWriter writer, final boolean edit, final String options[][], final int topIndex) {
         return createChoice(writer, FF_COMBO + (edit ? FF_EDIT : 0), processOptions(options), topIndex);
     }
 
-    private static PdfArray processOptions(final String options[]) {
+    protected static PdfArray processOptions(final String options[]) {
         final PdfArray array = new PdfArray();
         for (final String option : options) {
             array.add(new PdfString(option, PdfObject.TEXT_UNICODE));
@@ -196,7 +205,7 @@ public class PdfFormField extends PdfAnnotation {
         return array;
     }
 
-    private static PdfArray processOptions(final String options[][]) {
+    protected static PdfArray processOptions(final String options[][]) {
         final PdfArray array = new PdfArray();
         for (final String[] subOption : options) {
             final PdfArray ar2 = new PdfArray(new PdfString(subOption[0], PdfObject.TEXT_UNICODE));
@@ -231,7 +240,7 @@ public class PdfFormField extends PdfAnnotation {
         return this.kids;
     }
 
-    int setFieldFlags(final int flags) {
+    public int setFieldFlags(final int flags) {
         final PdfNumber obj = (PdfNumber)get(PdfName.FF);
         int old;
         if (obj == null) {
@@ -330,7 +339,7 @@ public class PdfFormField extends PdfAnnotation {
         put(PdfName.DR, dic);
     }
 
-    static PdfAnnotation shallowDuplicate(final PdfAnnotation annot) {
+    public static PdfAnnotation shallowDuplicate(final PdfAnnotation annot) {
         PdfAnnotation dup;
         if (annot.isForm()) {
             dup = new PdfFormField(annot.writer);

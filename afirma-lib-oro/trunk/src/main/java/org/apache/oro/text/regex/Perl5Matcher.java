@@ -91,7 +91,7 @@ public final class Perl5Matcher implements PatternMatcher {
 	private char[] __program;
 	private int __expSize, __inputOffset, __lastParen;
 	private int[] __beginMatchOffsets, __endMatchOffsets;
-	private final Stack<int[]> __stack = new Stack<int[]>();
+	private final Stack<int[]> __stack = new Stack<>();
 	private Perl5MatchResult __lastMatchResult = null;
 
 	private static boolean __compare(final char[] s1, final int s1off,

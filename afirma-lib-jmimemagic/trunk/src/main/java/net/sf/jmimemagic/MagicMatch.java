@@ -30,14 +30,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-/**
- * This class represents a single match test
- *
+/** This class represents a single match test
  * @author $Author: arimus $
- * @version $Revision: 1.10 $
- */
-public class MagicMatch implements Cloneable, Serializable {
+ * @version $Revision: 1.10 $ */
+public final class MagicMatch implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = -1070505530849518849L;
 
@@ -54,7 +50,7 @@ public class MagicMatch implements Cloneable, Serializable {
     private String type = ""; //$NON-NLS-1$
     private long bitmask = 0xFFFFFFFFL;
     private char comparator = '\0';
-    private final ArrayList<MagicMatch> subMatches = new ArrayList<MagicMatch>(0);
+    private final ArrayList<MagicMatch> subMatches = new ArrayList<>(0);
     private Map<String, String> properties;
 
     /** Set the mime type for this magic match. */
@@ -331,12 +327,12 @@ public class MagicMatch implements Cloneable, Serializable {
         clone.setOffset(this.offset);
 
         // these properties should only be String types, so we shouldn't have to clone them
-        final HashMap<String, String> m = new HashMap<String, String>();
+        final HashMap<String, String> m = new HashMap<>();
         m.putAll(this.properties);
         clone.setProperties(m);
 
         final Iterator<MagicMatch> i = this.subMatches.iterator();
-        final ArrayList<MagicMatch> a = new ArrayList<MagicMatch>();
+        final ArrayList<MagicMatch> a = new ArrayList<>();
 
         while (i.hasNext()) {
             final MagicMatch mm = i.next();

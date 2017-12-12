@@ -43,8 +43,8 @@ public final class MagicParser extends DefaultHandler {
 
     private boolean initialized = false;
     private XMLReader parser = null;
-    private final ArrayList<MagicMatcher> stack = new ArrayList<MagicMatcher>();
-    private final Collection<MagicMatcher> matchers = new ArrayList<MagicMatcher>();
+    private final ArrayList<MagicMatcher> stack = new ArrayList<>();
+    private final Collection<MagicMatcher> matchers = new ArrayList<>();
     private MagicMatcher matcher = null;
     private MagicMatch match = null;
     private HashMap<String, String> properties = null;
@@ -212,7 +212,7 @@ public final class MagicParser extends DefaultHandler {
                 // save the property to our map
                 if (name != null && value != null) {
                     if (this.properties == null) {
-                        this.properties = new HashMap<String, String>();
+                        this.properties = new HashMap<>();
                     }
 
                     if (!this.properties.containsKey(name)) {

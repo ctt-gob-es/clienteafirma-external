@@ -52,6 +52,7 @@ package com.aowagie.text.xml.xmp;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import com.aowagie.text.pdf.PdfDate;
 import com.aowagie.text.pdf.PdfDictionary;
@@ -68,7 +69,7 @@ import com.aowagie.text.pdf.PdfWriter;
 public class XmpWriter {
 
 	/** A possible charset for the XMP. */
-	private static final String UTF8 = "UTF-8";
+	private static final String UTF8 = StandardCharsets.UTF_8.name();
 
 	/** String used to fill the extra space. */
 	static final String EXTRASPACE = "                                                                                                   \n";
