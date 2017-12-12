@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>es.gob.afirma</groupId>
+	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>afirma-lib-jmimemagic</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<name>afirma-lib-jmimemagic</name>
 
 	<properties>
@@ -13,9 +13,9 @@
   
 	<dependencies>
 		<dependency>
-			<groupId>es.gob.afirma</groupId>
+			<groupId>es.gob.afirma.lib</groupId>
 			<artifactId>afirma-lib-oro</artifactId>
-			<version>0.0.3-SNAPSHOT</version>
+			<version>0.0.3</version>
 		</dependency>
 		
 		<dependency>
@@ -30,17 +30,6 @@
 		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
 		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
 	</scm>
-	
-	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<url>http://devel01.uji.es:8080/nexus/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://devel01.uji.es:8080/nexus/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 	
 	<build>
 		<plugins>

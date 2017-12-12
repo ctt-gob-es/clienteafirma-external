@@ -2,10 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>es.gob.afirma</groupId>
+	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>support-libraries</artifactId>
 	<version>1.0.0</version>
-	<name>support-libraries</name>
 	<packaging>pom</packaging>
 	
 	<modules>
@@ -16,21 +15,24 @@
 		<module>afirma-lib-itext-android/trunk</module>
 	</modules>
 
-	<scm>
-		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
-		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
-	</scm>
+	<name>support-libraries</name>
+	<description>Bibliotecas externas modificadas del Cliente @firma</description>
+	<url>https://administracionelectronica.gob.es/ctt/clienteafirma</url>
 	
-	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<url>http://devel01.uji.es:8080/nexus/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://devel01.uji.es:8080/nexus/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+	<developers>
+		<developer>
+			<name>Secretaría General de Administración Digital</name>
+			<email>soporte.afirma@correo.gob.es</email>
+			<organization>Gobierno de España</organization>
+			<organizationUrl>https://administracionelectronica.gob.es</organizationUrl>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external.git</connection>
+		<developerConnection>scm:git:ssh://github.com/ctt-gob-es/clienteafirma-external.git</developerConnection>
+		<url>https://github.com/ctt-gob-es/clienteafirma-external</url>
+	</scm>
 
 	<build>
 		<plugins>

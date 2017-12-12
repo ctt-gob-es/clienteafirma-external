@@ -1,14 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>es.gob.afirma</groupId>
+	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>afirma-lib-oro</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<name>afirma-lib-oro</name>
 
 	<properties>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 	</properties>
+	
+	<scm>
+		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
+		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
+	</scm>
   
 	<dependencies>
 		<dependency>
@@ -18,22 +23,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
-	<scm>
-		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external.git</connection>
-		<url>https://github.com/ctt-gob-es/clienteafirma-external.git</url>
-  </scm>
-	
-	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<url>http://devel01.uji.es:8080/nexus/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://devel01.uji.es:8080/nexus/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+
 	
 	<build>
 		<plugins>
