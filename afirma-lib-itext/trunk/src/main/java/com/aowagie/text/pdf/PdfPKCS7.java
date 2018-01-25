@@ -245,6 +245,12 @@ public class PdfPKCS7 {
         allowedDigests.put("RIPEMD-256", "1.3.36.3.2.3");
     }
 
+    /** Obtiene el PKCS&#35;1 de la firma PKCS&#35;7 del PDF.
+     * @return PKCS&#35;1 de la firma PKCS&#35;7 del PDF. */
+    public byte[] getPkcs1() {
+    	return this.digest != null ? this.digest.clone() : null;
+    }
+
     /**
      * Gets the digest name for a certain id
      * @param oid	an id (for instance "1.2.840.113549.2.5")
