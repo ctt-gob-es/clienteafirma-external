@@ -23,12 +23,12 @@ For more information, please email arimus@users.sourceforge.net
 package net.sf.jmimemagic.detectors;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import net.sf.jmimemagic.MagicDetector;
-
 import org.apache.oro.text.perl.Perl5Util;
+
+import net.sf.jmimemagic.MagicDetector;
 
 
 /**
@@ -117,24 +117,20 @@ public final class TextFileDetector implements MagicDetector
      * @return DOCUMENT ME!
      */
     @Override
-	public String[] process(final byte[] data, final int offset, final int length, final long bitmask, final char comparator,
-        final String mimeType, final Map<String, String> params)
-    {
+	public String[] process(final byte[] data,
+			                final int offset,
+			                final int length,
+			                final long bitmask,
+			                final char comparator,
+			                final String mimeType,
+			                final Map<String, String> params) {
 
         final Perl5Util util = new Perl5Util();
-
-        try {
-            final String s = new String(data, "UTF-8"); //$NON-NLS-1$
-
-            if (!util.match("/[^[:ascii:][:space:]]/", s)) { //$NON-NLS-1$
-                return new String[] { "text/plain" }; //$NON-NLS-1$
-            }
-
-            return null;
-        } catch (final UnsupportedEncodingException e) {
-
-            return null;
+        final String s = new String(data, StandardCharsets.UTF_8);
+        if (!util.match("/[^[:ascii:][:space:]]/", s)) { //$NON-NLS-1$
+            return new String[] { "text/plain" }; //$NON-NLS-1$
         }
+        return null;
     }
 
     /**
