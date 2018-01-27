@@ -57,31 +57,31 @@ import com.aowagie.text.pdf.PdfChunk;
  */
 
 public interface SplitCharacter {
-    
+
     /**
      * Returns <CODE>true</CODE> if the character can split a line. The splitting implementation
      * is free to look ahead or look behind characters to make a decision.
      * <p>
      * The default implementation is:
      * <p>
-     * <pre>
+     * <code>
      * public boolean isSplitCharacter(int start, int current, int end, char[] cc, PdfChunk[] ck) {
      *    char c;
      *    if (ck == null)
      *        c = cc[current];
      *    else
      *        c = (char) ck[Math.min(current, ck.length - 1)].getUnicodeEquivalent(cc[current]);
-     *    if (c <= ' ' || c == '-') {
+     *    if (c &lt;= ' ' || c == '-') {
      *        return true;
      *    }
-     *    if (c < 0x2e80)
+     *    if (c &lt; 0x2e80)
      *        return false;
-     *    return ((c >= 0x2e80 && c < 0xd7a0)
-     *    || (c >= 0xf900 && c < 0xfb00)
-     *    || (c >= 0xfe30 && c < 0xfe50)
-     *    || (c >= 0xff61 && c < 0xffa0));
+     *    return ((c &gt;= 0x2e80 &amp;&amp; c &gt; 0xd7a0)
+     *    || (c &gt;= 0xf900 &amp;&amp; c &lt; 0xfb00)
+     *    || (c &gt;= 0xfe30 &amp;&amp; c &lt; 0xfe50)
+     *    || (c &gt;= 0xff61 &amp;&amp; c &lt; 0xffa0));
      * }
-     * </pre>
+     * </code>
      * @param start the lower limit of <CODE>cc</CODE> inclusive
      * @param current the pointer to the character in <CODE>cc</CODE>
      * @param end the upper limit of <CODE>cc</CODE> exclusive

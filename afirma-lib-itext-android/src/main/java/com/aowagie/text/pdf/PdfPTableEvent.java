@@ -54,11 +54,11 @@ package com.aowagie.text.pdf;
  * @author Paulo Soares (psoares@consiste.pt)
  */
 public interface PdfPTableEvent {
-    
+
     /** This method is called at the end of the table rendering. The text or graphics are added to
      * one of the 4 <CODE>PdfContentByte</CODE> contained in
      * <CODE>canvases</CODE>.<br>
-     * The indexes to <CODE>canvases</CODE> are:<p>
+     * The indexes to <CODE>canvases</CODE> are:
      * <ul>
      * <li><CODE>PdfPTable.BASECANVAS</CODE> - the original <CODE>PdfContentByte</CODE>. Anything placed here
      * will be under the table.
@@ -73,7 +73,7 @@ public interface PdfPTableEvent {
      * The size of the <CODE>widths</CODE> array is the number of rows.
      * Each sub-array in <CODE>widths</CODE> corresponds to the x column border positions where
      * the first element is the x coordinate of the left table border and the last
-     * element is the x coordinate of the right table border. 
+     * element is the x coordinate of the right table border.
      * If colspan is not used all the sub-arrays in <CODE>widths</CODE>
      * are the same.<br>
      * For the <CODE>heights</CODE> the first element is the y coordinate of the top table border and the last
@@ -86,7 +86,7 @@ public interface PdfPTableEvent {
      * @param headerRows the number of rows defined for the header.
      * @param rowStart the first row number after the header
      * @param canvases an array of <CODE>PdfContentByte</CODE>
-     */    
+     */
     public void tableLayout(PdfPTable table, float widths[][], float heights[], int headerRows, int rowStart, PdfContentByte[] canvases);
 
 }

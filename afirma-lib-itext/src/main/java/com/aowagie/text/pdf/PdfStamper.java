@@ -445,7 +445,6 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * can be used normally as the signature is only applied when closing.
      * <p>
      * A possible use for adding a signature without invalidating an existing one is:
-     * <p>
      * <pre>
      * KeyStore ks = KeyStore.getInstance("pkcs12");
      * ks.load(new FileInputStream("my_private_key.pfx"), "my_password".toCharArray());
@@ -492,7 +491,6 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * can be used normally as the signature is only applied when closing.
      * <p>
      * A possible use for adding a signature without invalidating an existing one is:
-     * <p>
      * <pre>
      * KeyStore ks = KeyStore.getInstance("pkcs12");
      * ks.load(new FileInputStream("my_private_key.pfx"), "my_password".toCharArray());

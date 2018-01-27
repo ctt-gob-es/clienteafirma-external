@@ -67,11 +67,10 @@ import java.util.Set;
  * A dictionary is generally used to collect and tie together the attributes
  * of a complex object, with each key-value pair specifying the name and value
  * of an attribute.<BR>
- * A dictionary is represented by two left angle brackets (<<), followed by a
- * sequence of key-value pairs, followed by two right angle brackets (>>).<BR>
+ * A dictionary is represented by two left angle brackets (&lt;&lt;), followed by a
+ * sequence of key-value pairs, followed by two right angle brackets (&gt;&gt;).<BR>
  * This object is described in the 'Portable Document Format Reference Manual
  * version 1.7' section 3.2.6 (page 59-60).
- * <P>
  *
  * @see		PdfObject
  * @see		PdfName
@@ -228,7 +227,7 @@ public class PdfDictionary extends PdfObject {
      * <VAR>key</VAR>.
      *
      * @param key a <CODE>PdfName</CODE>
-     * @return the </CODE>PdfObject</CODE> previously associated to the
+     * @return the <CODE>PdfObject</CODE> previously associated to the
      *   <VAR>key</VAR>
      */
     public PdfObject get(final PdfName key) {

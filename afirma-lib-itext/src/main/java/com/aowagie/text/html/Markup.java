@@ -258,7 +258,7 @@ public class Markup {
 	 *
 	 * @param s
 	 *            the <CODE>Color</CODE> that has to be converted.
-	 * @return the HTML representation of this <COLOR>Color </COLOR>
+	 * @return the HTML representation of this <CODE>Color</CODE>
 	 */
 
 	public static Color decodeColor(String s) {

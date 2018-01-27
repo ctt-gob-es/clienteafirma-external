@@ -765,7 +765,7 @@ public class PdfStamperImp extends PdfWriter {
 				}
                 final int page = item.getPage(k).intValue();
                 final PdfDictionary appDic = merged.getAsDict(PdfName.AP);
-                if (appDic != null && (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
+                if (appDic != null && (flags & PdfAnnotation.FLAGS_PRINT) != 0 && (flags & PdfAnnotation.FLAGS_HIDDEN) == 0) {
                     final PdfObject obj = appDic.get(PdfName.N);
                     PdfAppearance app = null;
                     if (obj != null) {
@@ -944,7 +944,7 @@ public class PdfStamperImp extends PdfWriter {
 				final PdfNumber ff = annDic.getAsNumber(PdfName.F);
                 final int flags = ff != null ? ff.intValue() : 0;
 
-				if ( (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0)
+				if ( (flags & PdfAnnotation.FLAGS_PRINT) != 0 && (flags & PdfAnnotation.FLAGS_HIDDEN) == 0)
 				{
 					final PdfObject obj1 = annDic.get(PdfName.AP);
 					if (obj1 == null) {
@@ -1328,7 +1328,6 @@ public class PdfStamperImp extends PdfWriter {
      * @param actionType ignore
      * @param action ignore
      * @throws PdfException ignore
-     * @see PdfStamper#setPageAction(PdfName, PdfAction, int)
      */
     @Override
 	public void setPageAction(final PdfName actionType, final PdfAction action) throws PdfException {

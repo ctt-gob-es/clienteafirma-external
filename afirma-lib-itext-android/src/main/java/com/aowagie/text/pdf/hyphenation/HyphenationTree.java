@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
  * way for fast lookup. It provides the provides the method to
  * hyphenate a word.
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * @author Carlos Villegas (cav@uniscope.co.jp)
  */
 class HyphenationTree extends TernaryTree
             implements PatternConsumer {

@@ -22,7 +22,7 @@ import java.io.Serializable;
  * This class implements a simple char vector with access to the
  * underlying array.
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * @author Carlos Villegas &lt;cav@uniscope.co.jp&gt;
  */
 class CharVector implements Cloneable, Serializable {
 

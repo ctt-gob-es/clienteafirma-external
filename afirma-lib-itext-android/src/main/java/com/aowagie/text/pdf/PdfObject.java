@@ -250,7 +250,7 @@ public abstract class PdfObject {
      * - <VAR>ARRAY</VAR>: A <CODE>PdfArray</CODE>
      * - <VAR>DICTIONARY</VAR>: A <CODE>PdfDictionary</CODE>
      * - <VAR>STREAM</VAR>: A <CODE>PdfStream</CODE>
-     * - <VAR>INDIRECT</VAR>: ><CODE>PdfIndirectObject</CODE>
+     * - <VAR>INDIRECT</VAR>: A <CODE>PdfIndirectObject</CODE>
      *
      * @return The type
      */

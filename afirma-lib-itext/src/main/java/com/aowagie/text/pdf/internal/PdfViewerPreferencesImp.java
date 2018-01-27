@@ -118,6 +118,7 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 
 	/**
 	 * Returns the page layout and page mode value.
+	 * @return Layout and mode.
 	 */
 	public int getPageLayoutAndMode() {
 		return this.pageLayoutAndMode;
@@ -125,6 +126,7 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 
 	/**
 	 * Returns the viewer preferences.
+	 * @return Dictionary.
 	 */
 	public PdfDictionary getViewerPreferences() {
 		return this.viewerPreferences;

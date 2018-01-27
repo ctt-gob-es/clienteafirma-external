@@ -28,7 +28,7 @@ import java.io.Serializable;
  * spelling if they're split across lines, like german's 'backen' which
  * hyphenates 'bak-ken'. BTW, this comes from TeX.
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * @author Carlos Villegas &lt;cav@uniscope.co.jp&gt;
  */
 
 class Hyphen implements Serializable {

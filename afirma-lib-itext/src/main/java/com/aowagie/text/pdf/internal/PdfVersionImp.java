@@ -123,6 +123,7 @@ public class PdfVersionImp implements PdfVersion {
 
 	/**
 	 * Sets the append mode.
+	 * @param appendmode Append Mode.
 	 */
 	public void setAppendmode(final boolean appendmode) {
 		this.appendmode = appendmode;
@@ -130,7 +131,8 @@ public class PdfVersionImp implements PdfVersion {
 
 	/**
 	 * Writes the header to the OutputStreamCounter.
-	 * @throws IOException
+	 * @param os OutputStream.
+	 * @throws IOException I/O Exception.
 	 */
 	public void writeHeader(final OutputStreamCounter os) throws IOException {
 		if (this.appendmode) {
@@ -147,6 +149,7 @@ public class PdfVersionImp implements PdfVersion {
 	/**
 	 * Returns the PDF version as a name.
 	 * @param version	the version character.
+	 * @return Version name.
 	 */
 	public static PdfName getVersionAsName(final char version) {
 		switch(version) {
@@ -170,6 +173,7 @@ public class PdfVersionImp implements PdfVersion {
 	/**
 	 * Returns the version as a byte[].
 	 * @param version the version character
+	 * @return Version.
 	 */
 	private byte[] getVersionAsByteArray(final char version) {
 		return DocWriter.getISOBytes(getVersionAsName(version).toString().substring(1));

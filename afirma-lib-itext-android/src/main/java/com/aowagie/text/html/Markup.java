@@ -52,10 +52,10 @@
 
 package com.aowagie.text.html;
 
-import harmony.java.awt.Color;
-
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import harmony.java.awt.Color;
 
 /**
  * A class that contains all the possible tagnames and their attributes.
@@ -259,7 +259,7 @@ public class Markup {
 	 *
 	 * @param s
 	 *            the <CODE>Color</CODE> that has to be converted.
-	 * @return the HTML representation of this <COLOR>Color </COLOR>
+	 * @return the HTML representation of this <CODE>Color </CODE>
 	 */
 
 	public static Color decodeColor(String s) {

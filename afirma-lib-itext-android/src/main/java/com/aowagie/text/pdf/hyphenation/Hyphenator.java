@@ -27,7 +27,7 @@ import com.aowagie.text.pdf.BaseFont;
  * This class is the main entry point to the hyphenation package.
  * You can use only the static methods or create an instance.
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * @author Carlos Villegas (cav@uniscope.co.jp)
  */
 public class Hyphenator {
 

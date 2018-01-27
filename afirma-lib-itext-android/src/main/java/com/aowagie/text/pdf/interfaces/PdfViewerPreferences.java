@@ -61,11 +61,10 @@ import com.aowagie.text.pdf.PdfObject;
  * for reasons of convenience.
  */
 
-public interface PdfViewerPreferences {	
-		
+public interface PdfViewerPreferences {
+
     /**
      * Sets the page layout and page mode preferences by ORing one or two of these constants.
-     * <p>
      * <ul>
      * <li>The page layout to be used when the document is opened (choose one).
      *   <ul>
@@ -133,7 +132,7 @@ public interface PdfViewerPreferences {
 	 * @see PdfViewerPreferences#addViewerPreference
      */
     public void setViewerPreferences(int preferences);
-    
+
     /**
      * Adds a viewer preference.
      * <ul>
@@ -190,11 +189,10 @@ public interface PdfViewerPreferences {
      * <li>In case the key is PdfName.<b>PICKTRAYBYPDFSIZE</b>, the value must be of type PdfBoolean.
      * <li>In case the key is PdfName.<b>PRINTPAGERANGE</b>, the value must be of type PdfArray.
      * <li>In case the key is PdfName.<b>NUMCOPIES</b>, the value must be of type PdfNumber.
-     * <ul>
      * </ul>
      * @param key	the name of the viewer preference
      * @param value	the value of the viewer preference
 	 * @see PdfViewerPreferences#setViewerPreferences
      */
-    public void addViewerPreference(PdfName key, PdfObject value);    	
+    public void addViewerPreference(PdfName key, PdfObject value);
 }

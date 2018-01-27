@@ -127,7 +127,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Signals that an <CODE>Element</CODE> was added to the <CODE>Document</CODE>.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class.
  *
  * @param element A high level object to add
@@ -197,7 +197,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Changes the header of this document.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class if they actually support the use of
  * headers.
  *
@@ -211,7 +211,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Resets the header of this document.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class if they actually support the use of
  * headers.
  */
@@ -223,7 +223,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Changes the footer of this document.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class if they actually support the use of
  * footers.
  *
@@ -237,7 +237,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Resets the footer of this document.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class if they actually support the use of
  * footers.
  */
@@ -249,7 +249,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Sets the page number to 0.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class if they actually support the use of
  * pagenumbers.
  */
@@ -261,7 +261,7 @@ public abstract class DocWriter implements DocListener {
 /**
  * Sets the page number.
  * <P>
- * This method should be overridden in the specific <CODE>DocWriter<CODE> classes
+ * This method should be overridden in the specific <CODE>DocWriter</CODE> classes
  * derived from this abstract class if they actually support the use of
  * pagenumbers.
  *

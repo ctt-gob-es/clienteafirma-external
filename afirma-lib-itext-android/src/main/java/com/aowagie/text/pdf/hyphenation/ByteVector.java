@@ -22,7 +22,7 @@ import java.io.Serializable;
  * This class implements a simple byte vector with access to the
  * underlying array.
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * @author Carlos Villegas (cav@uniscope.co.jp)
  */
 class ByteVector implements Serializable {
 

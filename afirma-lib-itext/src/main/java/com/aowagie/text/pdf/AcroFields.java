@@ -375,7 +375,7 @@ public class AcroFields {
      * is required.
      * <p>
      * An example:
-     * <p>
+     * </p>
      * <PRE>
      * PdfReader pdf = new PdfReader("input.pdf");
      * PdfStamper stp = new PdfStamper(pdf, new FileOutputStream("output.pdf"));
@@ -384,7 +384,6 @@ public class AcroFields {
      * af.setField("ComboBox", "b");
      * stp.close();
      * </PRE>
-     *
      * @param fieldName the field name
      * @param exportValues the export values
      * @param displayValues the display values
@@ -691,11 +690,11 @@ public class AcroFields {
         tx.setVisibility(BaseField.VISIBLE_BUT_DOES_NOT_PRINT);
         if (nfl != null) {
             flags = nfl.intValue();
-            if ((flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) != 0) {
+            if ((flags & PdfAnnotation.FLAGS_PRINT) != 0 && (flags & PdfAnnotation.FLAGS_HIDDEN) != 0) {
 				tx.setVisibility(BaseField.HIDDEN);
-			} else if ((flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_NOVIEW) != 0) {
+			} else if ((flags & PdfAnnotation.FLAGS_PRINT) != 0 && (flags & PdfAnnotation.FLAGS_NOVIEW) != 0) {
 				tx.setVisibility(BaseField.HIDDEN_BUT_PRINTABLE);
-			} else if ((flags & PdfFormField.FLAGS_PRINT) != 0) {
+			} else if ((flags & PdfAnnotation.FLAGS_PRINT) != 0) {
 				tx.setVisibility(BaseField.VISIBLE);
 			}
         }
@@ -973,7 +972,6 @@ public class AcroFields {
 
     /**
      * Sets a field property. Valid property names are:
-     * <p>
      * <ul>
      * <li>textfont - sets the text font. The value for this entry is a <CODE>BaseFont</CODE>.<br>
      * <li>textcolor - sets the text color. The value for this entry is a <CODE>java.awt.Color</CODE>.<br>
@@ -1135,7 +1133,7 @@ public class AcroFields {
                         if (value == null) {
 							mk.remove(dname);
 						} else {
-							mk.put(dname, PdfFormField.getMKColor((Color)value));
+							mk.put(dname, PdfAnnotation.getMKColor((Color)value));
 						}
                     }
                 }
@@ -1151,7 +1149,6 @@ public class AcroFields {
 
     /**
      * Sets a field property. Valid property names are:
-     * <p>
      * <ul>
      * <li>flags - a set of flags specifying various characteristics of the field's widget annotation.
      * The value of this entry replaces that of the F entry in the form's corresponding annotation dictionary.<br>
@@ -1278,7 +1275,7 @@ public class AcroFields {
      *
      * @param n the top node of the data structure
      * @throws java.io.IOException on error
-     * @throws com.lowagie.text.DocumentException o error
+     * @throws com.aowagie.text.DocumentException on error
      */
     public void mergeXfaData(final Node n) throws IOException, DocumentException {
         final XfaForm.Xml2SomDatasets data = new XfaForm.Xml2SomDatasets(n);
@@ -2233,7 +2230,6 @@ public class AcroFields {
 
     /**
      * Verifies a signature. An example usage is:
-     * <p>
      * <pre>
      * KeyStore kall = PdfPKCS7.loadCacertsKeyStore();
      * PdfReader reader = new PdfReader("my_signed_doc.pdf");
@@ -2255,7 +2251,6 @@ public class AcroFields {
      *        System.out.println("Certificate failed: " + fails[1]);
      * }
      * </pre>
-     *
      * @param name the signature field name
      * @return a <CODE>PdfPKCS7</CODE> class to continue the verification
      */
@@ -2265,7 +2260,6 @@ public class AcroFields {
 
     /**
      * Verifies a signature. An example usage is:
-     * <p>
      * <pre>
      * KeyStore kall = PdfPKCS7.loadCacertsKeyStore();
      * PdfReader reader = new PdfReader("my_signed_doc.pdf");
@@ -2287,7 +2281,6 @@ public class AcroFields {
      *        System.out.println("Certificate failed: " + fails[1]);
      * }
      * </pre>
-     *
      * @param name the signature field name
      * @param provider the provider or <code>null</code> for the default provider
      * @return a <CODE>PdfPKCS7</CODE> class to continue the verification
@@ -2431,7 +2424,6 @@ public class AcroFields {
      * create a new TextField is time expensive. For those tasks that repeatedly
      * fill the same PDF with different field values the use of the cache has dramatic
      * speed advantages. An example usage:
-     * <p>
      * <pre>
      * String pdfFile = ...;// the pdf file used as template
      * ArrayList xfdfFiles = ...;// the xfdf file names

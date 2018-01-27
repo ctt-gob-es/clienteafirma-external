@@ -49,11 +49,11 @@
 
 package com.aowagie.text;
 
-import harmony.java.awt.Color;
-
 import java.util.ArrayList;
 
 import com.aowagie.text.pdf.GrayColor;
+
+import harmony.java.awt.Color;
 
 /**
  * A <CODE>Rectangle</CODE> is the representation of a geometric figure.
@@ -62,7 +62,7 @@ import com.aowagie.text.pdf.GrayColor;
  * {@link #setBorderWidth(float)}and {@link #setBorder(int)}.
  * They also support borders that vary in width/color on each side using
  * methods like {@link #setBorderWidthLeft(float)}or
- * {@link #setBorderColorLeft(java.awt.Color)}.
+ * {@link #setBorderColorLeft(Color)}.
  *
  * @see Element
  * @see Table

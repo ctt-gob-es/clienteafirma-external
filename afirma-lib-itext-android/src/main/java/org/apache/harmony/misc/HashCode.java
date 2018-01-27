@@ -22,13 +22,13 @@ package org.apache.harmony.misc;
  * object based on the field values. The result depends on the order of elements
  * appended. The exact formula is the same as for
  * <code>java.util.List.hashCode</code>.
- * 
+ *
  * If you need order independent hash code just summate, multiply or XOR all
  * elements.
- * 
+ *
  * <p>
  * Suppose we have class:
- * 
+ *
  * <pre>
  * <code>
  * class Thing {
@@ -38,12 +38,12 @@ package org.apache.harmony.misc;
  * }
  * </code>
  * </pre>
- * 
+ *
  * The hash code calculation can be expressed in 2 forms.
- * 
+ *
  * <p>
  * For maximum performance:
- * 
+ *
  * <pre>
  * <code>
  * public int hashCode() {
@@ -55,20 +55,20 @@ package org.apache.harmony.misc;
  * }
  * </code>
  * </pre>
- * 
+ *
  * <p>
- * For convenience: <code><pre>
+ * For convenience: <code>
  * public int hashCode() {
  *     return new HashCode().append(id).append(name).append(weight).hashCode();
  * }
- * </code></pre>
- * 
+ * </code>
+ *
  * @see java.util.List#hashCode()
  */
 public final class HashCode {
 	/**
 	 * The hashCode value before any data is appended, equals to 1.
-	 * 
+	 *
 	 * @see java.util.List#hashCode()
 	 */
 	public static final int EMPTY_HASH_CODE = 1;
@@ -78,13 +78,14 @@ public final class HashCode {
 	/**
 	 * Returns accumulated hashCode
 	 */
+	@Override
 	public final int hashCode() {
-		return hashCode;
+		return this.hashCode;
 	}
 
 	/**
 	 * Combines hashCode of previous elements sequence and value's hashCode.
-	 * 
+	 *
 	 * @param hashCode
 	 *            previous hashCode value
 	 * @param value
@@ -92,13 +93,13 @@ public final class HashCode {
 	 * @return combined hashCode
 	 */
 	public static int combine(int hashCode, boolean value) {
-		int v = value ? 1231 : 1237;
+		final int v = value ? 1231 : 1237;
 		return combine(hashCode, v);
 	}
 
 	/**
 	 * Combines hashCode of previous elements sequence and value's hashCode.
-	 * 
+	 *
 	 * @param hashCode
 	 *            previous hashCode value
 	 * @param value
@@ -106,13 +107,13 @@ public final class HashCode {
 	 * @return combined hashCode
 	 */
 	public static int combine(int hashCode, long value) {
-		int v = (int) (value ^ (value >>> 32));
+		final int v = (int) (value ^ value >>> 32);
 		return combine(hashCode, v);
 	}
 
 	/**
 	 * Combines hashCode of previous elements sequence and value's hashCode.
-	 * 
+	 *
 	 * @param hashCode
 	 *            previous hashCode value
 	 * @param value
@@ -120,13 +121,13 @@ public final class HashCode {
 	 * @return combined hashCode
 	 */
 	public static int combine(int hashCode, float value) {
-		int v = Float.floatToIntBits(value);
+		final int v = Float.floatToIntBits(value);
 		return combine(hashCode, v);
 	}
 
 	/**
 	 * Combines hashCode of previous elements sequence and value's hashCode.
-	 * 
+	 *
 	 * @param hashCode
 	 *            previous hashCode value
 	 * @param value
@@ -134,13 +135,13 @@ public final class HashCode {
 	 * @return combined hashCode
 	 */
 	public static int combine(int hashCode, double value) {
-		long v = Double.doubleToLongBits(value);
+		final long v = Double.doubleToLongBits(value);
 		return combine(hashCode, v);
 	}
 
 	/**
 	 * Combines hashCode of previous elements sequence and value's hashCode.
-	 * 
+	 *
 	 * @param hashCode
 	 *            previous hashCode value
 	 * @param value
@@ -153,7 +154,7 @@ public final class HashCode {
 
 	/**
 	 * Combines hashCode of previous elements sequence and value's hashCode.
-	 * 
+	 *
 	 * @param hashCode
 	 *            previous hashCode value
 	 * @param value
@@ -166,73 +167,73 @@ public final class HashCode {
 
 	/**
 	 * Appends value's hashCode to the current hashCode.
-	 * 
+	 *
 	 * @param value
 	 *            new element
 	 * @return this
 	 */
 	public final HashCode append(int value) {
-		hashCode = combine(hashCode, value);
+		this.hashCode = combine(this.hashCode, value);
 		return this;
 	}
 
 	/**
 	 * Appends value's hashCode to the current hashCode.
-	 * 
+	 *
 	 * @param value
 	 *            new element
 	 * @return this
 	 */
 	public final HashCode append(long value) {
-		hashCode = combine(hashCode, value);
+		this.hashCode = combine(this.hashCode, value);
 		return this;
 	}
 
 	/**
 	 * Appends value's hashCode to the current hashCode.
-	 * 
+	 *
 	 * @param value
 	 *            new element
 	 * @return this
 	 */
 	public final HashCode append(float value) {
-		hashCode = combine(hashCode, value);
+		this.hashCode = combine(this.hashCode, value);
 		return this;
 	}
 
 	/**
 	 * Appends value's hashCode to the current hashCode.
-	 * 
+	 *
 	 * @param value
 	 *            new element
 	 * @return this
 	 */
 	public final HashCode append(double value) {
-		hashCode = combine(hashCode, value);
+		this.hashCode = combine(this.hashCode, value);
 		return this;
 	}
 
 	/**
 	 * Appends value's hashCode to the current hashCode.
-	 * 
+	 *
 	 * @param value
 	 *            new element
 	 * @return this
 	 */
 	public final HashCode append(boolean value) {
-		hashCode = combine(hashCode, value);
+		this.hashCode = combine(this.hashCode, value);
 		return this;
 	}
 
 	/**
 	 * Appends value's hashCode to the current hashCode.
-	 * 
+	 *
 	 * @param value
 	 *            new element
 	 * @return this
 	 */
 	public final HashCode append(Object value) {
-		hashCode = combine(hashCode, value);
+		this.hashCode = combine(this.hashCode, value);
 		return this;
 	}
 }

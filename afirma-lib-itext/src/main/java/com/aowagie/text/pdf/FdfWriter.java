@@ -242,7 +242,6 @@ public class FdfWriter {
 
     /**
      * Sets the field value as a <CODE>PDFAction</CODE>.
-     * For example, this method allows setting a form submit button action using {@link PdfAction#createSubmitForm(String, Object[], int)}.
      * This method creates an <CODE>A</CODE> entry for the specified field in the underlying FDF file.
      * Method contributed by Philippe Laflamme (plaflamme)
      * @param field the fully qualified field name

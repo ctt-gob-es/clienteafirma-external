@@ -801,7 +801,7 @@ public class PdfPTable implements LargeElement{
 
     /**
      * Gets and initializes the 4 layers where the table is written to. The text or graphics are added to
-     * one of the 4 <CODE>PdfContentByte</CODE> returned with the following order:<p>
+     * one of the 4 <CODE>PdfContentByte</CODE> returned with the following order:
      * <ul>
      * <li><CODE>PdfPtable.BASECANVAS</CODE> - the original <CODE>PdfContentByte</CODE>. Anything placed here
      * will be under the table.
@@ -921,7 +921,7 @@ public class PdfPTable implements LargeElement{
 
     /**
      * Gets the maximum height of a cell in a particular row (will only be different
-     * from getRowHeight is one of the cells in the row has a rowspan > 1).
+     * from getRowHeight is one of the cells in the row has a rowspan lesser than 1).
      *
      * @param	rowIndex	the row index
      * @param	cellIndex	the cell index

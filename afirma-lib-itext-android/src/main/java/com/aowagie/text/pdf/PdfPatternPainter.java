@@ -46,11 +46,11 @@
  */
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Color;
-
 import com.aowagie.text.DocumentException;
 import com.aowagie.text.Image;
 import com.aowagie.text.Rectangle;
+
+import harmony.java.awt.Color;
 
 /**
  * Implements the pattern.
@@ -345,18 +345,12 @@ public final class PdfPatternPainter extends PdfTemplate {
         super.setRGBColorStroke(red, green, blue);
     }
 
-    /**
-     * @see com.aowagie.text.pdf.PdfContentByte#setColorStroke(java.awt.Color)
-     */
     @Override
 	public void setColorStroke(final Color color) {
         checkNoColor();
         super.setColorStroke(color);
     }
 
-    /**
-     * @see com.aowagie.text.pdf.PdfContentByte#setColorFill(java.awt.Color)
-     */
     @Override
 	public void setColorFill(final Color color) {
         checkNoColor();
@@ -390,18 +384,12 @@ public final class PdfPatternPainter extends PdfTemplate {
         super.setPatternFill(p);
     }
 
-    /**
-     * @see com.aowagie.text.pdf.PdfContentByte#setPatternFill(com.aowagie.text.pdf.PdfPatternPainter, java.awt.Color, float)
-     */
     @Override
 	public void setPatternFill(final PdfPatternPainter p, final Color color, final float tint) {
         checkNoColor();
         super.setPatternFill(p, color, tint);
     }
 
-    /**
-     * @see com.aowagie.text.pdf.PdfContentByte#setPatternStroke(com.aowagie.text.pdf.PdfPatternPainter, java.awt.Color, float)
-     */
     @Override
 	public void setPatternStroke(final PdfPatternPainter p, final Color color, final float tint) {
         checkNoColor();

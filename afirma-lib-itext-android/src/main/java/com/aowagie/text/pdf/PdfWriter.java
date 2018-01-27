@@ -49,9 +49,6 @@
 
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Color;
-import harmony.java.awt.color.ICC_Profile;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -89,6 +86,9 @@ import com.aowagie.text.pdf.interfaces.PdfXConformance;
 import com.aowagie.text.pdf.internal.PdfVersionImp;
 import com.aowagie.text.pdf.internal.PdfXConformanceImp;
 import com.aowagie.text.xml.xmp.XmpWriter;
+
+import harmony.java.awt.Color;
+import harmony.java.awt.color.ICC_Profile;
 
 /**
  * A <CODE>DocWriter</CODE> class for PDF.
@@ -1588,7 +1588,6 @@ public class PdfWriter extends DocWriter implements
          this.pdf.setOpenAction(action);
      }
 
-    /** @see com.aowagie.text.pdf.interfaces.PdfDocumentActions#setAdditionalAction(com.aowagie.text.pdf.PdfName, com.aowagie.text.pdf.PdfAction) */
 	public void setAdditionalAction(final PdfName actionType, final PdfAction action) throws DocumentException {
          if (!(actionType.equals(DOCUMENT_CLOSE) ||
          actionType.equals(WILL_SAVE) ||
@@ -2478,7 +2477,6 @@ public class PdfWriter extends DocWriter implements
     /** action value */
     private static final PdfName PAGE_CLOSE = PdfName.C;
 
-    /** @see com.aowagie.text.pdf.interfaces.PdfPageActions#setPageAction(com.aowagie.text.pdf.PdfName, com.aowagie.text.pdf.PdfAction) */
 	public void setPageAction(final PdfName actionType, final PdfAction action) throws DocumentException {
           if (!actionType.equals(PAGE_OPEN) && !actionType.equals(PAGE_CLOSE)) {
 			throw new DocumentException("Invalid page additional action type: " + actionType.toString());

@@ -9,7 +9,7 @@ import java.io.Reader;
  * Copyright (c) 2011 - Sean Malone.
  * The BoundedBufferedReader is published by Sean Malone under the BSD license. You should read and accept the
  * LICENSE before you use, modify, and/or redistribute this software.
- * @author Sean Malone <sean@seantmalone.com>
+ * @author Sean Malone (sean@seantmalone.com)
  * @version 1.1 */
 public final class BoundedBufferedReader extends BufferedReader {
 

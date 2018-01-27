@@ -52,14 +52,14 @@
 
 package com.aowagie.text;
 
-import harmony.java.awt.Dimension;
-import harmony.java.awt.Point;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.aowagie.text.pdf.PdfPCell;
 import com.aowagie.text.pdf.PdfPTable;
+
+import harmony.java.awt.Dimension;
+import harmony.java.awt.Point;
 
 /**
  * A <CODE>Table</CODE> is a <CODE>Rectangle</CODE> that contains <CODE>Cell</CODE>s,
@@ -105,6 +105,7 @@ import com.aowagie.text.pdf.PdfPTable;
  * <STRONG>table.addCell("cell test2");</STRONG>
  * </PRE></BLOCKQUOTE>
  * The result of this code is a table:
+ * {@code
  *      <TABLE ALIGN="Center" BORDER="1" BORDERCOLOR="#0000ff" CELLPADDING="5" CELLSPACING="5">
  *              <TR ALIGN="Left" VALIGN="Left">
  *                      <TH ALIGN="Left" COLSPAN="3" VALIGN="Left">
@@ -144,7 +145,7 @@ import com.aowagie.text.pdf.PdfPTable;
  *                      </TD>
  *              </TR>
  *      </TABLE>
- *
+ * }
  * @see         Rectangle
  * @see         Element
  * @see         Row
@@ -1323,7 +1324,7 @@ public class Table extends Rectangle implements LargeElement {
 	 */
 	@Override
 	public void flushContent() {
-		this.setNotAddedYet(false);
+		setNotAddedYet(false);
         final ArrayList headerrows = new ArrayList();
         for (int i = 0; i < getLastHeaderRow() + 1; i++) {
             headerrows.add(this.rows.get(i));

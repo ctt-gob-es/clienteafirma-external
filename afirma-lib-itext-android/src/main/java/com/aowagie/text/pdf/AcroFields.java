@@ -46,8 +46,6 @@
  */
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Color;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -67,6 +65,8 @@ import com.aowagie.text.ExceptionConverter;
 import com.aowagie.text.Image;
 import com.aowagie.text.Rectangle;
 import com.aowagie.text.pdf.codec.Base64;
+
+import harmony.java.awt.Color;
 
 /**
  * Query and change fields in existing documents either by method
@@ -1580,7 +1580,6 @@ public class AcroFields {
 
     /**
      * Verifies a signature. An example usage is:
-     * <p>
      * <pre>
      * KeyStore kall = PdfPKCS7.loadCacertsKeyStore();
      * PdfReader reader = new PdfReader("my_signed_doc.pdf");
@@ -1750,7 +1749,6 @@ public class AcroFields {
      * create a new TextField is time expensive. For those tasks that repeatedly
      * fill the same PDF with different field values the use of the cache has dramatic
      * speed advantages. An example usage:
-     * <p>
      * <pre>
      * String pdfFile = ...;// the pdf file used as template
      * ArrayList xfdfFiles = ...;// the xfdf file names

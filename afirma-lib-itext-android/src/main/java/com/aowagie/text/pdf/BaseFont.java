@@ -1185,7 +1185,7 @@ public abstract class BaseFont {
     /** Indicates if all the glyphs and widths for that particular
      * encoding should be included in the document. When set to <CODE>true</CODE>
      * only the glyphs used will be included in the font. When set to <CODE>false</CODE>
-     * and {@link #addSubsetRange(int[])} was not called the full font will be included
+     * and #addSubsetRange(int[]) was not called the full font will be included
      * otherwise just the characters ranges will be included.
      * @param subset new value of property subset
      */
@@ -1237,7 +1237,7 @@ public abstract class BaseFont {
     }
 
     /** Gets the Unicode equivalent to a CID.
-     * The (inexistent) CID <FF00> is translated as '\n'.
+     * The (inexistent) CID &lt;FF00&gt; is translated as '\n'.
      * It has only meaning with CJK fonts with Identity encoding.
      * @param c the CID code
      * @return the Unicode equivalent

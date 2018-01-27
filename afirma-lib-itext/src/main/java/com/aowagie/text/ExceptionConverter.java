@@ -3,7 +3,7 @@
  * Read http://www.javaspecialists.co.za/archive/newsletter.do?issue=033&print=yes&locale=en_US
  * "This material from The Java(tm) Specialists' Newsletter by Maximum Solutions (South Africa).
  * Please contact Maximum Solutions  for more information."
- * 
+ *
  * Copyright (C) 2001 Dr. Heinz M. Kabutz
  */
 
@@ -60,9 +60,9 @@ package com.aowagie.text;
 public class ExceptionConverter extends RuntimeException {
     private static final long serialVersionUID = 8657630363395849399L;
 	/** we keep a handle to the wrapped exception */
-    private Exception ex;
+    private final Exception ex;
     /** prefix for the exception */
-    private String prefix;
+    private final String prefix;
 
     /**
      * Construct a RuntimeException based on another Exception
@@ -70,7 +70,7 @@ public class ExceptionConverter extends RuntimeException {
      */
     public ExceptionConverter(Exception ex) {
         this.ex = ex;
-        prefix = (ex instanceof RuntimeException) ? "" : "ExceptionConverter: ";
+        this.prefix = ex instanceof RuntimeException ? "" : "ExceptionConverter: ";
     }
 
     /**
@@ -78,7 +78,7 @@ public class ExceptionConverter extends RuntimeException {
      * already an unchecked exception or return an ExceptionConverter wrapper otherwise
      *
      * @param ex the exception to convert
-     * @return an unchecked exception 
+     * @return an unchecked exception
      * @since 2.1.6
      */
     public static final RuntimeException convertException(Exception ex) {
@@ -89,72 +89,79 @@ public class ExceptionConverter extends RuntimeException {
     }
 
     /**
-     * and allow the user of ExceptionConverter to get a handle to it. 
+     * and allow the user of ExceptionConverter to get a handle to it.
      * @return the original exception
      */
     public Exception getException() {
-        return ex;
+        return this.ex;
     }
 
     /**
-     * We print the message of the checked exception 
+     * We print the message of the checked exception
      * @return message of the original exception
      */
-    public String getMessage() {
-        return ex.getMessage();
+    @Override
+	public String getMessage() {
+        return this.ex.getMessage();
     }
 
     /**
      * and make sure we also produce a localized version
      * @return localized version of the message
      */
-    public String getLocalizedMessage() {
-        return ex.getLocalizedMessage();
+    @Override
+	public String getLocalizedMessage() {
+        return this.ex.getLocalizedMessage();
     }
 
     /**
-     * The toString() is changed to be prefixed with ExceptionConverter 
+     * The toString() is changed to be prefixed with ExceptionConverter
      * @return String version of the exception
      */
-    public String toString() {
-        return prefix + ex;
+    @Override
+	public String toString() {
+        return this.prefix + this.ex;
     }
 
     /** we have to override this as well */
-    public void printStackTrace() {
+    @Override
+	public void printStackTrace() {
         printStackTrace(System.err);
     }
 
     /**
      * here we prefix, with s.print(), not s.println(), the stack
-     * trace with "ExceptionConverter:" 
-     * @param s
+     * trace with "ExceptionConverter:"
+     * @param s Stream.
      */
-    public void printStackTrace(java.io.PrintStream s) {
+    @Override
+	public void printStackTrace(java.io.PrintStream s) {
         synchronized (s) {
-            s.print(prefix);
-            ex.printStackTrace(s);
+            s.print(this.prefix);
+            this.ex.printStackTrace(s);
         }
     }
 
     /**
-     * Again, we prefix the stack trace with "ExceptionConverter:" 
-     * @param s
+     * Again, we prefix the stack trace with "ExceptionConverter:"
+     * @param s Stream.
      */
-    public void printStackTrace(java.io.PrintWriter s) {
+    @Override
+	public void printStackTrace(java.io.PrintWriter s) {
         synchronized (s) {
-            s.print(prefix);
-            ex.printStackTrace(s);
+            s.print(this.prefix);
+            this.ex.printStackTrace(s);
         }
     }
 
     /**
      * requests to fill in the stack trace we will have to ignore.
      * We can't throw an exception here, because this method
-     * is called by the constructor of Throwable 
+     * is called by the constructor of Throwable
      * @return a Throwable
      */
-    public Throwable fillInStackTrace() {
+    @Override
+	public Throwable fillInStackTrace() {
         return this;
     }
 }

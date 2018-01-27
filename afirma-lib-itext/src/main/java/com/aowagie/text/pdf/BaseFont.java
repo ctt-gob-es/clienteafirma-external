@@ -1395,7 +1395,7 @@ public abstract class BaseFont {
     }
 
     /** Gets the Unicode equivalent to a CID.
-     * The (inexistent) CID <FF00> is translated as '\n'.
+     * The (inexistent) CID &lt;FF00&gt; is translated as '\n'.
      * It has only meaning with CJK fonts with Identity encoding.
      * @param c the CID code
      * @return the Unicode equivalent
