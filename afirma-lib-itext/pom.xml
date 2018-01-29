@@ -6,8 +6,52 @@
 	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>afirma-lib-itext</artifactId>
 	<version>1.0</version>
-	<name>afirma-lib-itext</name>
+	<packaging>jar</packaging>
 	
+	<name>afirma-lib-itext</name>
+	<description>Versi&oacute;n modificada de iText 2.1.7 con el paquete cambiado, adaptaciones menores para firma y dependencias actualizadas.</description>
+	
+	<parent>
+		<groupId>es.gob.afirma.lib</groupId>
+		<artifactId>support-libraries</artifactId>
+		<version>1.6</version>
+	</parent>
+	
+	<licenses>
+        <license>
+            <name>Mozilla Public License</name>
+            <url>http://www.mozilla.org/MPL/MPL-1.1.html</url>
+            <comments>
+                iText was originally published under the LGPLicense.
+                LGPL can be used as an alternative license for the MPL.
+            </comments>
+        </license>
+    </licenses>
+	
+    <developers>
+        <developer>
+            <id>blowagie</id>
+            <name>Bruno Lowagie</name>
+            <email>bruno@lowagie.com</email>
+            <url>http://www.lowagie.com</url>
+        </developer>
+        <developer>
+            <id>psoares33</id>
+            <name>Paulo Soares</name>
+            <email>psoares33@users.sourceforge.net</email>
+        </developer>
+        <developer>
+            <id>hallm</id>
+            <name>Mark Hall</name>
+            <email>hallm@users.sourceforge.net</email>
+        </developer>
+        <developer>
+            <id>xlv</id>
+            <name>Xavier Le Vourch</name>
+            <email>xlv@users.sourceforge.net</email>
+        </developer>
+    </developers>
+
 	<properties>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 	</properties>
@@ -40,11 +84,6 @@
 		</dependency>
 	</dependencies>
 
-	<scm>
-		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
-		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
-	</scm>
-	
 	<build>
 		<plugins>
 			<plugin>

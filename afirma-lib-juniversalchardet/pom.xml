@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -5,16 +6,45 @@
 	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>afirma-lib-juniversalchardet</artifactId>
 	<version>0.0.3</version>
+	<packaging>jar</packaging>
+	
 	<name>afirma-lib-juniversalchardet</name>
+	<description>Versi&oacute;n modificada de JUniversalCharDet con dependencias reducidas.</description>
+	
+	<parent>
+		<groupId>es.gob.afirma.lib</groupId>
+		<artifactId>support-libraries</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	
+    <licenses>
+        <license>
+            <name>Mozilla Public License</name>
+            <url>http://www.mozilla.org/MPL/MPL-1.1.html</url>
+            <comments>
+                iText was originally published under the LGPLicense.
+                LGPL can be used as an alternative license for the MPL.
+            </comments>
+        </license>
+    </licenses>
 
+    <developers>
+        <developer>
+            <organization>Netscape Communications Corporation</organization>
+        </developer>
+        <developer>
+            <name>Shy Shalom</name>
+            <email>shooshX@gmail.com</email>
+        </developer>
+        <developer>
+            <name>Kohei TAKETA</name>
+            <email>k-tak@void.in</email>
+        </developer>
+    </developers>
+	
 	<properties>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 	</properties>
-
-	<scm>
-		<connection>scm:git:https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</connection>
-		<url>https://github.com/ctt-gob-es/clienteafirma-external/${project.name}/trunk</url>
-	</scm>
 
 	<dependencies>
 		<dependency>
