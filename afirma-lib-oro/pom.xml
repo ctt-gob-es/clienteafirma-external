@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 	
 	<name>afirma-lib-oro</name>
-	<description>Versi&oacute;n modificada de Apache Oro con dependencias reducidas.</description>
+	<description>Version modificada de Apache Oro con dependencias reducidas.</description>
 	
 	<parent>
 		<groupId>es.gob.afirma.lib</groupId>

@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 	
 	<name>afirma-lib-jmimemagic</name>
-	<description>Versi&oacute;n modificada de JMimeMagic con dependencias reducidas.</description>
+	<description>Version modificada de JMimeMagic con dependencias reducidas.</description>
 	
 	<parent>
 		<groupId>es.gob.afirma.lib</groupId>

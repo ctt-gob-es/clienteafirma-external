@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 	
 	<name>afirma-lib-itext</name>
-	<description>Versi&oacute;n modificada de iText 2.1.7 con el paquete cambiado, adaptaciones menores para firma y dependencias actualizadas.</description>
+	<description>Version modificada de iText 2.1.7 con el paquete cambiado, adaptaciones menores para firma y dependencias actualizadas.</description>
 	
 	<parent>
 		<groupId>es.gob.afirma.lib</groupId>
