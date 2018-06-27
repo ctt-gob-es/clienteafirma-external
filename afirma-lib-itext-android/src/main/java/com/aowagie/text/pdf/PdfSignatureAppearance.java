@@ -327,8 +327,27 @@ public class PdfSignatureAppearance {
 		}
         this.rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
     }
-
-
+	
+   /**
+    * Gets a template layer to create a signature appearance. The layers can go from 0 to 4.
+    * <p>
+    * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
+    * for further details.
+    * @param layer the layer
+    * @return a template
+    */
+    public PdfTemplate getLayer(final int layer) {
+       if (layer < 0 || layer >= this.app.length) {
+	return null;
+       }
+       PdfTemplate t = this.app[layer];
+       if (t == null) {
+           t = this.app[layer] = new PdfTemplate(this.writer);
+           t.setBoundingBox(this.rect);
+           this.writer.addDirectTemplateSimple(t, new PdfName("n" + layer)); //$NON-NLS-1$
+       }
+       return t;
+    }
 
     /**
      * Gets the template that aggregates all appearance layers. This corresponds to the /FRM resource.
