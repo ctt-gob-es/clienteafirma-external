@@ -1227,7 +1227,7 @@ public class PdfContentByte {
      * Makes this <CODE>PdfContentByte</CODE> empty.
      * Calls <code>reset( true )</code>
      */
-    void reset() {
+    public void reset() {
         reset( true );
     }
 
