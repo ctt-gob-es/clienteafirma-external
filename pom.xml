@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>support-libraries</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<name>support-libraries</name>
@@ -37,18 +37,7 @@
 		<developerConnection>scm:git:ssh://github.com/ctt-gob-es/clienteafirma-external.git</developerConnection>
 		<url>https://github.com/ctt-gob-es/clienteafirma-external</url>
 	</scm>
-
-	<distributionManagement>
-	  <snapshotRepository>
-		<id>ossrh</id>
-		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-	  </snapshotRepository>
-	  <repository>
-		<id>ossrh</id>
-		<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-	  </repository>
-	</distributionManagement>
-
+	
 	<modules>
 		<module>afirma-lib-jmimemagic</module>
 		<module>afirma-lib-juniversalchardet</module>
@@ -64,8 +53,12 @@
 		<profile>
 			<id>env-dev</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>defaultProfile</name>
+					<value>!false</value>
+				</property>
       		</activation>
+
       		<build>
        			<plugins>
 	
@@ -83,8 +76,38 @@
 		  </build>
 	    </profile>
 
-		<!-- Construccion para despliegue en el repositorio de artefactos -->
+		<!-- Construccion para despliegue en el repositorio de la SGAE -->
+		<profile>
+			<id>minhap</id>
+			<distributionManagement>
+				<repository>
+					<id>MINHAP-central</id>
+					<name>artefactos.scae.redsara.es-releases</name>
+					<url>https://artefactos.scae.redsara.es/artifactory/AFIRMA-release/</url>
+				</repository>
+				<snapshotRepository>
+					<id>MINHAP-snapshots</id>
+					<name>artefactos.scae.redsara.es-snapshots</name>
+					<url>https://artefactos.scae.redsara.es/artifactory/AFIRMA-snapshot/</url>
+				</snapshotRepository>
+			</distributionManagement>
+			
+      		<build>
+       			<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.6.1</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+						</configuration>
+					</plugin>
+			</plugins>
+		  </build>
+	    </profile>
 		
+		<!-- Construccion para despliegue en el repositorio de artefactos -->
 		<profile>
 			<id>env-deploy</id>
 			<activation>
@@ -93,6 +116,18 @@
 				  <value>deploy</value>
 				</property>
 			</activation>
+
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+				<repository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+			
 			<build>
 				<plugins>
 					<plugin>
