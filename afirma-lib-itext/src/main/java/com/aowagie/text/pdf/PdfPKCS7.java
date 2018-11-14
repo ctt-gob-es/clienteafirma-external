@@ -82,7 +82,6 @@ import java.util.Set;
 
 import org.spongycastle.asn1.ASN1Encodable;
 import org.spongycastle.asn1.ASN1EncodableVector;
-import org.spongycastle.asn1.ASN1Encoding;
 import org.spongycastle.asn1.ASN1Enumerated;
 import org.spongycastle.asn1.ASN1InputStream;
 import org.spongycastle.asn1.ASN1Integer;
@@ -512,7 +511,7 @@ public class PdfPKCS7 {
             if (signerInfo.getObjectAt(next) instanceof ASN1TaggedObject) {
                 final ASN1TaggedObject tagsig = (ASN1TaggedObject)signerInfo.getObjectAt(next);
                 final ASN1Set sseq = ASN1Set.getInstance(tagsig, false);
-                this.sigAttr = sseq.getEncoded(ASN1Encoding.DER);
+                this.sigAttr = sseq.getEncoded();
 
                 for (int k = 0; k < sseq.size(); ++k) {
                     final ASN1Sequence seq2 = (ASN1Sequence)sseq.getObjectAt(k);
