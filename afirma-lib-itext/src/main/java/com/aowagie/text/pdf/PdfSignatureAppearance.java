@@ -107,7 +107,7 @@ public class PdfSignatureAppearance {
     public static final int CERTIFIED_FORM_FILLING = 2;
     public static final int CERTIFIED_FORM_FILLING_AND_ANNOTATIONS = 3;
 
-    private static final float TOP_SECTION = 0.3f;
+    private static final float TOP_SECTION = 0.0f;
     private static final float MARGIN = 2;
     private Rectangle rect;
     private Rectangle pageRect;
