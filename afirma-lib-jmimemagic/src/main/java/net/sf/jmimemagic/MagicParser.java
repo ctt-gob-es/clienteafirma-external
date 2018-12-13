@@ -66,15 +66,22 @@ public final class MagicParser extends DefaultHandler {
     			).getDeclaredConstructor().newInstance();
             }
             catch (final Exception e) {
-            	Logger.getLogger("es.gob.afirma").info( //$NON-NLS-1$
-        			"No se ha podido obtener el analizador SAX de Apache Xerces, se usara el por defecto: " + e //$NON-NLS-1$
-    			);
             	try {
-            		this.parser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            		this.parser = (XMLReader) MagicMatcher.classForName(
+            				"org.apache.xerces.parsers.SAXParser" //$NON-NLS-1$
+            				).getDeclaredConstructor().newInstance();
             	}
-            	catch (final Exception e2) {
-            		throw new MagicParseException("unable to instantiate parser", e2); //$NON-NLS-1$
-            	}
+            	catch (Exception e2) {
+            		Logger.getLogger("es.gob.afirma").info( //$NON-NLS-1$
+                			"No se ha podido obtener el analizador SAX de Apache Xerces, se usara el por defecto: " + e2 //$NON-NLS-1$
+            			);
+            		try {
+                		this.parser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+                	}
+                	catch (final Exception e3) {
+                		throw new MagicParseException("unable to instantiate parser", e3); //$NON-NLS-1$
+                	}
+				}
             }
 
             // set handlers
