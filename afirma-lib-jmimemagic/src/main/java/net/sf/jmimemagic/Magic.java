@@ -30,7 +30,6 @@ import java.util.Iterator;
 /** This class is the primary class for jMimeMagic
  * @author $Author: arimus $
  * @version $Revision: 1.8 $ */
-@SuppressWarnings("javadoc")
 public final class Magic {
     private static boolean initialized = false;
     private static MagicParser magicParser = null;

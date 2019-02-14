@@ -1,5 +1,5 @@
 /*
- * $Id: PdfSignatureAppearance.java 3905 2009-04-24 10:40:24Z blowagie $
+ * $Id: java 3905 2009-04-24 10:40:24Z blowagie $
  *
  * Copyright 2004-2006 by Paulo Soares.
  *
@@ -1173,7 +1173,7 @@ public class PdfSignatureAppearance {
      * @return the document bytes that are hashable
      */
     public InputStream getRangeStream() {
-        return new PdfSignatureAppearance.RangeStream(this.raf, this.bout, this.range);
+        return new RangeStream(this.raf, this.bout, this.range);
     }
 
     /**
@@ -1343,7 +1343,7 @@ public class PdfSignatureAppearance {
     /**
      * Commands to draw a yellow question mark in a stream content
      */
-    private static final String questionMark =
+    public static final String questionMark =
         "% DSUnknown\n" + //$NON-NLS-1$
         "q\n" + //$NON-NLS-1$
         "1 G\n" + //$NON-NLS-1$
@@ -1501,7 +1501,7 @@ public class PdfSignatureAppearance {
          * Allows modification of the signature dictionary.
          * @param sig the signature dictionary
          */
-        public void getSignatureDictionary(PdfDictionary sig);
+        void getSignatureDictionary(PdfDictionary sig);
     }
 
     private int certificationLevel = NOT_CERTIFIED;

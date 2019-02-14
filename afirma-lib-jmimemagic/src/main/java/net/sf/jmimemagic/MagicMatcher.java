@@ -44,7 +44,6 @@ import org.apache.oro.text.perl.Perl5Util;
 /** This class represents a single match test.
  * @author $Author: arimus $
  * @version $Revision: 1.1 $ */
-@SuppressWarnings("javadoc")
 public final class MagicMatcher implements Cloneable, Serializable {
 
 	// En Android hay que establecer cual es el controlador SAX
@@ -546,7 +545,7 @@ public final class MagicMatcher implements Cloneable, Serializable {
         	}
         }
         catch (final Throwable e) {
-        	java.util.logging.Logger.getLogger("es.gob.afirma").warning(e.toString()); //$NON-NLS-1$
+        	Logger.getLogger("es.gob.afirma").warning(e.toString()); //$NON-NLS-1$
         }
 
         return false;
