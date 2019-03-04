@@ -327,7 +327,7 @@ public class PdfSignatureAppearance {
 		}
         this.rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
     }
-	
+
    /**
     * Gets a template layer to create a signature appearance. The layers can go from 0 to 4.
     * <p>
@@ -1313,7 +1313,7 @@ public class PdfSignatureAppearance {
     /**
      * Commands to draw a yellow question mark in a stream content
      */
-    private static final String questionMark =
+    public static final String questionMark =
         "% DSUnknown\n" + //$NON-NLS-1$
         "q\n" + //$NON-NLS-1$
         "1 G\n" + //$NON-NLS-1$
@@ -1471,7 +1471,7 @@ public class PdfSignatureAppearance {
          * Allows modification of the signature dictionary.
          * @param sig the signature dictionary
          */
-        public void getSignatureDictionary(PdfDictionary sig);
+        void getSignatureDictionary(PdfDictionary sig);
     }
 
     private int certificationLevel = NOT_CERTIFIED;
