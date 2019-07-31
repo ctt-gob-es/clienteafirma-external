@@ -94,23 +94,53 @@ public class XmpReader {
 
 	/**
 	 * Replaces the content of a tag.
+	 * @param	parent			the tag name of the parent
 	 * @param	namespaceURI	the URI of the namespace
 	 * @param	localName		the tag name
 	 * @param	value			the new content for the tag
 	 * @return	true if the content was successfully replaced
 	 * @since	2.1.6 the return type has changed from void to boolean
 	 */
-	public boolean replace(final String namespaceURI, final String localName, final String value) {
+	public boolean replace(final String parent, final String namespaceURI, final String localName, final String value) {
+
+		// Buscamos el nodo con el nombre indicado y hacemos el reemplazo de valor
+		// si se encuentra
 		final NodeList nodes = this.domDocument.getElementsByTagNameNS(namespaceURI, localName);
-		Node node;
-		if (nodes.getLength() == 0) {
+		if (nodes.getLength() > 0) {
+			Node node;
+			for (int i = 0; i < nodes.getLength(); i++) {
+				node = nodes.item(i);
+				setNodeText(this.domDocument, node, value);
+			}
+			return true;
+		}
+
+		// Si no indico el nodo padre o este no se encuentra, concluimos que
+		// no se hace reemplazo
+		final NodeList parentNodes = parent == null ?
+				null :
+				this.domDocument.getElementsByTagName(parent);
+		if (parentNodes == null || parentNodes.getLength() == 0) {
 			return false;
 		}
-		for (int i = 0; i < nodes.getLength(); i++) {
-			node = nodes.item(i);
-			setNodeText(this.domDocument, node, value);
+
+		// En caso contrario, se comprueba si el dato se indico como atributo
+		// del nodo padre y lo actualizaremos en caso de encontrarlo
+		Node node;
+		NamedNodeMap attrMap;
+		boolean replaced = false;
+		for (int i = 0; i < parentNodes.getLength(); i++) {
+			node = parentNodes.item(i);
+			attrMap = node.getAttributes();
+			if (attrMap != null) {
+				final Node targetAttr = attrMap.getNamedItemNS(namespaceURI, localName);
+				if (targetAttr != null) {
+					targetAttr.setNodeValue(value);
+					replaced = true;
+				}
+			}
 		}
-		return true;
+		return replaced;
 	}
 
 	/**
