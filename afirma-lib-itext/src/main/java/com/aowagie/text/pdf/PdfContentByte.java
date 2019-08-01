@@ -1857,8 +1857,21 @@ public class PdfContentByte {
     }
 
 
-
-
+    /**
+     * Creates a new template.
+     * <P>
+     * Creates a new template that is nothing more than a form XObject. This template can be included
+     * in this <CODE>PdfContentByte</CODE> or in another template. Templates are only written
+     * to the output when the document is closed permitting things like showing text in the first page
+     * that is only defined in the last page.
+     *
+     * @param width the bounding box width
+     * @param height the bounding box height
+     * @return the created template
+     */
+    public PdfTemplate createTemplate(final float width, final float height) {
+        return createTemplate(width, height, null);
+    }
 
     private PdfTemplate createTemplate(final float width, final float height, final PdfName forcedName) {
         checkWriter();
