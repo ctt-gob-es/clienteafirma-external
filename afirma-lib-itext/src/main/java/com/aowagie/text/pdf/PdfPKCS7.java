@@ -48,12 +48,9 @@ package com.aowagie.text.pdf;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
-import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -76,7 +73,6 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -123,19 +119,20 @@ import com.aowagie.text.ExceptionConverter;
  * <p>
  * It's based in code found at org.spongycastle.
  */
-public class PdfPKCS7 {
+public final class PdfPKCS7 {
 
     private byte sigAttr[];
     private byte digestAttr[];
     private int version, signerversion;
-    private Set digestalgos;
-    private Collection certs, crls, signCerts;
+    private Set<String> digestalgos;
+    private Collection<Certificate> certs;
+    private Collection<CRL> crls;
+    private Collection<Certificate> signCerts;
     private X509Certificate signCert;
     private byte[] digest;
     private MessageDigest messageDigest;
     private String digestAlgorithm, digestEncryptionAlgorithm;
     private Signature sig;
-    private transient PrivateKey privKey;
     private byte RSAdata[];
     private boolean verified;
     private boolean verifyResult;
@@ -143,14 +140,14 @@ public class PdfPKCS7 {
     private byte externalRSAdata[];
     private String provider;
 
-    private static final String ID_PKCS7_DATA = "1.2.840.113549.1.7.1";
-    private static final String ID_PKCS7_SIGNED_DATA = "1.2.840.113549.1.7.2";
-    private static final String ID_RSA = "1.2.840.113549.1.1.1";
-    private static final String ID_DSA = "1.2.840.10040.4.1";
-    private static final String ID_CONTENT_TYPE = "1.2.840.113549.1.9.3";
-    private static final String ID_MESSAGE_DIGEST = "1.2.840.113549.1.9.4";
-    private static final String ID_SIGNING_TIME = "1.2.840.113549.1.9.5";
-    private static final String ID_ADBE_REVOCATION = "1.2.840.113583.1.1.8";
+    private static final String ID_PKCS7_DATA = "1.2.840.113549.1.7.1"; //$NON-NLS-1$
+    private static final String ID_PKCS7_SIGNED_DATA = "1.2.840.113549.1.7.2"; //$NON-NLS-1$
+    private static final String ID_RSA = "1.2.840.113549.1.1.1"; //$NON-NLS-1$
+    private static final String ID_DSA = "1.2.840.10040.4.1"; //$NON-NLS-1$
+    private static final String ID_CONTENT_TYPE = "1.2.840.113549.1.9.3"; //$NON-NLS-1$
+    private static final String ID_MESSAGE_DIGEST = "1.2.840.113549.1.9.4"; //$NON-NLS-1$
+    private static final String ID_SIGNING_TIME = "1.2.840.113549.1.9.5"; //$NON-NLS-1$
+    private static final String ID_ADBE_REVOCATION = "1.2.840.113583.1.1.8"; //$NON-NLS-1$
     /**
      * Holds value of property reason.
      */
@@ -173,75 +170,75 @@ public class PdfPKCS7 {
 
     private TimeStampToken timeStampToken;
 
-    private static final HashMap digestNames = new LinkedHashMap();
-    private static final HashMap algorithmNames = new LinkedHashMap();
-    private static final HashMap allowedDigests = new LinkedHashMap();
+    private static final HashMap<String, String> DIGEST_NAMES = new LinkedHashMap<>();
+    private static final HashMap<String, String> ALGORITHM_NAMES = new LinkedHashMap<>();
+    private static final HashMap<String, String> ALLOWED_DIGESTS = new LinkedHashMap<>();
 
     static {
-        digestNames.put("1.2.840.113549.2.5", "MD5");
-        digestNames.put("1.2.840.113549.2.2", "MD2");
-        digestNames.put("1.3.14.3.2.26", "SHA1");
-        digestNames.put("2.16.840.1.101.3.4.2.4", "SHA224");
-        digestNames.put("2.16.840.1.101.3.4.2.1", "SHA256");
-        digestNames.put("2.16.840.1.101.3.4.2.2", "SHA384");
-        digestNames.put("2.16.840.1.101.3.4.2.3", "SHA512");
-        digestNames.put("1.3.36.3.2.2", "RIPEMD128");
-        digestNames.put("1.3.36.3.2.1", "RIPEMD160");
-        digestNames.put("1.3.36.3.2.3", "RIPEMD256");
-        digestNames.put("1.2.840.113549.1.1.4", "MD5");
-        digestNames.put("1.2.840.113549.1.1.2", "MD2");
-        digestNames.put("1.2.840.113549.1.1.5", "SHA1");
-        digestNames.put("1.2.840.113549.1.1.14", "SHA224");
-        digestNames.put("1.2.840.113549.1.1.11", "SHA256");
-        digestNames.put("1.2.840.113549.1.1.12", "SHA384");
-        digestNames.put("1.2.840.113549.1.1.13", "SHA512");
-        digestNames.put("1.2.840.113549.2.5", "MD5");
-        digestNames.put("1.2.840.113549.2.2", "MD2");
-        digestNames.put("1.2.840.10040.4.3", "SHA1");
-        digestNames.put("2.16.840.1.101.3.4.3.1", "SHA224");
-        digestNames.put("2.16.840.1.101.3.4.3.2", "SHA256");
-        digestNames.put("2.16.840.1.101.3.4.3.3", "SHA384");
-        digestNames.put("2.16.840.1.101.3.4.3.4", "SHA512");
-        digestNames.put("1.3.36.3.3.1.3", "RIPEMD128");
-        digestNames.put("1.3.36.3.3.1.2", "RIPEMD160");
-        digestNames.put("1.3.36.3.3.1.4", "RIPEMD256");
+        DIGEST_NAMES.put("1.2.840.113549.2.5", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.2.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.14.3.2.26", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.2.4", "SHA224"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.2.1", "SHA256"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.2.2", "SHA384"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.2.3", "SHA512"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.36.3.2.2", "RIPEMD128"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.36.3.2.1", "RIPEMD160"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.36.3.2.3", "RIPEMD256"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.4", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.5", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.14", "SHA224"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.11", "SHA256"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.12", "SHA384"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.1.1.13", "SHA512"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.2.5", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.113549.2.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.2.840.10040.4.3", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.3.1", "SHA224"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.3.2", "SHA256"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.3.3", "SHA384"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("2.16.840.1.101.3.4.3.4", "SHA512"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.36.3.3.1.3", "RIPEMD128"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.36.3.3.1.2", "RIPEMD160"); //$NON-NLS-1$ //$NON-NLS-2$
+        DIGEST_NAMES.put("1.3.36.3.3.1.4", "RIPEMD256"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        algorithmNames.put("1.2.840.113549.1.1.1", "RSA");
-        algorithmNames.put("1.2.840.10040.4.1", "DSA");
-        algorithmNames.put("1.2.840.113549.1.1.2", "RSA");
-        algorithmNames.put("1.2.840.113549.1.1.4", "RSA");
-        algorithmNames.put("1.2.840.113549.1.1.5", "RSA");
-        algorithmNames.put("1.2.840.113549.1.1.14", "RSA");
-        algorithmNames.put("1.2.840.113549.1.1.11", "RSA");
-        algorithmNames.put("1.2.840.113549.1.1.12", "RSA");
-        algorithmNames.put("1.2.840.113549.1.1.13", "RSA");
-        algorithmNames.put("1.2.840.10040.4.3", "DSA");
-        algorithmNames.put("2.16.840.1.101.3.4.3.1", "DSA");
-        algorithmNames.put("2.16.840.1.101.3.4.3.2", "DSA");
-        algorithmNames.put("1.3.36.3.3.1.3", "RSA");
-        algorithmNames.put("1.3.36.3.3.1.2", "RSA");
-        algorithmNames.put("1.3.36.3.3.1.4", "RSA");
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.1", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.10040.4.1", "DSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.2", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.4", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.5", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.14", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.11", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.12", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.113549.1.1.13", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.2.840.10040.4.3", "DSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("2.16.840.1.101.3.4.3.1", "DSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("2.16.840.1.101.3.4.3.2", "DSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.3.36.3.3.1.3", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.3.36.3.3.1.2", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALGORITHM_NAMES.put("1.3.36.3.3.1.4", "RSA"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        allowedDigests.put("MD5", "1.2.840.113549.2.5");
-        allowedDigests.put("MD2", "1.2.840.113549.2.2");
-        allowedDigests.put("SHA1", "1.3.14.3.2.26");
-        allowedDigests.put("SHA224", "2.16.840.1.101.3.4.2.4");
-        allowedDigests.put("SHA256", "2.16.840.1.101.3.4.2.1");
-        allowedDigests.put("SHA384", "2.16.840.1.101.3.4.2.2");
-        allowedDigests.put("SHA512", "2.16.840.1.101.3.4.2.3");
-        allowedDigests.put("MD-5", "1.2.840.113549.2.5");
-        allowedDigests.put("MD-2", "1.2.840.113549.2.2");
-        allowedDigests.put("SHA-1", "1.3.14.3.2.26");
-        allowedDigests.put("SHA-224", "2.16.840.1.101.3.4.2.4");
-        allowedDigests.put("SHA-256", "2.16.840.1.101.3.4.2.1");
-        allowedDigests.put("SHA-384", "2.16.840.1.101.3.4.2.2");
-        allowedDigests.put("SHA-512", "2.16.840.1.101.3.4.2.3");
-        allowedDigests.put("RIPEMD128", "1.3.36.3.2.2");
-        allowedDigests.put("RIPEMD-128", "1.3.36.3.2.2");
-        allowedDigests.put("RIPEMD160", "1.3.36.3.2.1");
-        allowedDigests.put("RIPEMD-160", "1.3.36.3.2.1");
-        allowedDigests.put("RIPEMD256", "1.3.36.3.2.3");
-        allowedDigests.put("RIPEMD-256", "1.3.36.3.2.3");
+        ALLOWED_DIGESTS.put("MD5", "1.2.840.113549.2.5"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("MD2", "1.2.840.113549.2.2"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA1", "1.3.14.3.2.26"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA224", "2.16.840.1.101.3.4.2.4"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA256", "2.16.840.1.101.3.4.2.1"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA384", "2.16.840.1.101.3.4.2.2"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA512", "2.16.840.1.101.3.4.2.3"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("MD-5", "1.2.840.113549.2.5"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("MD-2", "1.2.840.113549.2.2"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA-1", "1.3.14.3.2.26"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA-224", "2.16.840.1.101.3.4.2.4"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA-256", "2.16.840.1.101.3.4.2.1"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA-384", "2.16.840.1.101.3.4.2.2"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("SHA-512", "2.16.840.1.101.3.4.2.3"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("RIPEMD128", "1.3.36.3.2.2"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("RIPEMD-128", "1.3.36.3.2.2"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("RIPEMD160", "1.3.36.3.2.1"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("RIPEMD-160", "1.3.36.3.2.1"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("RIPEMD256", "1.3.36.3.2.3"); //$NON-NLS-1$ //$NON-NLS-2$
+        ALLOWED_DIGESTS.put("RIPEMD-256", "1.3.36.3.2.3"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Obtiene el PKCS&#35;1 de la firma PKCS&#35;7 del PDF.
@@ -257,12 +254,11 @@ public class PdfPKCS7 {
      * @since	2.1.6
      */
     private static String getDigest(final String oid) {
-        final String ret = (String)digestNames.get(oid);
+        final String ret = DIGEST_NAMES.get(oid);
         if (ret == null) {
 			return oid;
-		} else {
-			return ret;
 		}
+		return ret;
     }
 
     /**
@@ -272,12 +268,11 @@ public class PdfPKCS7 {
      * @since	2.1.6
      */
     private static String getAlgorithm(final String oid) {
-        final String ret = (String)algorithmNames.get(oid);
+        final String ret = ALGORITHM_NAMES.get(oid);
         if (ret == null) {
 			return oid;
-		} else {
-			return ret;
 		}
+		return ret;
     }
 
     /**
@@ -313,31 +308,34 @@ public class PdfPKCS7 {
     PdfPKCS7(final byte[] contentsKey, final byte[] certsKey, final String provider) {
         try {
             this.provider = provider;
-            final X509CertParser cr = new X509CertParser();
-            cr.engineInit(new ByteArrayInputStream(certsKey));
-            this.certs = cr.engineReadAll();
+
+            final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            this.certs = (Collection<Certificate>) cf.generateCertificates(new ByteArrayInputStream(certsKey));
+
             this.signCerts = this.certs;
             this.signCert = (X509Certificate)this.certs.iterator().next();
-            this.crls = new ArrayList();
+            this.crls = new ArrayList<>();
             final ASN1InputStream in = new ASN1InputStream(new ByteArrayInputStream(contentsKey));
             this.digest = ((DEROctetString)in.readObject()).getOctets();
             if (provider == null) {
-				this.sig = Signature.getInstance("SHA1withRSA");
+				this.sig = Signature.getInstance("SHA1withRSA"); //$NON-NLS-1$
 			}
             else {
-				this.sig = Signature.getInstance("SHA1withRSA", provider);
+				this.sig = Signature.getInstance("SHA1withRSA", provider); //$NON-NLS-1$
 			}
 
             PublicKey publicKey = this.signCert.getPublicKey();
             if (publicKey == null) {
-            	publicKey = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(this.signCert.getEncoded())).getPublicKey();
+            	publicKey = CertificateFactory.getInstance("X.509").generateCertificate( //$NON-NLS-1$
+        			new ByteArrayInputStream(this.signCert.getEncoded())
+    			).getPublicKey();
             }
             if (publicKey != null) {
             	this.sig.initVerify(publicKey);
             }
             else {
             	throw new CertificateEncodingException(
-        			"El certificado no contiene una clave publica adecuada"
+        			"El certificado no contiene una clave publica adecuada" //$NON-NLS-1$
     			);
             }
 
@@ -379,9 +377,8 @@ public class PdfPKCS7 {
                         seq = (ASN1Sequence)tag.getObject();
                         ret = false;
                         break;
-                    } else {
-						return;
-					}
+                    }
+					return;
                 }
             }
             if (ret) {
@@ -400,7 +397,7 @@ public class PdfPKCS7 {
      * @param contentsKey the /Contents key
      * @param provider the provider or <code>null</code> for the default provider
      */
-    PdfPKCS7(final byte[] contentsKey, final String provider) {
+	PdfPKCS7(final byte[] contentsKey, final String provider) {
         try {
             this.provider = provider;
             final ASN1InputStream din = new ASN1InputStream(new ByteArrayInputStream(contentsKey));
@@ -414,15 +411,15 @@ public class PdfPKCS7 {
                 pkcs = din.readObject();
             }
             catch (final IOException e) {
-                throw new IllegalArgumentException("can't decode PKCS7SignedData object");
+                throw new IllegalArgumentException("can't decode PKCS7SignedData object", e); //$NON-NLS-1$
             }
             if (!(pkcs instanceof ASN1Sequence)) {
-                throw new IllegalArgumentException("Not a valid PKCS#7 object - not a sequence");
+                throw new IllegalArgumentException("Not a valid PKCS#7 object - not a sequence"); //$NON-NLS-1$
             }
             final ASN1Sequence signedData = (ASN1Sequence)pkcs;
             final ASN1ObjectIdentifier objId = (ASN1ObjectIdentifier)signedData.getObjectAt(0);
             if (!objId.getId().equals(ID_PKCS7_SIGNED_DATA)) {
-				throw new IllegalArgumentException("Not a valid PKCS#7 object - not signed data");
+				throw new IllegalArgumentException("Not a valid PKCS#7 object - not signed data"); //$NON-NLS-1$
 			}
             final ASN1Sequence content = (ASN1Sequence)((ASN1TaggedObject)signedData.getObjectAt(1)).getObject();
             // the positions that we care are:
@@ -436,7 +433,7 @@ public class PdfPKCS7 {
             this.version = ((ASN1Integer)content.getObjectAt(0)).getValue().intValue();
 
             // the digestAlgorithms
-            this.digestalgos = new HashSet();
+            this.digestalgos = new HashSet<>();
             final Enumeration e = ((ASN1Set)content.getObjectAt(1)).getObjects();
             while (e.hasMoreElements())
             {
@@ -465,7 +462,7 @@ public class PdfPKCS7 {
             		rsaDataContent = (ASN1OctetString)((BERTaggedObject)encodable).getObject();
             	}
             	else {
-            		throw new IllegalArgumentException("El objeto ASN.1 no es ni BER ni BER ni DER: " + encodable.getClass().getName());
+            		throw new IllegalArgumentException("El objeto ASN.1 no es ni BER ni BER ni DER: " + encodable.getClass().getName()); //$NON-NLS-1$
             	}
                 this.RSAdata = rsaDataContent.getOctets();
             }
@@ -479,7 +476,7 @@ public class PdfPKCS7 {
 
             final ASN1Set signerInfos = (ASN1Set)content.getObjectAt(next);
             if (signerInfos.size() != 1) {
-				throw new IllegalArgumentException("This PKCS#7 object has multiple SignerInfos - only one is supported at this time");
+				throw new IllegalArgumentException("This PKCS#7 object has multiple SignerInfos - only one is supported at this time"); //$NON-NLS-1$
 			}
             final ASN1Sequence signerInfo = (ASN1Sequence)signerInfos.getObjectAt(0);
 
@@ -495,15 +492,15 @@ public class PdfPKCS7 {
             // Get the signing certificate
             final ASN1Sequence issuerAndSerialNumber = (ASN1Sequence)signerInfo.getObjectAt(1);
             final BigInteger serialNumber = ((ASN1Integer)issuerAndSerialNumber.getObjectAt(1)).getValue();
-            for (final Iterator i = this.certs.iterator(); i.hasNext();) {
-                final X509Certificate cert = (X509Certificate)i.next();
+            for (final Object element : this.certs) {
+                final X509Certificate cert = (X509Certificate)element;
                 if (serialNumber.equals(cert.getSerialNumber())) {
                     this.signCert = cert;
                     break;
                 }
             }
             if (this.signCert == null) {
-                throw new IllegalArgumentException("Can't find signing certificate with serial " + serialNumber.toString(16));
+                throw new IllegalArgumentException("Can't find signing certificate with serial " + serialNumber.toString(16)); //$NON-NLS-1$
             }
             signCertificateChain();
             this.digestAlgorithm = ((ASN1ObjectIdentifier)((ASN1Sequence)signerInfo.getObjectAt(2)).getObjectAt(0)).getId();
@@ -533,7 +530,7 @@ public class PdfPKCS7 {
                     }
                 }
                 if (this.digestAttr == null) {
-					throw new IllegalArgumentException("Authenticated attribute is missing the digest.");
+					throw new IllegalArgumentException("Authenticated attribute is missing the digest."); //$NON-NLS-1$
 				}
                 ++next;
             }
@@ -552,7 +549,7 @@ public class PdfPKCS7 {
                 }
             }
             if (this.RSAdata != null || this.digestAttr != null) {
-                if (provider == null || provider.startsWith("SunPKCS11")) {
+                if (provider == null || provider.startsWith("SunPKCS11")) { //$NON-NLS-1$
                 	this.messageDigest = MessageDigest.getInstance(getDigestAlgorithmName(getHashAlgorithm()));
 				}
                 else {
@@ -568,14 +565,14 @@ public class PdfPKCS7 {
 
             PublicKey publicKey = this.signCert.getPublicKey();
             if (publicKey == null) {
-            	publicKey = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(this.signCert.getEncoded())).getPublicKey();
+            	publicKey = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(this.signCert.getEncoded())).getPublicKey(); //$NON-NLS-1$
             }
             if (publicKey != null) {
             	this.sig.initVerify(publicKey);
             }
             else {
             	throw new CertificateEncodingException(
-        			"El certificado no contiene una clave publica adecuada"
+        			"El certificado no contiene una clave publica adecuada" //$NON-NLS-1$
     			);
             }
 
@@ -597,23 +594,25 @@ public class PdfPKCS7 {
      * @throws NoSuchProviderException on error
      * @throws NoSuchAlgorithmException on error
      */
-    PdfPKCS7(final PrivateKey privKey, final Certificate[] certChain, final CRL[] crlList,
-                    final String hashAlgorithm, final String provider, final boolean hasRSAdata)
-      throws InvalidKeyException, NoSuchProviderException,
-      NoSuchAlgorithmException
-    {
-        this.privKey = privKey;
+    PdfPKCS7(final PrivateKey privKey,
+    		 final Certificate[] certChain,
+    		 final CRL[] crlList,
+             final String hashAlgorithm,
+             final String provider,
+             final boolean hasRSAdata) throws InvalidKeyException,
+                                              NoSuchProviderException,
+                                              NoSuchAlgorithmException {
         this.provider = provider;
 
-        this.digestAlgorithm = (String)allowedDigests.get(hashAlgorithm.toUpperCase());
+        this.digestAlgorithm = ALLOWED_DIGESTS.get(hashAlgorithm.toUpperCase());
         if (this.digestAlgorithm == null) {
-			throw new NoSuchAlgorithmException("Unknown Hash Algorithm "+hashAlgorithm);
+			throw new NoSuchAlgorithmException("Unknown Hash Algorithm "+hashAlgorithm); //$NON-NLS-1$
 		}
 
         this.version = this.signerversion = 1;
-        this.certs = new ArrayList();
-        this.crls = new ArrayList();
-        this.digestalgos = new HashSet();
+        this.certs = new ArrayList<>();
+        this.crls = new ArrayList<>();
+        this.digestalgos = new HashSet<>();
         this.digestalgos.add(this.digestAlgorithm);
 
         //
@@ -635,19 +634,19 @@ public class PdfPKCS7 {
             // Now we have private key, find out what the digestEncryptionAlgorithm is.
             //
             this.digestEncryptionAlgorithm = privKey.getAlgorithm();
-            if (this.digestEncryptionAlgorithm.equals("RSA")) {
+            if (this.digestEncryptionAlgorithm.equals("RSA")) { //$NON-NLS-1$
                 this.digestEncryptionAlgorithm = ID_RSA;
             }
-            else if (this.digestEncryptionAlgorithm.equals("DSA")) {
+            else if (this.digestEncryptionAlgorithm.equals("DSA")) { //$NON-NLS-1$
                 this.digestEncryptionAlgorithm = ID_DSA;
             }
             else {
-                throw new NoSuchAlgorithmException("Unknown Key Algorithm "+this.digestEncryptionAlgorithm);
+                throw new NoSuchAlgorithmException("Unknown Key Algorithm "+this.digestEncryptionAlgorithm); //$NON-NLS-1$
             }
         }
         if (hasRSAdata) {
             this.RSAdata = new byte[0];
-            if (provider == null || provider.startsWith("SunPKCS11")) {
+            if (provider == null || provider.startsWith("SunPKCS11")) { //$NON-NLS-1$
 				this.messageDigest = MessageDigest.getInstance(getHashAlgorithm());
 			}
             else {
@@ -689,7 +688,7 @@ public class PdfPKCS7 {
      * @return the X.509 certificates associated with this PKCS#7 object
      */
     public Certificate[] getCertificates() {
-        return (X509Certificate[])this.certs.toArray(new X509Certificate[this.certs.size()]);
+        return this.certs.toArray(new X509Certificate[this.certs.size()]);
     }
 
     /**
@@ -700,13 +699,13 @@ public class PdfPKCS7 {
      * @since	2.1.6
      */
     public Certificate[] getSignCertificateChain() {
-        return (X509Certificate[])this.signCerts.toArray(new X509Certificate[this.signCerts.size()]);
+        return this.signCerts.toArray(new X509Certificate[this.signCerts.size()]);
     }
 
-    private void signCertificateChain() {
-        final ArrayList cc = new ArrayList();
+	private void signCertificateChain() {
+        final ArrayList<Certificate> cc = new ArrayList<>();
         cc.add(this.signCert);
-        final ArrayList oc = new ArrayList(this.certs);
+        final ArrayList<Certificate> oc = new ArrayList<>(this.certs);
         for (int k = 0; k < oc.size(); ++k) {
             if (this.signCert.getSerialNumber().equals(((X509Certificate)oc.get(k)).getSerialNumber())) {
                 oc.remove(k);
@@ -722,7 +721,8 @@ public class PdfPKCS7 {
                 try {
                     if (this.provider == null) {
 						v.verify(((X509Certificate)oc.get(k)).getPublicKey());
-					} else {
+					}
+                    else {
 						v.verify(((X509Certificate)oc.get(k)).getPublicKey(), this.provider);
 					}
                     found = true;
@@ -731,6 +731,7 @@ public class PdfPKCS7 {
                     break;
                 }
                 catch (final Exception e) {
+                	// Vacio
                 }
             }
         }
@@ -741,7 +742,7 @@ public class PdfPKCS7 {
      * Get the X.509 certificate revocation lists associated with this PKCS#7 object
      * @return the X.509 certificate revocation lists associated with this PKCS#7 object
      */
-    public Collection getCRLs() {
+    public Collection<CRL> getCRLs() {
         return this.crls;
     }
 
@@ -779,7 +780,7 @@ public class PdfPKCS7 {
 			dea = this.digestEncryptionAlgorithm;
 		}
 
-        return getHashAlgorithm() + "with" + dea;
+        return getHashAlgorithm() + "with" + dea; //$NON-NLS-1$
     }
 
     /**
@@ -789,40 +790,6 @@ public class PdfPKCS7 {
     public String getHashAlgorithm() {
         return getDigest(this.digestAlgorithm);
     }
-
-
-
-    /**
-     * Loads the default root certificates at &lt;java.home&gt;/lib/security/cacerts.
-     * @param provider the provider or <code>null</code> for the default provider
-     * @return a <CODE>KeyStore</CODE>
-     */
-    private static KeyStore loadCacertsKeyStore(final String provider) {
-        File file = new File(System.getProperty("java.home"), "lib");
-        file = new File(file, "security");
-        file = new File(file, "cacerts");
-        FileInputStream fin = null;
-        try {
-            fin = new FileInputStream(file);
-            KeyStore k;
-            if (provider == null) {
-				k = KeyStore.getInstance("JKS");
-			} else {
-				k = KeyStore.getInstance("JKS", provider);
-			}
-            k.load(fin, null);
-            return k;
-        }
-        catch (final Exception e) {
-            throw new ExceptionConverter(e);
-        }
-        finally {
-            try{if (fin != null) {fin.close();}}catch(final Exception ex){}
-        }
-    }
-
-
-
 
     /**
      * Checks if OCSP revocation refers to the document signing certificate.
@@ -850,24 +817,9 @@ public class PdfPKCS7 {
             return tis.equals(cid);
         }
         catch (final Exception ex) {
+        	// Vacio
         }
         return false;
-    }
-
-    private static ASN1Primitive getExtensionValue(final X509Certificate cert, final String oid) throws IOException {
-        final byte[] bytes = cert.getExtensionValue(oid);
-        if (bytes == null) {
-            return null;
-        }
-        ASN1InputStream aIn = new ASN1InputStream(new ByteArrayInputStream(bytes));
-        final ASN1OctetString octs = (ASN1OctetString) aIn.readObject();
-        aIn = new ASN1InputStream(new ByteArrayInputStream(octs.getOctets()));
-        return aIn.readObject();
-    }
-
-    private static String getStringFromGeneralName(final ASN1Primitive names) throws IOException {
-        final DERTaggedObject taggedObject = (DERTaggedObject) names ;
-        return new String(ASN1OctetString.getInstance(taggedObject, false).getOctets(), "ISO-8859-1");
     }
 
     /**
@@ -876,8 +828,9 @@ public class PdfPKCS7 {
      * @return a DERObject
      */
     private static ASN1Primitive getIssuer(final byte[] enc) {
-        try {
-            final ASN1InputStream in = new ASN1InputStream(new ByteArrayInputStream(enc));
+        try (
+    		final ASN1InputStream in = new ASN1InputStream(new ByteArrayInputStream(enc))
+		) {
             final ASN1Sequence seq = (ASN1Sequence)in.readObject();
             return (ASN1Primitive)seq.getObjectAt(seq.getObjectAt(0) instanceof DERTaggedObject ? 3 : 2);
         }
@@ -901,8 +854,6 @@ public class PdfPKCS7 {
             throw new ExceptionConverter(e);
         }
     }
-
-
 
     /**
      * Get the subject fields from an X509 Certificate
@@ -954,13 +905,13 @@ public class PdfPKCS7 {
         this.externalDigest = digest;
         this.externalRSAdata = RSAdata;
         if (digestEncryptionAlgorithm != null) {
-            if (digestEncryptionAlgorithm.equals("RSA")) {
+            if (digestEncryptionAlgorithm.equals("RSA")) { //$NON-NLS-1$
                 this.digestEncryptionAlgorithm = ID_RSA;
             }
-            else if (digestEncryptionAlgorithm.equals("DSA")) {
+            else if (digestEncryptionAlgorithm.equals("DSA")) { //$NON-NLS-1$
                 this.digestEncryptionAlgorithm = ID_DSA;
             } else {
-				throw new ExceptionConverter(new NoSuchAlgorithmException("Unknown Key Algorithm "+digestEncryptionAlgorithm));
+				throw new ExceptionConverter(new NoSuchAlgorithmException("Unknown Key Algorithm "+digestEncryptionAlgorithm)); //$NON-NLS-1$
 			}
         }
     }
@@ -996,21 +947,31 @@ public class PdfPKCS7 {
             else if (this.externalRSAdata != null && this.RSAdata != null) {
                 this.RSAdata = this.externalRSAdata;
                 this.sig.update(this.RSAdata);
-                this.digest = this.sig.sign();
+                try {
+                	this.digest = this.sig.sign();
+                }
+                catch(final Exception e) {
+                	// Vacio
+                }
             }
             else {
                 if (this.RSAdata != null) {
                     this.RSAdata = this.messageDigest.digest();
                     this.sig.update(this.RSAdata);
                 }
-                this.digest = this.sig.sign();
+                try {
+                	this.digest = this.sig.sign();
+                }
+                catch(final Exception e) {
+                	// Vacio
+                }
             }
 
             // Create the set of Hash algorithms
             final ASN1EncodableVector digestAlgorithms = new ASN1EncodableVector();
-            for(final Iterator it = this.digestalgos.iterator(); it.hasNext();) {
+            for (final String string : this.digestalgos) {
                 final ASN1EncodableVector algos = new ASN1EncodableVector();
-                algos.add(new ASN1ObjectIdentifier((String)it.next()));
+                algos.add(new ASN1ObjectIdentifier(string));
                 algos.add(DERNull.INSTANCE);
                 digestAlgorithms.add(new DERSequence(algos));
             }
@@ -1026,8 +987,8 @@ public class PdfPKCS7 {
             // Get all the certificates
             //
             v = new ASN1EncodableVector();
-            for (final Iterator i = this.certs.iterator(); i.hasNext();) {
-                final ASN1InputStream tempstream = new ASN1InputStream(new ByteArrayInputStream(((X509Certificate)i.next()).getEncoded()));
+            for (final Object element : this.certs) {
+                final ASN1InputStream tempstream = new ASN1InputStream(new ByteArrayInputStream(((X509Certificate)element).getEncoded()));
                 v.add(tempstream.readObject());
             }
 
@@ -1069,7 +1030,7 @@ public class PdfPKCS7 {
             // Added by Martin Brunecky, 07/12/2007 folowing Aiken Sam, 2006-11-15
             // Sam found Adobe expects time-stamped SHA1-1 of the encrypted digest
             if (tsaClient != null) {
-                final byte[] tsImprint = MessageDigest.getInstance("SHA-1").digest(this.digest);
+                final byte[] tsImprint = MessageDigest.getInstance("SHA-1").digest(this.digest); //$NON-NLS-1$
                 final byte[] tsToken = tsaClient.getTimeStampToken(this, tsImprint);
                 if (tsToken != null) {
                     final ASN1EncodableVector unauthAttributes = buildUnauthenticatedAttributes(tsToken);
@@ -1088,8 +1049,8 @@ public class PdfPKCS7 {
 
            if (!this.crls.isEmpty()) {
                 v = new ASN1EncodableVector();
-                for (final Iterator i = this.crls.iterator();i.hasNext();) {
-                    final ASN1InputStream t = new ASN1InputStream(new ByteArrayInputStream(((X509CRL)i.next()).getEncoded()));
+                for (final Object element : this.crls) {
+                    final ASN1InputStream t = new ASN1InputStream(new ByteArrayInputStream(((X509CRL)element).getEncoded()));
                     v.add(t.readObject());
                 }
                 final DERSet dercrls = new DERSet(v);
@@ -1128,13 +1089,13 @@ public class PdfPKCS7 {
      * @return ASN1EncodableVector
      * @throws IOException
      */
-    private ASN1EncodableVector buildUnauthenticatedAttributes(final byte[] timeStampToken)  throws IOException {
+    private static ASN1EncodableVector buildUnauthenticatedAttributes(final byte[] timeStampToken)  throws IOException {
         if (timeStampToken == null) {
 			return null;
 		}
 
         // @todo: move this together with the rest of the defintions
-        final String ID_TIME_STAMP_TOKEN = "1.2.840.113549.1.9.16.2.14"; // RFC 3161 id-aa-timeStampToken
+        final String ID_TIME_STAMP_TOKEN = "1.2.840.113549.1.9.16.2.14"; // RFC 3161 id-aa-timeStampToken //$NON-NLS-1$
 
         final ASN1InputStream tempstream = new ASN1InputStream(new ByteArrayInputStream(timeStampToken));
         final ASN1EncodableVector unauthAttributes = new ASN1EncodableVector();
@@ -1186,8 +1147,8 @@ public class PdfPKCS7 {
                 v = new ASN1EncodableVector();
                 v.add(new ASN1ObjectIdentifier(ID_ADBE_REVOCATION));
                 final ASN1EncodableVector v2 = new ASN1EncodableVector();
-                for (final Iterator i = this.crls.iterator();i.hasNext();) {
-                    final ASN1InputStream t = new ASN1InputStream(new ByteArrayInputStream(((X509CRL)i.next()).getEncoded()));
+                for (final Object element : this.crls) {
+                    final ASN1InputStream t = new ASN1InputStream(new ByteArrayInputStream(((X509CRL)element).getEncoded()));
                     v2.add(t.readObject());
                 }
                 v.add(new DERSet(new DERSequence(new DERTaggedObject(true, 0, new DERSequence(v2)))));
@@ -1271,95 +1232,96 @@ public class PdfPKCS7 {
         /**
          * country code - StringType(SIZE(2))
          */
-        private static final ASN1ObjectIdentifier C = new ASN1ObjectIdentifier("2.5.4.6");
+        private static final ASN1ObjectIdentifier C = new ASN1ObjectIdentifier("2.5.4.6"); //$NON-NLS-1$
 
         /**
          * organization - StringType(SIZE(1..64))
          */
-        private static final ASN1ObjectIdentifier O = new ASN1ObjectIdentifier("2.5.4.10");
+        private static final ASN1ObjectIdentifier O = new ASN1ObjectIdentifier("2.5.4.10"); //$NON-NLS-1$
 
         /**
          * organizational unit name - StringType(SIZE(1..64))
          */
-        private static final ASN1ObjectIdentifier OU = new ASN1ObjectIdentifier("2.5.4.11");
+        private static final ASN1ObjectIdentifier OU = new ASN1ObjectIdentifier("2.5.4.11"); //$NON-NLS-1$
 
         /**
          * Title
          */
-        private static final ASN1ObjectIdentifier T = new ASN1ObjectIdentifier("2.5.4.12");
+        private static final ASN1ObjectIdentifier T = new ASN1ObjectIdentifier("2.5.4.12"); //$NON-NLS-1$
 
         /**
          * common name - StringType(SIZE(1..64))
          */
-        private static final ASN1ObjectIdentifier CN = new ASN1ObjectIdentifier("2.5.4.3");
+        private static final ASN1ObjectIdentifier CN = new ASN1ObjectIdentifier("2.5.4.3"); //$NON-NLS-1$
 
         /**
          * device serial number name - StringType(SIZE(1..64))
          */
-        private static final ASN1ObjectIdentifier SN = new ASN1ObjectIdentifier("2.5.4.5");
+        private static final ASN1ObjectIdentifier SN = new ASN1ObjectIdentifier("2.5.4.5"); //$NON-NLS-1$
 
         /**
          * locality name - StringType(SIZE(1..64))
          */
-        private static final ASN1ObjectIdentifier L = new ASN1ObjectIdentifier("2.5.4.7");
+        private static final ASN1ObjectIdentifier L = new ASN1ObjectIdentifier("2.5.4.7"); //$NON-NLS-1$
 
         /**
          * state, or province name - StringType(SIZE(1..64))
          */
-        private static final ASN1ObjectIdentifier ST = new ASN1ObjectIdentifier("2.5.4.8");
+        private static final ASN1ObjectIdentifier ST = new ASN1ObjectIdentifier("2.5.4.8"); //$NON-NLS-1$
 
         /** Naming attribute of type X520name */
-        private static final ASN1ObjectIdentifier SURNAME = new ASN1ObjectIdentifier("2.5.4.4");
+        private static final ASN1ObjectIdentifier SURNAME = new ASN1ObjectIdentifier("2.5.4.4"); //$NON-NLS-1$
         /** Naming attribute of type X520name */
-        private static final ASN1ObjectIdentifier GIVENNAME = new ASN1ObjectIdentifier("2.5.4.42");
+        private static final ASN1ObjectIdentifier GIVENNAME = new ASN1ObjectIdentifier("2.5.4.42"); //$NON-NLS-1$
         /** Naming attribute of type X520name */
-        private static final ASN1ObjectIdentifier INITIALS = new ASN1ObjectIdentifier("2.5.4.43");
+        private static final ASN1ObjectIdentifier INITIALS = new ASN1ObjectIdentifier("2.5.4.43"); //$NON-NLS-1$
         /** Naming attribute of type X520name */
-        private static final ASN1ObjectIdentifier GENERATION = new ASN1ObjectIdentifier("2.5.4.44");
+        private static final ASN1ObjectIdentifier GENERATION = new ASN1ObjectIdentifier("2.5.4.44"); //$NON-NLS-1$
 
 
         /**
          * Email address (RSA PKCS#9 extension) - IA5String.
          * <p>Note: if you're trying to be ultra orthodox, don't use this! It shouldn't be in here.
          */
-        private static final ASN1ObjectIdentifier EmailAddress = new ASN1ObjectIdentifier("1.2.840.113549.1.9.1");
+        private static final ASN1ObjectIdentifier EmailAddress = new ASN1ObjectIdentifier("1.2.840.113549.1.9.1"); //$NON-NLS-1$
 
 
 
         /** object identifier */
-        private static final ASN1ObjectIdentifier DC = new ASN1ObjectIdentifier("0.9.2342.19200300.100.1.25");
+        private static final ASN1ObjectIdentifier DC = new ASN1ObjectIdentifier("0.9.2342.19200300.100.1.25"); //$NON-NLS-1$
 
         /** LDAP User id. */
-        private static final ASN1ObjectIdentifier UID = new ASN1ObjectIdentifier("0.9.2342.19200300.100.1.1");
+        private static final ASN1ObjectIdentifier UID = new ASN1ObjectIdentifier("0.9.2342.19200300.100.1.1"); //$NON-NLS-1$
 
         /** A HashMap with default symbols */
-        private static HashMap DefaultSymbols = new LinkedHashMap();
+        private static HashMap<ASN1ObjectIdentifier, String> DefaultSymbols = new LinkedHashMap<>();
 
         static {
-            DefaultSymbols.put(C, "C");
-            DefaultSymbols.put(O, "O");
-            DefaultSymbols.put(T, "T");
-            DefaultSymbols.put(OU, "OU");
-            DefaultSymbols.put(CN, "CN");
-            DefaultSymbols.put(L, "L");
-            DefaultSymbols.put(ST, "ST");
-            DefaultSymbols.put(SN, "SN");
-            DefaultSymbols.put(EmailAddress, "E");
-            DefaultSymbols.put(DC, "DC");
-            DefaultSymbols.put(UID, "UID");
-            DefaultSymbols.put(SURNAME, "SURNAME");
-            DefaultSymbols.put(GIVENNAME, "GIVENNAME");
-            DefaultSymbols.put(INITIALS, "INITIALS");
-            DefaultSymbols.put(GENERATION, "GENERATION");
+            DefaultSymbols.put(C, "C"); //$NON-NLS-1$
+            DefaultSymbols.put(O, "O"); //$NON-NLS-1$
+            DefaultSymbols.put(T, "T"); //$NON-NLS-1$
+            DefaultSymbols.put(OU, "OU"); //$NON-NLS-1$
+            DefaultSymbols.put(CN, "CN"); //$NON-NLS-1$
+            DefaultSymbols.put(L, "L"); //$NON-NLS-1$
+            DefaultSymbols.put(ST, "ST"); //$NON-NLS-1$
+            DefaultSymbols.put(SN, "SN"); //$NON-NLS-1$
+            DefaultSymbols.put(EmailAddress, "E"); //$NON-NLS-1$
+            DefaultSymbols.put(DC, "DC"); //$NON-NLS-1$
+            DefaultSymbols.put(UID, "UID"); //$NON-NLS-1$
+            DefaultSymbols.put(SURNAME, "SURNAME"); //$NON-NLS-1$
+            DefaultSymbols.put(GIVENNAME, "GIVENNAME"); //$NON-NLS-1$
+            DefaultSymbols.put(INITIALS, "INITIALS"); //$NON-NLS-1$
+            DefaultSymbols.put(GENERATION, "GENERATION"); //$NON-NLS-1$
         }
+
         /** A HashMap with values */
-        private final HashMap values = new LinkedHashMap();
+        private final HashMap<String, ArrayList<String>> values = new LinkedHashMap<>();
 
         /**
          * Constructs an X509 name
          * @param seq an ASN1 Sequence
          */
-        private X509Name(final ASN1Sequence seq) {
+        X509Name(final ASN1Sequence seq) {
             final Enumeration e = seq.getObjects();
 
             while (e.hasMoreElements()) {
@@ -1367,13 +1329,13 @@ public class PdfPKCS7 {
 
                 for (int i = 0; i < set.size(); i++) {
                     final ASN1Sequence s = (ASN1Sequence)set.getObjectAt(i);
-                    final String id = (String)DefaultSymbols.get(s.getObjectAt(0));
+                    final String id = DefaultSymbols.get(s.getObjectAt(0));
                     if (id == null) {
 						continue;
 					}
-                    ArrayList vs = (ArrayList)this.values.get(id);
+                    ArrayList<String> vs = this.values.get(id);
                     if (vs == null) {
-                        vs = new ArrayList();
+                        vs = new ArrayList<>();
                         this.values.put(id, vs);
                     }
                     vs.add(((ASN1String)s.getObjectAt(1)).getString());
@@ -1381,19 +1343,16 @@ public class PdfPKCS7 {
             }
         }
 
-
         public String getField(final String name) {
-            final ArrayList vs = (ArrayList)this.values.get(name);
+            final ArrayList vs = this.values.get(name);
             return vs == null ? null : (String)vs.get(0);
         }
-
-
 
         /**
          * getter for values
          * @return a HashMap with the fields of the X509 name
          */
-        public HashMap getFields() {
+        public HashMap<String, ArrayList<String>> getFields() {
             return this.values;
         }
 
@@ -1406,86 +1365,19 @@ public class PdfPKCS7 {
         }
     }
 
-    /**
-     * class for breaking up an X500 Name into it's component tokens, ala
-     * java.util.StringTokenizer. We need this class as some of the
-     * lightweight Java environment don't support classes like
-     * StringTokenizer.
-     */
-    private static class X509NameTokenizer {
-        private final String          oid;
-        private int             index;
-        private final StringBuffer    buf = new StringBuffer();
-
-        private X509NameTokenizer(
-        final String oid) {
-            this.oid = oid;
-            this.index = -1;
-        }
-
-        private boolean hasMoreTokens() {
-            return this.index != this.oid.length();
-        }
-
-        private String nextToken() {
-            if (this.index == this.oid.length()) {
-                return null;
-            }
-
-            int     end = this.index + 1;
-            boolean quoted = false;
-            boolean escaped = false;
-
-            this.buf.setLength(0);
-
-            while (end != this.oid.length()) {
-                final char    c = this.oid.charAt(end);
-
-                if (c == '"') {
-                    if (!escaped) {
-                        quoted = !quoted;
-                    }
-                    else {
-                        this.buf.append(c);
-                    }
-                    escaped = false;
-                }
-                else {
-                    if (escaped || quoted) {
-                        this.buf.append(c);
-                        escaped = false;
-                    }
-                    else if (c == '\\') {
-                        escaped = true;
-                    }
-                    else if (c == ',') {
-                        break;
-                    }
-                    else {
-                        this.buf.append(c);
-                    }
-                }
-                end++;
-            }
-
-            this.index = end;
-            return this.buf.toString().trim();
-        }
-    }
-
-	/** Obtiene el nombre de un algoritmo de huella digital a partir de una de
+    /** Obtiene el nombre de un algoritmo de huella digital a partir de una de
 	 * las variantes de este.
-	 * @param pseudoName
-	 *        Nombre o variante del nombre del algoritmo de huella digital
+	 * @param pseudoName Nombre o variante del nombre del algoritmo de huella digital
 	 * @return Nombre del algoritmo de huella digital */
 	private static String getDigestAlgorithmName(final String pseudoName) {
 		final String upperPseudoName = pseudoName.toUpperCase();
-		if (upperPseudoName.equals("SHA")  //$NON-NLS-1$
-				|| upperPseudoName.equals("http://www.w3.org/2000/09/xmldsig#sha1".toUpperCase()) //$NON-NLS-1$
-				|| upperPseudoName.equals("1.3.14.3.2.26") //$NON-NLS-1$
-				|| upperPseudoName.startsWith("SHA1") //$NON-NLS-1$
-				|| upperPseudoName.startsWith("SHA-1")) //$NON-NLS-1$
-		{
+		if (
+			upperPseudoName.equals("SHA")                                                  || //$NON-NLS-1$
+			upperPseudoName.equals("http://www.w3.org/2000/09/xmldsig#sha1".toUpperCase()) || //$NON-NLS-1$
+			upperPseudoName.equals("1.3.14.3.2.26")                                        || //$NON-NLS-1$
+			upperPseudoName.startsWith("SHA1")                                             || //$NON-NLS-1$
+			upperPseudoName.startsWith("SHA-1") //$NON-NLS-1$
+		) {
 			return "SHA1"; //$NON-NLS-1$
 		}
 
