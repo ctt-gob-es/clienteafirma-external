@@ -1496,7 +1496,7 @@ public class PdfReader implements PdfViewerPreferences {
             }
         }
         thisStream *= 2;
-        if (thisStream < this.xref.length) {
+        if (thisStream + 1 < this.xref.length && this.xref[thisStream] == 0 && this.xref[thisStream + 1] == 0) {
 			this.xref[thisStream] = -1;
 		}
 
@@ -3284,10 +3284,11 @@ public class PdfReader implements PdfViewerPreferences {
         void insertPage(int pageNum, final PRIndirectReference ref) {
             --pageNum;
             if (this.refsn != null) {
-                if (pageNum >= this.refsn.size())
-                    this.refsn.add(ref);
-                else
-                    this.refsn.add(pageNum, ref);
+                if (pageNum >= this.refsn.size()) {
+					this.refsn.add(ref);
+				} else {
+					this.refsn.add(pageNum, ref);
+				}
             }
             else {
                 ++this.sizep;

@@ -1496,7 +1496,7 @@ public class PdfReader implements PdfViewerPreferences {
             }
         }
         thisStream *= 2;
-        if (thisStream < this.xref.length) {
+        if (thisStream + 1 < this.xref.length && this.xref[thisStream] == 0 && this.xref[thisStream + 1] == 0) {
 			this.xref[thisStream] = -1;
 		}
 
