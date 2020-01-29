@@ -309,7 +309,7 @@ public final class PdfPKCS7 {
         try {
             this.provider = provider;
 
-            final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            final CertificateFactory cf = CertificateFactory.getInstance("X.509"); //$NON-NLS-1$
             this.certs = (Collection<Certificate>) cf.generateCertificates(new ByteArrayInputStream(certsKey));
 
             this.signCerts = this.certs;
