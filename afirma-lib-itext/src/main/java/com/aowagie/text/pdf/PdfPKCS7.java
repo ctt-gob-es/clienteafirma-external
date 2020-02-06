@@ -69,10 +69,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -779,8 +781,8 @@ public final class PdfPKCS7 {
         if (dea == null) {
 			dea = this.digestEncryptionAlgorithm;
 		}
-
-        return getHashAlgorithm() + "with" + dea; //$NON-NLS-1$
+        final String algo = OIDS.get(dea);
+        return algo != null ? algo : getHashAlgorithm() + "with" + dea; //$NON-NLS-1$
     }
 
     /**
@@ -1446,4 +1448,48 @@ public final class PdfPKCS7 {
         this.verified = true;
         return this.verifyResult;
     }
+
+    //**********************************************************************************************
+    //*********************** Modificaciones para el soporte de ECDSA ******************************
+
+    private static final String OID_ECDSA_SHA1   = "1.2.840.10045.4.1"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA224 = "1.2.840.10045.4.3.1"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA256 = "1.2.840.10045.4.3.2"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA384 = "1.2.840.10045.4.3.3"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA512 = "1.2.840.10045.4.3.4"; //$NON-NLS-1$
+
+    private static final String OID_RSA_SHA3_224 = "2.16.840.1.101.3.4.3.13"; //$NON-NLS-1$
+    private static final String OID_RSA_SHA3_256 = "2.16.840.1.101.3.4.3.14"; //$NON-NLS-1$
+    private static final String OID_RSA_SHA3_384 = "2.16.840.1.101.3.4.3.15"; //$NON-NLS-1$
+    private static final String OID_RSA_SHA3_512 = "2.16.840.1.101.3.4.3.16"; //$NON-NLS-1$
+
+    private static final String OID_ECDSA_SHA3_224 = "2.16.840.1.101.3.4.3.9"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA3_256 = "2.16.840.1.101.3.4.3.10"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA3_384 = "2.16.840.1.101.3.4.3.11"; //$NON-NLS-1$
+    private static final String OID_ECDSA_SHA3_512 = "2.16.840.1.101.3.4.3.12"; //$NON-NLS-1$
+
+    private static final Dictionary<String, String> OIDS = new Hashtable<>();
+    static {
+
+        OIDS.put(OID_ECDSA_SHA1, "SHA1withECDSA"); //$NON-NLS-1$
+
+        OIDS.put(OID_ECDSA_SHA224, "SHA224withECDSA"); //$NON-NLS-1$
+        OIDS.put(OID_ECDSA_SHA256, "SHA256withECDSA"); //$NON-NLS-1$
+        OIDS.put(OID_ECDSA_SHA384, "SHA384withECDSA"); //$NON-NLS-1$
+        OIDS.put(OID_ECDSA_SHA512, "SHA512withECDSA"); //$NON-NLS-1$
+
+        OIDS.put(OID_RSA_SHA3_224, "SHA3-224withRSA"); //$NON-NLS-1$
+        OIDS.put(OID_RSA_SHA3_256, "SHA3-256withRSA"); //$NON-NLS-1$
+        OIDS.put(OID_RSA_SHA3_384, "SHA3-384withRSA"); //$NON-NLS-1$
+        OIDS.put(OID_RSA_SHA3_512, "SHA3-512withRSA"); //$NON-NLS-1$
+
+        OIDS.put(OID_ECDSA_SHA3_224, "SHA3-224withECDSA"); //$NON-NLS-1$
+        OIDS.put(OID_ECDSA_SHA3_256, "SHA3-256withECDSA"); //$NON-NLS-1$
+        OIDS.put(OID_ECDSA_SHA3_384, "SHA3-384withECDSA"); //$NON-NLS-1$
+        OIDS.put(OID_ECDSA_SHA3_512, "SHA3-512withECDSA"); //$NON-NLS-1$
+
+    }
+
+    //*********************** Fin modificaciones para el soporte de ECDSA **************************
+    //**********************************************************************************************
 }
