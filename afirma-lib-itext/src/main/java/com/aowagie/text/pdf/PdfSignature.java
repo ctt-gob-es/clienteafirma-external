@@ -54,44 +54,52 @@ package com.aowagie.text.pdf;
 public class PdfSignature extends PdfDictionary {
 
     /** Creates new PdfSignature */
-    public PdfSignature(PdfName filter, PdfName subFilter) {
+    public PdfSignature(final PdfName filter, final PdfName subFilter) {
         super(PdfName.SIG);
         put(PdfName.FILTER, filter);
         put(PdfName.SUBFILTER, subFilter);
     }
-    
-    public void setByteRange(int range[]) {
-        PdfArray array = new PdfArray();
-        for (int k = 0; k < range.length; ++k)
-            array.add(new PdfNumber(range[k]));
+
+    /** Creates new PdfSignature */
+    public PdfSignature(final PdfName type, final PdfName filter, final PdfName subFilter) {
+        super(type);
+        put(PdfName.FILTER, filter);
+        put(PdfName.SUBFILTER, subFilter);
+    }
+
+    public void setByteRange(final int range[]) {
+        final PdfArray array = new PdfArray();
+        for (final int element : range) {
+			array.add(new PdfNumber(element));
+		}
         put(PdfName.BYTERANGE, array);
     }
-    
-    public void setContents(byte contents[]) {
+
+    public void setContents(final byte contents[]) {
         put(PdfName.CONTENTS, new PdfString(contents).setHexWriting(true));
     }
-    
-    public void setCert(byte cert[]) {
+
+    public void setCert(final byte cert[]) {
         put(PdfName.CERT, new PdfString(cert));
     }
-    
-    public void setName(String name) {
+
+    public void setName(final String name) {
         put(PdfName.NAME, new PdfString(name, PdfObject.TEXT_UNICODE));
     }
 
-    public void setDate(PdfDate date) {
+    public void setDate(final PdfDate date) {
         put(PdfName.M, date);
     }
 
-    public void setLocation(String name) {
+    public void setLocation(final String name) {
         put(PdfName.LOCATION, new PdfString(name, PdfObject.TEXT_UNICODE));
     }
 
-    public void setReason(String name) {
+    public void setReason(final String name) {
         put(PdfName.REASON, new PdfString(name, PdfObject.TEXT_UNICODE));
     }
-    
-    public void setContact(String name) {
+
+    public void setContact(final String name) {
         put(PdfName.CONTACTINFO, new PdfString(name, PdfObject.TEXT_UNICODE));
     }
 }
