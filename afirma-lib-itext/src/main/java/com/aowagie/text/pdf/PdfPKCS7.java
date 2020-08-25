@@ -774,9 +774,15 @@ public final class PdfPKCS7 {
 
     /**
      * Get the algorithm used to calculate the message digest
-     * @return the algorithm used to calculate the message digest
+     * @return the algorithm used to calculate the message digest or {@code null}
+     * if it couldn't identify the encryption algorithm.
      */
     public String getDigestAlgorithm() {
+
+    	if (this.digestEncryptionAlgorithm == null) {
+    		return null;
+    	}
+
         String dea = getAlgorithm(this.digestEncryptionAlgorithm);
         if (dea == null) {
 			dea = this.digestEncryptionAlgorithm;
