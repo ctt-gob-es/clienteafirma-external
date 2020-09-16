@@ -125,7 +125,7 @@ public class PdfSignatureAppearance {
     private Certificate[] certChain;
     private CRL[] crlList;
     private PdfName filter;
-    private boolean newField;
+    private boolean newField = true;
     private ByteBuffer sigout;
     private OutputStream originalout;
     private File tempFile;
@@ -278,7 +278,6 @@ public class PdfSignatureAppearance {
         this.pageRect.normalize();
         this.rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
         this.page = page;
-        this.newField = true;
     }
 
     /**
@@ -295,7 +294,11 @@ public class PdfSignatureAppearance {
         if (!PdfName.SIG.equals(PdfReader.getPdfObject(merged.get(PdfName.FT)))) {
 			throw new IllegalArgumentException("The field " + fieldName + " is not a signature field."); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+
+        // Se utilizara este campo de firma preexistente
+        this.newField = false;
         this.fieldName = fieldName;
+
         final PdfArray r = merged.getAsArray(PdfName.RECT);
         final float llx = r.getAsNumber(0).floatValue();
         final float lly = r.getAsNumber(1).floatValue();
@@ -919,7 +922,13 @@ public class PdfSignatureAppearance {
         this.preClosed = true;
         final AcroFields af = this.writer.getAcroFields();
         final String name = getFieldName();
-        final boolean fieldExists = !(isInvisible() || isNewField());
+
+        // Se elimina la comprobacion de si es el campo es visible o no, ya que
+        // eso impide que se puedan firmar campos de firma invisibles que ya
+        // existan
+        //final boolean fieldExists = !(isInvisible() || isNewField());
+        final boolean fieldExists = !isNewField();
+
         final PdfIndirectReference refSig = this.writer.getPdfIndirectReference();
         this.writer.setSigFlags(3);
         if (fieldExists) {
