@@ -919,7 +919,13 @@ public class PdfSignatureAppearance {
         this.preClosed = true;
         final AcroFields af = this.writer.getAcroFields();
         final String name = getFieldName();
-        final boolean fieldExists = !(isInvisible() || isNewField());
+
+        // Se elimina la comprobacion de si es el campo es visible o no, ya que
+        // eso impide que se puedan firmar campos de firma invisibles que ya
+        // existan
+        //final boolean fieldExists = !(isInvisible() || isNewField());
+        final boolean fieldExists = !isNewField();
+
         final PdfIndirectReference refSig = this.writer.getPdfIndirectReference();
         this.writer.setSigFlags(3);
         if (fieldExists) {
