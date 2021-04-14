@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 		<jdk.version>1.7</jdk.version>
 		<spongycastle.version>1.56.0.0</spongycastle.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 	</properties>
 

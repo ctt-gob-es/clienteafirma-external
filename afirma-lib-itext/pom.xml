@@ -67,6 +67,11 @@
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
