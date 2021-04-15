@@ -214,6 +214,7 @@ public class Polygon implements Shape, Serializable {
 	}
 
 	/**
+	 * @return the bounds of box
 	 * @deprecated
 	 */
 	@Deprecated
@@ -237,6 +238,9 @@ public class Polygon implements Shape, Serializable {
 
 	/**
 	 * @deprecated
+	 * @param x position of x
+	 * @param y position of y
+	 * @return the inside
 	 */
 	@Deprecated
 	public boolean inside(int x, int y) {

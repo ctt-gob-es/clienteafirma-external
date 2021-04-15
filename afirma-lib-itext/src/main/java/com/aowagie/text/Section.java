@@ -698,7 +698,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	 * Sets the indication if the section was already added to
 	 * the document.
 	 * @since	iText2.0.8
-	 * @param notAddedYet
+	 * @param notAddedYet set the notAddedYet attribute
 	 */
 	public void setNotAddedYet(final boolean notAddedYet) {
 		this.notAddedYet = notAddedYet;

@@ -281,7 +281,7 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 	 * Adds the viewer preferences defined in the preferences parameter to a
 	 * PdfDictionary (more specifically the root or catalog of a PDF file).
 	 *
-	 * @param catalog
+	 * @param catalog Catalog to set
 	 */
 	public void addToCatalog(final PdfDictionary catalog) {
 		// Page Layout

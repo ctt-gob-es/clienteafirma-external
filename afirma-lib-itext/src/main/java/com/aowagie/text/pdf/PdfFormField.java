@@ -102,6 +102,12 @@ public class PdfFormField extends PdfAnnotation {
 
 /**
  * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
+ * @param writer writer to put
+ * @param llx position llx to put
+ * @param lly position lly to put
+ * @param urx position urx to put
+ * @param ury position ury to put
+ * @param action action to put
  */
 
     public PdfFormField(final PdfWriter writer, final float llx, final float lly, final float urx, final float ury, final PdfAction action) {

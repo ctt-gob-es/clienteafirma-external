@@ -122,8 +122,8 @@ public class XmpWriter {
 
 	/**
 	 * Creates an XmpWriter.
-	 * @param os
-	 * @throws IOException
+	 * @param os output stream to set
+	 * @throws IOException Exception with a IO error
 	 */
 	public XmpWriter(final OutputStream os) throws IOException {
 		this(os, UTF8, 20);
@@ -142,8 +142,8 @@ public class XmpWriter {
 
 	/**
 	 * Adds an rdf:Description.
-	 * @param s
-	 * @throws IOException
+	 * @param s schema to set
+	 * @throws IOException Exception with a IO error
 	 */
 	public void addRdfDescription(final XmpSchema s) throws IOException {
 		this.writer.write("<rdf:Description rdf:about=\"");
@@ -157,7 +157,7 @@ public class XmpWriter {
 
 	/**
 	 * Flushes and closes the XmpWriter.
-	 * @throws IOException
+	 * @throws IOException Exception with a IO error
 	 */
 	public void close() throws IOException {
 		this.writer.write("</rdf:RDF>");
@@ -171,9 +171,10 @@ public class XmpWriter {
 	}
 
     /**
-     * @param os
-     * @param info
-     * @throws IOException
+     * @param os output stream to set
+     * @param info info to set
+     * @param PdfXConformance pdf to set
+     * @throws IOException Exception with a IO error
      */
     public XmpWriter(final OutputStream os, final PdfDictionary info, final int PdfXConformance) throws IOException {
         this(os);

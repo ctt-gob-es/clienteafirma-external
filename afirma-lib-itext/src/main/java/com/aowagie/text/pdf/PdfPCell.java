@@ -262,7 +262,7 @@ public class PdfPCell extends Rectangle{
     /**
      * Adds an iText element to the cell.
      *
-     * @param element
+     * @param element element to add
      */
     public void addElement(final Element element) {
         if (this.table != null) {
@@ -464,7 +464,7 @@ public class PdfPCell extends Rectangle{
     /**
      * Sets the padding of the contents in the cell (space between content and border).
      *
-     * @param padding
+     * @param padding padding to set
      */
     public void setPadding(final float padding) {
         this.paddingBottom = padding;
@@ -758,7 +758,7 @@ public class PdfPCell extends Rectangle{
      * May be either of:
      * PdfWriter.RUN_DIRECTION_DEFAULT, PdfWriter.RUN_DIRECTION_NO_BIDI,
      * PdfWriter.RUN_DIRECTION_LTR or PdfWriter.RUN_DIRECTION_RTL.
-     * @param runDirection
+     * @param runDirection run direction to set
      */
     public void setRunDirection(final int runDirection) {
         this.column.setRunDirection(runDirection);
@@ -902,7 +902,7 @@ public class PdfPCell extends Rectangle{
     /**
      * Sets the columntext in the cell.
      *
-     * @param column
+     * @param column column to set
      */
     public void setColumn(final ColumnText column) {
         this.column = column;

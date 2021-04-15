@@ -374,6 +374,7 @@ public class Base64 {
      * Encodes or decodes two files from the command line;
      * <strong>feel free to delete this method (in fact you probably should)
      * if you're embedding this code into a larger program.</strong>
+     * @param args args to send
      */
     public final static void main( final String[] args ) {
         if( args.length < 3 ){
@@ -516,6 +517,7 @@ public class Base64 {
      *
      * @param source The data to convert
      * @since 1.4
+     * @return a encode String
      */
     public static String encodeBytes( final byte[] source ) {
         return encodeBytes( source, 0, source.length, NO_OPTIONS );

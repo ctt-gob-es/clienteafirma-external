@@ -88,9 +88,7 @@ import java.util.Stack;
 /**
  * A simple XML and HTML parser.  This parser is, like the SAX parser,
  * an event based parser, but with much less functionality.
- * <p>
  * The parser can:
- * <p>
  * <ul>
  * <li>It recognizes the encoding used
  * <li>It recognizes all the elements' start tags and end tags
@@ -99,7 +97,6 @@ import java.util.Stack;
  * <li>It recognizes the standard entities: &amp;amp;, &amp;lt;, &amp;gt;, &amp;quot;, and &amp;apos;, as well as numeric entities
  * <li>It maps lines ending in <code>\r\n</code> and <code>\r</code> to <code>\n</code> on input, in accordance with the XML Specification, Section 2.11
  * </ul>
- * <p>
  */
 public final class SimpleXMLParser {
     /** possible states */

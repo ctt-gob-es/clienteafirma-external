@@ -86,6 +86,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * document.
      * @param reader the original document. It cannot be reused
      * @param os the output stream
+     * @param globalDate global date
      * @throws DocumentException on error
      * @throws IOException on error
      */
@@ -167,6 +168,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * <p>
      * If closing a signed document with an external signature the closing must be done
      * in the <CODE>PdfSignatureAppearance</CODE> instance.
+     * @param globalDate global date
      * @throws DocumentException on error
      * @throws IOException on error. */
     public void close(final Calendar globalDate) throws DocumentException, IOException {
@@ -407,7 +409,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
 
     /**
      * Sets the XMP metadata.
-     * @param xmp
+     * @param xmp info with xmp
      * @see PdfWriter#setXmpMetadata(byte[])
      */
     public void setXmpMetadata(final byte[] xmp) {
@@ -519,6 +521,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      *     no temporary file will be created and memory will be used
      * @param append if <CODE>true</CODE> the signature and all the other content will be added as a
      * new revision thus not invalidating existing signatures
+     * @param globalDate global date
      * @return a <CODE>PdfStamper</CODE>
      * @throws DocumentException on error
      * @throws IOException on error

@@ -277,6 +277,7 @@ public class PdfSignatureAppearance {
         this.pageRect = new Rectangle(pageRect);
         this.pageRect.normalize();
         this.rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
+        this.rect.rotate();
         this.page = page;
     }
 
@@ -911,7 +912,7 @@ public class PdfSignatureAppearance {
      * @param exclusionSizes a <CODE>HashMap</CODE> with names and sizes to be excluded in the signature
      * calculation. The key is a <CODE>PdfName</CODE> and the value an
      * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
-     * @param globalDate
+     * @param globalDate global date
      * @throws IOException on error
      * @throws DocumentException on error
      */

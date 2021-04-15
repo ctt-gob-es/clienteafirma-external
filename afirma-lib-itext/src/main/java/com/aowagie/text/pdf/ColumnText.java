@@ -648,10 +648,10 @@ public class ColumnText {
     /**
      * Simplified method for rectangular columns.
      *
-     * @param llx
-     * @param lly
-     * @param urx
-     * @param ury
+     * @param llx Position por llx
+     * @param lly Position por lly
+     * @param urx Position por urx
+     * @param ury Position por ury
      */
     public void setSimpleColumn(final float llx, final float lly, final float urx, final float ury) {
         this.leftX = Math.min(llx, urx);
@@ -1577,7 +1577,7 @@ public class ColumnText {
      * Sets the canvas.
      * If before a set of four canvases was set, it is being unset.
      *
-     * @param canvas
+     * @param canvas canvas to set
      */
     public void setCanvas(final PdfContentByte canvas) {
         this.canvas = canvas;
@@ -1590,7 +1590,7 @@ public class ColumnText {
     /**
      * Sets the canvases.
      *
-     * @param canvases
+     * @param canvases canvases to set
      */
     public void setCanvases(final PdfContentByte[] canvases) {
         this.canvases = canvases;
@@ -1639,6 +1639,8 @@ public class ColumnText {
 
     /**
      * Checks the status variable and looks if there's still some text.
+     * @param status Index with status
+     * @return returns true if it has more text
      */
     public static boolean hasMoreText(final int status) {
     	return (status & ColumnText.NO_MORE_TEXT) == 0;

@@ -121,13 +121,13 @@ public class PdfAnnotation extends PdfDictionary {
 
 /**
  * Constructs a new <CODE>PdfAnnotation</CODE> of subtype text.
- * @param writer
- * @param llx
- * @param lly
- * @param urx
- * @param ury
- * @param title
- * @param content
+ * @param writer writer to put
+ * @param llx position llx to put
+ * @param lly position lly to put
+ * @param urx position urx to put
+ * @param ury position ury to put
+ * @param title title to put
+ * @param content content to put
  */
 
     public PdfAnnotation(final PdfWriter writer, final float llx, final float lly, final float urx, final float ury, final PdfString title, final PdfString content) {
@@ -140,12 +140,12 @@ public class PdfAnnotation extends PdfDictionary {
 
 /**
  * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
- * @param writer
- * @param llx
- * @param lly
- * @param urx
- * @param ury
- * @param action
+ * @param writer writer to put
+ * @param llx position llx to put
+ * @param lly position lly to put
+ * @param urx position urx to put
+ * @param ury position ury to put
+ * @param action action to put
  */
 
     public PdfAnnotation(final PdfWriter writer, final float llx, final float lly, final float urx, final float ury, final PdfAction action) {
@@ -159,14 +159,14 @@ public class PdfAnnotation extends PdfDictionary {
 
     /**
      * Creates a screen PdfAnnotation
-     * @param writer
-     * @param rect
-     * @param clipTitle
-     * @param fs
-     * @param mimeType
-     * @param playOnDisplay
+     * @param writer Writer to create
+     * @param rect Rectangle to create
+     * @param clipTitle Cliptitle to create
+     * @param fs FileSpecification to create
+     * @param mimeType Mimetype to set
+     * @param playOnDisplay PlayOnDisplay to set
      * @return a screen PdfAnnotation
-     * @throws IOException
+     * @throws IOException Exception of a I/O
      */
     public static PdfAnnotation createScreen(final PdfWriter writer, final Rectangle rect, final String clipTitle, final PdfFileSpecification fs,
                                              final String mimeType, final boolean playOnDisplay) throws IOException {
@@ -526,6 +526,7 @@ public class PdfAnnotation extends PdfDictionary {
      * Sets the name of the annotation.
      * With this name the annotation can be identified among
      * all the annotations on a page (it has to be unique).
+     * @param name name to set
      */
     public void setName(final String name) {
     	put(PdfName.NM, new PdfString(name));

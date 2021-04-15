@@ -101,7 +101,7 @@ public class SimpleTable extends Rectangle implements PdfPTableEvent, TextElemen
 	/**
 	 * Creates a PdfPTable object based on this TableAttributes object.
 	 * @return a com.aowagie.text.pdf.PdfPTable object
-	 * @throws DocumentException
+	 * @throws DocumentException Exception with information about the error
 	 */
 	public PdfPTable createPdfPTable() throws DocumentException {
 		if (this.content.isEmpty()) {

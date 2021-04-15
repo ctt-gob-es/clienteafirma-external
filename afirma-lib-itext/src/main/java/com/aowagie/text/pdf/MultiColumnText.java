@@ -128,7 +128,7 @@ public class MultiColumnText implements Element {
      * If height is <CODE>AUTOMATIC</CODE>, fill complete pages until done.
      * If a specific height is used, it may span one or more pages.
      *
-     * @param height
+     * @param height height to set
      */
     public MultiColumnText(final float height) {
         this.columnDefs = new ArrayList();
@@ -143,8 +143,8 @@ public class MultiColumnText implements Element {
      * Construct a MultiColumnText container of the specified height
      * starting at the specified Y position.
      *
-     * @param height
-     * @param top
+     * @param height height to set
+     * @param top top to set
      */
     public MultiColumnText(final float top, final float height) {
         this.columnDefs = new ArrayList();
@@ -174,7 +174,7 @@ public class MultiColumnText implements Element {
      * when rendering.  Parameters like <CODE>setArabicOptions</CODE>
      * must be set in this way.
      *
-     * @param sourceColumn
+     * @param sourceColumn column from copy
      */
     public void useColumnParams(final ColumnText sourceColumn) {
         // note that canvas will be overwritten later

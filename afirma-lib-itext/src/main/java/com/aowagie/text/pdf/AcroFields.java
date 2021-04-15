@@ -1521,6 +1521,8 @@ public class AcroFields {
      * @param	value	an array with values that need to be selected
      * @return	true only if the field value was changed
      * @since 2.1.4
+     * @throws IOException Exception with information about a I/O error
+     * @throws DocumentException Exception with information about a document error
      */
 	public boolean setListSelection(final String name, final String[] value) throws IOException, DocumentException {
         final Item item = getFieldItem(name);
@@ -1870,6 +1872,7 @@ public class AcroFields {
          * Mark all the item dictionaries used matching the given flags
          *
          * @since 2.1.5
+         * @param parentFields Fields to mark
          * @param writeFlags WRITE_MERGED is ignored
          */
         public void markUsed( final AcroFields parentFields, final int writeFlags ) {
@@ -2053,7 +2056,7 @@ public class AcroFields {
          * Retrieve the page number of the given instance
          *
          * @since 2.1.5
-         * @param idx
+         * @param idx Number of page
          * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
          */
         public Integer getPage(final int idx) {
@@ -2084,7 +2087,7 @@ public class AcroFields {
          * Gets the tabOrder.
          *
          * @since 2.1.5
-         * @param idx
+         * @param idx Number of tab
          * @return tab index of the given field instance
          */
         public Integer getTabOrder(final int idx) {

@@ -50,6 +50,7 @@ public class Hyphenation {
 
     /**
      * @return the pre-break text, not including the hyphen character
+     * @param index index to cut the word
      */
     public String getPreHyphenText(int index) {
         return word.substring(0, hyphenPoints[index]);
@@ -57,6 +58,7 @@ public class Hyphenation {
 
     /**
      * @return the post-break text
+     * @param index index to cut the word
      */
     public String getPostHyphenText(int index) {
         return word.substring(hyphenPoints[index]);

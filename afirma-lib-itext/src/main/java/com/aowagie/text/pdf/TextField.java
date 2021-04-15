@@ -135,8 +135,8 @@ public class TextField extends BaseField {
     /**
      * Removes CRLF from a <code>String</code>.
      *
-     * @param text
-     * @return String
+     * @param text text to search
+     * @return String string with remove
      * @since	2.1.5
      */
     public static String removeCRLF(final String text) {
@@ -165,8 +165,8 @@ public class TextField extends BaseField {
      * Obfuscates a password <code>String</code>.
      * Every character is replaced by an asterisk (*).
      *
-     * @param text
-     * @return String
+     * @param text text to be treated
+     * @return String text treated
      * @since	2.1.5
      */
     public static String obfuscatePassword(final String text) {

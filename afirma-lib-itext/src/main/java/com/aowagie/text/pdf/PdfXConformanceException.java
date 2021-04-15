@@ -63,7 +63,7 @@ public class PdfXConformanceException extends RuntimeException {
     
     /**
      * Creates a new instance of PdfXConformanceException.
-     * @param s
+     * @param s string to set
      */
     public PdfXConformanceException(String s) {
         super(s);

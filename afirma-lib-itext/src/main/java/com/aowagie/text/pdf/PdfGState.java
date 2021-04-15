@@ -59,7 +59,7 @@ public class PdfGState extends PdfDictionary {
 
     /**
      * Sets the flag whether to apply overprint for stroking.
-     * @param ov
+     * @param ov boolean to set
      */
     public void setOverPrintStroking(final boolean ov) {
         put(PdfName.OP, ov ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
@@ -67,7 +67,7 @@ public class PdfGState extends PdfDictionary {
 
     /**
      * Sets the flag whether to apply overprint for non stroking painting operations.
-     * @param ov
+     * @param ov overPrint to set
      */
     public void setOverPrintNonStroking(final boolean ov) {
         put(PdfName.op, ov ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
@@ -85,7 +85,7 @@ public class PdfGState extends PdfDictionary {
      * Sets the current stroking alpha constant, specifying the constant shape or
      * constant opacity value to be used for stroking operations in the transparent
      * imaging model.
-     * @param n
+     * @param n opacity to set
      */
     public void setStrokeOpacity(final float n) {
         put(PdfName.CA, new PdfNumber(n));
@@ -95,7 +95,7 @@ public class PdfGState extends PdfDictionary {
      * Sets the current stroking alpha constant, specifying the constant shape or
      * constant opacity value to be used for nonstroking operations in the transparent
      * imaging model.
-     * @param n
+     * @param n opacity to set
      */
     public void setFillOpacity(final float n) {
         put(PdfName.ca, new PdfNumber(n));
@@ -105,7 +105,7 @@ public class PdfGState extends PdfDictionary {
      * The alpha source flag specifying whether the current soft mask
      * and alpha constant are to be interpreted as shape values (true)
      * or opacity values (false).
-     * @param v
+     * @param v set the shape
      */
     public void setAlphaIsShape(final boolean v) {
         put(PdfName.AIS, v ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
@@ -114,7 +114,7 @@ public class PdfGState extends PdfDictionary {
     /**
      * Determines the behavior of overlapping glyphs within a text object
      * in the transparent imaging model.
-     * @param v
+     * @param v set if knockout
      */
     public void setTextKnockout(final boolean v) {
         put(PdfName.TK, v ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
@@ -122,7 +122,7 @@ public class PdfGState extends PdfDictionary {
 
     /**
      * The current blend mode to be used in the transparent imaging model.
-     * @param bm
+     * @param bm set if blend mode
      */
     public void setBlendMode(final PdfName bm) {
         put(PdfName.BM, bm);

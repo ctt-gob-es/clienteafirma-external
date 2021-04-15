@@ -524,7 +524,7 @@ public class Table extends Rectangle implements LargeElement {
      * 25% for the second and third column.
      *
      * @param       widths  an array with values
-     * @throws BadElementException
+     * @throws BadElementException Exception with information about the error
      */
     public void setWidths(final float[] widths) throws BadElementException {
         if (widths.length != this.columns) {
@@ -555,7 +555,7 @@ public class Table extends Rectangle implements LargeElement {
      * The values will be recalculated as percentages of this sum.
      *
      * @param       widths  an array with values
-     * @throws DocumentException
+     * @throws DocumentException Exception with information about the error
      */
     public void setWidths(final int[] widths) throws DocumentException {
         final float tb[] = new float[widths.length];
@@ -1239,7 +1239,7 @@ public class Table extends Rectangle implements LargeElement {
     /**
      * Create a PdfPTable based on this Table object.
      * @return a PdfPTable object
-     * @throws BadElementException
+     * @throws BadElementException Exception with information about the error
      */
     public PdfPTable createPdfPTable() throws BadElementException {
     	if (!this.convert2pdfptable) {
@@ -1311,7 +1311,7 @@ public class Table extends Rectangle implements LargeElement {
 	 * Sets the indication if the section was already added to
 	 * the document.
 	 * @since	iText2.0.8
-	 * @param notAddedYet
+	 * @param notAddedYet Indication that will be set
 	 */
 	public void setNotAddedYet(final boolean notAddedYet) {
 		this.notAddedYet = notAddedYet;

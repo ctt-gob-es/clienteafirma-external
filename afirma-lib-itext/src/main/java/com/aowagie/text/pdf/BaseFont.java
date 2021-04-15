@@ -1080,6 +1080,8 @@ public abstract class BaseFont {
      * or if there is no font program available (standard Type 1 fonts).
      * @return	a PdfStream with the font program
      * @since	2.1.3
+     * @throws IOException Exception of a I/O
+     * @throws DocumentException Exception of a document
      */
     abstract PdfStream getFullFontStream() throws IOException, DocumentException;
 

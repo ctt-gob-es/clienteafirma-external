@@ -179,7 +179,9 @@ public class PdfVersionImp implements PdfVersion {
 		return DocWriter.getISOBytes(getVersionAsName(version).toString().substring(1));
 	}
 
-	/** Adds the version to the Catalog dictionary. */
+	/** Adds the version to the Catalog dictionary. 
+	 * @param catalog Catalog to set
+	 * */
 	public void addToCatalog(final PdfDictionary catalog) {
 		if(this.catalog_version != null) {
 			catalog.put(PdfName.VERSION, this.catalog_version);

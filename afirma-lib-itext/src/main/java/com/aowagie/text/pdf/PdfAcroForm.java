@@ -78,7 +78,7 @@ public class PdfAcroForm extends PdfDictionary {
     private int sigFlags = 0;
 
     /** Creates new PdfAcroForm
-     * @param writer
+     * @param writer Writer to create
      */
     public PdfAcroForm(final PdfWriter writer) {
         super();
@@ -91,7 +91,7 @@ public class PdfAcroForm extends PdfDictionary {
 
     /**
      * Adds fieldTemplates.
-     * @param ft
+     * @param ft Map to set
      */
 
     public void addFieldTemplates(final HashMap ft) {
@@ -100,7 +100,7 @@ public class PdfAcroForm extends PdfDictionary {
 
     /**
      * Adds documentFields.
-     * @param ref
+     * @param ref Reference to set
      */
 
     public void addDocumentField(final PdfIndirectReference ref) {
@@ -142,7 +142,7 @@ public class PdfAcroForm extends PdfDictionary {
 
     /**
      * Adds an object to the calculationOrder.
-     * @param formField
+     * @param formField FormField to set
      */
 
     public void addCalculationOrder(final PdfFormField formField) {
@@ -151,7 +151,7 @@ public class PdfAcroForm extends PdfDictionary {
 
     /**
      * Sets the signature flags.
-     * @param f
+     * @param f Flags to set
      */
 
     public void setSigFlags(final int f) {

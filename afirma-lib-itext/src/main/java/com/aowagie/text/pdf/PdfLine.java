@@ -497,8 +497,8 @@ public class PdfLine {
 
     /**
      * Gets a width corrected with a charSpacing and wordSpacing.
-     * @param charSpacing
-     * @param wordSpacing
+     * @param charSpacing space between chars
+     * @param wordSpacing space between words
      * @return a corrected width
      */
     public float getWidthCorrected(final float charSpacing, final float wordSpacing) {

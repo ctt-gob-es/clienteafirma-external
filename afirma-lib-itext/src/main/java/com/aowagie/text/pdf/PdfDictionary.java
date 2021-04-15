@@ -133,7 +133,7 @@ public class PdfDictionary extends PdfObject {
      *
      * @param writer for backwards compatibility
      * @param os the <CODE>OutputStream</CODE> to write the bytes to.
-     * @throws IOException
+     * @throws IOException Exception with a I/O error
      */
     @Override
 	public void toPdf(final PdfWriter writer, final OutputStream os) throws IOException {

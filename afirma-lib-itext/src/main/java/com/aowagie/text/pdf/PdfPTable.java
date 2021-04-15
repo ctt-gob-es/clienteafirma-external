@@ -258,7 +258,7 @@ public class PdfPTable implements LargeElement{
     /**
      * Makes a shallow copy of a table (format without content).
      *
-     * @param table
+     * @param table table to copy
      * @return a shallow copy of the table
      */
     public static PdfPTable shallowCopy(final PdfPTable table) {
@@ -392,7 +392,7 @@ public class PdfPTable implements LargeElement{
      *
      * @param columnWidth the absolute width of each column
      * @param pageSize the page size
-     * @throws DocumentException
+     * @throws DocumentException Exception with information about a document error
      */
     public void setWidthPercentage(final float columnWidth[], final Rectangle pageSize) throws DocumentException {
         if (columnWidth.length != getNumberOfColumns()) {
@@ -1165,7 +1165,7 @@ public class PdfPTable implements LargeElement{
      * Gets a row with a given index
      * (added by Jin-Hsia Yang).
      *
-     * @param idx
+     * @param idx index to get
      * @return the row at position idx
      */
     public PdfPRow getRow(final int idx) {

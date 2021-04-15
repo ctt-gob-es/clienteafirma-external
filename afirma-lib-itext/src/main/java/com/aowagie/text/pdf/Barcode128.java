@@ -583,35 +583,35 @@ public class Barcode128 extends Barcode{
         return new Rectangle(fullWidth, fullHeight);
     }
 
-    /** Places the barcode in a <CODE>PdfContentByte</CODE>. The
+    /** <p>Places the barcode in a <CODE>PdfContentByte</CODE>. The
      * barcode is always placed at coordinates (0, 0). Use the
-     * translation matrix to move it elsewhere.<p>
-     * The bars and text are written in the following colors:<p>
-     * <P><TABLE BORDER=1>
+     * translation matrix to move it elsewhere.</p>
+     * <p>The bars and text are written in the following colors:</p>
+     * <TABLE BORDER=1 summary="barcode">
      * <TR>
-     *   <TH><P><CODE>barColor</CODE></TH>
-     *   <TH><P><CODE>textColor</CODE></TH>
-     *   <TH><P>Result</TH>
+     *   <TH><CODE>barColor</CODE></TH>
+     *   <TH><CODE>textColor</CODE></TH>
+     *   <TH>Result</TH>
      *   </TR>
      * <TR>
-     *   <TD><P><CODE>null</CODE></TD>
-     *   <TD><P><CODE>null</CODE></TD>
-     *   <TD><P>bars and text painted with current fill color</TD>
+     *   <TD><CODE>null</CODE></TD>
+     *   <TD><CODE>null</CODE></TD>
+     *   <TD>bars and text painted with current fill color</TD>
      *   </TR>
      * <TR>
-     *   <TD><P><CODE>barColor</CODE></TD>
-     *   <TD><P><CODE>null</CODE></TD>
-     *   <TD><P>bars and text painted with <CODE>barColor</CODE></TD>
+     *   <TD><CODE>barColor</CODE></TD>
+     *   <TD><CODE>null</CODE></TD>
+     *   <TD>bars and text painted with <CODE>barColor</CODE></TD>
      *   </TR>
      * <TR>
-     *   <TD><P><CODE>null</CODE></TD>
-     *   <TD><P><CODE>textColor</CODE></TD>
-     *   <TD><P>bars painted with current color<br>text painted with <CODE>textColor</CODE></TD>
+     *   <TD><CODE>null</CODE></TD>
+     *   <TD><CODE>textColor</CODE></TD>
+     *   <TD>bars painted with current color<br>text painted with <CODE>textColor</CODE></TD>
      *   </TR>
      * <TR>
-     *   <TD><P><CODE>barColor</CODE></TD>
-     *   <TD><P><CODE>textColor</CODE></TD>
-     *   <TD><P>bars painted with <CODE>barColor</CODE><br>text painted with <CODE>textColor</CODE></TD>
+     *   <TD><CODE>barColor</CODE></TD>
+     *   <TD><CODE>textColor</CODE></TD>
+     *   <TD>bars painted with <CODE>barColor</CODE><br>text painted with <CODE>textColor</CODE></TD>
      *   </TR>
      * </TABLE>
      * @param cb the <CODE>PdfContentByte</CODE> where the barcode will be placed

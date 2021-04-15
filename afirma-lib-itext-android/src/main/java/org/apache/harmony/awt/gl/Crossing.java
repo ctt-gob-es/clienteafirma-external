@@ -371,6 +371,13 @@ public class Crossing {
 
 	/**
 	 * Returns how many times ray from point (x,y) cross line.
+	 * @param x1 position of x1
+	 * @param y1 position of y1
+	 * @param x2 position of x2
+	 * @param y2 position of y2
+	 * @param x position of x
+	 * @param y position of y
+	 * @return Returns how many times ray from point
 	 */
 	public static int crossLine(double x1, double y1, double x2, double y2, double x, double y) {
 
@@ -405,6 +412,15 @@ public class Crossing {
 
 	/**
 	 * Returns how many times ray from point (x,y) cross quard curve
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param cx position for cx
+	 * @param cy position for cy
+	 * @param x2 position for x2
+	 * @param y2 position for y2
+	 * @param x position for x
+	 * @param y position for y
+	 * @return the int with cross
 	 */
 	public static int crossQuad(double x1, double y1, double cx, double cy, double x2, double y2, double x, double y) {
 
@@ -434,6 +450,17 @@ public class Crossing {
 
 	/**
 	 * Returns how many times ray from point (x,y) cross cubic curve
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param cx1 position for cx1
+	 * @param cy1 position for cy1
+	 * @param cx2 position for cx2
+	 * @param cy2 position for cy2
+	 * @param x2 position for x2
+	 * @param y2 position for y2
+	 * @param x position for x
+	 * @param y position for y
+	 * @return the int with cross
 	 */
 	public static int crossCubic(double x1, double y1, double cx1, double cy1, double cx2, double cy2, double x2,
 			double y2, double x, double y) {
@@ -463,6 +490,10 @@ public class Crossing {
 
 	/**
 	 * Returns how many times ray from point (x,y) cross path
+	 * @param p path of iterator
+	 * @param x position of x
+	 * @param y position of y
+	 * @return int of cross
 	 */
 	public static int crossPath(PathIterator p, double x, double y) {
 		int cross = 0;
@@ -513,6 +544,10 @@ public class Crossing {
 
 	/**
 	 * Returns how many times ray from point (x,y) cross shape
+	 * @param s shape to cross
+	 * @param x position of x
+	 * @param y position of y
+	 * @return int of cross
 	 */
 	public static int crossShape(Shape s, double x, double y) {
 		if (!s.getBounds2D().contains(x, y)) {
@@ -523,6 +558,8 @@ public class Crossing {
 
 	/**
 	 * Returns true if value enough small
+	 * @param val value to set
+	 * @return return true if val is in the range
 	 */
 	public static boolean isZero(double val) {
 		return -DELTA < val && val < DELTA;
@@ -530,6 +567,8 @@ public class Crossing {
 
 	/**
 	 * Sort bound array
+	 * @param bound array
+	 * @param index to sort
 	 */
 	static void sortBound(double bound[], int bc) {
 		for (int i = 0; i < bc - 4; i += 4) {
@@ -558,6 +597,11 @@ public class Crossing {
 
 	/**
 	 * Returns are bounds intersect or not intersect rectangle
+	 * @param bound bound to intersect
+	 * @param bc index to intersect
+	 * @param py1 position of py1
+	 * @param py2 position of py2
+	 * @return int with intersect
 	 */
 	static int crossBound(double bound[], int bc, double py1, double py2) {
 
@@ -603,6 +647,15 @@ public class Crossing {
 
 	/**
 	 * Returns how many times rectangle stripe cross line or the are intersect
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param x2 position for x2
+	 * @param y2 position for y2
+	 * @param rx1 position for rx1
+	 * @param ry1 position for ry1
+	 * @param rx2 position for rx2
+	 * @param ry2 position for ry2
+	 * @return int with intersect
 	 */
 	public static int intersectLine(double x1, double y1, double x2, double y2, double rx1, double ry1, double rx2,
 			double ry2) {
@@ -671,6 +724,17 @@ public class Crossing {
 	/**
 	 * Returns how many times rectangle stripe cross quad curve or the are
 	 * intersect
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param cx position for cx
+	 * @param cy position for cy
+	 * @param x2 position for x2
+	 * @param y2 position for y2
+	 * @param rx1 position for rx1
+	 * @param ry1 position for ry1
+	 * @param rx2 position for rx2
+	 * @param ry2 position for ry2
+	 * @return int with intersect
 	 */
 	public static int intersectQuad(double x1, double y1, double cx, double cy, double x2, double y2, double rx1,
 			double ry1, double rx2, double ry2) {
@@ -742,6 +806,19 @@ public class Crossing {
 	/**
 	 * Returns how many times rectangle stripe cross cubic curve or the are
 	 * intersect
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param cx1 position for cx1
+	 * @param cy1 position for cy1
+	 * @param cx2 position for cx2
+	 * @param cy2 position for cy2
+	 * @param x2 position for x2
+	 * @param y2 position for y2
+	 * @param rx1 position for rx1
+	 * @param ry1 position for ry1
+	 * @param rx2 position for rx2
+	 * @param ry2 position for ry2
+	 * @return int with intersect
 	 */
 	public static int intersectCubic(double x1, double y1, double cx1, double cy1, double cx2, double cy2, double x2,
 			double y2, double rx1, double ry1, double rx2, double ry2) {
@@ -815,6 +892,12 @@ public class Crossing {
 
 	/**
 	 * Returns how many times rectangle stripe cross path or the are intersect
+	 * @param p path to intersect
+	 * @param x position for x
+	 * @param y position for y
+	 * @param w position for w
+	 * @param h position for h
+	 * @return int with intersect
 	 */
 	public static int intersectPath(PathIterator p, double x, double y, double w, double h) {
 
@@ -875,6 +958,12 @@ public class Crossing {
 
 	/**
 	 * Returns how many times rectangle stripe cross shape or the are intersect
+	 * @param s shape to intersect
+	 * @param x position for x
+	 * @param y position for y
+	 * @param w position for w
+	 * @param h position for h
+	 * @return int with intersect
 	 */
 	public static int intersectShape(Shape s, double x, double y, double w, double h) {
 		if (!s.getBounds2D().intersects(x, y, w, h)) {
@@ -886,6 +975,8 @@ public class Crossing {
 	/**
 	 * Returns true if cross count correspond inside location for non zero path
 	 * rule
+	 * @param cross cross count
+	 * @return return true if cross is not zero
 	 */
 	public static boolean isInsideNonZero(int cross) {
 		return cross != 0;
@@ -894,6 +985,8 @@ public class Crossing {
 	/**
 	 * Returns true if cross count correspond inside location for even-odd path
 	 * rule
+	 * @param cross cross count
+	 * @return return true if cross is not zero
 	 */
 	public static boolean isInsideEvenOdd(int cross) {
 		return (cross & 1) != 0;

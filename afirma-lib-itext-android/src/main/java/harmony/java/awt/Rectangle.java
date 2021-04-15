@@ -113,6 +113,8 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
 
 	/**
 	 * @deprecated
+	 * @param x position of x
+	 * @param y position of y
 	 */
 	@Deprecated
 	public void move(int x, int y) {
@@ -130,6 +132,8 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
 
 	/**
 	 * @deprecated
+	 * @param width width to set
+	 * @param height height to set
 	 */
 	@Deprecated
 	public void resize(int width, int height) {
@@ -138,6 +142,10 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
 
 	/**
 	 * @deprecated
+	 * @param x position of x
+	 * @param y position of y
+	 * @param width width to set
+	 * @param height height to set
 	 */
 	@Deprecated
 	public void reshape(int x, int y, int width, int height) {
@@ -223,6 +231,9 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
 
 	/**
 	 * @deprecated
+	 * @param px position of px
+	 * @param py position if py
+	 * @return return true if it cointains the position
 	 */
 	@Deprecated
 	public boolean inside(int px, int py) {

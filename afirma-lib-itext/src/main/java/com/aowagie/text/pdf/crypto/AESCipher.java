@@ -62,7 +62,11 @@ import org.spongycastle.crypto.params.ParametersWithIV;
 public class AESCipher {
     private final PaddedBufferedBlockCipher bp;
 
-    /** Creates a new instance of AESCipher */
+    /** Creates a new instance of AESCipher 
+    * @param forEncryption set the encryption
+	* @param key key to encription
+	* @param iv parameter with IV
+     * */
     public AESCipher(final boolean forEncryption, final byte[] key, final byte[] iv) {
         final BlockCipher aes = new AESFastEngine();
         final BlockCipher cbc = new CBCBlockCipher(aes);

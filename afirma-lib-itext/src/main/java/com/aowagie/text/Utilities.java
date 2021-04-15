@@ -102,8 +102,8 @@ public class Utilities {
 
 	/**
 	 * Checks for a true/false value of a key in a Properties object.
-	 * @param attributes
-	 * @param key
+	 * @param attributes Attributes with properties
+	 * @param key Key to search
 	 * @return a true/false value of a key in a Properties object
 	 */
 	public static boolean checkTrueOrFalse(final Properties attributes, final String key) {
@@ -169,7 +169,7 @@ public class Utilities {
 	 *            the <CODE>InputStream</CODE>
 	 * @param size
 	 *            the number of bytes to skip
-	 * @throws IOException
+	 * @throws IOException Exception with information about the error
 	 */
 	static public void skip(final InputStream is, int size) throws IOException {
 	    long n;

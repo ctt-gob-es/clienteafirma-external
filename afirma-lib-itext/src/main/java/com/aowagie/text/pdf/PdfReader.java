@@ -782,7 +782,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param obj
+     * @param obj object to release
      * @return a PdfObject
      */
     public static PdfObject getPdfObjectRelease(final PdfObject obj) {
@@ -891,8 +891,8 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param idx
-     * @return aPdfObject
+     * @param idx index to get
+     * @return aPdfObject returns a PdfObject
      */
     public PdfObject getPdfObject(final int idx) {
         try {
@@ -961,7 +961,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param obj
+     * @param obj object to add
      * @return an indirect reference
      */
     public PRIndirectReference addPdfObject(final PdfObject obj) {
@@ -2000,7 +2000,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param pageNum
+     * @param pageNum number of page
      * @return a Dictionary object
      */
     public PdfDictionary getPageNRelease(final int pageNum) {
@@ -2010,7 +2010,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param pageNum
+     * @param pageNum number of page
      */
     public void releasePage(final int pageNum) {
         this.pageRefs.releasePage(pageNum);

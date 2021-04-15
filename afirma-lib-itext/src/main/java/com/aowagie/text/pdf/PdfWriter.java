@@ -784,10 +784,10 @@ public class PdfWriter extends DocWriter implements
 
     /** Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param inObjStm
+     * @param object object to add
+     * @param inObjStm info about inObjStm property
      * @return a PdfIndirectObject
-     * @throws IOException */
+     * @throws IOException Exception with a IO error*/
     public PdfIndirectObject addToBody(final PdfObject object, final boolean inObjStm) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, inObjStm);
         return iobj;
@@ -796,10 +796,10 @@ public class PdfWriter extends DocWriter implements
     /**
      * Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param ref
+     * @param object object to add
+     * @param ref reference to add
      * @return a PdfIndirectObject
-     * @throws IOException
+     * @throws IOException Exception with information about a IO error
      */
     public PdfIndirectObject addToBody(final PdfObject object, final PdfIndirectReference ref) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, ref);
@@ -1013,6 +1013,7 @@ public class PdfWriter extends DocWriter implements
     /**
      * Returns the value to be used for the Tabs entry in the page tree.
      * @since	2.1.5
+     * @return the tabs
      */
     public PdfName getTabs() {
     	return this.tabs;

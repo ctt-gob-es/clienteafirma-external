@@ -644,6 +644,8 @@ public class RandomAccessFileOrArray implements DataInput {
 
     /**
      * @since 2.0.8
+     * @return a buffer of nio bytes
+     * @throws IOException Exception with information about a IO error
      */
     public java.nio.ByteBuffer getNioByteBuffer() throws IOException {
     	if (this.filename != null) {

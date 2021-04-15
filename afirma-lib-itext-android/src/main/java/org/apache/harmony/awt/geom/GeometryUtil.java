@@ -52,7 +52,15 @@ public class GeometryUtil {
 	 * The method checks up if line (x1, y1) - (x2, y2) and line (x3, y3) - (x4,
 	 * y4) intersect. If lines intersect then the result parameters are saved to
 	 * point array. The size of array point must be at least 2.
-	 * 
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param x2 position for x2
+	 * @param y2 position for x2
+	 * @param x3 position for x3
+	 * @param y3 position for x3
+	 * @param x4 position for x4
+	 * @param y4 position for x5
+	 * @param point represent of the point
 	 * @return the method returns 1 if two lines intersect in the defined
 	 *         interval, otherwise 0
 	 */
@@ -88,7 +96,17 @@ public class GeometryUtil {
 	 * the quad curve (qx1, qy1) - (qx2, qy2) - (qx3, qy3). The parameters of
 	 * the intersection area saved to params array. Therefore the params size
 	 * must be at learst 4.
-	 * 
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param x2 position for x2
+	 * @param y2 position for x2
+	 * @param qx1 position for qx1
+	 * @param qy1 position for qy1
+	 * @param qx2 position for qx2
+	 * @param qy2 position for qy2
+	 * @param qx3 position for qx3
+	 * @param qy3 position for qy3
+	 * @param params array with parameters
 	 * @return The method returns the quantity of roots lied in the defined
 	 *         interval
 	 */
@@ -133,7 +151,19 @@ public class GeometryUtil {
 	 * cy1) - (cx2, cy2) - (cx3, cy3) - (cx4, cy4). The points of the
 	 * intersection is saved to points array. Therefore the points size must be
 	 * at learst 6.
-	 * 
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param x2 position for x2
+	 * @param y2 position for x2
+	 * @param cx1 position for cx1
+	 * @param cy1 position for cy1
+	 * @param cx2 position for cx2
+	 * @param cy2 position for cy2
+	 * @param cx3 position for cx3
+	 * @param cy3 position for cy3
+	 * @param cx4 position for cx4
+	 * @param cy4 position for cy4
+	 * @param params array with parameters
 	 * @return The method returns the quantity of roots lied in the defined
 	 *         interval
 	 */
@@ -178,7 +208,19 @@ public class GeometryUtil {
 	 * The method checks up if two quads (x1, y1) - (x2, y2) - (x3, y3) and
 	 * (qx1, qy1) - (qx2, qy2) - (qx3, qy3) intersect. The result is saved to
 	 * point array. Size of points should be at learst 4.
-	 * 
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param x2 position for x2
+	 * @param y2 position for y2
+	 * @param x3 position for x3
+	 * @param y3 position for x3
+	 * @param qx1 position for qx1
+	 * @param qy1 position for qy1
+	 * @param qx2 position for qx2
+	 * @param qy2 position for qy2
+	 * @param qx3 position for qx3
+	 * @param qy3 position for qy3
+	 * @param params array with parameters
 	 * @return the method returns the quantity of roots lied in the interval
 	 */
 	public static int intersectQuads(double x1, double y1, double x2, double y2, double x3, double y3, double qx1,
@@ -232,7 +274,21 @@ public class GeometryUtil {
 	 * (cx1, cy1) - (cx2, cy2) - (cx3, cy3) - (cx4, cy4) curves intersect. The
 	 * points of the intersection is saved to points array. The points size
 	 * should be at learst 6.
-	 * 
+	 * @param qx1 position for qx1
+	 * @param qy1 position for qy1
+	 * @param qx2 position for qx2
+	 * @param qy2 position for qx2
+	 * @param qx3 position for qx3
+	 * @param qy3 position for qx3
+	 * @param cx1 position for cx1
+	 * @param cy1 position for cy1
+	 * @param cx2 position for cx2
+	 * @param cy2 position for cy2
+	 * @param cx3 position for cx3
+	 * @param cy3 position for cy3
+	 * @param cx4 position for cx4
+	 * @param cy4 position for cy4
+	 * @param params array with parameters
 	 * @return The method returns the quantity of the intersection points lied
 	 *         in the interval.
 	 */
@@ -294,7 +350,23 @@ public class GeometryUtil {
 	 * The method checks up if two cubic curves (x1, y1) - (x2, y2) - (x3, y3) -
 	 * (x4, y4) and (cx1, cy1) - (cx2, cy2) - (cx3, cy3) - (cx4, cy4) intersect.
 	 * The result is saved to point array. Size of points should be at learst 6.
-	 * 
+	 * @param x1 position for x1
+	 * @param y1 position for y1
+	 * @param x2 position for x2
+	 * @param y2 position for x2
+	 * @param x3 position for x3
+	 * @param y3 position for x3
+	 * @param x4 position for x4
+	 * @param y4 position for x4
+	 * @param cx1 position for cx1
+	 * @param cy1 position for cy1
+	 * @param cx2 position for cx2
+	 * @param cy2 position for cy2
+	 * @param cx3 position for cx3
+	 * @param cy3 position for cy3
+	 * @param cx4 position for cx4
+	 * @param cy4 position for cy4
+	 * @param params array with parameters
 	 * @return the method returns the quantity of the intersection points lied
 	 *         in the interval
 	 */

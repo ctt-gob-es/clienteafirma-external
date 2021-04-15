@@ -77,9 +77,9 @@ public class XmpReader {
     /**
      * Constructs an XMP reader
      * @param	bytes	the XMP content
-     * @throws ExceptionConverter
-     * @throws IOException
-     * @throws SAXException
+     * @throws ExceptionConverter Exception with a converter error
+     * @throws IOException Exception with a IO error
+     * @throws SAXException Exception with a SAX error
      */
 	public XmpReader(final byte[] bytes) throws SAXException, IOException {
 		try {
@@ -197,6 +197,8 @@ public class XmpReader {
 
     /**
      * Writes the document to a byte array.
+     * @return return a serialize document
+     * @throws IOException with a I/O error
      */
 	public byte[] serializeDoc() throws IOException {
 		final XmlDomWriter xw = new XmlDomWriter();

@@ -43,10 +43,10 @@ public class Hyphenator {
     private static String hyphenDir = "";
 
     /**
-     * @param lang
-     * @param country
-     * @param leftMin
-     * @param rightMin
+     * @param lang language to set
+     * @param country country to set
+     * @param leftMin left minimum to set
+     * @param rightMin right minimum to set
      */
     public Hyphenator(final String lang, final String country, final int leftMin,
                       final int rightMin) {
@@ -145,14 +145,14 @@ public class Hyphenator {
 
 
     /**
-     * @param min
+     * @param min minimum to set
      */
     public void setMinRemainCharCount(final int min) {
         this.remainCharCount = min;
     }
 
     /**
-     * @param min
+     * @param min minimum to set
      */
     public void setMinPushCharCount(final int min) {
         this.pushCharCount = min;
@@ -163,7 +163,7 @@ public class Hyphenator {
 
 
     /**
-     * @param word
+     * @param word word to set
      * @return a hyphenation object
      */
     public Hyphenation hyphenate(final String word) {

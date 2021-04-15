@@ -352,8 +352,8 @@ public class ICC_Profile implements Serializable {
 	/**
 	 * Serializable implementation
 	 * 
-	 * @param s
-	 * @throws IOException
+	 * @param s output stream to use
+	 * @throws IOException Exception with information about a IO error
 	 */
 	private void writeObject(ObjectOutputStream s) throws IOException {
 		s.defaultWriteObject();
@@ -364,9 +364,9 @@ public class ICC_Profile implements Serializable {
 	/**
 	 * Serializable implementation
 	 * 
-	 * @param s
-	 * @throws IOException
-	 * @throws ClassNotFoundException
+	 * @param s input stream to use
+	 * @throws IOException Exception with information about a IO error
+	 * @throws ClassNotFoundException Exception with information about a class not found
 	 */
 	private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
 		s.defaultReadObject();
