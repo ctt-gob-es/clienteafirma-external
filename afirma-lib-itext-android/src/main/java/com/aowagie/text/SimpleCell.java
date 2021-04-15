@@ -124,8 +124,8 @@ class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementArray {
 
 	/**
 	 * Adds content to this object.
-	 * @param element
-	 * @throws BadElementException
+	 * @param element Element
+	 * @throws BadElementException on error
 	 */
 	private void addElement(final Element element) throws BadElementException {
 		if (this.cellgroup) {
@@ -162,7 +162,7 @@ class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementArray {
 
 	/**
 	 * Creates a PdfPCell with these attributes.
-	 * @param rowAttributes
+	 * @param rowAttributes row attributes
 	 * @return a PdfPCell based on these attributes.
 	 */
 	public PdfPCell createPdfPCell(final SimpleCell rowAttributes) {
@@ -271,7 +271,7 @@ class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementArray {
 	}
 
 	/** Sets the padding parameters if they are undefined.
-	 * @param padding
+	 * @param padding padding
 	 */
 	public void setPadding(final float padding) {
 		if (Float.isNaN(this.padding_right)) {

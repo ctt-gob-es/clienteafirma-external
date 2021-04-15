@@ -128,7 +128,7 @@ public class ExceptionConverter extends RuntimeException {
     /**
      * here we prefix, with s.print(), not s.println(), the stack
      * trace with "ExceptionConverter:" 
-     * @param s
+     * @param s stream
      */
     public void printStackTrace(java.io.PrintStream s) {
         synchronized (s) {
@@ -139,7 +139,7 @@ public class ExceptionConverter extends RuntimeException {
 
     /**
      * Again, we prefix the stack trace with "ExceptionConverter:" 
-     * @param s
+     * @param s writer
      */
     public void printStackTrace(java.io.PrintWriter s) {
         synchronized (s) {

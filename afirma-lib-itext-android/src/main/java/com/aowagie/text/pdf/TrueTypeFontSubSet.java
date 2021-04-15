@@ -116,6 +116,8 @@ class TrueTypeFontSubSet {
      * @param fileName the file name of the font
      * @param glyphsUsed the glyphs used
      * @param includeCmap <CODE>true</CODE> if the table cmap is to be included in the generated font
+     * @param rf Rf
+     * @param includeExtras Include Extras
      */
     TrueTypeFontSubSet(final String fileName, final RandomAccessFileOrArray rf, final HashMap glyphsUsed, final int directoryOffset, final boolean includeCmap, final boolean includeExtras) {
         this.fileName = fileName;

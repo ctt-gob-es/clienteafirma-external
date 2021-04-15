@@ -224,7 +224,6 @@ class TrueTypeFont extends BaseFont {
     private String familyName[][];
     /** The italic angle. It is usually extracted from the 'post' table or in it's
      * absence with the code:
-     * <P>
      * <PRE>
      * -Math.atan2(hhea.caretSlopeRun, hhea.caretSlopeRise) * 180 / Math.PI
      * </PRE>
@@ -338,6 +337,8 @@ class TrueTypeFont extends BaseFont {
      * @param enc the encoding to be applied to this font
      * @param emb true if the font is to be embedded in the PDF
      * @param ttfAfm the font as a <CODE>byte</CODE> array
+     * @param justNames Just names
+     * @param forceRead Force read
      * @throws DocumentException the font is invalid
      * @throws IOException the font file could not be read
      * @since	2.1.5
@@ -509,6 +510,7 @@ class TrueTypeFont extends BaseFont {
 
     /** Extracts the names of the font in all the languages available.
      * @param id the name id to retrieve
+     * @return Names
      * @throws DocumentException on error
      * @throws IOException on error
      */
@@ -552,6 +554,7 @@ class TrueTypeFont extends BaseFont {
     }
 
     /** Extracts all the names of the names-Table
+     * @return Names
      * @throws DocumentException on error
      * @throws IOException on error
      */
@@ -604,6 +607,7 @@ class TrueTypeFont extends BaseFont {
 
     /** Reads the font data.
      * @param ttfAfm the font as a <CODE>byte</CODE> array, possibly <CODE>null</CODE>
+     * @param preload Preload
      * @throws DocumentException the font is invalid
      * @throws IOException the font file could not be read
      * @since	2.1.5
@@ -1051,6 +1055,7 @@ class TrueTypeFont extends BaseFont {
      * @return the PdfDictionary containing the font descriptor or <CODE>null</CODE>
      * @param subsetPrefix the subset prefix
      * @param fontStream the indirect reference to a PdfStream containing the font or <CODE>null</CODE>
+     * @param cidset CID set
      */
     protected PdfDictionary getFontDescriptor(final PdfIndirectReference fontStream, final String subsetPrefix, final PdfIndirectReference cidset) {
         final PdfDictionary dic = new PdfDictionary(PdfName.FONTDESCRIPTOR);
@@ -1327,6 +1332,7 @@ class TrueTypeFont extends BaseFont {
      * will return the raw bytes needed for the font stream. If this method is
      * ever made public: make sure to add a test if (cff == true).
      * @return	a byte array
+     * @throws IOException on error
      * @since	2.1.3
      */
     protected byte[] readCffFont() throws IOException {
@@ -1351,6 +1357,8 @@ class TrueTypeFont extends BaseFont {
     /**
      * Returns a PdfStream object with the full font program.
      * @return	a PdfStream with the font program
+     * @throws IOException on error
+     * @throws DocumentException on error
      * @since	2.1.3
      */
     @Override

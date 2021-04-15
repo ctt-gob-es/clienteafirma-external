@@ -89,8 +89,6 @@
 
 package com.aowagie.text.pdf.codec;
 
-import harmony.java.awt.color.ICC_Profile;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -113,6 +111,8 @@ import com.aowagie.text.pdf.PdfNumber;
 import com.aowagie.text.pdf.PdfObject;
 import com.aowagie.text.pdf.PdfReader;
 import com.aowagie.text.pdf.PdfString;
+
+import harmony.java.awt.color.ICC_Profile;
 
 /** Reads a PNG image. All types of PNG can be read.
  * <p>
@@ -196,7 +196,8 @@ public class PngImage {
 
 
 
-    /** Creates a new instance of PngImage */
+    /** Creates a new instance of PngImage
+     * @param is Input stream. */
     private PngImage(final InputStream is) {
         this.is = is;
     }
@@ -973,8 +974,8 @@ public class PngImage {
  *
  * @param		is      an <CODE>InputStream</CODE>
  * @return		the value of an <CODE>int</CODE>
+ * @throws IOException on error
  */
-
     private static final int getInt(final InputStream is) throws IOException {
         return (is.read() << 24) + (is.read() << 16) + (is.read() << 8) + is.read();
     }
@@ -984,6 +985,7 @@ public class PngImage {
  *
  * @param		is      an <CODE>InputStream</CODE>
  * @return		the value of an <CODE>int</CODE>
+ * @throws IOException on error
  */
 
     private static final int getWord(final InputStream is) throws IOException {
@@ -995,6 +997,7 @@ public class PngImage {
  *
  * @param		is      an <CODE>InputStream</CODE>
  * @return		the value of an <CODE>int</CODE>
+ * @throws IOException on error
  */
 
     private static final String getString(final InputStream is) throws IOException {

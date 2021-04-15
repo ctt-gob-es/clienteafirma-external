@@ -88,8 +88,8 @@ class Matrix {
 
     /**
      * Constructs a matrix that represents translation
-     * @param tx
-     * @param ty
+     * @param tx X
+     * @param ty Y
      */
     public Matrix(final float tx, final float ty){
         this.vals[I31] = tx;
@@ -98,12 +98,12 @@ class Matrix {
 
     /**
      * Creates a Matrix with 6 specified entries
-     * @param a
-     * @param b
-     * @param c
-     * @param d
-     * @param e
-     * @param f
+     * @param a a
+     * @param b b
+     * @param c c
+     * @param d d
+     * @param e e
+     * @param f f
      */
     public Matrix(final float a, final float b, final float c, final float d, final float e, final float f){
         this.vals[I11] = a;

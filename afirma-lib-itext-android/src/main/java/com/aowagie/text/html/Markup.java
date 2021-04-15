@@ -185,7 +185,9 @@ public class Markup {
 
 	/**
 	 * New method contributed by: Lubos Strapko
-	 *
+	 * @param string String with unit.
+	 * @param actualFontSize Font size.
+	 * @return String length on the selected unit.
 	 * @since 2.1.3
 	 */
 	public static float parseLength(String string, final float actualFontSize) {

@@ -643,6 +643,8 @@ public class RandomAccessFileOrArray implements DataInput {
     }
 
     /**
+     * @return Buffer
+     * @throws IOException on error
      * @since 2.0.8
      */
     public java.nio.ByteBuffer getNioByteBuffer() throws IOException {

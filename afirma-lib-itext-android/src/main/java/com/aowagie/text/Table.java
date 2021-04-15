@@ -525,7 +525,7 @@ public class Table extends Rectangle implements LargeElement {
      * 25% for the second and third column.
      *
      * @param       widths  an array with values
-     * @throws BadElementException
+     * @throws BadElementException on error
      */
     public void setWidths(final float[] widths) throws BadElementException {
         if (widths.length != this.columns) {
@@ -556,7 +556,7 @@ public class Table extends Rectangle implements LargeElement {
      * The values will be recalculated as percentages of this sum.
      *
      * @param       widths  an array with values
-     * @throws DocumentException
+     * @throws DocumentException on error
      */
     public void setWidths(final int[] widths) throws DocumentException {
         final float tb[] = new float[widths.length];
@@ -656,7 +656,7 @@ public class Table extends Rectangle implements LargeElement {
      *
      * @param       aCell        The <CODE>Cell</CODE> to add
      * @param       aLocation    The location where the <CODE>Cell</CODE> will be added
-     * @throws BadElementException
+     * @throws BadElementException on error
      */
 	private void addCell(final Cell aCell, final Point aLocation) throws BadElementException {
         if (aCell == null) {
@@ -824,9 +824,9 @@ public class Table extends Rectangle implements LargeElement {
      * returns the element at the position row, column
      *          (Cast to Cell or Table)
      *
-     * @param row
-     * @param column
-     * @return  dimension
+     * @param row Row
+     * @param column Column
+     * @return  dimension Dimension
      * @since  2.1.0 (was made private in 2.0.3)
      */
     private Object getElement(final int row, final int column) {
@@ -1063,9 +1063,8 @@ public class Table extends Rectangle implements LargeElement {
 
     /**
      * check if <CODE>Cell</CODE> 'fits' the table.
-     * <P>
-     * <UL><LI>rowspan/colspan not beyond borders
-     *     <LI>spanned cell don't overlap existing cells</UL>
+     * <UL><LI>rowspan/colspan not beyond borders</LI>
+     *     <LI>spanned cell don't overlap existing cells</LI></UL>
      *
      * @param   aCell       the cell that has to be checked
      * @param   aLocation   the location where the cell has to be placed
@@ -1240,7 +1239,7 @@ public class Table extends Rectangle implements LargeElement {
     /**
      * Create a PdfPTable based on this Table object.
      * @return a PdfPTable object
-     * @throws BadElementException
+     * @throws BadElementException on error
      */
     PdfPTable createPdfPTable() throws BadElementException {
     	if (!this.convert2pdfptable) {
@@ -1312,7 +1311,7 @@ public class Table extends Rectangle implements LargeElement {
 	 * Sets the indication if the section was already added to
 	 * the document.
 	 * @since	iText2.0.8
-	 * @param notAddedYet
+	 * @param notAddedYet No added yet
 	 */
 	public void setNotAddedYet(final boolean notAddedYet) {
 		this.notAddedYet = notAddedYet;

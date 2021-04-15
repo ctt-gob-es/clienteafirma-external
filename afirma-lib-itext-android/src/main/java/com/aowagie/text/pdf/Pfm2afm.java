@@ -153,7 +153,12 @@ final class Pfm2afm {
     private final RandomAccessFileOrArray in;
     private final PrintWriter out;
 
-    /** Creates a new instance of Pfm2afm */
+    /**
+     * Creates a new instance of Pfm2afm
+     * @param in Input
+     * @param out Output
+     * @throws IOException on error
+     */
     private Pfm2afm(final RandomAccessFileOrArray in, final OutputStream out) throws IOException {
         this.in = in;
         this.out = new PrintWriter(new OutputStreamWriter(out, "ISO-8859-1"));

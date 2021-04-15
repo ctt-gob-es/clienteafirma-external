@@ -179,6 +179,7 @@ public class Annotation implements Element {
 
 	/**
 	 * Copy constructor.
+	 * @param an Annotation
 	 */
     public Annotation(final Annotation an) {
         this.annotationtype = an.annotationtype;
@@ -297,9 +298,13 @@ public class Annotation implements Element {
 	 * Creates a Screen annotation to embed media clips
 	 *
 	 * @param llx
+	 *            the lower left x-value
 	 * @param lly
+	 *            the lower left y-value
 	 * @param urx
+	 *            the upper right x-value
 	 * @param ury
+	 *            the upper right y-value
 	 * @param moviePath
 	 *            path to the media clip file
 	 * @param mimeType

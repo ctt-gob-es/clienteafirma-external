@@ -340,7 +340,7 @@ class CFFFontSubset extends CFFFont {
 
 	/**
 	 * Read the FDArray count, offsize and Offset array
-	 * @param Font
+	 * @param Font Font
 	 */
 	private void ReadFDArray(final int Font)
 	{
@@ -361,9 +361,9 @@ class CFFFontSubset extends CFFFont {
 	 * subset version of the original.
 	 * @param fontName - The name of the font to be taken out of the CFF
 	 * @return The new font stream
-	 * @throws IOException
+	 * @throws IOException If I/O error.
 	 */
-	public byte[] Process(final String fontName)throws IOException{
+	public byte[] Process(final String fontName) throws IOException{
 		try
 		{
 			// Verify that the file is open
@@ -428,7 +428,7 @@ class CFFFontSubset extends CFFFont {
 	/**
 	 *Function uses BuildNewIndex to create the new index of the subset charstrings
 	 * @param FontIndex the font
-	 * @throws IOException
+	 * @throws IOException If I/O error
 	 */
 	private void BuildNewCharString(final int FontIndex) throws IOException
 	{
@@ -436,10 +436,10 @@ class CFFFontSubset extends CFFFont {
 	}
 
 	/**
-	 * Function builds the new local & global subsrs indices. IF CID then All of
+	 * Function builds the new local &amp; global subsrs indices. IF CID then All of
 	 * the FD Array lsubrs will be subsetted.
 	 * @param Font the font
-	 * @throws IOException
+	 * @throws IOException If I/O error
 	 */
 	private void BuildNewLGSubrs(final int Font)throws IOException
 	{
@@ -529,8 +529,8 @@ class CFFFontSubset extends CFFFont {
 	}
 
 	/**
-	 * Function uses ReadAsubr on the glyph used to build the LSubr & Gsubr HashMap.
-	 * The HashMap (of the lsubr only) is then scanned recursively for Lsubr & Gsubrs
+	 * Function uses ReadAsubr on the glyph used to build the LSubr and Gsubr HashMap.
+	 * The HashMap (of the lsubr only) is then scanned recursively for Lsubr and Gsubrs
 	 * calls.
 	 * @param Font the font
 	 * @param FD FD array processed. 0 indicates function was called by non CID font
@@ -588,7 +588,7 @@ class CFFFontSubset extends CFFFont {
 
 	/**
 	 * Function scans the Glsubr used ArrayList to find recursive calls
-	 * to Gsubrs and adds to Hashmap & ArrayList
+	 * to Gsubrs and adds to Hashmap and ArrayList
 	 * @param Font the font
 	 */
 	private void BuildGSubrsUsed(final int Font)
@@ -648,6 +648,7 @@ class CFFFontSubset extends CFFFont {
 	 * @param LBias the bias of the Local Subrs
 	 * @param hSubr the HashMap for the lSubrs
 	 * @param lSubr the ArrayList for the lSubrs
+	 * @param LSubrsOffsets lSubrs offsets
 	 */
 	private void ReadASubr(final int begin,final int end,final int GBias,final int LBias,final HashMap hSubr,final ArrayList lSubr,final int[] LSubrsOffsets)
 	{
@@ -755,7 +756,7 @@ class CFFFontSubset extends CFFFont {
 
 	/**
 	 * Function checks the key and return the change to the stack after the operator
-	 * @return The change in the stack. 2-> flush the stack
+	 * @return The change in the stack. 2-&lt; flush the stack
 	 */
 	private int StackOpp()
 	{
@@ -959,7 +960,7 @@ class CFFFontSubset extends CFFFont {
 	 * @param Used the hashmap of the used objects
 	 * @param OperatorForUnusedEntries the operator inserted into the data stream for unused entries
 	 * @return the new index subset version
-	 * @throws IOException
+	 * @throws IOException on error
 	 */
 	private byte[] BuildNewIndex(final int[] Offsets,final HashMap Used,final byte OperatorForUnusedEntries) throws IOException
 	{

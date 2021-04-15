@@ -171,7 +171,7 @@ public class PdfWriter extends DocWriter implements
             // constructors
             /**
              * Constructs a cross-reference element for a PdfIndirectObject.
-             * @param refnum
+             * @param refnum Reference
              * @param	offset		byte offset of the object
              * @param	generation	generation number of the object
              */
@@ -185,7 +185,7 @@ public class PdfWriter extends DocWriter implements
 
             /**
              * Constructs a cross-reference element for a PdfIndirectObject.
-             * @param refnum
+             * @param refnum Reference
              * @param	offset		byte offset of the object
              */
 
@@ -209,8 +209,8 @@ public class PdfWriter extends DocWriter implements
 
             /**
              * Returns the PDF representation of this <CODE>PdfObject</CODE>.
-             * @param os
-             * @throws IOException
+             * @param os OutputStream
+             * @throws IOException on error
              */
 
             private void toPdf(final OutputStream os) throws IOException {
@@ -225,9 +225,9 @@ public class PdfWriter extends DocWriter implements
 
             /**
              * Writes PDF syntax to the OutputStream
-             * @param midSize
-             * @param os
-             * @throws IOException
+             * @param midSize Mid Size
+             * @param os OutputStream
+             * @throws IOException on error
              */
             private void toPdf(int midSize, final OutputStream os) throws IOException {
                 os.write((byte)this.type);
@@ -289,7 +289,7 @@ public class PdfWriter extends DocWriter implements
 
         /**
          * Constructs a new <CODE>PdfBody</CODE>.
-         * @param writer
+         * @param writer Writer
          */
         private PdfBody(final PdfWriter writer) {
             this.xrefs = new TreeSet();
@@ -354,7 +354,7 @@ public class PdfWriter extends DocWriter implements
          *
          * @param		object			a <CODE>PdfObject</CODE>
          * @return		a <CODE>PdfIndirectObject</CODE>
-         * @throws IOException
+         * @throws IOException on error
          */
 
         PdfIndirectObject add(final PdfObject object) throws IOException {
@@ -393,7 +393,7 @@ public class PdfWriter extends DocWriter implements
          * @param		object			a <CODE>PdfObject</CODE>
          * @param		ref		        a <CODE>PdfIndirectReference</CODE>
          * @return		a <CODE>PdfIndirectObject</CODE>
-         * @throws IOException
+         * @throws IOException on error
          */
 
         PdfIndirectObject add(final PdfObject object, final PdfIndirectReference ref) throws IOException {
@@ -453,13 +453,13 @@ public class PdfWriter extends DocWriter implements
 
         /**
          * Returns the CrossReferenceTable of the <CODE>Body</CODE>.
-         * @param os
-         * @param root
-         * @param info
-         * @param encryption
-         * @param fileID
-         * @param prevxref
-         * @throws IOException
+         * @param os OutputStream
+         * @param root Root
+         * @param info Info
+         * @param encryption Encryption
+         * @param fileID FileID
+         * @param prevxref Prev xref
+         * @throws IOException on error
          */
 
         void writeCrossReferenceTable(final OutputStream os, final PdfIndirectReference root, final PdfIndirectReference info, final PdfIndirectReference encryption, final PdfObject fileID, final int prevxref) throws IOException {
@@ -572,9 +572,9 @@ public class PdfWriter extends DocWriter implements
          * @param		offset		offset of the <CODE>PdfCrossReferenceTable</CODE>
          * @param		root		an indirect reference to the root of the PDF document
          * @param		info		an indirect reference to the info object of the PDF document
-         * @param encryption
-         * @param fileID
-         * @param prevxref
+         * @param encryption Encryption
+         * @param fileID File Id 
+         * @param prevxref Prev xref
          */
 
         PdfTrailer(final int size, final int offset, final PdfIndirectReference root, final PdfIndirectReference info, final PdfIndirectReference encryption, final PdfObject fileID, final int prevxref) {
@@ -597,9 +597,9 @@ public class PdfWriter extends DocWriter implements
 
         /**
          * Returns the PDF representation of this <CODE>PdfObject</CODE>.
-         * @param writer
-         * @param os
-         * @throws IOException
+         * @param writer Writer
+         * @param os Outpustream
+         * @throws IOException on error
          */
         @Override
 		public void toPdf(final PdfWriter writer, final OutputStream os) throws IOException {
@@ -774,9 +774,9 @@ public class PdfWriter extends DocWriter implements
     /**
      * Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
+     * @param object Object
      * @return a PdfIndirectObject
-     * @throws IOException
+     * @throws IOException on error
      */
     PdfIndirectObject addToBody(final PdfObject object) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object);
@@ -785,10 +785,10 @@ public class PdfWriter extends DocWriter implements
 
     /** Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param inObjStm
+     * @param object object
+     * @param inObjStm in Object Stream
      * @return a PdfIndirectObject
-     * @throws IOException */
+     * @throws IOException on error */
     public PdfIndirectObject addToBody(final PdfObject object, final boolean inObjStm) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, inObjStm);
         return iobj;
@@ -797,10 +797,10 @@ public class PdfWriter extends DocWriter implements
     /**
      * Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param ref
+     * @param object Object
+     * @param ref Reference
      * @return a PdfIndirectObject
-     * @throws IOException
+     * @throws IOException on error
      */
     public PdfIndirectObject addToBody(final PdfObject object, final PdfIndirectReference ref) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, ref);
@@ -810,11 +810,11 @@ public class PdfWriter extends DocWriter implements
     /**
      * Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param ref
-     * @param inObjStm
+     * @param object Object
+     * @param ref Reference
+     * @param inObjStm inObjStm
      * @return a PdfIndirectObject
-     * @throws IOException
+     * @throws IOException on error
      */
     PdfIndirectObject addToBody(final PdfObject object, final PdfIndirectReference ref, final boolean inObjStm) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, ref, inObjStm);
@@ -824,10 +824,10 @@ public class PdfWriter extends DocWriter implements
     /**
      * Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param refNumber
+     * @param object Object
+     * @param refNumber Reference
      * @return a PdfIndirectObject
-     * @throws IOException
+     * @throws IOException on error
      */
     PdfIndirectObject addToBody(final PdfObject object, final int refNumber) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, refNumber);
@@ -837,11 +837,11 @@ public class PdfWriter extends DocWriter implements
     /**
      * Use this method to add a PDF object to the PDF body.
      * Use this method only if you know what you're doing!
-     * @param object
-     * @param refNumber
-     * @param inObjStm
+     * @param object Object
+     * @param refNumber Reference
+     * @param inObjStm inObjStm
      * @return a PdfIndirectObject
-     * @throws IOException
+     * @throws IOException on error
      */
     PdfIndirectObject addToBody(final PdfObject object, final int refNumber, final boolean inObjStm) throws IOException {
         final PdfIndirectObject iobj = this.body.add(object, refNumber, inObjStm);
@@ -1013,6 +1013,7 @@ public class PdfWriter extends DocWriter implements
 
     /**
      * Returns the value to be used for the Tabs entry in the page tree.
+     * @return Tabs
      * @since	2.1.5
      */
     public PdfName getTabs() {
@@ -1398,6 +1399,7 @@ public class PdfWriter extends DocWriter implements
 
 	/**
 	 * Returns the version information.
+	 * @return Version
 	 */
 	PdfVersionImp getPdfVersion() {
 		return this.pdf_version;
@@ -1556,6 +1558,7 @@ public class PdfWriter extends DocWriter implements
       * Use this method to add a file attachment at the document level.
       * @param description the file description
       * @param fs the file specification
+      * @throws IOException on error
       */
      void addFileAttachment(final String description, final PdfFileSpecification fs) throws IOException {
          this.pdf.addFileAttachment(description, fs);
@@ -1787,9 +1790,10 @@ public class PdfWriter extends DocWriter implements
      * @param registryName              a value
      * @param info                      a value
      * @param destOutputProfile         a value
+     * @throws IOException on error
      * @since 1.x
      *
-     * @throws IOException
+     * @throws IOException on error
      */
     private void setOutputIntents(final String outputConditionIdentifier, final String outputCondition, final String registryName, final String info, final byte destOutputProfile[]) throws IOException {
         final ICC_Profile colorProfile = destOutputProfile == null ? null : ICC_Profile.getInstance(destOutputProfile);
@@ -2355,6 +2359,7 @@ public class PdfWriter extends DocWriter implements
     }
 
     /**
+     * @param erase Erase
      * @since 2.1.2
      */
     protected void fillOCProperties(final boolean erase) {
@@ -2855,6 +2860,7 @@ public class PdfWriter extends DocWriter implements
      * Writes a <CODE>PdfImage</CODE> to the outputstream.
      *
      * @param pdfImage the image to be added
+     * @param fixedRef Reference
      * @return a <CODE>PdfIndirectReference</CODE> to the encapsulated image
      * @throws PdfException when a document isn't open yet, or has been closed
      */
@@ -2913,6 +2919,7 @@ public class PdfWriter extends DocWriter implements
      * Gets an indirect reference to a JBIG2 Globals stream.
      * Adds the stream if it hasn't already been added to the writer.
 	 * @param	content a byte array that may already been added to the writer inside a stream object.
+	 * @return Reference
      * @since  2.1.5
      */
     protected PdfIndirectReference getReferenceJBIG2Globals(final byte[] content) {

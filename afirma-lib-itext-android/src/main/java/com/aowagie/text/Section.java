@@ -460,6 +460,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * Sets the style for numbering sections.
      * Possible values are NUMBERSTYLE_DOTTED: 1.2.3. (the default)
      * or NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT: 1.2.3
+     * @param numberStyle Style
 	 * @since	iText 2.0.8
      */
 	public void setNumberStyle(final int numberStyle) {
@@ -584,6 +585,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 
     /**
      * Changes the Chapter number.
+     * @param number Chapter
      */
     public void setChapterNumber(final int number) {
     	this.numbers.set(this.numbers.size() - 1, new Integer(number));
@@ -632,13 +634,14 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	 * Sets the indication if the section was already added to
 	 * the document.
 	 * @since	iText2.0.8
-	 * @param notAddedYet
+	 * @param notAddedYet No added yet
 	 */
 	public void setNotAddedYet(final boolean notAddedYet) {
 		this.notAddedYet = notAddedYet;
 	}
 
     /**
+     * @return Added
      * @since	iText 2.0.8
      */
     protected boolean isAddedCompletely() {
@@ -646,6 +649,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	}
 
 	/**
+	 * @param addedCompletely Added
      * @since	iText 2.0.8
 	 */
     private void setAddedCompletely(final boolean addedCompletely) {

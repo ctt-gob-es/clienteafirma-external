@@ -99,8 +99,8 @@ public class ImgWMF extends Image {
 
 /**
  * This method checks if the image is a valid WMF and processes some parameters.
- * @throws BadElementException
- * @throws IOException
+ * @throws BadElementException on error
+ * @throws IOException on error
  */
 
     private void processParameters() throws BadElementException, IOException {

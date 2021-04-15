@@ -165,6 +165,7 @@ public class ListItem extends Paragraph {
      * Sets the indentation of this paragraph on the left side.
      *
      * @param	indentation		the new indentation
+     * @param autoindent Autoindent
      */
     void setIndentationLeft(final float indentation, final boolean autoindent) {
     	if (autoindent) {

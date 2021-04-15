@@ -65,10 +65,10 @@ class CMYKColor extends ExtendedColor {
 
     /**
      * Construct a CMYK Color.
-     * @param floatCyan
-     * @param floatMagenta
-     * @param floatYellow
-     * @param floatBlack
+     * @param floatCyan Cyan value
+     * @param floatMagenta Magenta value
+     * @param floatYellow Yellow value
+     * @param floatBlack Black value
      */
     CMYKColor(final float floatCyan, final float floatMagenta, final float floatYellow, final float floatBlack) {
         super(TYPE_CMYK, 1f - floatCyan - floatBlack, 1f - floatMagenta - floatBlack, 1f - floatYellow - floatBlack);

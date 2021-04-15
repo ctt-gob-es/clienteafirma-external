@@ -109,14 +109,14 @@ public interface DocListener extends ElementListener {
         
     /**
      * Parameter that allows you to do left/right  margin mirroring (odd/even pages)
-     * @param marginMirroring
+     * @param marginMirroring margin mirroring
      * @return true if successful
      */
     public boolean setMarginMirroring(boolean marginMirroring); // [L6]
     
     /**
      * Parameter that allows you to do top/bottom margin mirroring (odd/even pages)
-     * @param marginMirroringTopBottom
+     * @param marginMirroringTopBottom margin mirroring
      * @return true if successful
      * @since	2.1.6
      */

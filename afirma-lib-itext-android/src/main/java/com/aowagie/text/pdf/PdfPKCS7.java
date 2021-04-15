@@ -941,6 +941,7 @@ public class PdfPKCS7 {
      * @param secondDigest the digest in the authenticatedAttributes
      * @param signingTime the signing time in the authenticatedAttributes
      * @param tsaClient TSAClient - null or an optional time stamp authority client
+     * @param ocsp OCSP
      * @return byte[] the bytes for the PKCS7SignedData object
      * @since	2.1.6
      */
@@ -1095,7 +1096,7 @@ public class PdfPKCS7 {
      * handled by the (vendor supplied) TSA request/response interface).
      * @param timeStampToken byte[] - time stamp token, DER encoded signedData
      * @return ASN1EncodableVector
-     * @throws IOException
+     * @throws IOException on error
      */
     private static ASN1EncodableVector buildUnauthenticatedAttributes(final byte[] timeStampToken)  throws IOException {
         if (timeStampToken == null) {

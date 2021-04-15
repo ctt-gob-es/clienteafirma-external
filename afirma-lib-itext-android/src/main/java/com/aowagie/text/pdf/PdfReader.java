@@ -541,7 +541,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @throws IOException
+     * @throws IOException on error
      */
     private void readDecryptedDocObj() throws IOException {
         if (this.encrypted) {
@@ -782,7 +782,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param obj
+     * @param obj PDF object
      * @return a PdfObject
      */
     public static PdfObject getPdfObjectRelease(final PdfObject obj) {
@@ -841,7 +841,7 @@ public class PdfReader implements PdfViewerPreferences {
      * if needed. If the reader was opened in partial mode the object will be released
      * to save memory.
      * @param obj the <CODE>PdfObject</CODE> to read
-     * @param parent
+     * @param parent parent
      * @return a PdfObject
      */
     static PdfObject getPdfObjectRelease(final PdfObject obj, final PdfObject parent) {
@@ -851,8 +851,8 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param obj
-     * @param parent
+     * @param obj PDF Object
+     * @param parent Parent
      * @return a PdfObject
      */
     static PdfObject getPdfObject(PdfObject obj, final PdfObject parent) {
@@ -881,7 +881,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param idx
+     * @param idx Index.
      * @return a PdfObject
      */
     PdfObject getPdfObjectRelease(final int idx) {
@@ -891,7 +891,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param idx
+     * @param idx Index
      * @return aPdfObject
      */
     public PdfObject getPdfObject(final int idx) {
@@ -920,10 +920,6 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
 
-
-    /**
-     *
-     */
     private void releaseLastXrefPartial() {
         if (this.partial && this.lastXrefPartial != -1) {
             this.xrefObj.set(this.lastXrefPartial, null);
@@ -932,7 +928,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param obj
+     * @param obj PDF object
      */
     static void releaseLastXrefPartial(final PdfObject obj) {
         if (obj == null) {
@@ -961,7 +957,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param obj
+     * @param obj PDF object
      * @return an indirect reference
      */
     public PRIndirectReference addPdfObject(final PdfObject obj) {
@@ -1723,8 +1719,8 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param in
-     * @param dicPar
+     * @param in In
+     * @param dicPar PDF object
      * @return a byte array
      */
     private static byte[] decodePredictor(final byte in[], final PdfObject dicPar) {
@@ -2000,7 +1996,7 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param pageNum
+     * @param pageNum Page Number
      * @return a Dictionary object
      */
     public PdfDictionary getPageNRelease(final int pageNum) {
@@ -2010,15 +2006,12 @@ public class PdfReader implements PdfViewerPreferences {
     }
 
     /**
-     * @param pageNum
+     * @param pageNum Page number
      */
     public void releasePage(final int pageNum) {
         this.pageRefs.releasePage(pageNum);
     }
 
-    /**
-     *
-     */
     public void resetReleasePage() {
         this.pageRefs.resetReleasePage();
     }
@@ -2110,6 +2103,7 @@ public class PdfReader implements PdfViewerPreferences {
     /** Sets the contents of the page.
      * @param content the new page content
      * @param pageNum the page number. 1 is the first
+     * @param compressionLevel Compression level
      * @since	2.1.3	(the method already existed without param compressionLevel)
      */
     private void setPageContent(final int pageNum, final byte content[], final int compressionLevel) {
@@ -3188,7 +3182,7 @@ public class PdfReader implements PdfViewerPreferences {
         }
 
         /**
-         * @param pageNum
+         * @param pageNum Page
          * @return a dictionary object
          */
         public PdfDictionary getPageNRelease(final int pageNum) {
@@ -3252,7 +3246,7 @@ public class PdfReader implements PdfViewerPreferences {
         }
 
         /**
-         * @param pageNum
+         * @param pageNum Page number
          */
         public void releasePage(int pageNum) {
             if (this.refsp == null) {
@@ -3271,9 +3265,6 @@ public class PdfReader implements PdfViewerPreferences {
             this.refsp.remove(pageNum);
         }
 
-        /**
-         *
-         */
         public void resetReleasePage() {
             if (this.refsp == null) {
 				return;

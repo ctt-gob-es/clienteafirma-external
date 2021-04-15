@@ -93,6 +93,7 @@ public final class PdfIndirectObject {
  *
  * @param		number			the object number
  * @param		object			the direct object
+ * @param writer Writer
  */
 
     PdfIndirectObject(final int number, final PdfObject object, final PdfWriter writer) {
@@ -106,6 +107,7 @@ public final class PdfIndirectObject {
  * @param		number			the object number
  * @param		generation		the generation number
  * @param		object			the direct object
+ * @param writer Writer
  */
 
     private PdfIndirectObject(final int number, final int generation, final PdfObject object, final PdfWriter writer) {

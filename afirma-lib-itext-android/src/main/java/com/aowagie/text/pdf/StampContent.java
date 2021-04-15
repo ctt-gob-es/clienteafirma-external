@@ -50,7 +50,11 @@ class StampContent extends PdfContentByte {
     private final PdfStamperImp.PageStamp ps;
     private final PageResources pageResources;
 
-    /** Creates a new instance of StampContent */
+    /**
+     * Creates a new instance of StampContent
+     * @param stamper Stamper
+     * @param ps Page stamp
+     */
     StampContent(final PdfStamperImp stamper, final PdfStamperImp.PageStamp ps) {
         super(stamper);
         this.ps = ps;

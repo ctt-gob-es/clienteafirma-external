@@ -86,8 +86,8 @@ public class SimpleTable extends Rectangle implements PdfPTableEvent, TextElemen
 
 	/**
 	 * Adds content to this object.
-	 * @param element
-	 * @throws BadElementException
+	 * @param element element
+	 * @throws BadElementException on error
 	 */
 	private void addElement(final SimpleCell element) throws BadElementException {
 		if(!element.isCellgroup()) {
@@ -101,7 +101,7 @@ public class SimpleTable extends Rectangle implements PdfPTableEvent, TextElemen
 	/**
 	 * Creates a PdfPTable object based on this TableAttributes object.
 	 * @return a com.aowagie.text.pdf.PdfPTable object
-	 * @throws DocumentException
+	 * @throws DocumentException on error
 	 */
 	public PdfPTable createPdfPTable() throws DocumentException {
 		if (this.content.isEmpty()) {

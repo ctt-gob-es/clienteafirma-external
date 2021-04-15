@@ -76,7 +76,7 @@ public class PdfStamperImp extends PdfWriter {
     private final RandomAccessFileOrArray file;
     PdfReader reader;
     private final IntHashtable myXref = new IntHashtable();
-    /** Integer(page number) -> PageStamp */
+    /** Integer(page number) -&lt; PageStamp */
     private final HashMap pagesToContent = new LinkedHashMap();
     private boolean closed = false;
     /** Holds value of property rotateContents. */
@@ -101,9 +101,10 @@ public class PdfStamperImp extends PdfWriter {
      * @param os the output destination
      * @param pdfVersion the new pdf version or '\0' to keep the same version as the original
      * document
-     * @param append
+     * @param append Append
+     * @param globalDate Date
      * @throws DocumentException on error
-     * @throws IOException
+     * @throws IOException on error
      */
     PdfStamperImp(final PdfReader reader, final OutputStream os, final char pdfVersion, final boolean append, final Calendar globalDate) throws DocumentException, IOException {
         super(new PdfDocument(globalDate), os);
@@ -528,9 +529,9 @@ public class PdfStamperImp extends PdfWriter {
     }
 
     /**
-     * @param reader
-     * @param openFile
-     * @throws IOException
+     * @param reader reader
+     * @param openFile It's open file
+     * @throws IOException on error
      */
     private void registerReader(final PdfReader reader, final boolean openFile) throws IOException {
         if (this.readers2intrefs.containsKey(reader)) {

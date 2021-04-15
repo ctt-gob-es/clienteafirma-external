@@ -61,7 +61,13 @@ class StandardDecryption {
     private final byte[] iv = new byte[16];
     private int ivptr;
 
-    /** Creates a new instance of StandardDecryption */
+    /**
+     * Creates a new instance of StandardDecryption
+     * @param key Key
+     * @param off Offset
+     * @param len Length
+     * @param revision Revision
+     */
     StandardDecryption(final byte key[], final int off, final int len, final int revision) {
         this.aes = revision == AES_128;
         if (this.aes) {

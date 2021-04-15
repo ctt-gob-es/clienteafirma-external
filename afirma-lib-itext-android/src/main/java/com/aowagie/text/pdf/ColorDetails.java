@@ -91,6 +91,7 @@ class ColorDetails {
     }
 
     /** Gets the <CODE>SpotColor</CODE> object.
+     * @param writer Writer
      * @return the <CODE>PdfSpotColor</CODE>
      */
     PdfObject getSpotColor(final PdfWriter writer) {

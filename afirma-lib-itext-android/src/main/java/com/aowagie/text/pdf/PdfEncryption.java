@@ -204,8 +204,6 @@ class PdfEncryption {
 		return this.embeddedFilesOnly;
 	}
 
-	/**
-	 */
 	private byte[] padPassword(final byte userPassword[]) {
 		final byte userPad[] = new byte[32];
 		if (userPassword == null) {
@@ -222,8 +220,6 @@ class PdfEncryption {
 		return userPad;
 	}
 
-	/**
-	 */
 	private byte[] computeOwnerKey(final byte userPad[], final byte ownerPad[]) {
 		final byte ownerKey[] = new byte[32];
 
@@ -253,6 +249,10 @@ class PdfEncryption {
 	/**
 	 *
 	 * ownerKey, documentID must be setup
+	 * @param documentID Document Id
+	 * @param userPad User pad
+	 * @param ownerKey Owner key
+	 * @param permissions Permissions
 	 */
 	private void setupGlobalEncryptionKey(final byte[] documentID, final byte userPad[],
 			final byte ownerKey[], final int permissions) {
@@ -352,24 +352,18 @@ class PdfEncryption {
 		return md5.digest(s.getBytes());
 	}
 
-	/**
-	 */
 	public void setupByUserPassword(final byte[] documentID, final byte userPassword[],
 			final byte ownerKey[], final int permissions) {
 		setupByUserPad(documentID, padPassword(userPassword), ownerKey,
 				permissions);
 	}
 
-	/**
-	 */
 	private void setupByUserPad(final byte[] documentID, final byte userPad[],
 			final byte ownerKey[], final int permissions) {
 		setupGlobalEncryptionKey(documentID, userPad, ownerKey, permissions);
 		setupUserKey();
 	}
 
-	/**
-	 */
 	public void setupByOwnerPassword(final byte[] documentID, final byte ownerPassword[],
 			final byte userKey[], final byte ownerKey[], final int permissions) {
 		setupByOwnerPad(documentID, padPassword(ownerPassword), userKey,

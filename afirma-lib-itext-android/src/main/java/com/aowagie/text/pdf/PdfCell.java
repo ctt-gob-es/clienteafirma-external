@@ -356,7 +356,7 @@ class PdfCell extends Rectangle {
     /**
      * Sets the bottom of the Rectangle and determines the proper {link #verticalOffset}
      * to appropriately align the contents vertically.
-     * @param value
+     * @param value Value
      */
     @Override
 	public void setBottom(final float value) {
@@ -766,7 +766,7 @@ class PdfCell extends Rectangle {
      * Processes all actions contained in the cell.
      * @param element	an element in the cell
      * @param action	an action that should be coupled to the cell
-     * @param allActions
+     * @param allActions All actions
      */
 
     private void processActions(final Element element, PdfAction action, final ArrayList allActions) {
@@ -822,7 +822,7 @@ class PdfCell extends Rectangle {
 
     /**
      * Sets the group number.
-     * @param number
+     * @param number Number
      */
 
     void setGroupNumber(final int number) {

@@ -131,7 +131,7 @@ class PdfEncodings {
         addExtraEncoding("Cp437", new Cp437Conversion());
     }
 
-    /** Converts a <CODE>String</CODE> to a </CODE>byte</CODE> array according
+    /** Converts a <CODE>String</CODE> to a <CODE>byte</CODE> array according
      * to the font's encoding.
      * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
      * @param encoding the encoding
@@ -209,7 +209,7 @@ class PdfEncodings {
         }
     }
 
-    /** Converts a <CODE>String</CODE> to a </CODE>byte</CODE> array according
+    /** Converts a <CODE>String</CODE> to a <CODE>byte</CODE> array according
      * to the font's encoding.
      * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
      * @param encoding the encoding
@@ -262,7 +262,7 @@ class PdfEncodings {
         }
     }
 
-    /** Converts a </CODE>byte</CODE> array to a <CODE>String</CODE> according
+    /** Converts a <CODE>byte</CODE> array to a <CODE>String</CODE> according
      * to the some encoding.
      * @param bytes the bytes to convert
      * @param encoding the encoding
@@ -333,9 +333,9 @@ class PdfEncodings {
 
     /** Converts a <CODE>byte</CODE> array encoded as <CODE>name</CODE>
      * to a CID string. This is needed to reach some CJK characters
-     * that don't exist in 16 bit Unicode.</p>
+     * that don't exist in 16 bit Unicode.
      * The font to use this result must use the encoding "Identity-H"
-     * or "Identity-V".</p>
+     * or "Identity-V".
      * See ftp://ftp.oreilly.com/pub/examples/nutshell/cjkv/adobe/.
      * @param name the CJK encoding name
      * @param start the start offset in the data

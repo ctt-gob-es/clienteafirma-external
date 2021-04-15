@@ -234,9 +234,9 @@ public abstract class Image extends Rectangle {
 	 * @param url
 	 *            an URL
 	 * @return an Image
-	 * @throws BadElementException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @throws BadElementException on error
+	 * @throws MalformedURLException on error
+	 * @throws IOException on error
 	 */
 	public static Image getInstance(final URL url) throws BadElementException,
 			MalformedURLException, IOException {
@@ -336,9 +336,9 @@ public abstract class Image extends Rectangle {
 	 *            a filename
 	 * @return an object of type <CODE>Gif</CODE>,<CODE>Jpeg</CODE> or
 	 *         <CODE>Png</CODE>
-	 * @throws BadElementException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @throws BadElementException on error
+	 * @throws MalformedURLException on error
+	 * @throws IOException on error
 	 */
 	public static Image getInstance(final String filename)
 			throws BadElementException, MalformedURLException, IOException {
@@ -351,9 +351,9 @@ public abstract class Image extends Rectangle {
 	 * @param imgb
 	 *            raw image date
 	 * @return an Image object
-	 * @throws BadElementException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @throws BadElementException on error
+	 * @throws MalformedURLException on error
+	 * @throws IOException on error
 	 */
 	public static Image getInstance(final byte imgb[]) throws BadElementException,
 			MalformedURLException, IOException {
@@ -476,6 +476,7 @@ public abstract class Image extends Rectangle {
 	 * @param	height	the height of the image
 	 * @param	data	the raw image data
 	 * @param	globals	JBIG2 globals
+	 * @return Image
 	 * @since	2.1.5
 	 */
 	public static Image getInstance(final int width, final int height, final byte[] data, final byte[] globals) {
@@ -599,7 +600,7 @@ public abstract class Image extends Rectangle {
 	 * @param template
 	 *            a PdfTemplate that has to be wrapped in an Image object
 	 * @return an Image object
-	 * @throws BadElementException
+	 * @throws BadElementException on error
 	 */
 	public static Image getInstance(final PdfTemplate template)
 			throws BadElementException {
@@ -1155,8 +1156,8 @@ public abstract class Image extends Rectangle {
 	/**
 	 * Sets the absolute position of the <CODE>Image</CODE>.
 	 *
-	 * @param absoluteX
-	 * @param absoluteY
+	 * @param absoluteX x
+	 * @param absoluteY y
 	 */
 
 	public void setAbsolutePosition(final float absoluteX, final float absoluteY) {
@@ -1370,7 +1371,8 @@ public abstract class Image extends Rectangle {
 	/** a static that is used for attributing a unique id to each image. */
 	static long serialId = 0;
 
-	/** Creates a new serial id. */
+	/** Creates a new serial id.
+	 * @return serial Id */
 	static protected synchronized Long getSerialId() {
 		++serialId;
 		return new Long(serialId);
@@ -1479,7 +1481,7 @@ public abstract class Image extends Rectangle {
 	/**
 	 * Sets the left indentation.
 	 *
-	 * @param f
+	 * @param f identation
 	 */
 	public void setIndentationLeft(final float f) {
 		this.indentationLeft = f;
@@ -1497,7 +1499,7 @@ public abstract class Image extends Rectangle {
 	/**
 	 * Sets the right indentation.
 	 *
-	 * @param f
+	 * @param f identation
 	 */
 	public void setIndentationRight(final float f) {
 		this.indentationRight = f;

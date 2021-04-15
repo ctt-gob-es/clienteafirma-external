@@ -75,6 +75,7 @@ public class PdfImage extends PdfStream {
      *
      * @param image the <CODE>Image</CODE>-object
      * @param name the <CODE>PdfName</CODE> for this image
+     * @param maskRef Mask reference
      * @throws BadPdfFormatException on error
      */
 

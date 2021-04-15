@@ -77,6 +77,7 @@ class MarkedObject implements Element {
 
 	/**
 	 * Creates a MarkedObject.
+	 * @param element Element
 	 */
 	MarkedObject(final Element element) {
 		this.element = element;

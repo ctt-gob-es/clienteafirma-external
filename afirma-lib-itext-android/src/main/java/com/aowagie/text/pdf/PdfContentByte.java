@@ -48,8 +48,6 @@
  */
 
 package com.aowagie.text.pdf;
-import harmony.java.awt.Color;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -64,6 +62,8 @@ import com.aowagie.text.Rectangle;
 import com.aowagie.text.exceptions.IllegalPdfSyntaxException;
 import com.aowagie.text.pdf.internal.PdfAnnotationsImp;
 import com.aowagie.text.pdf.internal.PdfXConformanceImp;
+
+import harmony.java.awt.Color;
 
 /**
  * <CODE>PdfContentByte</CODE> is an object containing the user positioned
@@ -2458,11 +2458,11 @@ public class PdfContentByte {
 
     /**
      * Draws a TextField.
-     * @param llx
-     * @param lly
-     * @param urx
-     * @param ury
-     * @param on
+     * @param llx the lower left x corner of the activation area
+     * @param lly the lower left y corner of the activation area
+     * @param urx the upper right x corner of the activation area
+     * @param ury the upper right y corner of the activation area
+     * @param on On
      */
     void drawRadioField(float llx, float lly, float urx, float ury, final boolean on) {
         if (llx > urx) { final float x = llx; llx = urx; urx = x; }
@@ -2497,10 +2497,10 @@ public class PdfContentByte {
 
     /**
      * Draws a TextField.
-     * @param llx
-     * @param lly
-     * @param urx
-     * @param ury
+     * @param llx the lower left x corner of the activation area
+     * @param lly the lower left y corner of the activation area
+     * @param urx the upper right x corner of the activation area
+     * @param ury the upper right y corner of the activation area
      */
     void drawTextField(float llx, float lly, float urx, float ury) {
         if (llx > urx) { final float x = llx; llx = urx; urx = x; }
@@ -2545,13 +2545,13 @@ public class PdfContentByte {
 
     /**
      * Draws a button.
-     * @param llx
-     * @param lly
-     * @param urx
-     * @param ury
-     * @param text
-     * @param bf
-     * @param size
+     * @param llx the lower left x corner of the activation area
+     * @param lly the lower left y corner of the activation area
+     * @param urx the upper right x corner of the activation area
+     * @param ury the upper right y corner of the activation area
+     * @param text text
+     * @param bf Base font
+     * @param size Size
      */
     void drawButton(float llx, float lly, float urx, float ury, final String text, final BaseFont bf, final float size) {
         if (llx > urx) { final float x = llx; llx = urx; urx = x; }
@@ -2716,7 +2716,6 @@ public class PdfContentByte {
      * One possible cause: not calling myPdfGraphics2D.dispose() will leave dangling
      *                     saveState() calls.
      * @since 2.1.6
-     * @throws IllegalPdfSyntaxException (a runtime exception)
      */
     private void sanityCheck() {
     	if (this.mcDepth != 0) {

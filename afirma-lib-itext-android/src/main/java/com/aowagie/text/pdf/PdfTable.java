@@ -205,6 +205,7 @@ class PdfTable extends Rectangle {
 
 	/**
 	 * Get the number of rows
+	 * @return Rows
 	 */
 
 	private int rows() {

@@ -82,7 +82,7 @@ class PdfCopy extends PdfWriter {
         private void setCopied() { this.hasCopied = true; }
         private boolean getCopied() { return this.hasCopied; }
         private PdfIndirectReference getRef() { return this.theRef; }
-    };
+    }
     private HashMap indirects;
     private final HashMap indirectMap;
 
@@ -126,9 +126,10 @@ class PdfCopy extends PdfWriter {
 
     /**
      * Constructor
-     * @param document
+     * @param document Document
      * @param os outputstream
-     * @param globalDate
+     * @param globalDate Date
+     * @throws DocumentException on error
      */
     PdfCopy(final Document document, final OutputStream os, final Calendar globalDate) throws DocumentException {
         super(new PdfDocument(globalDate), os);
@@ -188,6 +189,10 @@ class PdfCopy extends PdfWriter {
      * file they came from, because each file has its own namespace. The translation
      * we do from their namespace to ours is *at best* heuristic, and guaranteed to
      * fail under some circumstances.
+     * @param in Reference
+     * @return Reference
+     * @throws IOException on error
+     * @throws BadPdfFormatException on error
      */
     private PdfIndirectReference copyIndirect(final PRIndirectReference in) throws IOException, BadPdfFormatException {
         PdfIndirectReference theRef;
@@ -220,6 +225,10 @@ class PdfCopy extends PdfWriter {
     /**
      * Translate a PRDictionary to a PdfDictionary. Also translate all of the
      * objects contained in it.
+     * @param in Dictionary
+     * @return Dictionary
+     * @throws IOException on error
+     * @throws BadPdfFormatException on error
      */
     private PdfDictionary copyDictionary(final PdfDictionary in)
     throws IOException, BadPdfFormatException {
@@ -243,6 +252,10 @@ class PdfCopy extends PdfWriter {
 
     /**
      * Translate a PRStream to a PdfStream. The data part copies itself.
+     * @param in in stream
+     * @return PDF stream
+     * @throws IOException on error
+     * @throws BadPdfFormatException on error
      */
     private PdfStream copyStream(final PRStream in) throws IOException, BadPdfFormatException {
         final PRStream out = new PRStream(in, null);
@@ -260,6 +273,10 @@ class PdfCopy extends PdfWriter {
     /**
      * Translate a PRArray to a PdfArray. Also translate all of the objects contained
      * in it
+     * @param in In
+     * @return Pdf Array
+     * @throws IOException on error.
+     * @throws BadPdfFormatException on error.
      */
     private PdfArray copyArray(final PdfArray in) throws IOException, BadPdfFormatException {
         final PdfArray out = new PdfArray();
@@ -273,6 +290,10 @@ class PdfCopy extends PdfWriter {
 
     /**
      * Translate a PR-object to a Pdf-object
+     * @param in Pdf object
+     * @return Pdf oject
+     * @throws IOException on error
+     * @throws BadPdfFormatException on error
      */
     private PdfObject copyObject(final PdfObject in) throws IOException,BadPdfFormatException {
         if (in == null) {
@@ -311,6 +332,8 @@ class PdfCopy extends PdfWriter {
 
     /**
      * convenience method. Given an imported page, set our "globals"
+     * @param iPage Page
+     * @return Page number
      */
     private int setFromIPage(final PdfImportedPage iPage) {
         final int pageNum = iPage.getPageNumber();
@@ -321,7 +344,8 @@ class PdfCopy extends PdfWriter {
     }
 
     /**
-     * convenience method. Given a reader, set our "globals"
+     * Convenience method. Given a reader, set our "globals"
+     * @param reader Reader
      */
     private void setFromReader(final PdfReader reader) {
         this.reader = reader;
@@ -633,7 +657,11 @@ class PdfCopy extends PdfWriter {
     private static class StampContent extends PdfContentByte {
         private final PageResources pageResources;
 
-        /** Creates a new instance of StampContent */
+        /**
+         * Creates a new instance of StampContent
+         * @param writer Writer
+         * @param pageResources Pages
+         */
         private StampContent(final PdfWriter writer, final PageResources pageResources) {
             super(writer);
             this.pageResources = pageResources;

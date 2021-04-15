@@ -871,6 +871,7 @@ public class Chunk implements Element {
 
 	/**
      * Returns the hyphenation (if present).
+     * @return Hyphenation event
      * @since	2.1.2
 	 */
     public HyphenationEvent getHyphenation() {

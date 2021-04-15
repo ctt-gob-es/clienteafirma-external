@@ -586,11 +586,10 @@ class ColumnText {
 
     /**
      * Simplified method for rectangular columns.
-     *
-     * @param llx
-     * @param lly
-     * @param urx
-     * @param ury
+     * @param llx the lower left x corner
+     * @param lly the lower left y corner
+     * @param urx the upper right x corner
+     * @param ury the upper right y corner
      */
     void setSimpleColumn(final float llx, final float lly, final float urx, final float ury) {
         this.leftX = Math.min(llx, urx);
@@ -1499,7 +1498,7 @@ class ColumnText {
      * Sets the canvas.
      * If before a set of four canvases was set, it is being unset.
      *
-     * @param canvas
+     * @param canvas Canvas
      */
     public void setCanvas(final PdfContentByte canvas) {
         this.canvas = canvas;
@@ -1512,7 +1511,7 @@ class ColumnText {
     /**
      * Sets the canvases.
      *
-     * @param canvases
+     * @param canvases Canvases
      */
     public void setCanvases(final PdfContentByte[] canvases) {
         this.canvases = canvases;

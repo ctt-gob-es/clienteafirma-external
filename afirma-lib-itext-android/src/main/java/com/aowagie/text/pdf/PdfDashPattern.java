@@ -84,8 +84,8 @@ class PdfDashPattern extends PdfArray {
 
 /**
  * Constructs a new <CODE>PdfDashPattern</CODE>.
+ * @param dash Dash
  */
-
     PdfDashPattern(final float dash) {
         super(new PdfNumber(dash));
         this.dash = dash;

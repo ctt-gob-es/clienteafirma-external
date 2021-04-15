@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * This interface is used to connect the XML pattern file parser to
  * the hyphenation tree.
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * @author Carlos Villegas (cav@uniscope.co.jp)
  */
 interface PatternConsumer {
 
@@ -41,6 +41,8 @@ interface PatternConsumer {
      * fails or the user wants to provide his own hyphenation.
      * A hyphenatedword is a vector of alternating String's and
      * {@link Hyphen Hyphen} instances
+     * @param word Word
+     * @param hyphenatedword Hyphenated word
      */
     void addException(String word, ArrayList hyphenatedword);
 

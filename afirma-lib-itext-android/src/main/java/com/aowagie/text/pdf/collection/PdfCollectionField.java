@@ -59,6 +59,7 @@ class PdfCollectionField extends PdfDictionary {
 
 	/**
 	 * Checks if the type of the field is suitable for a Collection Item.
+	 * @return It is collection.
 	 */
 	public boolean isCollectionItem() {
 		switch(this.fieldType) {
@@ -74,6 +75,7 @@ class PdfCollectionField extends PdfDictionary {
 	/**
 	 * Returns a PdfObject that can be used as the value of a Collection Item.
 	 * @param v	value	the value that has to be changed into a PdfObject (PdfString, PdfDate or PdfNumber)
+	 * @return Pdf Object
 	 */
 	public PdfObject getValue(final String v) {
 		switch(this.fieldType) {

@@ -124,8 +124,8 @@ class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementArray {
 
 	/**
 	 * Adds content to this object.
-	 * @param element
-	 * @throws BadElementException
+	 * @param element Element
+	 * @throws BadElementException on error
 	 */
 	private void addElement(final Element element) throws BadElementException {
 		if (this.cellgroup) {

@@ -631,7 +631,7 @@ public class Document implements DocListener {
 
 	/**
  * Adds the current date and time to a Document.
-	 * @param globalDate
+ * @param globalDate Date
  *
  * @return	<CODE>true</CODE> if successful, <CODE>false</CODE> otherwise
  */

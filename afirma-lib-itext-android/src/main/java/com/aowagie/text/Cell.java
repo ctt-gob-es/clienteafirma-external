@@ -724,7 +724,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	/**
 	 * Creates a PdfPCell based on this Cell object.
 	 * @return a PdfPCell
-	 * @throws BadElementException
+	 * @throws BadElementException on error
 	 */
 	PdfPCell createPdfPCell() throws BadElementException {
 		if (this.rowspan > 1) {

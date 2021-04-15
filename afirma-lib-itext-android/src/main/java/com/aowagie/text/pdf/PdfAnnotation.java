@@ -49,13 +49,13 @@
 
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Color;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.aowagie.text.Rectangle;
+
+import harmony.java.awt.Color;
 /**
  * A <CODE>PdfAnnotation</CODE> is a note that is associated with a page.
  *
@@ -120,17 +120,16 @@ public class PdfAnnotation extends PdfDictionary {
 		}
     }
 
-/**
- * Constructs a new <CODE>PdfAnnotation</CODE> of subtype text.
- * @param writer
- * @param llx
- * @param lly
- * @param urx
- * @param ury
- * @param title
- * @param content
- */
-
+    /**
+     * Constructs a new <CODE>PdfAnnotation</CODE> of subtype text.
+     * @param writer Writer
+     * @param llx the lower left x corner of the area
+     * @param lly the lower left y corner of the area
+     * @param urx the upper right x corner of the area
+     * @param ury the upper right y corner of the area
+     * @param title Title
+     * @param content Content
+     */
     public PdfAnnotation(final PdfWriter writer, final float llx, final float lly, final float urx, final float ury, final PdfString title, final PdfString content) {
         this.writer = writer;
         put(PdfName.SUBTYPE, PdfName.TEXT);
@@ -139,16 +138,15 @@ public class PdfAnnotation extends PdfDictionary {
         put(PdfName.CONTENTS, content);
     }
 
-/**
- * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
- * @param writer
- * @param llx
- * @param lly
- * @param urx
- * @param ury
- * @param action
- */
-
+    /**
+     * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
+     * @param writer Writer
+     * @param llx the lower left x corner of the area
+     * @param lly the lower left y corner of the area
+     * @param urx the upper right x corner of the area
+     * @param ury the upper right y corner of the area
+     * @param action Action
+     */
     public PdfAnnotation(final PdfWriter writer, final float llx, final float lly, final float urx, final float ury, final PdfAction action) {
         this.writer = writer;
         put(PdfName.SUBTYPE, PdfName.LINK);
@@ -160,14 +158,14 @@ public class PdfAnnotation extends PdfDictionary {
 
     /**
      * Creates a screen PdfAnnotation
-     * @param writer
-     * @param rect
-     * @param clipTitle
-     * @param fs
-     * @param mimeType
-     * @param playOnDisplay
+     * @param writer Writer
+     * @param rect Rectangle
+     * @param clipTitle Clip title
+     * @param fs Specification
+     * @param mimeType Mimetype
+     * @param playOnDisplay Play on displat
      * @return a screen PdfAnnotation
-     * @throws IOException
+     * @throws IOException on error
      */
     public static PdfAnnotation createScreen(final PdfWriter writer, final Rectangle rect, final String clipTitle, final PdfFileSpecification fs,
                                              final String mimeType, final boolean playOnDisplay) throws IOException {
@@ -205,9 +203,9 @@ public class PdfAnnotation extends PdfDictionary {
 
     /**
      * Creates a link.
-     * @param writer
-     * @param rect
-     * @param highlight
+     * @param writer Writer
+     * @param rect Rectangle
+     * @param highlight High light
      * @return A PdfAnnotation
      */
     private static PdfAnnotation createLink(final PdfWriter writer, final Rectangle rect, final PdfName highlight) {
@@ -222,12 +220,12 @@ public class PdfAnnotation extends PdfDictionary {
 
 
     /** Creates a file attachment annotation
-     * @param writer
-     * @param rect
-     * @param contents
-     * @param fs
+     * @param writer Writer
+     * @param rect Rectangle
+     * @param contents Contents
+     * @param fs Specification
      * @return the annotation
-     * @throws IOException
+     * @throws IOException on error
      */
     private static PdfAnnotation createFileAttachment(final PdfWriter writer, final Rectangle rect, final String contents, final PdfFileSpecification fs) throws IOException {
         final PdfAnnotation annot = new PdfAnnotation(writer, rect);
@@ -527,6 +525,7 @@ public class PdfAnnotation extends PdfDictionary {
      * Sets the name of the annotation.
      * With this name the annotation can be identified among
      * all the annotations on a page (it has to be unique).
+     * @param name Name
      */
     public void setName(final String name) {
     	put(PdfName.NM, new PdfString(name));

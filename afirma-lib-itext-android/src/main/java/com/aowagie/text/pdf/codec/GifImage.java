@@ -192,6 +192,7 @@ public class GifImage {
 
     /**
      * Reads GIF file header information.
+     * @throws IOException on error
      */
     private void readHeader() throws IOException {
         String id = "";
@@ -210,6 +211,7 @@ public class GifImage {
 
     /**
      * Reads Logical Screen Descriptor
+     * @throws IOException on error
      */
     private void readLSD() throws IOException {
 
@@ -226,6 +228,8 @@ public class GifImage {
 
     /**
      * Reads next 16-bit value, LSB first
+     * @return Short
+     * @throws IOException on error
      */
     private int readShort() throws IOException {
         // read 16-bit value, LSB first
@@ -236,6 +240,7 @@ public class GifImage {
      * Reads next variable length block from input.
      *
      * @return number of bytes stored in "buffer"
+     * @throws IOException on error
      */
     private int readBlock() throws IOException {
         this.blockSize = this.in.read();
@@ -314,6 +319,7 @@ public class GifImage {
 
     /**
      * Reads next frame image
+     * @throws IOException on error
      */
     private void readImage() throws IOException {
         this.ix = readShort();    // (sub)image position & size
@@ -552,6 +558,7 @@ public class GifImage {
 
     /**
      * Reads Graphics Control Extension values
+     * @throws IOException on error
      */
     private void readGraphicControlExt() throws IOException {
         this.in.read();    // block size
@@ -569,6 +576,7 @@ public class GifImage {
     /**
      * Skips variable length blocks up to and including
      * next zero length block.
+     * @throws IOException on error
      */
     private void skip() throws IOException {
         do {

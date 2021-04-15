@@ -134,6 +134,8 @@ class TernaryTree implements Cloneable, Serializable {
      * another key with same prefix
      * is inserted. This saves a lot of space,
      * specially for long keys.
+     * @param key Key
+     * @param val Val
      */
     void insert(final String key, final char val) {
         // make sure we have enough room in the arrays
@@ -158,6 +160,11 @@ class TernaryTree implements Cloneable, Serializable {
 
     /**
      * The actual insertion function, recursive version.
+     * @param p P
+     * @param key Key
+     * @param start Start
+     * @param val Val
+     * @return Result
      */
     private char insert(char p, final char[] key, final int start, final char val) {
         final int len = strlen(key, start);
@@ -231,6 +238,11 @@ class TernaryTree implements Cloneable, Serializable {
 
     /**
      * Compares 2 null terminated char arrays
+     * @param a A
+     * @param startA Start A
+     * @param b B
+     * @param startB Start B
+     * @return Result
      */
     private static int strcmp(final char[] a, int startA, final char[] b, int startB) {
         for (; a[startA] == b[startB]; startA++, startB++) {
@@ -343,6 +355,10 @@ class TernaryTree implements Cloneable, Serializable {
      * lower and upper halves, and so on in order to get a balanced
      * tree. The array of keys is assumed to be sorted in ascending
      * order.
+     * @param k K
+     * @param v V
+     * @param offset Offset
+     * @param n N
      */
     private void insertBalanced(final String[] k, final char[] v, final int offset, final int n) {
         int m;
@@ -513,6 +529,7 @@ class TernaryTree implements Cloneable, Serializable {
 
         /**
          * traverse upwards
+         * @return Up
          */
         private int up() {
             Item i = new Item();
@@ -567,6 +584,7 @@ class TernaryTree implements Cloneable, Serializable {
 
         /**
          * traverse the tree to find next key
+         * @return Result
          */
         private int run() {
             if (this.cur == -1) {

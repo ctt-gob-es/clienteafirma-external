@@ -151,9 +151,9 @@ class JBIG2SegmentReader {
 		 * return as a single byte array the header-data for each segment in segment number
 		 * order, EMBEDDED organization, but i am putting the needed segments in SEQUENTIAL organization.
 		 * if for_embedding, skip the segment types that are known to be not for acrobat.
-		 * @param for_embedding
+		 * @param for_embedding For embedding
 		 * @return	a byte array
-		 * @throws IOException
+		 * @throws IOException on error
 		 */
 		public byte[] getData(final boolean for_embedding) throws IOException {
 			final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -419,7 +419,7 @@ class JBIG2SegmentReader {
 	@Override
 	public String toString() {
 		if ( this.read ) {
-			return "Jbig2SegmentReader: number of pages: " + this.numberOfPages(); //$NON-NLS-1$
+			return "Jbig2SegmentReader: number of pages: " + numberOfPages(); //$NON-NLS-1$
 		} else {
 			return "Jbig2SegmentReader in indeterminate state."; //$NON-NLS-1$
 		}

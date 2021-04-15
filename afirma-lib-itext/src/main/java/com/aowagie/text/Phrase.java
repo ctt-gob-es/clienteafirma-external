@@ -461,6 +461,7 @@ public class Phrase extends ArrayList implements TextElementArray {
 	/**
      * Returns the content as a String object.
      * This method differs from toString because toString will return an ArrayList with the toString value of the Chunks in this Phrase.
+     * @return Content
      */
     public String getContent() {
     	final StringBuffer buf = new StringBuffer();
@@ -522,9 +523,9 @@ public class Phrase extends ArrayList implements TextElementArray {
 
     /**
      * Gets a special kind of Phrase that changes some characters into corresponding symbols.
-     * @param leading
-     * @param string
-     * @param font
+     * @param leading Leading
+     * @param string String
+     * @param font Font
      * @return a newly constructed Phrase
      */
     private static final Phrase getInstance(final int leading, String string, final Font font) {

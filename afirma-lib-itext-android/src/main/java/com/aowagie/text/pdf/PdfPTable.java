@@ -255,7 +255,7 @@ public class PdfPTable implements LargeElement{
     /**
      * Makes a shallow copy of a table (format without content).
      *
-     * @param table
+     * @param table Table
      * @return a shallow copy of the table
      */
     static PdfPTable shallowCopy(final PdfPTable table) {
@@ -267,7 +267,7 @@ public class PdfPTable implements LargeElement{
     /**
      * Copies the format of the sourceTable without copying the content.
      *
-     * @param sourceTable
+     * @param sourceTable Table
 	 * @since	2.1.6 private is now protected
 	 */
     private void copyFormat(final PdfPTable sourceTable) {
@@ -750,7 +750,7 @@ public class PdfPTable implements LargeElement{
 
     /**
      * Gets and initializes the 4 layers where the table is written to. The text or graphics are added to
-     * one of the 4 <CODE>PdfContentByte</CODE> returned with the following order:<p>
+     * one of the 4 <CODE>PdfContentByte</CODE> returned with the following order:
      * <ul>
      * <li><CODE>PdfPtable.BASECANVAS</CODE> - the original <CODE>PdfContentByte</CODE>. Anything placed here
      * will be under the table.
@@ -758,7 +758,7 @@ public class PdfPTable implements LargeElement{
      * <li><CODE>PdfPtable.LINECANVAS</CODE> - the layer where the lines go to.
      * <li><CODE>PdfPtable.TEXTCANVAS</CODE> - the layer where the text go to. Anything placed here
      * will be over the table.
-     * </ul><p>
+     * </ul>
      * The layers are placed in sequence on top of each other.
      *
      * @param canvas the <CODE>PdfContentByte</CODE> where the rows will
@@ -870,7 +870,7 @@ public class PdfPTable implements LargeElement{
 
     /**
      * Gets the maximum height of a cell in a particular row (will only be different
-     * from getRowHeight is one of the cells in the row has a rowspan > 1).
+     * from getRowHeight is one of the cells in the row has a rowspan &lt; 1).
      *
      * @param	rowIndex	the row index
      * @param	cellIndex	the cell index
@@ -1092,7 +1092,7 @@ public class PdfPTable implements LargeElement{
      * Gets a row with a given index
      * (added by Jin-Hsia Yang).
      *
-     * @param idx
+     * @param idx Index
      * @return the row at position idx
      */
     PdfPRow getRow(final int idx) {
@@ -1161,6 +1161,7 @@ public class PdfPTable implements LargeElement{
      * Calculates the extra height needed in a row because of rowspans.
      * @param	start	the index of the start row (the one to adjust)
      * @param	end		the index of the end row on the page
+     * @return Row
      * @since	2.1.6
      */
     private PdfPRow adjustCellsInRow(final int start, final int end) {

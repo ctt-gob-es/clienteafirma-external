@@ -228,9 +228,9 @@ public abstract class Image extends Rectangle {
 	 * @param url
 	 *            an URL
 	 * @return an Image
-	 * @throws BadElementException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @throws BadElementException on error
+	 * @throws MalformedURLException on error
+	 * @throws IOException on error
 	 */
 	private static Image getInstance(final URL url) throws BadElementException,
 			MalformedURLException, IOException {
@@ -330,9 +330,9 @@ public abstract class Image extends Rectangle {
 	 *            a filename
 	 * @return an object of type <CODE>Gif</CODE>,<CODE>Jpeg</CODE> or
 	 *         <CODE>Png</CODE>
-	 * @throws BadElementException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @throws BadElementException on error
+	 * @throws MalformedURLException on error
+	 * @throws IOException on error
 	 */
 	public static Image getInstance(final String filename)
 			throws BadElementException, MalformedURLException, IOException {
@@ -345,9 +345,9 @@ public abstract class Image extends Rectangle {
 	 * @param imgb
 	 *            raw image date
 	 * @return an Image object
-	 * @throws BadElementException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @throws BadElementException on error
+	 * @throws MalformedURLException on error
+	 * @throws IOException on error
 	 */
 	public static Image getInstance(final byte imgb[]) throws BadElementException,
 			MalformedURLException, IOException {
@@ -564,8 +564,8 @@ public abstract class Image extends Rectangle {
 		}
 		if (components == 1 && bpc == 1) {
 			final byte g4[] = CCITTG4Encoder.compress(data, width, height);
-			return Image.getInstance(width, height, false, Image.CCITTG4,
-					Image.CCITT_BLACKIS1, g4, transparency);
+			return Image.getInstance(width, height, false, Element.CCITTG4,
+					Element.CCITT_BLACKIS1, g4, transparency);
 		}
 		final Image img = new ImgRaw(width, height, components, bpc, data);
 		img.transparency = transparency;
@@ -580,7 +580,7 @@ public abstract class Image extends Rectangle {
 	 * @param template
 	 *            a PdfTemplate that has to be wrapped in an Image object
 	 * @return an Image object
-	 * @throws BadElementException
+	 * @throws BadElementException on error
 	 */
 	public static Image getInstance(final PdfTemplate template)
 			throws BadElementException {
@@ -1057,8 +1057,8 @@ public abstract class Image extends Rectangle {
 	/**
 	 * Sets the absolute position of the <CODE>Image</CODE>.
 	 *
-	 * @param absoluteX
-	 * @param absoluteY
+	 * @param absoluteX X
+	 * @param absoluteY Y
 	 */
 
 	public void setAbsolutePosition(final float absoluteX, final float absoluteY) {
@@ -1272,7 +1272,10 @@ public abstract class Image extends Rectangle {
 	/** a static that is used for attributing a unique id to each image. */
 	private static long serialId = 0;
 
-	/** Creates a new serial id. */
+	/**
+	 * Creates a new serial id.
+	 * @return Serial Id
+	 */
 	static private synchronized Long getSerialId() {
 		++serialId;
 		return Long.valueOf(serialId);
@@ -1381,7 +1384,7 @@ public abstract class Image extends Rectangle {
 	/**
 	 * Sets the left indentation.
 	 *
-	 * @param f
+	 * @param f Identation
 	 */
 	public void setIndentationLeft(final float f) {
 		this.indentationLeft = f;
@@ -1399,7 +1402,7 @@ public abstract class Image extends Rectangle {
 	/**
 	 * Sets the right indentation.
 	 *
-	 * @param f
+	 * @param f Identation
 	 */
 	public void setIndentationRight(final float f) {
 		this.indentationRight = f;
@@ -1776,6 +1779,8 @@ public abstract class Image extends Rectangle {
 
 	/**
 	 * Gets a PDF Name from an array or returns the object that was passed.
+	 * @param obj Pdf array
+	 * @return Pdf object
 	 */
     private PdfObject simplifyColorspace(final PdfArray obj) {
         if (obj == null) {

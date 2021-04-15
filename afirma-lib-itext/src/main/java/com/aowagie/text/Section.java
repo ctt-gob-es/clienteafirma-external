@@ -385,6 +385,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 
     /**
      * Adds a marked section. For use in class MarkedSection only!
+     * @return Marked Section
      */
     public MarkedSection addMarkedSection() {
     	final MarkedSection section = new MarkedSection(new Section(null, this.numberDepth + 1));
@@ -523,6 +524,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * Sets the style for numbering sections.
      * Possible values are NUMBERSTYLE_DOTTED: 1.2.3. (the default)
      * or NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT: 1.2.3
+     * @param numberStyle Number style
 	 * @since	iText 2.0.8
      */
 	public void setNumberStyle(final int numberStyle) {
@@ -647,6 +649,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 
     /**
      * Changes the Chapter number.
+     * @param number Number
      */
     public void setChapterNumber(final int number) {
     	this.numbers.set(this.numbers.size() - 1, Integer.valueOf(number));

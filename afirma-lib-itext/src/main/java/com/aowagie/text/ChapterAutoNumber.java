@@ -103,6 +103,7 @@ public class ChapterAutoNumber extends Chapter {
     /**
      * Changes the Chapter number.
      * @param	number	the new chapter number
+     * @return Number
      * @since 2.1.4
      */
     int setAutomaticNumber(int number) {

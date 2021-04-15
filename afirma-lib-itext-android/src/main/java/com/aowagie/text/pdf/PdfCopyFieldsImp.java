@@ -167,6 +167,7 @@ class PdfCopyFieldsImp extends PdfWriter {
     }
 
     /**
+     * @param reader Reader
      * @since	2.1.5; before 2.1.5 the method was private
      */
     protected void updateCalculationOrder(final PdfReader reader) {
@@ -391,6 +392,7 @@ class PdfCopyFieldsImp extends PdfWriter {
 
     /**
      * Creates the new PDF by merging the fields and forms.
+     * @throws IOException on error
      */
     private void closeIt() throws IOException {
         for (int k = 0; k < this.readers.size(); ++k) {

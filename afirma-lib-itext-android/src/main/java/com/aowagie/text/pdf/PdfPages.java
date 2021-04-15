@@ -78,6 +78,7 @@ class PdfPages {
 
 /**
  * Constructs a <CODE>PdfPages</CODE>-object.
+ * @param writer Writer
  */
 
     PdfPages(final PdfWriter writer) {

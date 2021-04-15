@@ -167,6 +167,7 @@ public class Annotation implements Element {
 
 	/**
 	 * Copy constructor.
+	 * @param an Annotation
 	 */
     public Annotation(final Annotation an) {
         this.annotationtype = an.annotationtype;

@@ -64,10 +64,12 @@ class PdfBorderDictionary extends PdfDictionary {
     static final int STYLE_UNDERLINE = 4;
     // constructors
 
-/**
- * Constructs a <CODE>PdfBorderDictionary</CODE>.
- */
-
+    /**
+     * Constructs a <CODE>PdfBorderDictionary</CODE>.
+     * @param borderWidth Border width
+     * @param borderStyle Border style
+     * @param dashes Pattern
+     */
     public PdfBorderDictionary(final float borderWidth, final int borderStyle, final PdfDashPattern dashes) {
         put(PdfName.W, new PdfNumber(borderWidth));
         switch (borderStyle) {
@@ -94,6 +96,10 @@ class PdfBorderDictionary extends PdfDictionary {
         }
     }
 
+    /**
+     * @param borderWidth Border width
+     * @param borderStyle Border style
+     */
     public PdfBorderDictionary(final float borderWidth, final int borderStyle) {
         this(borderWidth, borderStyle, null);
     }

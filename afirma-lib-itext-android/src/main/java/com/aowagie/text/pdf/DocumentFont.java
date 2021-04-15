@@ -108,7 +108,9 @@ public class DocumentFont extends BaseFont {
         0,198,0,170,0,0,0,0,321,216,338,186,0,0,0,0,
         0,230,0,0,0,305,0,0,322,248,339,223,0,0,0,0};
 
-    /** Creates a new instance of DocumentFont */
+    /** Creates a new instance of DocumentFont
+     * @param refFont Font reference
+     */
     DocumentFont(final PRIndirectReference refFont) {
         this.encoding = "";
         this.fontSpecific = false;
@@ -712,7 +714,7 @@ public class DocumentFont extends BaseFont {
     }
 
     /**
-     * Exposes the unicode - > CID map that is constructed from the font's encoding
+     * Exposes the unicode CID map that is constructed from the font's encoding
      * @return the unicode to CID map
      * @since 2.1.7
      */

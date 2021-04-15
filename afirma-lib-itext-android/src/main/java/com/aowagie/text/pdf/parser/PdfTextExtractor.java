@@ -77,7 +77,7 @@ class PdfTextExtractor {
      * Gets the content stream of a page.
      * @param pageNum	the page number of page you want get the content stream from
      * @return	a byte array with the content stream of a page
-     * @throws IOException
+     * @throws IOException on error
      */
     private byte[] getContentBytesForPage(final int pageNum) throws IOException {
         final RandomAccessFileOrArray f = this.reader.getSafeFile();
@@ -90,7 +90,7 @@ class PdfTextExtractor {
      * Gets the text from a page.
      * @param page	the page number of the page
      * @return	a String with the content as plain text (without PDF syntax)
-     * @throws IOException
+     * @throws IOException on error
      */
     public String getTextFromPage(final int page) throws IOException {
         final PdfDictionary pageDic = this.reader.getPageN(page);

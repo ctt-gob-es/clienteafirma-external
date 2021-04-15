@@ -906,7 +906,7 @@ public abstract class BaseFont {
     }
 
     /**
-     * Converts a <CODE>String</CODE> to a </CODE>byte</CODE> array according
+     * Converts a <CODE>String</CODE> to a <CODE>byte</CODE> array according
      * to the font's encoding.
      * @param text the <CODE>String</CODE> to be converted
      * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
@@ -937,7 +937,7 @@ public abstract class BaseFont {
     }
 
     /**
-     * Converts a <CODE>char</CODE> to a </CODE>byte</CODE> array according
+     * Converts a <CODE>char</CODE> to a <CODE>byte</CODE> array according
      * to the font's encoding.
      * @param char1 the <CODE>char</CODE> to be converted
      * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
@@ -970,6 +970,8 @@ public abstract class BaseFont {
      * This method will return null for some types of fonts (CJKFont, Type3Font)
      * or if there is no font program available (standard Type 1 fonts).
      * @return	a PdfStream with the font program
+     * @throws IOException on error
+     * @throws DocumentException on error
      * @since	2.1.3
      */
     abstract PdfStream getFullFontStream() throws IOException, DocumentException;

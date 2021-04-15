@@ -92,7 +92,7 @@ class PdfPRow {
 	 * Constructs a new PdfPRow with the cells in the array that was passed
 	 * as a parameter.
 	 *
-	 * @param cells
+	 * @param cells Cells
 	 */
 	public PdfPRow(final PdfPCell cells[]) {
 		this.cells = cells;
@@ -103,7 +103,7 @@ class PdfPRow {
 	/**
 	 * Makes a copy of an existing row.
 	 *
-	 * @param row
+	 * @param row Row
 	 */
 	public PdfPRow(final PdfPRow row) {
 		this.maxHeight = row.maxHeight;
@@ -122,7 +122,7 @@ class PdfPRow {
 	/**
 	 * Sets the widths of the columns in the row.
 	 *
-	 * @param widths
+	 * @param widths Widths
 	 * @return true if everything went right
 	 */
 	public boolean setWidths(final float widths[]) {
@@ -205,8 +205,8 @@ class PdfPRow {
 	 * @param xPos The x-coordinate where the table starts on the canvas
 	 * @param yPos The y-coordinate where the table starts on the canvas
 	 * @param currentMaxHeight The height of the cell to be drawn.
-	 * @param cell
-	 * @param canvases
+	 * @param cell Cell
+	 * @param canvases Canvases
 	 * @since	2.1.6	extra parameter currentMaxHeight
 	 */
 	private void writeBorderAndBackground(final float xPos, final float yPos, final float currentMaxHeight, final PdfPCell cell, final PdfContentByte[] canvases) {
@@ -237,6 +237,13 @@ class PdfPRow {
 	}
 
 	/**
+	 * @param canvases Canvases
+     * @param a a
+     * @param b b
+     * @param c c
+     * @param d d
+     * @param e e
+     * @param f f
 	 * @since	2.1.6 private is now protected
 	 */
     private void saveAndRotateCanvases(final PdfContentByte[] canvases, final float a, final float b, final float c, final float d, final float e, final float f) {
@@ -254,6 +261,7 @@ class PdfPRow {
     }
 
 	/**
+	 * @param canvases Canvases
 	 * @since	2.1.6 private is now protected
 	 */
     private void restoreCanvases(final PdfContentByte[] canvases) {
@@ -269,6 +277,12 @@ class PdfPRow {
     }
 
 	/**
+	 * @param ct Column text
+	 * @param left left
+	 * @param bottom Bottom
+	 * @param right Right
+	 * @param top Top
+	 * @return Column
 	 * @since	3.0.0 protected is now public static
 	 */
     public static float setColumn(final ColumnText ct, final float left, final float bottom, float right, float top) {
@@ -292,6 +306,7 @@ class PdfPRow {
 	 * If -1, all the columns to the end are written.
 	 * @param	xPos The x-coordinate where the table starts on the canvas
 	 * @param	yPos The y-coordinate where the table starts on the canvas
+	 * @param canvases Canvases
 	 */
 	public void writeCells(int colStart, int colEnd, float xPos, final float yPos, final PdfContentByte[] canvases) {
 		if (!this.calculated) {
@@ -584,7 +599,8 @@ class PdfPRow {
 	 * Splits a row to newHeight.
 	 * The returned row is the remainder. It will return null if the newHeight
 	 * was so small that only an empty row would result.
-	 *
+	 * @param table Table
+	 * @param rowIndex Row index
 	 * @param new_height	the new height
 	 * @return the remainder row or null if the newHeight was so small that only
 	 * an empty row would result

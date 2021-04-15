@@ -34,8 +34,10 @@ public class Hyphenation {
     /**
      * rawWord as made of alternating strings and {@link Hyphen Hyphen}
      * instances
+     * @param word Word
+     * @param points Points
      */
-    Hyphenation(String word, int[] points) {
+    Hyphenation(final String word, final int[] points) {
         this.word = word;
         this.hyphenPoints = points;
         this.len = points.length;
@@ -49,16 +51,18 @@ public class Hyphenation {
     }
 
     /**
+     * @param index Index
      * @return the pre-break text, not including the hyphen character
      */
-    public String getPreHyphenText(int index) {
+    public String getPreHyphenText(final int index) {
         return this.word.substring(0, this.hyphenPoints[index]);
     }
 
     /**
+     * @param index Index
      * @return the post-break text
      */
-    public String getPostHyphenText(int index) {
+    public String getPostHyphenText(final int index) {
         return this.word.substring(this.hyphenPoints[index]);
     }
 

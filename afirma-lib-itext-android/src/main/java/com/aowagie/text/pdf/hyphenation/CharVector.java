@@ -84,6 +84,7 @@ class CharVector implements Cloneable, Serializable {
 
     /**
      * return number of items in array
+     * @return length
      */
     int length() {
         return this.n;

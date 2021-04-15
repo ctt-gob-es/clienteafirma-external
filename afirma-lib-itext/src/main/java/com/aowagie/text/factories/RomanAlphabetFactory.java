@@ -60,6 +60,8 @@ public class RomanAlphabetFactory {
 	 * Translates a positive integer (not equal to zero)
 	 * into a String using the letters 'a' to 'z';
 	 * 1 = a, 2 = b, ..., 26 = z, 27 = aa, 28 = ab,...
+	 * @param index Index
+	 * @return String
 	 */
 	private static final String getString(int index) {
     	if (index < 1) {
@@ -91,6 +93,8 @@ public class RomanAlphabetFactory {
 	 * Translates a positive integer (not equal to zero)
 	 * into a String using the letters 'a' to 'z';
 	 * 1 = a, 2 = b, ..., 26 = z, 27 = aa, 28 = ab,...
+	 * @param index Index
+	 * @return String
 	 */
 	private static final String getLowerCaseString(final int index) {
 		return getString(index);
@@ -100,6 +104,8 @@ public class RomanAlphabetFactory {
 	 * Translates a positive integer (not equal to zero)
 	 * into a String using the letters 'A' to 'Z';
 	 * 1 = A, 2 = B, ..., 26 = Z, 27 = AA, 28 = AB,...
+	 * @param index Index
+	 * @return String
 	 */
 	private static final String getUpperCaseString(final int index) {
 		return getString(index).toUpperCase();
@@ -110,6 +116,9 @@ public class RomanAlphabetFactory {
 	 * Translates a positive integer (not equal to zero)
 	 * into a String using the letters 'a' to 'z'
 	 * (a = 1, b = 2, ..., z = 26, aa = 27, ab = 28,...).
+	 * @param index Index
+	 * @param lowercase Lower case
+	 * @return String
 	 */
 	public static final String getString(final int index, final boolean lowercase) {
 		if (lowercase) {
@@ -117,15 +126,6 @@ public class RomanAlphabetFactory {
 		}
 		else {
 			return getUpperCaseString(index);
-		}
-	}
-
-	/**
-	 * Test this class using this main method.
-	 */
-	public static void main(final String[] args) {
-		for (int i = 1; i < 32000; i++) {
-			System.out.println(getString(i));
 		}
 	}
 }

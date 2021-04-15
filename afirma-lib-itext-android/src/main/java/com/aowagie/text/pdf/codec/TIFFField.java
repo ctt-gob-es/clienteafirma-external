@@ -125,34 +125,22 @@ class TIFFField extends Object implements Comparable, Serializable {
      * unsigned data type, long is used. The mapping between types is
      * as follows:
      *
-     * <table border=1>
-     * <tr>
-     * <th> TIFF type </th> <th> Java type </th>
-     * <tr>
-     * <td><tt>TIFF_BYTE</tt></td>      <td><tt>byte</tt></td>
-     * <tr>
-     * <td><tt>TIFF_ASCII</tt></td>     <td><tt>String</tt></td>
-     * <tr>
-     * <td><tt>TIFF_SHORT</tt></td>     <td><tt>char</tt></td>
-     * <tr>
-     * <td><tt>TIFF_LONG</tt></td>      <td><tt>long</tt></td>
-     * <tr>
-     * <td><tt>TIFF_RATIONAL</tt></td>  <td><tt>long[2]</tt></td>
-     * <tr>
-     * <td><tt>TIFF_SBYTE</tt></td>     <td><tt>byte</tt></td>
-     * <tr>
-     * <td><tt>TIFF_UNDEFINED</tt></td> <td><tt>byte</tt></td>
-     * <tr>
-     * <td><tt>TIFF_SSHORT</tt></td>    <td><tt>short</tt></td>
-     * <tr>
-     * <td><tt>TIFF_SLONG</tt></td>     <td><tt>int</tt></td>
-     * <tr>
-     * <td><tt>TIFF_SRATIONAL</tt></td> <td><tt>int[2]</tt></td>
-     * <tr>
-     * <td><tt>TIFF_FLOAT</tt></td>     <td><tt>float</tt></td>
-     * <tr>
-     * <td><tt>TIFF_DOUBLE</tt></td>    <td><tt>double</tt></td>
-     * </table>
+     * TIFF_BYTE: byte
+     * TIFF_ASCII: String
+     * TIFF_SHORT: char
+     * TIFF_LONG: long
+     * TIFF_RATIONAL: long[2]
+     * TIFF_SBYTE: byte
+     * TIFF_UNDEFINED: byte
+     * TIFF_SSHORT: short
+     * TIFF_SLONG: int
+     * TIFF_SRATIONAL: int[2]
+     * TIFF_FLOAT: float
+     * TIFF_DOUBLE: double
+     * @param tag Tag
+     * @param type Type
+     * @param count Count
+     * @param data Data
      */
     TIFFField(final int tag, final int type, final int count, final Object data) {
         this.tag = tag;
@@ -163,6 +151,7 @@ class TIFFField extends Object implements Comparable, Serializable {
 
     /**
      * Returns the tag number, between 0 and 65535.
+     * @return Tag
      */
     public int getTag() {
         return this.tag;
@@ -173,7 +162,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      * For a TIFF6.0 file, the value will equal one of the
      * TIFF_ constants defined in this class.  For future
      * revisions of TIFF, higher values are possible.
-     *
+     * @return Type
      */
     public int getType() {
         return this.type;
@@ -181,6 +170,7 @@ class TIFFField extends Object implements Comparable, Serializable {
 
     /**
      * Returns the number of elements in the IFD.
+     * @return Count
      */
     public int getCount() {
         return this.count;
@@ -197,6 +187,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_BYTE, TIFF_SBYTE, or TIFF_UNDEFINED.
+     * @return Bytes
      */
     public byte[] getAsBytes() {
         return (byte[])this.data;
@@ -208,6 +199,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_SHORT.
+     * @return Chars
      */
     public char[] getAsChars() {
         return (char[])this.data;
@@ -219,6 +211,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_SSHORT.
+     * @return Shorts
      */
     public short[] getAsShorts() {
         return (short[])this.data;
@@ -230,6 +223,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_SLONG.
+     * @return Ints
      */
     public int[] getAsInts() {
         return (int[])this.data;
@@ -241,6 +235,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_LONG.
+     * @return Longs
      */
     public long[] getAsLongs() {
         return (long[])this.data;
@@ -251,6 +246,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_FLOAT.
+     * @return Floats
      */
     public float[] getAsFloats() {
         return (float[])this.data;
@@ -261,6 +257,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_DOUBLE.
+     * @return Doubles
      */
     public double[] getAsDoubles() {
         return (double[])this.data;
@@ -271,6 +268,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_SRATIONAL.
+     * @return Rationals
      */
     public int[][] getAsSRationals() {
         return (int[][])this.data;
@@ -281,6 +279,7 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_RATTIONAL.
+     * @return Rationals
      */
     public long[][] getAsRationals() {
         return (long[][])this.data;
@@ -298,6 +297,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      * <p> A ClassCastException will be thrown if the field is not of
      * type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED, TIFF_SHORT,
      * TIFF_SSHORT, or TIFF_SLONG.
+     * @param index Index
+     * @return Int
      */
     int getAsInt(final int index) {
         switch (this.type) {
@@ -328,6 +329,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      * <p> A ClassCastException will be thrown if the field is not of
      * type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED, TIFF_SHORT,
      * TIFF_SSHORT, TIFF_SLONG, or TIFF_LONG.
+     * @param index Index
+     * @return Long
      */
     long getAsLong(final int index) {
         switch (this.type) {
@@ -358,6 +361,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is
      * of type TIFF_UNDEFINED or TIFF_ASCII.
+     * @param index Index
+     * @return Float
      */
     float getAsFloat(final int index) {
         switch (this.type) {
@@ -396,6 +401,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is of
      * type TIFF_UNDEFINED or TIFF_ASCII.
+     * @param index Index
+     * @return Double
      */
     double getAsDouble(final int index) {
         switch (this.type) {
@@ -434,6 +441,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_SRATIONAL.
+     * @param index Index
+     * @return Rational
      */
     private int[] getAsSRational(final int index) {
         return ((int[][])this.data)[index];
@@ -445,6 +454,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      *
      * <p> A ClassCastException will be thrown if the field is not
      * of type TIFF_RATIONAL.
+     * @param index Index
+     * @return Rational
      */
     long[] getAsRational(final int index) {
         if (this.type == TIFF_LONG) {
@@ -460,6 +471,8 @@ class TIFFField extends Object implements Comparable, Serializable {
      * <p><b>Note: this class has a natural ordering that is inconsistent
      * with <code>equals()</code>.</b>
      *
+     * @param o Object
+     * @return int
      * @throws IllegalArgumentException if the parameter is <code>null</code>.
      * @throws ClassCastException if the parameter is not a
      *         <code>TIFFField</code>.

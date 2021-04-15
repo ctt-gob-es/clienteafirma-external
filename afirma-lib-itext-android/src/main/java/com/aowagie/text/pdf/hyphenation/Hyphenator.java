@@ -43,10 +43,10 @@ public class Hyphenator {
     private static String hyphenDir = "";
 
     /**
-     * @param lang
-     * @param country
-     * @param leftMin
-     * @param rightMin
+     * @param lang Lang
+     * @param country Country
+     * @param leftMin LeftMin
+     * @param rightMin RightMin
      */
     public Hyphenator(final String lang, final String country, final int leftMin,
                       final int rightMin) {
@@ -56,8 +56,8 @@ public class Hyphenator {
     }
 
     /**
-     * @param lang
-     * @param country
+     * @param lang lang
+     * @param country Country
      * @return the hyphenation tree
      */
     private static HyphenationTree getHyphenationTree(final String lang,
@@ -87,7 +87,7 @@ public class Hyphenator {
     }
 
     /**
-     * @param key
+     * @param key key
      * @return a hyphenation tree
      */
     private static HyphenationTree getResourceHyphenationTree(final String key) {
@@ -109,7 +109,7 @@ public class Hyphenator {
     }
 
     /**
-     * @param key
+     * @param key Key
      * @return a hyphenation tree
      */
     private static HyphenationTree getFileHyphenationTree(final String key) {
@@ -145,14 +145,14 @@ public class Hyphenator {
 
 
     /**
-     * @param min
+     * @param min Min
      */
     public void setMinRemainCharCount(final int min) {
         this.remainCharCount = min;
     }
 
     /**
-     * @param min
+     * @param min Min
      */
     public void setMinPushCharCount(final int min) {
         this.pushCharCount = min;
@@ -163,7 +163,7 @@ public class Hyphenator {
 
 
     /**
-     * @param word
+     * @param word Word
      * @return a hyphenation object
      */
     public Hyphenation hyphenate(final String word) {
@@ -172,9 +172,4 @@ public class Hyphenator {
         }
         return this.hyphenTree.hyphenate(word, this.remainCharCount, this.pushCharCount);
     }
-
-
-
-
-
 }

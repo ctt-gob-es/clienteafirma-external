@@ -197,6 +197,7 @@ class PRAcroForm extends PdfDictionary {
     }
     /**
      * stack a level of dictionary. Merge in a dictionary from this level
+     * @param dict Dictionary
      */
     private void pushAttrib(final PdfDictionary dict) {
         PdfDictionary dic = null;

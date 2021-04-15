@@ -96,6 +96,7 @@ class PdfPage extends PdfDictionary {
  * Constructs a <CODE>PdfPage</CODE>.
  *
  * @param		mediaBox		a value for the <B>MediaBox</B> key
+ * @param boxSize Nox size
  * @param		resources		an indirect reference to a <CODE>PdfResources</CODE>-object
  * @param		rotate			a value for the <B>Rotate</B> key
  */

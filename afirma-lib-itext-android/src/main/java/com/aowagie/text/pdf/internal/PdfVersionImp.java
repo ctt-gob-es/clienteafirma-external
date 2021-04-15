@@ -123,6 +123,7 @@ public class PdfVersionImp implements PdfVersion {
 
 	/**
 	 * Sets the append mode.
+	 * @param appendmode Mode
 	 */
 	public void setAppendmode(final boolean appendmode) {
 		this.appendmode = appendmode;
@@ -130,7 +131,8 @@ public class PdfVersionImp implements PdfVersion {
 
 	/**
 	 * Writes the header to the OutputStreamCounter.
-	 * @throws IOException
+	 * @param os Os
+	 * @throws IOException on error
 	 */
 	public void writeHeader(final OutputStreamCounter os) throws IOException {
 		if (this.appendmode) {
@@ -147,6 +149,7 @@ public class PdfVersionImp implements PdfVersion {
 	/**
 	 * Returns the PDF version as a name.
 	 * @param version	the version character.
+	 * @return Pdf name
 	 */
 	public static PdfName getVersionAsName(final char version) {
 		switch(version) {
@@ -170,12 +173,15 @@ public class PdfVersionImp implements PdfVersion {
 	/**
 	 * Returns the version as a byte[].
 	 * @param version the version character
+	 * @return Version
 	 */
 	private byte[] getVersionAsByteArray(final char version) {
 		return DocWriter.getISOBytes(getVersionAsName(version).toString().substring(1));
 	}
 
-	/** Adds the version to the Catalog dictionary. */
+	/** Adds the version to the Catalog dictionary.
+	 * @param catalog Catalogo
+	 */
 	public void addToCatalog(final PdfDictionary catalog) {
 		if(this.catalog_version != null) {
 			catalog.put(PdfName.VERSION, this.catalog_version);
@@ -186,6 +192,7 @@ public class PdfVersionImp implements PdfVersion {
 	}
 
 	/**
+	 * @param de Extension
 	 * @see com.aowagie.text.pdf.interfaces.PdfVersion#addDeveloperExtension(com.aowagie.text.pdf.PdfDeveloperExtension)
 	 * @since	2.1.6
 	 */

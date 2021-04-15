@@ -843,7 +843,7 @@ public class PdfSignatureAppearance {
      * If calling preClose() <B>dont't</B> call PdfStamper.close().
      * <p>
      * No external signatures are allowed if this method is called.
-     * @param globalDate
+     * @param globalDate Date
      * @throws IOException on error
      * @throws DocumentException on error
      */
@@ -884,7 +884,7 @@ public class PdfSignatureAppearance {
      * @param exclusionSizes a <CODE>HashMap</CODE> with names and sizes to be excluded in the signature
      * calculation. The key is a <CODE>PdfName</CODE> and the value an
      * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
-     * @param globalDate
+     * @param globalDate Date
      * @throws IOException on error
      * @throws DocumentException on error
      */

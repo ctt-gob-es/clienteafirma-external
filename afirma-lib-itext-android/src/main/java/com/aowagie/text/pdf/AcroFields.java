@@ -1249,6 +1249,7 @@ public class AcroFields {
          *
          * @since 2.1.5
          * @param writeFlags WRITE_MERGED is ignored
+         * @param parentFields Fields
          */
         void markUsed( final AcroFields parentFields, final int writeFlags ) {
             if ((writeFlags & WRITE_VALUE) != 0) {
@@ -1329,7 +1330,7 @@ public class AcroFields {
          * remove all instances using this function.
          *
          * @since 2.1.5
-         * @param killIdx
+         * @param killIdx Idx
          */
         private void remove(final int killIdx) {
             this.values.remove(killIdx);
@@ -1376,7 +1377,7 @@ public class AcroFields {
          * Add a widget dict to this Item
          *
          * @since 2.1.5
-         * @param widget
+         * @param widget Widget
          */
         void addWidget(final PdfDictionary widget) {
             this.widgets.add(widget);
@@ -1397,7 +1398,7 @@ public class AcroFields {
          * Add a widget ref to this Item
          *
          * @since 2.1.5
-         * @param widgRef
+         * @param widgRef Widget reference
          */
         private void addWidgetRef(final PdfIndirectReference widgRef) {
             this.widget_refs.add(widgRef);
@@ -1421,7 +1422,7 @@ public class AcroFields {
          * Adds a merged dictionary to this Item.
          *
          * @since 2.1.5
-         * @param mergeDict
+         * @param mergeDict Dictionary
          */
         void addMerged(final PdfDictionary mergeDict) {
             this.merged.add(mergeDict);
@@ -1431,7 +1432,7 @@ public class AcroFields {
          * Retrieve the page number of the given instance
          *
          * @since 2.1.5
-         * @param idx
+         * @param idx Index
          * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
          */
         Integer getPage(final int idx) {
@@ -1442,7 +1443,7 @@ public class AcroFields {
          * Adds a page to the current Item.
          *
          * @since 2.1.5
-         * @param pg
+         * @param pg Page
          */
         void addPage(final int pg) {
             this.page.add(new Integer(pg));
@@ -1452,7 +1453,8 @@ public class AcroFields {
          * forces a page value into the Item.
          *
          * @since 2.1.5
-         * @param idx
+         * @param idx Index
+         * @param pg Page
          */
         void forcePage(final int idx, final int pg) {
             this.page.set(idx, new Integer( pg ));
@@ -1462,7 +1464,7 @@ public class AcroFields {
          * Gets the tabOrder.
          *
          * @since 2.1.5
-         * @param idx
+         * @param idx Index
          * @return tab index of the given field instance
          */
         Integer getTabOrder(final int idx) {
@@ -1473,7 +1475,7 @@ public class AcroFields {
          * Adds a tab order value to this Item.
          *
          * @since 2.1.5
-         * @param order
+         * @param order Order
          */
         void addTabOrder(final int order) {
             this.tabOrder.add(new Integer(order));
@@ -1611,7 +1613,6 @@ public class AcroFields {
 
     /**
      * Verifies a signature. An example usage is:
-     * <p>
      * <pre>
      * KeyStore kall = PdfPKCS7.loadCacertsKeyStore();
      * PdfReader reader = new PdfReader("my_signed_doc.pdf");

@@ -102,7 +102,9 @@ public class PdfFormField extends PdfAnnotation {
 
 
 
-    /** Creates new PdfFormField */
+    /** Creates new PdfFormField
+     * @param writer Writer
+     */
     private PdfFormField(final PdfWriter writer) {
         super(writer, null);
         this.form = true;

@@ -223,6 +223,7 @@ public class PdfString extends PdfObject {
 
     /**
      * Decrypt an encrypted <CODE>PdfString</CODE>
+     * @param reader Reader
      */
     void decrypt(final PdfReader reader) {
         final PdfEncryption decrypt = reader.getDecrypt();

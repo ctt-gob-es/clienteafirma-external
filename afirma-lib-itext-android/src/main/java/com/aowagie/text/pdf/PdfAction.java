@@ -125,8 +125,8 @@ public class PdfAction extends PdfDictionary {
 
     /**
      * Construct a new <CODE>PdfAction</CODE> of Subtype URI that accepts the x and y coordinate of the position that was clicked.
-     * @param url
-     * @param isMap
+     * @param url URL
+     * @param isMap Is map
      */
 
     private PdfAction(final String url, final boolean isMap) {
@@ -232,12 +232,12 @@ public class PdfAction extends PdfDictionary {
 
 
      /**Creates a Rendition action
-     * @param file
-     * @param fs
-     * @param mimeType
-     * @param ref
+     * @param file File name
+     * @param fs File specification
+     * @param mimeType MimeType
+     * @param ref Ref
      * @return a Media Clip action
-     * @throws IOException
+     * @throws IOException on error
      */
     static PdfAction rendition(final String file, final PdfFileSpecification fs, final String mimeType, final PdfIndirectReference ref) throws IOException {
         final PdfAction js = new PdfAction();

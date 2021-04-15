@@ -170,7 +170,7 @@ public abstract class PdfObject {
      *
      * @param writer for backwards compatibility
      * @param os     The <CODE>OutputStream</CODE> to write the bytes to.
-     * @throws IOException
+     * @throws IOException on error
      */
     public void toPdf(final PdfWriter writer, final OutputStream os) throws IOException {
         if (this.bytes != null) {

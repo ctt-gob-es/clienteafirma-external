@@ -132,7 +132,7 @@ class SAXiTextHandler extends DefaultHandler {
     private float bottomMargin = 36;
 
     /**
-     * @param document
+     * @param document Document
      */
     SAXiTextHandler(final DocListener document) {
         super();
@@ -144,8 +144,8 @@ class SAXiTextHandler extends DefaultHandler {
     protected HashMap myTags;
 
     /**
-     * @param document
-     * @param myTags
+     * @param document Document
+     * @param myTags tags
      */
     private SAXiTextHandler(final DocListener document, final HtmlTagMap myTags) {
         this(document);
@@ -155,8 +155,8 @@ class SAXiTextHandler extends DefaultHandler {
 
 
     /**
-     * @param document
-     * @param myTags
+     * @param document Document
+     * @param myTags tags
      */
     SAXiTextHandler(final DocListener document, final HashMap myTags) {
         this(document);
@@ -624,7 +624,7 @@ class SAXiTextHandler extends DefaultHandler {
 
     /**
      * Sets the font that has to be used.
-     * @param bf
+     * @param bf Base font
      */
     public void setBaseFont(final BaseFont bf) {
     	this.bf = bf;

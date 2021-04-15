@@ -59,18 +59,23 @@ class PdfBorderArray extends PdfArray {
 
     // constructors
 
-/**
- * Constructs a new <CODE>PdfBorderArray</CODE>.
- */
-
+	/**
+	 * Constructs a new <CODE>PdfBorderArray</CODE>.
+	 * @param hRadius Horizontal radius
+	 * @param vRadius Vertical radius
+	 * @param width Width
+	 */
     public PdfBorderArray(final float hRadius, final float vRadius, final float width) {
         this(hRadius, vRadius, width, null);
     }
 
-/**
- * Constructs a new <CODE>PdfBorderArray</CODE>.
- */
-
+    /**
+     * Constructs a new <CODE>PdfBorderArray</CODE>.
+	 * @param hRadius Horizontal radius
+	 * @param vRadius Vertical radius
+	 * @param width Width
+	 * @param dash Pattern
+     */
     private PdfBorderArray(final float hRadius, final float vRadius, final float width, final PdfDashPattern dash) {
         super(new PdfNumber(hRadius));
         add(new PdfNumber(vRadius));

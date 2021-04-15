@@ -125,7 +125,7 @@ class MultiColumnText implements Element {
      * If height is <CODE>AUTOMATIC</CODE>, fill complete pages until done.
      * If a specific height is used, it may span one or more pages.
      *
-     * @param height
+     * @param height Height
      */
     private MultiColumnText(final float height) {
         this.columnDefs = new ArrayList();

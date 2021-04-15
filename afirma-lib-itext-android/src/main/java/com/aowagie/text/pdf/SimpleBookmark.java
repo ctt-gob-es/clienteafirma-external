@@ -98,6 +98,7 @@ import com.aowagie.text.xml.simpleparser.SimpleXMLParser;
  * <ul>
  * <li>"File" - "the_file_to_open_or_execute"
  * </ul>
+ * </ul>
  * @author Paulo Soares (psoares@consiste.pt)
  */
 final class SimpleBookmark implements SimpleXMLDocHandler {
@@ -261,8 +262,8 @@ final class SimpleBookmark implements SimpleXMLDocHandler {
 	/**
 	 * Gets number of indirect. If type of directed indirect is PAGES, it refers PAGE object through KIDS.
 	 * (Contributed by Kazuya Ujihara)
-	 * @param indirect
-	 * 2004-06-13
+	 * @param indirect Indirect
+	 * @return Number
 	 */
 	private static int getNumber(PdfIndirectReference indirect)
 	{

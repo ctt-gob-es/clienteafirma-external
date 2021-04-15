@@ -78,6 +78,7 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
      * @param enc the encoding to be applied to this font
      * @param emb true if the font is to be embedded in the PDF
      * @param ttfAfm the font as a <CODE>byte</CODE> array
+     * @param forceRead Force read
      * @throws DocumentException the font is invalid
      * @throws IOException the font file could not be read
      */

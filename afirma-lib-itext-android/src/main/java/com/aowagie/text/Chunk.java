@@ -49,8 +49,6 @@
 
 package com.aowagie.text;
 
-import harmony.java.awt.Color;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -58,6 +56,8 @@ import java.util.LinkedHashMap;
 import com.aowagie.text.pdf.HyphenationEvent;
 import com.aowagie.text.pdf.PdfAction;
 import com.aowagie.text.pdf.draw.DrawInterface;
+
+import harmony.java.awt.Color;
 
 /**
  * This is the smallest significant part of text that can be added to a
@@ -671,6 +671,7 @@ public class Chunk implements Element {
 	public static final String PDFANNOTATION = "PDFANNOTATION";
 
 	/**
+	 * @return true
 	 * @see com.aowagie.text.Element#isContent()
 	 * @since	iText 2.0.8
 	 */
@@ -680,6 +681,7 @@ public class Chunk implements Element {
 	}
 
 	/**
+	 * @return true
 	 * @see com.aowagie.text.Element#isNestable()
 	 * @since	iText 2.0.8
 	 */
@@ -690,6 +692,7 @@ public class Chunk implements Element {
 
 	/**
      * Returns the hyphenation (if present).
+     * @return Hyphenation event
      * @since	2.1.2
 	 */
     public HyphenationEvent getHyphenation() {

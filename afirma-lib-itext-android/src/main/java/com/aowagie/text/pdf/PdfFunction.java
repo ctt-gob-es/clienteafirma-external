@@ -61,7 +61,9 @@ class PdfFunction {
 
     private PdfDictionary dictionary;
 
-    /** Creates new PdfFunction */
+    /** Creates new PdfFunction
+     * @param writer Writer
+     */
     private PdfFunction(final PdfWriter writer) {
         this.writer = writer;
     }

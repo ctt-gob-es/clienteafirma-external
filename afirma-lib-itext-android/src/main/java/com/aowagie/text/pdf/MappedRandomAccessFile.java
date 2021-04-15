@@ -73,8 +73,8 @@ class MappedRandomAccessFile {
      * Constructs a new MappedRandomAccessFile instance
      * @param filename String
      * @param mode String r, w or rw
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @throws FileNotFoundException on error
+     * @throws IOException on error
      */
     public MappedRandomAccessFile(final String filename, final String mode)
     throws FileNotFoundException, IOException {
@@ -95,7 +95,7 @@ class MappedRandomAccessFile {
      * initializes the channel and mapped bytebuffer
      * @param channel FileChannel
      * @param mapMode FileChannel.MapMode
-     * @throws IOException
+     * @throws IOException on error
      */
     private void init(final FileChannel channel, final FileChannel.MapMode mapMode)
     throws IOException {
@@ -106,6 +106,7 @@ class MappedRandomAccessFile {
     }
 
     /**
+     * @return File channel
      * @since 2.0.8
      */
     public FileChannel getChannel() {
@@ -176,6 +177,7 @@ class MappedRandomAccessFile {
     /**
      * @see java.io.RandomAccessFile#close()
      * Cleans the mapped bytebuffer and closes the channel
+     * @throws IOException on error
      */
     public void close() throws IOException {
         clean(this.mappedByteBuffer);

@@ -67,6 +67,7 @@ class ByteVector implements Serializable {
 
     /**
      * return number of items in array
+     * @return length
      */
     int length() {
         return this.n;
@@ -82,6 +83,8 @@ class ByteVector implements Serializable {
 
     /**
      * This is to implement memory allocation in the array. Like malloc().
+     * @param size Size
+     * @return memory alloc
      */
     int alloc(final int size) {
         final int index = this.n;

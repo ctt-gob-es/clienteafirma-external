@@ -63,7 +63,7 @@ public interface SplitCharacter {
      * is free to look ahead or look behind characters to make a decision.
      * <p>
      * The default implementation is:
-     * <p>
+     * </p>
      * <pre>
      * public boolean isSplitCharacter(int start, int current, int end, char[] cc, PdfChunk[] ck) {
      *    char c;
@@ -92,5 +92,5 @@ public interface SplitCharacter {
      * If shorter than <CODE>end</CODE> the last element is used
      * @return <CODE>true</CODE> if the character(s) can split a line
      */
-    public boolean isSplitCharacter(int start, int current, int end, char cc[], PdfChunk ck[]);
+    boolean isSplitCharacter(int start, int current, int end, char cc[], PdfChunk ck[]);
 }

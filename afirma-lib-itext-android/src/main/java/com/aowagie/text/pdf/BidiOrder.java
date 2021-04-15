@@ -248,7 +248,7 @@ final class BidiOrder {
         runAlgorithm();
     }
 
-    final static byte getDirection(final char c) {
+    static byte getDirection(final char c) {
         return rtypes[c];
     }
 
@@ -448,6 +448,9 @@ final class BidiOrder {
      * This examines resultTypes but does not modify it.  It returns embedding and
      * override information in the result array.  The low 7 bits are the level, the high
      * bit is set if the level is an override, and clear if it is an embedding.
+     * @param resultTypes Result types
+     * @param paragraphEmbeddingLevel Level
+     * @return embeddings
      */
     private static byte[] processEmbeddings(final byte[] resultTypes, final byte paragraphEmbeddingLevel) {
         final int EXPLICIT_LEVEL_LIMIT = 62;
@@ -575,8 +578,12 @@ final class BidiOrder {
     /**
      * 3) resolving weak types
      * Rules W1-W7.
-     *
      * Note that some weak types (EN, AN) remain after this processing is complete.
+     * @param start start
+     * @param limit limit
+     * @param level level
+     * @param sor previous character type of the start
+     * @param eor next character type of the end
      */
     private void resolveWeakTypes(final int start, final int limit, final byte level, final byte sor, final byte eor) {
 
@@ -692,6 +699,11 @@ final class BidiOrder {
     /**
      * 6) resolving neutral types
      * Rules N1-N2.
+     * @param start start
+     * @param limit limit
+     * @param level level
+     * @param sor previous character type of the start
+     * @param eor next character type of the end
      */
     private void resolveNeutralTypes(final int start, final int limit, final byte level, final byte sor, final byte eor) {
 
@@ -756,6 +768,11 @@ final class BidiOrder {
     /**
      * 7) resolving implicit embedding levels
      * Rules I1, I2.
+     * @param start start
+     * @param limit limit
+     * @param level level
+     * @param sor previous character type of the start
+     * @param eor next character type of the end
      */
     private void resolveImplicitLevels(final int start, final int limit, final byte level, final byte sor, final byte eor) {
         if ((level & 1) == 0) { // even level
@@ -865,6 +882,9 @@ final class BidiOrder {
     /**
      * Return multiline reordering array for a given level array.
      * Reordering does not occur across a line break.
+     * @param levels Levels
+     * @param linebreaks Line braks
+     * @return Lines
      */
     private static int[] computeMultilineReordering(final byte[] levels, final int[] linebreaks) {
         final int[] result = new int[levels.length];
@@ -890,6 +910,8 @@ final class BidiOrder {
      * The reordering is a visual to logical map.  For example,
      * the leftmost char is string.charAt(order[0]).
      * Rule L2.
+     * @param levels Levels
+     * @return Reordered levels
      */
     private static int[] computeReordering(final byte[] levels) {
         final int lineLength = levels.length;
@@ -944,6 +966,7 @@ final class BidiOrder {
 
     /**
      * Return the base level of the paragraph.
+     * @return Base level
      */
     public byte getBaseLevel() {
         return this.paragraphEmbeddingLevel;
@@ -953,6 +976,8 @@ final class BidiOrder {
 
     /**
      * Return true if the type is considered a whitespace type for the line break rules.
+     * @param biditype Bidi type
+     * @return It is Bidi type
      */
     private static boolean isWhitespace(final byte biditype) {
         switch (biditype) {
@@ -971,6 +996,8 @@ final class BidiOrder {
 
     /**
      * Return the strong type (L or R) corresponding to the level.
+     * @param level Level
+     * @return Type
      */
     private static byte typeForLevel(final int level) {
         return (level & 0x1) == 0 ? L : R;
@@ -979,6 +1006,10 @@ final class BidiOrder {
     /**
      * Return the limit of the run starting at index that includes only resultTypes in validSet.
      * This checks the value at index, and will return index if that value is not in validSet.
+     * @param index Index
+     * @param limit Limit
+     * @param validSet Valid set
+     * @return limit
      */
     private int findRunLimit(int index, final int limit, final byte[] validSet) {
         --index;
@@ -999,6 +1030,9 @@ final class BidiOrder {
     /**
      * Return the start of the run including index that includes only resultTypes in validSet.
      * This assumes the value at index is valid, and does not check it.
+     * @param index Index
+     * @param validSet Valid set
+     * @return Index
      */
     private int findRunStart(int index, final byte[] validSet) {
         loop:
@@ -1016,6 +1050,9 @@ final class BidiOrder {
 
     /**
      * Set resultTypes from start up to (but not including) limit to newType.
+     * @param start Start
+     * @param limit Limit
+     * @param newType New type
      */
     private void setTypes(final int start, final int limit, final byte newType) {
         for (int i = start; i < limit; ++i) {
@@ -1025,6 +1062,9 @@ final class BidiOrder {
 
     /**
      * Set resultLevels from start up to (but not including) limit to newLevel.
+     * @param start Start
+     * @param limit Limit
+     * @param newLevel New level
      */
     private void setLevels(final int start, final int limit, final byte newLevel) {
         for (int i = start; i < limit; ++i) {
@@ -1036,6 +1076,7 @@ final class BidiOrder {
 
     /**
      * Throw exception if type array is invalid.
+     * @param types Types
      */
     private static void validateTypes(final byte[] types) {
         if (types == null) {
@@ -1056,6 +1097,7 @@ final class BidiOrder {
     /**
      * Throw exception if paragraph embedding level is invalid. Special allowance for -1 so that
      * default processing can still be performed when using this API.
+     * @param paragraphEmbeddingLevel level.
      */
     private static void validateParagraphEmbeddingLevel(final byte paragraphEmbeddingLevel) {
         if (paragraphEmbeddingLevel != -1 &&
@@ -1067,6 +1109,8 @@ final class BidiOrder {
 
     /**
      * Throw exception if line breaks array is invalid.
+     * @param linebreaks Line breaks
+     * @param textLength Text length
      */
     private static void validateLineBreaks(final int[] linebreaks, final int textLength) {
         int prev = 0;

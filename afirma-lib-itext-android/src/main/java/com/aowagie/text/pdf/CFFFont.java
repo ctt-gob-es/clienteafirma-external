@@ -387,11 +387,13 @@ class CFFFont {
 
     protected static abstract class Item {
         int myOffset = -1;
-        /** remember the current offset and increment by item's size in bytes. */
+        /** remember the current offset and increment by item's size in bytes.
+         * @param currentOffset Current offset */
         public void increment(final int[] currentOffset) {
             this.myOffset = currentOffset[0];
         }
-        /** Emit the byte stream for this item. */
+        /** Emit the byte stream for this item.
+         * @param buffer Buffer */
         public void emit(final byte[] buffer) {}
         /** Fix up cross references to this item (applies only to markers). */
         public void xref() {}
@@ -401,6 +403,7 @@ class CFFFont {
         int value;
         /** set the value of an offset item that was initially unknown.
          * It will be fixed up latex by a call to xref on some marker.
+         * @param offset Offset.
          */
         private void set(final int offset) { this.value = offset; }
     }
@@ -734,7 +737,7 @@ class CFFFont {
     protected int[] gsubrOffsets;
 
     /**
-     * TODO Changed from private to protected by Ygal&Oren
+     * TODO Changed from private to protected by Ygal&amp;Oren
      */
     final class Font {
         String    name;
@@ -752,7 +755,7 @@ class CFFFont {
         int[]     fdprivateLengths;
 
 
-        // Added by Oren & Ygal
+        // Added by Oren and Ygal
         int nglyphs;
         int nstrings;
         int CharsetLength;

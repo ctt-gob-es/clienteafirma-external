@@ -53,14 +53,21 @@ package com.aowagie.text.pdf;
  */
 public class PdfSignature extends PdfDictionary {
 
-    /** Creates new PdfSignature */
+    /** Creates new PdfSignature
+     * @param filter Filter
+     * @param subFilter Subfilter
+     */
     public PdfSignature(PdfName filter, PdfName subFilter) {
         super(PdfName.SIG);
         put(PdfName.FILTER, filter);
         put(PdfName.SUBFILTER, subFilter);
     }
 
-    /** Creates new PdfSignature */
+    /** Creates new PdfSignature
+     * @param type Type
+     * @param filter Filter
+     * @param subFilter Subfilter
+     */
     public PdfSignature(final PdfName type, final PdfName filter, final PdfName subFilter) {
         super(type);
         put(PdfName.FILTER, filter);

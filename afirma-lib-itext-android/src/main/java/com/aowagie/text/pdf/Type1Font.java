@@ -166,6 +166,7 @@ class Type1Font extends BaseFont
      * @param afmFile the name of one of the 14 built-in fonts or the location of an AFM file. The file must end in '.afm'
      * @param enc the encoding to be applied to this font
      * @param emb true if the font is to be embedded in the PDF
+     * @param forceRead Force read
      * @throws DocumentException the AFM file is invalid
      * @throws IOException the AFM file could not be read
      * @since	2.1.5

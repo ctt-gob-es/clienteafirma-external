@@ -90,7 +90,7 @@ public class PdfRectangle extends PdfArray {
  * @param		lly			lower left y
  * @param		urx			upper right x
  * @param		ury			upper right y
- *
+ * @param rotation Rotation
  * @since		rugPdf0.10
  */
 
@@ -126,6 +126,7 @@ public class PdfRectangle extends PdfArray {
  * Constructs a <CODE>PdfRectangle</CODE>-object with a <CODE>Rectangle</CODE>-object.
  *
  * @param	rectangle	a <CODE>Rectangle</CODE>
+ * @param rotation Rotation
  */
 
     PdfRectangle(final Rectangle rectangle, final int rotation) {

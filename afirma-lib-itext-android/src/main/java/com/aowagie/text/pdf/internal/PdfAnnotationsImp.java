@@ -95,6 +95,7 @@ public class PdfAnnotationsImp {
 
     /**
      * Checks if the AcroForm is valid.
+     * @return Valid
      */
     public boolean hasValidAcroForm() {
     	return this.acroForm.isValid();

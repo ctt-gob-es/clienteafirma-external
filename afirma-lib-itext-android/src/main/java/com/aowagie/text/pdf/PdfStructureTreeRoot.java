@@ -68,7 +68,10 @@ class PdfStructureTreeRoot extends PdfDictionary {
      */
     private final PdfWriter writer;
 
-    /** Creates a new instance of PdfStructureTreeRoot */
+    /**
+     * Creates a new instance of PdfStructureTreeRoot
+     * @param writer Writer
+     */
     PdfStructureTreeRoot(final PdfWriter writer) {
         super(PdfName.STRUCTTREEROOT);
         this.writer = writer;

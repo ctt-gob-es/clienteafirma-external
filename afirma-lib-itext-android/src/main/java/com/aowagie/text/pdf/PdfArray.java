@@ -214,7 +214,7 @@ public class PdfArray extends PdfObject {
      * indices).
      *
      * @param idx The index of the element to be removed.
-     * @throws IndexOutOfBoundsException the specified position doesn't exist
+     * @return Pdf object
      * @since 2.1.5
      */
     PdfObject remove(final int idx) {

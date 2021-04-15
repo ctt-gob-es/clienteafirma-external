@@ -105,8 +105,8 @@ public class Jpeg extends Image {
      * Constructs a <CODE>Jpeg</CODE>-object, using an <VAR>url</VAR>.
      *
      * @param		url			the <CODE>URL</CODE> where the image can be found
-     * @throws BadElementException
-     * @throws IOException
+     * @throws BadElementException on error
+     * @throws IOException on error
      */
     Jpeg(final URL url) throws BadElementException, IOException {
         super(url);
@@ -117,8 +117,8 @@ public class Jpeg extends Image {
      * Constructs a <CODE>Jpeg</CODE>-object from memory.
      *
      * @param		img		the memory image
-     * @throws BadElementException
-     * @throws IOException
+     * @throws BadElementException on error
+     * @throws IOException on error
      */
 
     public Jpeg(final byte[] img) throws BadElementException, IOException {
@@ -135,7 +135,7 @@ public class Jpeg extends Image {
      *
      * @param	is		the <CODE>InputStream</CODE>
      * @return	an int
-     * @throws IOException
+     * @throws IOException on error
      */
     private static final int getShort(final InputStream is) throws IOException {
         return (is.read() << 8) + is.read();
@@ -145,7 +145,7 @@ public class Jpeg extends Image {
      * Returns a type of marker.
      *
      * @param	marker      an int
-     * @return	a type: <VAR>VALID_MARKER</CODE>, <VAR>UNSUPPORTED_MARKER</VAR> or <VAR>NOPARAM_MARKER</VAR>
+     * @return	a type: <VAR>VALID_MARKER</VAR>, <VAR>UNSUPPORTED_MARKER</VAR> or <VAR>NOPARAM_MARKER</VAR>
      */
     private static final int marker(final int marker) {
         for (final int element : VALID_MARKERS) {
@@ -170,8 +170,8 @@ public class Jpeg extends Image {
 
     /**
      * This method checks if the image is a valid JPEG and processes some parameters.
-     * @throws BadElementException
-     * @throws IOException
+     * @throws BadElementException on error
+     * @throws IOException on error
      */
     private void processParameters() throws BadElementException, IOException {
         this.type = JPEG;

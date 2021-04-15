@@ -49,8 +49,6 @@
 
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Color;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -61,6 +59,8 @@ import com.aowagie.text.Font;
 import com.aowagie.text.Image;
 import com.aowagie.text.SplitCharacter;
 import com.aowagie.text.Utilities;
+
+import harmony.java.awt.Color;
 
 /**
  * A <CODE>PdfChunk</CODE> is the PDF translation of a <CODE>Chunk</CODE>.
@@ -278,7 +278,7 @@ public class PdfChunk {
     // methods
 
     /** Gets the Unicode equivalent to a CID.
-     * The (inexistent) CID <FF00> is translated as '\n'.
+     * The (inexistent) CID FF00 is translated as '\n'.
      * It has only meaning with CJK fonts with Identity encoding.
      * @param c the CID code
      * @return the Unicode equivalent
@@ -797,8 +797,7 @@ public class PdfChunk {
 
 /**
  * Removes all the <VAR>' '</VAR> and <VAR>'-'</VAR>-characters on the right of a <CODE>String</CODE>.
- * <P>
- * @param	string		the <CODE>String<CODE> that has to be trimmed.
+ * @param	string		the <CODE>String</CODE> that has to be trimmed.
  * @return	the trimmed <CODE>String</CODE>
  */
     private String trim(String string) {

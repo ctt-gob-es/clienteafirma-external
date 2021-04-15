@@ -56,12 +56,20 @@ public class XmlDomWriter {
     // Public methods
     //
 
-    /** Sets whether output is canonical. */
+    /**
+     * Sets whether output is canonical.
+     * @param canonical Canonical.
+     */
     public void setCanonical(final boolean canonical) {
         this.fCanonical = canonical;
     } // setCanonical(boolean)
 
-    /** Sets the output stream for printing. */
+    /**
+     * Sets the output stream for printing.
+     * @param stream Stream.
+     * @param encoding Encoding.
+     * @throws UnsupportedEncodingException If it a unsupported encoding.
+     */
     public void setOutput(final OutputStream stream, String encoding)
     throws UnsupportedEncodingException {
 
@@ -74,7 +82,10 @@ public class XmlDomWriter {
 
     } // setOutput(OutputStream,String)
 
-    /** Sets the output writer. */
+    /**
+     * Sets the output writer.
+     * @param writer Writer.
+     */
     public void setOutput(final java.io.Writer writer) {
 
         this.fOut = writer instanceof PrintWriter
@@ -82,7 +93,10 @@ public class XmlDomWriter {
 
     } // setOutput(java.io.Writer)
 
-    /** Writes the specified node, recursively. */
+    /**
+     * Writes the specified node, recursively.
+     * @param node Node.
+     */
     public void write(final Node node) {
 
         // is there anything to do?
@@ -226,7 +240,11 @@ public class XmlDomWriter {
 
     } // write(Node)
 
-    /** Returns a sorted list of attributes. */
+    /**
+     * Returns a sorted list of attributes.
+     * @param attrs Attributes.
+     * @return Attributes.
+     */
     private Attr[] sortAttributes(final NamedNodeMap attrs) {
 
         final int len = attrs != null ? attrs.getLength() : 0;
@@ -259,7 +277,11 @@ public class XmlDomWriter {
     // Protected methods
     //
 
-    /** Normalizes and prints the given string. */
+    /**
+     * Normalizes and prints the given string.
+     * @param s String.
+     * @param isAttValue It's attribute value.
+     */
     private void normalizeAndPrint(final String s, final boolean isAttValue) {
 
         final int len = s != null ? s.length() : 0;
@@ -270,7 +292,11 @@ public class XmlDomWriter {
 
     } // normalizeAndPrint(String,boolean)
 
-    /** Normalizes and print the given character. */
+    /**
+     * Normalizes and print the given character.
+     * @param c Character.
+     * @param isAttValue It's attribute value.
+     */
     private void normalizeAndPrint(final char c, final boolean isAttValue) {
 
         switch (c) {
@@ -333,7 +359,7 @@ public class XmlDomWriter {
         }
     } // normalizeAndPrint(char,boolean)
 
-    /** Extracts the XML version from the Document. */
+//    /** Extracts the XML version from the Document. */
 //    protected String getVersion(Document document) {
 //        if (document == null) {
 //            return null;

@@ -51,8 +51,6 @@
  */
 package com.aowagie.text.factories;
 
-import harmony.java.awt.Color;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -79,6 +77,8 @@ import com.aowagie.text.Table;
 import com.aowagie.text.Utilities;
 import com.aowagie.text.html.Markup;
 
+import harmony.java.awt.Color;
+
 /**
  * This class is able to create Element objects based on a list of properties.
  */
@@ -86,7 +86,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a Chunk object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a Chunk
 	 */
 	public static Chunk getChunk(final Properties attributes) {
@@ -143,7 +143,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a Phrase object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a Phrase
 	 */
 	public static Phrase getPhrase(final Properties attributes) {
@@ -172,7 +172,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates an Anchor object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return an Anchor
 	 */
 	public static Anchor getAnchor(final Properties attributes) {
@@ -191,7 +191,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a Paragraph object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a Paragraph
 	 */
 	public static Paragraph getParagraph(final Properties attributes) {
@@ -214,7 +214,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a ListItem object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a ListItem
 	 */
 	public static ListItem getListItem(final Properties attributes) {
@@ -224,7 +224,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a List object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return the List
 	 */
 	public static List getList(final Properties attributes) {
@@ -280,7 +280,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a Cell object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a Cell
 	 */
 	public static Cell getCell(final Properties attributes) {
@@ -319,7 +319,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates an Table object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a Table
 	 */
 	public static Table getTable(final Properties attributes) {
@@ -350,9 +350,9 @@ public class ElementFactory {
 				}
 			}
 
-			table.setBorder(Table.BOX);
+			table.setBorder(Rectangle.BOX);
 			table.setBorderWidth(1);
-			table.getDefaultCell().setBorder(Table.BOX);
+			table.getDefaultCell().setBorder(Rectangle.BOX);
 
 			value = attributes.getProperty(ElementTags.LASTHEADERROW);
 			if (value != null) {
@@ -401,6 +401,8 @@ public class ElementFactory {
 
 	/**
 	 * Sets some Rectangle properties (for a Cell, Table,...).
+	 * @param rect Rectangle.
+	 * @param attributes Properties.
 	 */
 	private static void setRectangleProperties(final Rectangle rect,
 			final Properties attributes) {
@@ -475,7 +477,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a ChapterAutoNumber object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return a Chapter
 	 */
 	public static ChapterAutoNumber getChapter(final Properties attributes) {
@@ -486,7 +488,8 @@ public class ElementFactory {
 
 	/**
 	 * Creates a Section object based on a list of properties.
-	 * @param attributes
+	 * @param parent Parent.
+	 * @param attributes Atrributes.
 	 * @return a Section
 	 */
 	public static Section getSection(final Section parent, final Properties attributes) {
@@ -497,7 +500,8 @@ public class ElementFactory {
 
 	/**
 	 * Helper method to create a Chapter/Section object.
-	 * @param attributes
+	 * @param section Section.
+	 * @param attributes Atrributes.
 	 */
 	private static void setSectionParameters(final Section section,
 			final Properties attributes) {
@@ -522,8 +526,11 @@ public class ElementFactory {
 
 	/**
 	 * Creates an Image object based on a list of properties.
-	 * @param attributes
-	 * @return an Image
+	 * @param attributes Atrributes.
+	 * @return an Image.
+	 * @throws BadElementException If it isn't a valid image.
+	 * @throws MalformedURLException If it is a invalid URL.
+	 * @throws IOException If it can't load the image.
 	 */
 	public static Image getImage(final Properties attributes)
 			throws BadElementException, MalformedURLException, IOException {
@@ -584,7 +591,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates an Annotation object based on a list of properties.
-	 * @param attributes
+	 * @param attributes Atrributes.
 	 * @return an Annotation
 	 */
 	public static Annotation getAnnotation(final Properties attributes) {

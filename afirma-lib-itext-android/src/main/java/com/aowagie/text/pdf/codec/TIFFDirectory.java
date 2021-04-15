@@ -111,6 +111,7 @@ class TIFFDirectory extends Object implements Serializable {
      *
      * @param stream a SeekableStream to read from.
      * @param directory the index of the directory to read.
+     * @throws IOException on error
      */
     TIFFDirectory(final RandomAccessFileOrArray stream, final int directory)
     throws IOException {
@@ -232,7 +233,7 @@ class TIFFDirectory extends Object implements Serializable {
                         while (index < count) {
 
                             while (index < count && bvalues[index++] != 0) {
-								;
+
 							}
 
                             // When we encountered zero, means one string has ended
@@ -340,7 +341,8 @@ class TIFFDirectory extends Object implements Serializable {
         }
     }
 
-    /** Returns the number of directory entries. */
+    /** Returns the number of directory entries.
+     * @return Num entries */
     public int getNumEntries() {
         return this.numEntries;
     }
@@ -348,6 +350,8 @@ class TIFFDirectory extends Object implements Serializable {
     /**
      * Returns the value of a given tag as a TIFFField,
      * or null if the tag is not present.
+     * @param tag Tag
+     * @return Field
      */
     TIFFField getField(final int tag) {
         final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
@@ -360,6 +364,8 @@ class TIFFDirectory extends Object implements Serializable {
 
     /**
      * Returns true if a tag appears in the directory.
+     * @param tag Tag
+     * @return is present
      */
     boolean isTagPresent(final int tag) {
         return this.fieldIndex.containsKey(new Integer(tag));
@@ -368,6 +374,7 @@ class TIFFDirectory extends Object implements Serializable {
     /**
      * Returns an ordered array of ints indicating the tag
      * values.
+     * @return Tags
      */
     public int[] getTags() {
         final int[] tags = new int[this.fieldIndex.size()];
@@ -384,6 +391,7 @@ class TIFFDirectory extends Object implements Serializable {
     /**
      * Returns an array of TIFFFields containing all the fields
      * in this directory.
+     * @return Fields
      */
     public TIFFField[] getFields() {
         return this.fields;
@@ -394,6 +402,9 @@ class TIFFDirectory extends Object implements Serializable {
      * byte.  The caller is responsible for ensuring that the tag is
      * present and has type TIFFField.TIFF_SBYTE, TIFF_BYTE, or
      * TIFF_UNDEFINED.
+     * @param tag Tag
+     * @param index Index
+     * @return Field
      */
     private byte getFieldAsByte(final int tag, final int index) {
         final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
@@ -408,6 +419,10 @@ class TIFFDirectory extends Object implements Serializable {
      * long.  The caller is responsible for ensuring that the tag is
      * present and has type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED,
      * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
+     *
+     * @param tag Tag
+     * @param index Index
+     * @return Field
      */
     private long getFieldAsLong(final int tag, final int index) {
         final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
@@ -419,6 +434,8 @@ class TIFFDirectory extends Object implements Serializable {
      * long.  The caller is responsible for ensuring that the tag is
      * present and has type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED,
      * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
+     * @param tag Tag
+     * @return Field
      */
     long getFieldAsLong(final int tag) {
         return getFieldAsLong(tag, 0);
@@ -429,6 +446,9 @@ class TIFFDirectory extends Object implements Serializable {
      * float.  The caller is responsible for ensuring that the tag is
      * present and has numeric type (all but TIFF_UNDEFINED and
      * TIFF_ASCII).
+     * @param tag Tag
+     * @param index Index
+     * @return Field
      */
     private float getFieldAsFloat(final int tag, final int index) {
         final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
@@ -442,6 +462,9 @@ class TIFFDirectory extends Object implements Serializable {
      * double.  The caller is responsible for ensuring that the tag is
      * present and has numeric type (all but TIFF_UNDEFINED and
      * TIFF_ASCII).
+     * @param tag Tag
+     * @param index Index
+     * @return Field
      */
     private double getFieldAsDouble(final int tag, final int index) {
         final Integer i = (Integer)this.fieldIndex.get(new Integer(tag));
@@ -543,6 +566,7 @@ class TIFFDirectory extends Object implements Serializable {
      * Returns a boolean indicating whether the byte order used in the
      * the TIFF file is big-endian (i.e. whether the byte order is from
      * the most significant to the least significant)
+     * @return Is it big endian.
      */
     public boolean isBigEndian() {
         return this.isBigEndian;
@@ -551,6 +575,7 @@ class TIFFDirectory extends Object implements Serializable {
     /**
      * Returns the offset of the IFD corresponding to this
      * <code>TIFFDirectory</code>.
+     * @return Offset
      */
     public long getIFDOffset() {
         return this.IFDOffset;
@@ -559,6 +584,7 @@ class TIFFDirectory extends Object implements Serializable {
     /**
      * Returns the offset of the next IFD after the IFD corresponding to this
      * <code>TIFFDirectory</code>.
+     * @return Offset
      */
     public long getNextIFDOffset() {
         return this.nextIFDOffset;

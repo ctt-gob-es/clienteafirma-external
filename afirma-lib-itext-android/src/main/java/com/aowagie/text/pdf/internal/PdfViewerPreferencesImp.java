@@ -118,6 +118,7 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 
 	/**
 	 * Returns the page layout and page mode value.
+	 * @return Layout and mode
 	 */
 	public int getPageLayoutAndMode() {
 		return this.pageLayoutAndMode;
@@ -125,6 +126,7 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 
 	/**
 	 * Returns the viewer preferences.
+	 * @return Preferences
 	 */
 	public PdfDictionary getViewerPreferences() {
 		return this.viewerPreferences;
@@ -202,6 +204,9 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 
 	/**
 	 * Checks if some value is valid for a certain key.
+	 * @param value Value
+	 * @param accepted Accepted
+	 * @return It is possible
 	 */
 	private boolean isPossibleValue(final PdfName value, final PdfName[] accepted) {
 		for (final PdfName element : accepted) {
@@ -214,6 +219,8 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 
 	/**
 	 * Sets the viewer preferences for printing.
+	 * @param key Key
+	 * @param value Value
 	 */
 	@Override
 	public void addViewerPreference(final PdfName key, final PdfObject value) {
@@ -279,7 +286,7 @@ public class PdfViewerPreferencesImp implements PdfViewerPreferences {
 	 * Adds the viewer preferences defined in the preferences parameter to a
 	 * PdfDictionary (more specifically the root or catalog of a PDF file).
 	 *
-	 * @param catalog
+	 * @param catalog Catalog
 	 */
 	public void addToCatalog(final PdfDictionary catalog) {
 		// Page Layout

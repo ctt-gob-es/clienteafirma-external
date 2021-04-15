@@ -63,7 +63,7 @@ import com.aowagie.text.Rectangle;
  */
 
 class PdfContents extends PdfStream {
-    
+
     static final byte SAVESTATE[] = DocWriter.getISOBytes("q\n");
     static final byte RESTORESTATE[] = DocWriter.getISOBytes("Q\n");
     static final byte ROTATE90[] = DocWriter.getISOBytes("0 1 -1 0 ");
@@ -71,7 +71,7 @@ class PdfContents extends PdfStream {
     static final byte ROTATE270[] = DocWriter.getISOBytes("0 -1 1 0 ");
     static final byte ROTATEFINAL[] = DocWriter.getISOBytes(" cm\n");
     // constructor
-    
+
 /**
  * Constructs a <CODE>PdfContents</CODE>-object, containing text and general graphics.
  *
@@ -79,25 +79,26 @@ class PdfContents extends PdfStream {
  * @param content the graphics in a page
  * @param text the text in a page
  * @param secondContent the direct content that is over all others
+ * @param page Page
  * @throws BadPdfFormatException on error
  */
-    
-    PdfContents(PdfContentByte under, PdfContentByte content, PdfContentByte text, PdfContentByte secondContent, Rectangle page) throws BadPdfFormatException {
+
+    PdfContents(final PdfContentByte under, final PdfContentByte content, final PdfContentByte text, final PdfContentByte secondContent, final Rectangle page) throws BadPdfFormatException {
         super();
         try {
             OutputStream out = null;
             Deflater deflater = null;
-            streamBytes = new ByteArrayOutputStream();
+            this.streamBytes = new ByteArrayOutputStream();
             if (Document.compress)
             {
-                compressed = true;
-                compressionLevel = text.getPdfWriter().getCompressionLevel();
-                deflater = new Deflater(compressionLevel);
-                out = new DeflaterOutputStream(streamBytes, deflater);
-            }
-            else
-                out = streamBytes;
-            int rotation = page.getRotation();
+                this.compressed = true;
+                this.compressionLevel = text.getPdfWriter().getCompressionLevel();
+                deflater = new Deflater(this.compressionLevel);
+                out = new DeflaterOutputStream(this.streamBytes, deflater);
+            } else {
+				out = this.streamBytes;
+			}
+            final int rotation = page.getRotation();
             switch (rotation) {
                 case 90:
                     out.write(ROTATE90);
@@ -144,11 +145,12 @@ class PdfContents extends PdfStream {
                 deflater.end();
             }
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             throw new BadPdfFormatException(e.getMessage());
         }
-        put(PdfName.LENGTH, new PdfNumber(streamBytes.size()));
-        if (compressed)
-            put(PdfName.FILTER, PdfName.FLATEDECODE);
+        put(PdfName.LENGTH, new PdfNumber(this.streamBytes.size()));
+        if (this.compressed) {
+			put(PdfName.FILTER, PdfName.FLATEDECODE);
+		}
     }
 }

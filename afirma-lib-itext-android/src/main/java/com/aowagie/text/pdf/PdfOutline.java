@@ -303,8 +303,8 @@ class PdfOutline extends PdfDictionary {
      * Returns the PDF representation of this <CODE>PdfOutline</CODE>.
      *
      * @param writer the encryption information
-     * @param os
-     * @throws IOException
+     * @param os output stream
+     * @throws IOException on error
      */
 
     @Override
@@ -339,7 +339,7 @@ class PdfOutline extends PdfDictionary {
 
     /**
      * Adds a kid to the outline
-     * @param outline
+     * @param outline Outline
      */
     private void addKid(final PdfOutline outline) {
         this.kids.add(outline);
@@ -355,7 +355,7 @@ class PdfOutline extends PdfDictionary {
 
     /**
      * Sets the kids of this outline
-     * @param kids
+     * @param kids Kids
      */
     public void setKids(final ArrayList kids) {
         this.kids = kids;
@@ -386,7 +386,7 @@ class PdfOutline extends PdfDictionary {
 
     /**
      * Sets the title of this outline
-     * @param title
+     * @param title Title
      */
     public void setTitle(final String title) {
         put(PdfName.TITLE, new PdfString(title, PdfObject.TEXT_UNICODE));

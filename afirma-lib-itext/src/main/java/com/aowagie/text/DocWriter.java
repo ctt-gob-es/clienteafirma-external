@@ -327,7 +327,7 @@ public abstract class DocWriter implements DocListener {
  * Writes a <CODE>String</CODE> to the <CODE>OutputStream</CODE>.
  *
  * @param string    the <CODE>String</CODE> to write
- * @throws IOException
+ * @throws IOException on error
  */
 
     private void write(final String string) throws IOException {
@@ -341,7 +341,7 @@ public abstract class DocWriter implements DocListener {
  *
  * @param   key     the name of an attribute
  * @param   value   the value of an attribute
- * @throws IOException
+ * @throws IOException on error
  */
 
     private void write(final String key, final String value)

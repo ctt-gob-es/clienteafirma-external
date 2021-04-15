@@ -82,8 +82,8 @@ class Jpeg2000 extends Image {
      * Constructs a <CODE>Jpeg2000</CODE>-object, using an <VAR>url</VAR>.
      *
      * @param		url			the <CODE>URL</CODE> where the image can be found
-     * @throws BadElementException
-     * @throws IOException
+     * @throws BadElementException on error
+     * @throws IOException on error
      */
     Jpeg2000(final URL url) throws BadElementException, IOException {
         super(url);
@@ -94,8 +94,8 @@ class Jpeg2000 extends Image {
      * Constructs a <CODE>Jpeg2000</CODE>-object from memory.
      *
      * @param		img		the memory image
-     * @throws BadElementException
-     * @throws IOException
+     * @throws BadElementException on error
+     * @throws IOException on error
      */
 
     Jpeg2000(final byte[] img) throws BadElementException, IOException {
@@ -132,7 +132,7 @@ class Jpeg2000 extends Image {
 
     /**
      * This method checks if the image is a valid JPEG and processes some parameters.
-     * @throws IOException
+     * @throws IOException on error
      */
     private void processParameters() throws IOException {
         this.type = JPEG2000;

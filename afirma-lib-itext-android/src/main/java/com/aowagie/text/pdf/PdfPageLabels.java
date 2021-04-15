@@ -116,6 +116,7 @@ class PdfPageLabels {
 
 
     /** Gets the page label dictionary to insert into the document.
+     * @param writer Writer
      * @return the page label dictionary
      */
     PdfDictionary getDictionary(final PdfWriter writer) {

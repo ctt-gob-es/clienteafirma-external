@@ -49,8 +49,6 @@
 
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Color;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -79,6 +77,8 @@ import com.aowagie.text.pdf.draw.DrawInterface;
 import com.aowagie.text.pdf.internal.PdfAnnotationsImp;
 import com.aowagie.text.pdf.internal.PdfViewerPreferencesImp;
 
+import harmony.java.awt.Color;
+
 /**
  * <CODE>PdfDocument</CODE> is the class that is used by <CODE>PdfWriter</CODE>
  * to translate a <CODE>Document</CODE> into a PDF with different pages.
@@ -103,7 +103,6 @@ class PdfDocument extends Document {
      * should be strings.<BR>
      * This object is described in the 'Portable Document Format Reference Manual version 1.3'
      * section 6.10 (page 120-121)
-     * @param globalDate
      * @since	2.0.8 (PdfDocument was package-private before)
      */
 
@@ -111,6 +110,7 @@ class PdfDocument extends Document {
 
         /**
          * Construct a <CODE>PdfInfo</CODE>-object.
+         * @param globalDate Global date
          */
 
         private PdfInfo(final Calendar globalDate) {
@@ -149,6 +149,7 @@ class PdfDocument extends Document {
 
         /**
          * Adds the date of creation to the document.
+         * @param globalDate Date
          */
 
         private void addCreationDate(final Calendar globalDate) {
@@ -266,7 +267,7 @@ class PdfDocument extends Document {
 
     /**
      * Constructs a new PDF document.
-     * @param globalDate
+     * @param globalDate Date
      */
     PdfDocument(final Calendar globalDate) {
         super();
@@ -361,7 +362,6 @@ class PdfDocument extends Document {
 
     /**
      * Closes the document.
-     * <B>
      * Once all the content has been written in the body, you have to close
      * the body. After that nothing can be written to the body anymore.
      */
@@ -923,7 +923,7 @@ class PdfDocument extends Document {
      * @param text the <CODE>PdfContentByte</CODE> where the text will be written to
      * @param graphics the <CODE>PdfContentByte</CODE> where the graphics will be written to
      * @param currentValues the current font and extra spacing values
-     * @param ratio
+     * @param ratio ratio
      * @throws DocumentException on error
      */
     void writeLineToContent(final PdfLine line, final PdfContentByte text, final PdfContentByte graphics, final Object currentValues[], final float ratio)  throws DocumentException {
@@ -1393,7 +1393,7 @@ class PdfDocument extends Document {
     /**
      * Gets the <CODE>PdfInfo</CODE>-object.
      *
-     * @return	<CODE>PdfInfo</COPE>
+     * @return	<CODE>PdfInfo</CODE>
      */
 
     PdfInfo getInfo() {
@@ -1492,6 +1492,7 @@ class PdfDocument extends Document {
 
     /**
      * Recursive method to update the count in the outlines.
+     * @param outline Outline
      */
     private void traverseOutlineCount(final PdfOutline outline) {
         final ArrayList kids = outline.getKids();
@@ -1519,6 +1520,7 @@ class PdfDocument extends Document {
 
     /**
      * Writes the outline tree to the body of the PDF document.
+     * @throws IOException on error
      */
     private void writeOutlines() throws IOException {
         if (this.rootOutline.getKids().size() == 0) {
@@ -1530,6 +1532,8 @@ class PdfDocument extends Document {
 
     /**
      * Recursive method used to write outlines.
+     * @param outline Outline
+     * @throws IOException on error
      */
     private void outlineTree(final PdfOutline outline) throws IOException {
         outline.setIndirectReference(this.writer.getPdfIndirectReference());
@@ -1563,12 +1567,19 @@ class PdfDocument extends Document {
 
 	/** Contains the Viewer preferences of this PDF document. */
     private final PdfViewerPreferencesImp viewerPreferences = new PdfViewerPreferencesImp();
-    /** @see com.aowagie.text.pdf.interfaces.PdfViewerPreferences#setViewerPreferences(int) */
+    /**
+     * @param preferences Preferences
+     * @see com.aowagie.text.pdf.interfaces.PdfViewerPreferences#setViewerPreferences(int)
+     */
     void setViewerPreferences(final int preferences) {
         this.viewerPreferences.setViewerPreferences(preferences);
     }
 
-    /** @see com.aowagie.text.pdf.interfaces.PdfViewerPreferences#addViewerPreference(com.aowagie.text.pdf.PdfName, com.aowagie.text.pdf.PdfObject) */
+    /**
+     * @param key Key
+     * @param value Value
+     * @see com.aowagie.text.pdf.interfaces.PdfViewerPreferences#addViewerPreference(com.aowagie.text.pdf.PdfName, com.aowagie.text.pdf.PdfObject)
+     */
     void addViewerPreference(final PdfName key, final PdfObject value) {
     	this.viewerPreferences.addViewerPreference(key, value);
     }
@@ -2071,7 +2082,7 @@ class PdfDocument extends Document {
 
         /**
          * Consumes the rowspan
-         * @param c
+         * @param c Cell
          * @return a rowspan.
          */
         int consumeRowspan(final PdfCell c) {
@@ -2095,7 +2106,7 @@ class PdfDocument extends Document {
 
         /**
          * Looks at the current rowspan.
-         * @param c
+         * @param c Cell
          * @return the current rowspan
          */
         private int currentRowspan(final PdfCell c) {
@@ -2146,12 +2157,12 @@ class PdfDocument extends Document {
 
             return false;
         }
-    };
+    }
 
 	/**
 	 * Adds a new table to the document.
 	 * @param t				Table to add.  Rendered rows will be deleted after processing.
-	 * @throws DocumentException
+	 * @throws DocumentException on error
 	 * @since	iText 2.0.8
 	 */
     private void addPdfTable(final Table t) throws DocumentException {

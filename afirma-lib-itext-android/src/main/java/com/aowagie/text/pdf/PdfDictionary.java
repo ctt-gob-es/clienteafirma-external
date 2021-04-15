@@ -132,7 +132,7 @@ public class PdfDictionary extends PdfObject {
      *
      * @param writer for backwards compatibility
      * @param os the <CODE>OutputStream</CODE> to write the bytes to.
-     * @throws IOException
+     * @throws IOException on error
      */
     @Override
 	public void toPdf(final PdfWriter writer, final OutputStream os) throws IOException {
@@ -272,7 +272,7 @@ public class PdfDictionary extends PdfObject {
     /**
      * Returns <CODE>true</CODE> if this <CODE>PdfDictionary</CODE> contains a
      * mapping for the specified <VAR>key</VAR>.
-     *
+     * @param key Key
      * @return <CODE>true</CODE> if the key is set, otherwise <CODE>false</CODE>.
      */
     boolean contains(final PdfName key) {

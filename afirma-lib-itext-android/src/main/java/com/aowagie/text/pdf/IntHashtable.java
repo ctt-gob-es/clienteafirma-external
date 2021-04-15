@@ -148,7 +148,6 @@ class IntHashtable implements Cloneable {
      * @return <code>true</code> if and only if the specified int is a
      *    key in this hashtable, as determined by the <tt>equals</tt>
      *    method; <code>false</code> otherwise.
-     * @see #contains(int)
      */
     boolean containsKey(final int key) {
         final Entry tab[] = this.table;
@@ -365,7 +364,7 @@ class IntHashtable implements Cloneable {
 		public Object next() {
             if (this.entry == null) {
                 while (this.index-- > 0 && (this.entry = this.table[this.index]) == null) {
-					;
+
 				}
             }
             if (this.entry != null) {
@@ -401,7 +400,7 @@ class IntHashtable implements Cloneable {
     	while (true) {
     		if (entry == null) {
 				while (index-- > 0 && (entry = this.table[index]) == null) {
-					;
+
 				}
 			}
     		if (entry == null) {
@@ -421,7 +420,7 @@ class IntHashtable implements Cloneable {
     	int index = this.table.length;
     	Entry entry = null;
     	while (index-- > 0 && (entry = this.table[index]) == null) {
-			;
+
 		}
     	if (entry == null) {
 			return 0;
