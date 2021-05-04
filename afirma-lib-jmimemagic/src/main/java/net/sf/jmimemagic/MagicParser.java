@@ -23,6 +23,7 @@ For more information, please email arimus@users.sourceforge.net
 package net.sf.jmimemagic;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +40,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /** Analizador del XML de identificaci&oacute;n de tipos de fichero. */
 public final class MagicParser extends DefaultHandler {
-    private static String magicFile = "/magic.xml"; //$NON-NLS-1$
+
+    private static final String MAGIC_FILE = "/magic.xml"; //$NON-NLS-1$
 
     private boolean initialized = false;
     private XMLReader parser = null;
@@ -71,7 +73,7 @@ public final class MagicParser extends DefaultHandler {
             				"org.apache.xerces.parsers.SAXParser" //$NON-NLS-1$
             				).getDeclaredConstructor().newInstance();
             	}
-            	catch (Exception e2) {
+            	catch (final Exception e2) {
             		Logger.getLogger("es.gob.afirma").info( //$NON-NLS-1$
                 			"No se ha podido obtener el analizador SAX de Apache Xerces, se usara el por defecto: " + e2 //$NON-NLS-1$
             			);
@@ -88,16 +90,21 @@ public final class MagicParser extends DefaultHandler {
             this.parser.setErrorHandler(this);
             this.parser.setContentHandler(this);
 
+            final URL magicUrl = MagicParser.class.getResource(MAGIC_FILE);
+            if (magicUrl == null) {
+                throw new MagicParseException("No se ha podido cargar '" + MAGIC_FILE + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
             // parse file
             try {
                 // get the magic file URL
-                final String magicURL = MagicParser.class.getResource(magicFile).toString();
+                final String  magic = magicUrl.toString();
 
-                if (magicURL == null) {
-                    throw new MagicParseException("couldn't load '" + magicURL + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+                if (magic == null) {
+                    throw new MagicParseException("No se ha podido cargar '" + magic + "'"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
 
-                this.parser.parse(magicURL);
+                this.parser.parse(magic);
             }
             catch (final SAXParseException e) {
                 // ignore
@@ -175,12 +182,12 @@ public final class MagicParser extends DefaultHandler {
 
                     if (attrLocalName.equals("offset")) { //$NON-NLS-1$
                         if (!attrValue.equals("")) { //$NON-NLS-1$
-                            this.match.setOffset(Integer.valueOf(attrValue).intValue());
+                            this.match.setOffset(Integer.parseInt(attrValue));
                         }
                     }
                     else if (attrLocalName.equals("length")) { //$NON-NLS-1$
                         if (!attrValue.equals("")) { //$NON-NLS-1$
-                            this.match.setLength(Integer.valueOf(attrValue).intValue());
+                            this.match.setLength(Integer.parseInt(attrValue));
                         }
                     }
                     else if (attrLocalName.equals("type")) { //$NON-NLS-1$
@@ -209,11 +216,9 @@ public final class MagicParser extends DefaultHandler {
                         if (!attrValue.equals("")) { //$NON-NLS-1$
                             name = attrValue;
                         }
-                    } else if (attrLocalName.equals("value")) { //$NON-NLS-1$
-                        if (!attrValue.equals("")) { //$NON-NLS-1$
-                            value = attrValue;
-                        }
-                    }
+                    } else if (attrLocalName.equals("value") && !attrValue.equals("")) { //$NON-NLS-1$
+					    value = attrValue;
+					}
                 }
 
                 // save the property to our map
