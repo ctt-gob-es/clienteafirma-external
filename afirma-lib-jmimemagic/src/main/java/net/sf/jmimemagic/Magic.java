@@ -42,7 +42,7 @@ public final class Magic {
      * @param matcher DOCUMENT ME!
      */
     private static void addHint(final String extension, final MagicMatcher matcher) {
-        if (hintMap.keySet().contains(extension)) {
+        if (hintMap.containsKey(extension)) {
             final ArrayList<MagicMatcher> a = hintMap.get(extension);
             a.add(matcher);
         } else {
@@ -52,7 +52,8 @@ public final class Magic {
         }
     }
 
-    /** Create a parser and initialize it. */
+    /** Create a parser and initialize it.
+     * @throws MagicParseException En cualquier error. */
     public static synchronized void initialize() throws MagicParseException {
 
         if (!initialized) {
