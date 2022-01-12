@@ -90,6 +90,7 @@ public final class MagicParser extends DefaultHandler {
             this.parser.setErrorHandler(this);
             this.parser.setContentHandler(this);
 
+            // get the magic file URL
             final URL magicUrl = MagicParser.class.getResource(MAGIC_FILE);
             if (magicUrl == null) {
                 throw new MagicParseException("No se ha podido cargar '" + MAGIC_FILE + "'"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -97,13 +98,7 @@ public final class MagicParser extends DefaultHandler {
 
             // parse file
             try {
-                // get the magic file URL
                 final String  magic = magicUrl.toString();
-
-                if (magic == null) {
-                    throw new MagicParseException("No se ha podido cargar '" + magic + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-
                 this.parser.parse(magic);
             }
             catch (final SAXParseException e) {
@@ -216,7 +211,7 @@ public final class MagicParser extends DefaultHandler {
                         if (!attrValue.equals("")) { //$NON-NLS-1$
                             name = attrValue;
                         }
-                    } else if (attrLocalName.equals("value") && !attrValue.equals("")) { //$NON-NLS-1$
+                    } else if (attrLocalName.equals("value") && !attrValue.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 					    value = attrValue;
 					}
                 }
