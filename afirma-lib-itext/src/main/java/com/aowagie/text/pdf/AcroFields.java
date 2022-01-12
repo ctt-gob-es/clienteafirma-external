@@ -174,6 +174,22 @@ public class AcroFields {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
                 }
+
+                // Comprobamos que la firma encontrada estaba entre las firmas declaradas
+                boolean found = false;
+                final PRIndirectReference foundSignRef = (PRIndirectReference) annots.getPdfObject(j);
+                for (int l = 0; l < arrfds.size() && !found; l++) {
+                	final PRIndirectReference declaredSignRef = (PRIndirectReference) arrfds.getPdfObject(l);
+                	if (foundSignRef.getNumber() == declaredSignRef.getNumber()) {
+                		found = true;
+                	}
+                }
+
+                if (!found) {
+                	PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                	continue;
+                }
+
                 if (!PdfName.WIDGET.equals(annot.getAsName(PdfName.SUBTYPE))) {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
