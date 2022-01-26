@@ -76,6 +76,7 @@ import com.aowagie.text.Image;
 import com.aowagie.text.Paragraph;
 import com.aowagie.text.Phrase;
 import com.aowagie.text.Rectangle;
+import com.aowagie.text.exceptions.InvalidPageNumberException;
 
 /**
  * This class takes care of the cryptographic options and appearances that form a signature.
@@ -265,7 +266,7 @@ public class PdfSignatureAppearance {
             this.fieldName = fieldName;
         }
         if (page < 1 || page > this.writer.reader.getNumberOfPages()) {
-			throw new IllegalArgumentException("Invalid page number: " + page); //$NON-NLS-1$
+			throw new InvalidPageNumberException("Invalid page number: " + page); //$NON-NLS-1$
 		}
         this.pageRect = new Rectangle(pageRect);
         this.pageRect.normalize();
