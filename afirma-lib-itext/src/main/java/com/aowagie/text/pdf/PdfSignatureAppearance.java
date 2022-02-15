@@ -65,6 +65,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.aowagie.text.Chunk;
@@ -873,11 +874,11 @@ public class PdfSignatureAppearance {
      * @throws DocumentException on error
      */
     void preClose(final Calendar globalDate) throws IOException, DocumentException {
-        preClose(null, globalDate);
+        preClose(null, globalDate, null);
     }
 
     public void preClose() throws IOException, DocumentException {
-    	preClose(null, null);
+    	preClose(null, null, null);
     }
 
     /**
@@ -897,7 +898,7 @@ public class PdfSignatureAppearance {
      * @throws DocumentException on error
      */
     public void preClose(final HashMap exclusionSizes) throws IOException, DocumentException {
-    	preClose(exclusionSizes, null);
+    	preClose(exclusionSizes, null, null);
     }
 
     /**
@@ -914,10 +915,11 @@ public class PdfSignatureAppearance {
      * calculation. The key is a <CODE>PdfName</CODE> and the value an
      * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
      * @param globalDate global date
+     * @param pages number of the pages to stamp
      * @throws IOException on error
      * @throws DocumentException on error
      */
-    public void preClose(final HashMap exclusionSizes, final Calendar globalDate) throws IOException, DocumentException {
+    public void preClose(final HashMap exclusionSizes, final Calendar globalDate, final List<Integer> pages) throws IOException, DocumentException {
         if (this.preClosed) {
             throw new DocumentException("Document already pre closed."); //$NON-NLS-1$
         }
@@ -955,15 +957,21 @@ public class PdfSignatureAppearance {
             sigField.put(PdfName.V, refSig);
             sigField.setFlags(PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED);
 
-            final int pagen = getPage();
             if (!isInvisible()) {
 				sigField.setWidget(getPageRect(), null);
 			} else {
 				sigField.setWidget(new Rectangle(0, 0), null);
 			}
             sigField.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, getAppearance());
-            sigField.setPage(pagen);
-            this.writer.addAnnotation(sigField, pagen);
+            if (pages != null && pages.size() >= 1) {
+            	for (int i = 0 ; i < pages.size() ; i++) {
+    	            sigField.setPage(pages.get(i));
+    	            this.writer.addAnnotation(sigField, pages.get(i));
+            	}
+            } else {
+	            sigField.setPage(getPage());
+	            this.writer.addAnnotation(sigField, getPage());
+            }
         }
 
         this.exclusionLocations = new LinkedHashMap();
