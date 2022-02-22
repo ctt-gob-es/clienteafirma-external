@@ -915,6 +915,192 @@ public class PdfSignatureAppearance {
      * calculation. The key is a <CODE>PdfName</CODE> and the value an
      * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
      * @param globalDate global date
+     * @throws IOException on error
+     * @throws DocumentException on error
+     */
+    public void preClose(final HashMap exclusionSizes, final Calendar globalDate) throws IOException, DocumentException {
+        if (this.preClosed) {
+            throw new DocumentException("Document already pre closed."); //$NON-NLS-1$
+        }
+        this.preClosed = true;
+        final AcroFields af = this.writer.getAcroFields();
+        final String name = getFieldName();
+
+        // Se elimina la comprobacion de si es el campo es visible o no, ya que
+        // eso impide que se puedan firmar campos de firma invisibles que ya
+        // existan
+        //final boolean fieldExists = !(isInvisible() || isNewField());
+        final boolean fieldExists = !isNewField();
+
+        final PdfIndirectReference refSig = this.writer.getPdfIndirectReference();
+        this.writer.setSigFlags(3);
+        if (fieldExists) {
+            final PdfDictionary widget = af.getFieldItem(name).getWidget(0);
+            this.writer.markUsed(widget);
+            widget.put(PdfName.P, this.writer.getPageReference(getPage()));
+            widget.put(PdfName.V, refSig);
+            final PdfObject obj = PdfReader.getPdfObjectRelease(widget.get(PdfName.F));
+            int flags = 0;
+            if (obj != null && obj.isNumber()) {
+				flags = ((PdfNumber)obj).intValue();
+			}
+            flags |= PdfAnnotation.FLAGS_LOCKED;
+            widget.put(PdfName.F, new PdfNumber(flags));
+            final PdfDictionary ap = new PdfDictionary();
+            ap.put(PdfName.N, getAppearance().getIndirectReference());
+            widget.put(PdfName.AP, ap);
+        }
+        else {
+            final PdfFormField sigField = PdfFormField.createSignature(this.writer);
+            sigField.setFieldName(name);
+            sigField.put(PdfName.V, refSig);
+            sigField.setFlags(PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED);
+
+            final int pagen = getPage();
+            if (!isInvisible()) {
+				sigField.setWidget(getPageRect(), null);
+			} else {
+				sigField.setWidget(new Rectangle(0, 0), null);
+			}
+            sigField.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, getAppearance());
+            sigField.setPage(pagen);
+            this.writer.addAnnotation(sigField, pagen);
+        }
+
+        this.exclusionLocations = new LinkedHashMap();
+        if (this.cryptoDictionary == null) {
+            if (PdfName.ADOBE_PPKLITE.equals(getFilter())) {
+				this.sigStandard = new PdfSigGenericPKCS.PPKLite(getProvider());
+			}
+            else if (PdfName.ADOBE_PPKMS.equals(getFilter())) {
+				this.sigStandard = new PdfSigGenericPKCS.PPKMS(getProvider());
+			}
+            else if (PdfName.VERISIGN_PPKVS.equals(getFilter())) {
+				this.sigStandard = new PdfSigGenericPKCS.VeriSign(getProvider());
+			}
+            else {
+				throw new IllegalArgumentException("Unknown filter: " + getFilter()); //$NON-NLS-1$
+			}
+            this.sigStandard.setExternalDigest(this.externalDigest, this.externalRSAdata, this.digestEncryptionAlgorithm);
+            if (getReason() != null) {
+				this.sigStandard.setReason(getReason());
+			}
+            if (getLocation() != null) {
+				this.sigStandard.setLocation(getLocation());
+			}
+            if (getContact() != null) {
+				this.sigStandard.setContact(getContact());
+			}
+            this.sigStandard.put(PdfName.M, new PdfDate(getSignDate()));
+            this.sigStandard.setSignInfo(getPrivKey(), getCertChain(), getCrlList());
+            final PdfString contents = (PdfString)this.sigStandard.get(PdfName.CONTENTS);
+            PdfLiteral lit = new PdfLiteral((contents.toString().length() + (PdfName.ADOBE_PPKLITE.equals(getFilter())?0:64)) * 2 + 2);
+            this.exclusionLocations.put(PdfName.CONTENTS, lit);
+            this.sigStandard.put(PdfName.CONTENTS, lit);
+            lit = new PdfLiteral(80);
+            this.exclusionLocations.put(PdfName.BYTERANGE, lit);
+            this.sigStandard.put(PdfName.BYTERANGE, lit);
+            if (this.certificationLevel > 0) {
+                addDocMDP(this.sigStandard);
+            }
+            if (this.signatureEvent != null) {
+				this.signatureEvent.getSignatureDictionary(this.sigStandard);
+			}
+            this.writer.addToBody(this.sigStandard, refSig, false);
+     }
+        else {
+            PdfLiteral lit = new PdfLiteral(80);
+            this.exclusionLocations.put(PdfName.BYTERANGE, lit);
+            this.cryptoDictionary.put(PdfName.BYTERANGE, lit);
+            for (final Iterator it = exclusionSizes.entrySet().iterator(); it.hasNext();) {
+                final Map.Entry entry = (Map.Entry)it.next();
+                final PdfName key = (PdfName)entry.getKey();
+                final Integer v = (Integer)entry.getValue();
+                lit = new PdfLiteral(v.intValue());
+                this.exclusionLocations.put(key, lit);
+                this.cryptoDictionary.put(key, lit);
+            }
+            if (this.certificationLevel > 0) {
+				addDocMDP(this.cryptoDictionary);
+			}
+            if (this.signatureEvent != null) {
+				this.signatureEvent.getSignatureDictionary(this.cryptoDictionary);
+			}
+            this.writer.addToBody(this.cryptoDictionary, refSig, false);
+        }
+        if (this.certificationLevel > 0) {
+          // add DocMDP entry to root
+             final PdfDictionary docmdp = new PdfDictionary();
+             docmdp.put(new PdfName("DocMDP"), refSig); //$NON-NLS-1$
+             this.writer.reader.getCatalog().put(new PdfName("Perms"), docmdp); //$NON-NLS-1$
+        }
+
+        this.writer.close(this.stamper.getMoreInfo(), globalDate!=null ? globalDate : new GregorianCalendar());
+
+        this.range = new int[this.exclusionLocations.size() * 2];
+        final int byteRangePosition = ((PdfLiteral)this.exclusionLocations.get(PdfName.BYTERANGE)).getPosition();
+        this.exclusionLocations.remove(PdfName.BYTERANGE);
+        int idx = 1;
+        for (final Iterator it = this.exclusionLocations.values().iterator(); it.hasNext();) {
+            final PdfLiteral lit = (PdfLiteral)it.next();
+            final int n = lit.getPosition();
+            this.range[idx++] = n;
+            this.range[idx++] = lit.getPosLength() + n;
+        }
+        Arrays.sort(this.range, 1, this.range.length - 1);
+        for (int k = 3; k < this.range.length - 2; k += 2) {
+			this.range[k] -= this.range[k - 1];
+		}
+
+        if (this.tempFile == null) {
+            this.bout = this.sigout.getBuffer();
+            this.boutLen = this.sigout.size();
+            this.range[this.range.length - 1] = this.boutLen - this.range[this.range.length - 2];
+            final ByteBuffer bf = new ByteBuffer();
+            bf.append('[');
+            for (final int element : this.range) {
+				bf.append(element).append(' ');
+			}
+            bf.append(']');
+            System.arraycopy(bf.getBuffer(), 0, this.bout, byteRangePosition, bf.size());
+        }
+        else {
+            try {
+                this.raf = new RandomAccessFile(this.tempFile, "rw"); //$NON-NLS-1$
+                final int boutLen = (int)this.raf.length();
+                this.range[this.range.length - 1] = boutLen - this.range[this.range.length - 2];
+                final ByteBuffer bf = new ByteBuffer();
+                bf.append('[');
+                for (final int element : this.range) {
+					bf.append(element).append(' ');
+				}
+                bf.append(']');
+                this.raf.seek(byteRangePosition);
+                this.raf.write(bf.getBuffer(), 0, bf.size());
+            }
+            catch (final IOException e) {
+                try{this.raf.close();}catch(final Exception ee){}
+                try{this.tempFile.delete();}catch(final Exception ee){}
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * This is the first method to be called when using external signatures. The general sequence is:
+     * preClose(), getDocumentBytes() and close(). This is a new version of the method
+     * preClose(final HashMap exclusionSizes, final Calendar globalDate)
+     * <p>
+     * If calling preClose() <B>dont't</B> call PdfStamper.close().
+     * <p>
+     * If using an external signature <CODE>exclusionSizes</CODE> must contain at least
+     * the <CODE>PdfName.CONTENTS</CODE> key with the size that it will take in the
+     * document. Note that due to the hex string coding this size should be
+     * byte_size*2+2.
+     * @param exclusionSizes a <CODE>HashMap</CODE> with names and sizes to be excluded in the signature
+     * calculation. The key is a <CODE>PdfName</CODE> and the value an
+     * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
+     * @param globalDate global date
      * @param pages number of the pages to stamp
      * @throws IOException on error
      * @throws DocumentException on error
