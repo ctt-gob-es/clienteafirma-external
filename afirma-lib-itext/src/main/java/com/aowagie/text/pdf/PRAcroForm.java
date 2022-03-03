@@ -62,7 +62,7 @@ import java.util.LinkedHashMap;
  * @author Mark Thompson
  */
 
-class PRAcroForm extends PdfDictionary {
+public class PRAcroForm extends PdfDictionary {
 
     /**
      * This class holds the information for a single field
@@ -78,7 +78,7 @@ class PRAcroForm extends PdfDictionary {
         public String getName() { return this.name; }
         public PdfDictionary getInfo() { return this.info; }
         public PRIndirectReference getRef() { return this.ref; }
-    };
+    }
     private final ArrayList fields;
     private final ArrayList stack;
     private final HashMap fieldByName;

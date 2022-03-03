@@ -65,6 +65,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.aowagie.text.Chunk;
@@ -890,6 +891,29 @@ public class PdfSignatureAppearance {
      * @throws DocumentException on error
      */
     public void preClose(final HashMap exclusionSizes, final Calendar globalDate) throws IOException, DocumentException {
+    	preClose(exclusionSizes, globalDate, null);
+    }
+
+    /**
+     * This is the first method to be called when using external signatures. The general sequence is:
+     * preClose(), getDocumentBytes() and close(). This is a new version of the method
+     * preClose(final HashMap exclusionSizes, final Calendar globalDate)
+     * <p>
+     * If calling preClose() <B>dont't</B> call PdfStamper.close().
+     * <p>
+     * If using an external signature <CODE>exclusionSizes</CODE> must contain at least
+     * the <CODE>PdfName.CONTENTS</CODE> key with the size that it will take in the
+     * document. Note that due to the hex string coding this size should be
+     * byte_size*2+2.
+     * @param exclusionSizes a <CODE>HashMap</CODE> with names and sizes to be excluded in the signature
+     * calculation. The key is a <CODE>PdfName</CODE> and the value an
+     * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
+     * @param globalDate global date
+     * @param pages pages to stamp
+     * @throws IOException on error
+     * @throws DocumentException on error
+     */
+    public void preClose(final HashMap exclusionSizes, final Calendar globalDate, final List<Integer> pages) throws IOException, DocumentException {
         if (this.preClosed) {
             throw new DocumentException("Document already pre closed."); //$NON-NLS-1$
         }
@@ -927,26 +951,36 @@ public class PdfSignatureAppearance {
             sigField.put(PdfName.V, refSig);
             sigField.setFlags(PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED);
 
-            final int pagen = getPage();
             if (!isInvisible()) {
 				sigField.setWidget(getPageRect(), null);
 			} else {
 				sigField.setWidget(new Rectangle(0, 0), null);
 			}
             sigField.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, getAppearance());
-            sigField.setPage(pagen);
-            this.writer.addAnnotation(sigField, pagen);
+            if (pages != null && pages.size() >= 1) {
+            	for (int i = 0 ; i < pages.size() ; i++) {
+    	            sigField.setPage(pages.get(i));
+    	            this.writer.addAnnotation(sigField, pages.get(i));
+            	}
+            } else {
+            	final int pagen = getPage();
+	            sigField.setPage(pagen);
+	            this.writer.addAnnotation(sigField, pagen);
+            }
         }
 
         this.exclusionLocations = new LinkedHashMap();
         if (this.cryptoDictionary == null) {
             if (PdfName.ADOBE_PPKLITE.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.PPKLite(getProvider());
-			} else if (PdfName.ADOBE_PPKMS.equals(getFilter())) {
+			}
+            else if (PdfName.ADOBE_PPKMS.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.PPKMS(getProvider());
-			} else if (PdfName.VERISIGN_PPKVS.equals(getFilter())) {
+			}
+            else if (PdfName.VERISIGN_PPKVS.equals(getFilter())) {
 				this.sigStandard = new PdfSigGenericPKCS.VeriSign(getProvider());
-			} else {
+			}
+            else {
 				throw new IllegalArgumentException("Unknown filter: " + getFilter()); //$NON-NLS-1$
 			}
             this.sigStandard.setExternalDigest(this.externalDigest, this.externalRSAdata, this.digestEncryptionAlgorithm);
