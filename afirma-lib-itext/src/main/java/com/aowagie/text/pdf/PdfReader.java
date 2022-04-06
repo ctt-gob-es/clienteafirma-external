@@ -52,6 +52,8 @@ package com.aowagie.text.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -965,7 +967,7 @@ public class PdfReader implements PdfViewerPreferences {
      * @return an indirect reference
      */
     public PRIndirectReference addPdfObject(final PdfObject obj) {
-        this.xrefObj.add(obj);
+    	this.xrefObj.add(obj);
         return new PRIndirectReference(this, this.xrefObj.size() - 1);
     }
 
@@ -1070,7 +1072,21 @@ public class PdfReader implements PdfViewerPreferences {
 				throw new InvalidPdfException("Error reading ObjStm"); //$NON-NLS-1$
 			}
             this.tokens.seek(address);
-            return readPRObject();
+            
+            // Correccion iText
+            this.tokens.nextToken();
+            PdfObject obj;
+            if (this.tokens.getTokenType() == PRTokeniser.TK_NUMBER) {
+                obj = new PdfNumber(this.tokens.getStringValue());
+            }
+            else {
+            	this.tokens.seek(address);
+                obj = readPRObject();
+            }
+            return obj;
+            
+            // Antes:
+            //return readPRObject();
         }
         finally {
             this.tokens = saveTokens;
@@ -1158,8 +1174,9 @@ public class PdfReader implements PdfViewerPreferences {
         if (calc) {
             final byte tline[] = new byte[16];
             this.tokens.seek(start);
+            int pos;
             while (true) {
-                int pos = this.tokens.getFilePointer();
+                pos = this.tokens.getFilePointer();
                 if (!this.tokens.readLineSegment(tline)) {
 					break;
 				}
@@ -1218,7 +1235,20 @@ public class PdfReader implements PdfViewerPreferences {
             for (int k = 0; k < n; ++k) {
                 if (map.containsKey(k)) {
                     this.tokens.seek(address[k]);
-                    final PdfObject obj = readPRObject();
+                   
+                    // Correccion iText
+                    this.tokens.nextToken();
+                    PdfObject obj;
+                    if (this.tokens.getTokenType() == PRTokeniser.TK_NUMBER) {
+                    	obj = new PdfNumber(this.tokens.getStringValue());
+                    }
+                    else {
+                    	this.tokens.seek(address[k]);
+                    	obj = readPRObject();
+                    }
+                    // Antes:
+					// PdfObject obj = readPRObject();
+
                     this.xrefObj.set(objNumber[k], obj);
                 }
             }
@@ -3541,4 +3571,24 @@ public class PdfReader implements PdfViewerPreferences {
 		}
     }
 
+    
+    public static void main(String[] args) throws Exception {
+
+//    	try (InputStream is = new FileInputStream("C:\\Users\\carlos.gamuci\\Desktop\\220121_Boletines_firmados_por_email_.pdf")) {
+//    		PdfReader reader = new PdfReader(is);
+//    	}
+
+    	
+    	PdfReader reader;
+    	try (InputStream fis = new FileInputStream("C:\\Users\\carlos.gamuci\\Desktop\\220121_Boletines_firmados_por_email_.pdf")) {
+    		reader = new PdfReader(fis);
+    	}
+    	
+    	try (FileOutputStream fos = new FileOutputStream("C:\\Users\\carlos.gamuci\\Desktop\\salida_itext2.pdf")) {
+    		final PdfStamper stamper = new PdfStamper(reader, fos);
+    		stamper.close();
+    	}
+    	
+    	System.out.println("Fin");
+    }
 }
