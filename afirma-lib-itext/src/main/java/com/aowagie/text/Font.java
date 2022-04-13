@@ -74,19 +74,19 @@ public class Font implements Comparable {
 	// static membervariables for the different families
 
 	/** a possible value of a font family. */
-	private static final int COURIER = 0;
+	public static final int COURIER = 0;
 
 	/** a possible value of a font family. */
-	private static final int HELVETICA = 1;
+	public static final int HELVETICA = 1;
 
 	/** a possible value of a font family. */
-	private static final int TIMES_ROMAN = 2;
+	public static final int TIMES_ROMAN = 2;
 
 	/** a possible value of a font family. */
 	public static final int SYMBOL = 3;
 
 	/** a possible value of a font family. */
-	static final int ZAPFDINGBATS = 4;
+	public static final int ZAPFDINGBATS = 4;
 
 	// static membervariables for the different styles
 

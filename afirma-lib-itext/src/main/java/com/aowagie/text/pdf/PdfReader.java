@@ -52,8 +52,6 @@ package com.aowagie.text.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -3569,26 +3567,5 @@ public class PdfReader implements PdfViewerPreferences {
 		} else {
 			return this.decrypt.isMetadataEncrypted();
 		}
-    }
-
-    
-    public static void main(String[] args) throws Exception {
-
-//    	try (InputStream is = new FileInputStream("C:\\Users\\carlos.gamuci\\Desktop\\220121_Boletines_firmados_por_email_.pdf")) {
-//    		PdfReader reader = new PdfReader(is);
-//    	}
-
-    	
-    	PdfReader reader;
-    	try (InputStream fis = new FileInputStream("C:\\Users\\carlos.gamuci\\Desktop\\220121_Boletines_firmados_por_email_.pdf")) {
-    		reader = new PdfReader(fis);
-    	}
-    	
-    	try (FileOutputStream fos = new FileOutputStream("C:\\Users\\carlos.gamuci\\Desktop\\salida_itext2.pdf")) {
-    		final PdfStamper stamper = new PdfStamper(reader, fos);
-    		stamper.close();
-    	}
-    	
-    	System.out.println("Fin");
     }
 }
