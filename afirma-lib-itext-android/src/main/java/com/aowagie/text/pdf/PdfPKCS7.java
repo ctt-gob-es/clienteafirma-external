@@ -174,11 +174,23 @@ public class PdfPKCS7 {
 
     private TimeStampToken timeStampToken;
 
+    private static final HashMap<String, String> strictDigestNames = new LinkedHashMap<String, String>();
     private static final HashMap<String, String> digestNames = new LinkedHashMap<String, String>();
     private static final HashMap<String, String> algorithmNames = new LinkedHashMap<String, String>();
     private static final HashMap<String, String> allowedDigests = new LinkedHashMap<String, String>();
 
     static {
+    	strictDigestNames.put("1.2.840.113549.2.5", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
+    	strictDigestNames.put("1.2.840.113549.2.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("1.3.14.3.2.26", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("2.16.840.1.101.3.4.2.4", "SHA224"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("2.16.840.1.101.3.4.2.1", "SHA256"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("2.16.840.1.101.3.4.2.2", "SHA384"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("2.16.840.1.101.3.4.2.3", "SHA512"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("1.3.36.3.2.2", "RIPEMD128"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("1.3.36.3.2.1", "RIPEMD160"); //$NON-NLS-1$ //$NON-NLS-2$
+        strictDigestNames.put("1.3.36.3.2.3", "RIPEMD256"); //$NON-NLS-1$ //$NON-NLS-2$
+
         digestNames.put("1.2.840.113549.2.5", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("1.2.840.113549.2.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("1.3.14.3.2.26", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -196,8 +208,6 @@ public class PdfPKCS7 {
         digestNames.put("1.2.840.113549.1.1.11", "SHA256"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("1.2.840.113549.1.1.12", "SHA384"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("1.2.840.113549.1.1.13", "SHA512"); //$NON-NLS-1$ //$NON-NLS-2$
-        digestNames.put("1.2.840.113549.2.5", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
-        digestNames.put("1.2.840.113549.2.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("1.2.840.10040.4.3", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("2.16.840.1.101.3.4.3.1", "SHA224"); //$NON-NLS-1$ //$NON-NLS-2$
         digestNames.put("2.16.840.1.101.3.4.3.2", "SHA256"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -795,6 +805,15 @@ public class PdfPKCS7 {
      */
     public String getHashAlgorithm() {
         return getDigest(this.digestAlgorithm);
+    }
+
+    /**
+     * Returns the algorithm de hash declarado.
+     * @return the digest algorithm or {@code null} is there isn't a valid
+     * hash algorithm.
+     */
+    public String getStrictHashAlgorithm() {
+        return strictDigestNames.get(this.digestAlgorithm);
     }
 
     /**
