@@ -64,6 +64,14 @@ public class ImgJBIG2 extends Image {
 	private  byte[] globalHash;
 
 	/**
+	 * Copy contstructor.
+	 * @param	image another Image
+	 */
+	ImgJBIG2(Image image) {
+		super(image);
+	}
+	
+	/**
 	 * Empty constructor.
 	 */
 	public ImgJBIG2() {

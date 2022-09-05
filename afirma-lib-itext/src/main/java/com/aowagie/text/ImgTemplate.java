@@ -62,8 +62,12 @@ import com.aowagie.text.pdf.PdfTemplate;
  * @author  Paulo Soares
  */
 
-class ImgTemplate extends Image {
+public class ImgTemplate extends Image {
 
+    ImgTemplate(Image image) {
+        super(image);
+    }
+	
     /** Creates an Image from a PdfTemplate.
      *
      * @param template the PdfTemplate

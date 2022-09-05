@@ -92,12 +92,12 @@ public class PdfSignatureAppearance {
     /**
      * The rendering mode is the name of the signer and the description
      */
-    private static final int SignatureRenderNameAndDescription = 1;
+    public static final int SignatureRenderNameAndDescription = 1;
 
     /**
      * The rendering mode is an image and the description
      */
-    private static final int SignatureRenderGraphicAndDescription = 2;
+    public static final int SignatureRenderGraphicAndDescription = 2;
 
     /**
      * The self signed filter.

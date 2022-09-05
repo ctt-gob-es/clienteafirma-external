@@ -49,11 +49,11 @@
 
 package com.aowagie.text;
 
-import harmony.java.awt.color.ICC_Profile;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import harmony.java.awt.color.ICC_Profile;
 
 /**
  * An <CODE>Jpeg</CODE> is the representation of a graphic element (JPEG)
@@ -100,6 +100,10 @@ public class Jpeg extends Image {
 
     private byte[][] icc;
     // Constructors
+
+    Jpeg(final Image image) {
+        super(image);
+    }
 
     /**
      * Constructs a <CODE>Jpeg</CODE>-object, using an <VAR>url</VAR>.

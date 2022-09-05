@@ -69,6 +69,10 @@ public class ImgWMF extends Image {
 
     // Constructors
 
+    public ImgWMF(final Image image) {
+        super(image);
+    }
+
     /**
      * Constructs an <CODE>ImgWMF</CODE>-object, using an <VAR>url</VAR>.
      *

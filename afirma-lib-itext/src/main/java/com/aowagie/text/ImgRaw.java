@@ -62,6 +62,10 @@ import java.net.URL;
 
 public class ImgRaw extends Image {
 
+    ImgRaw(Image image) {
+        super(image);
+    }
+	
 /** Creates an Image in raw mode.
  *
  * @param width the exact width of the image

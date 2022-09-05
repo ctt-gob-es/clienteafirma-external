@@ -62,7 +62,11 @@ import com.aowagie.text.pdf.codec.TIFFFaxDecoder;
  * @author  Paulo Soares
  */
 
-class ImgCCITT extends Image {
+public class ImgCCITT extends Image {
+
+    public ImgCCITT(final Image image) {
+        super(image);
+    }
 
     /** Creates an Image with CCITT compression.
      *

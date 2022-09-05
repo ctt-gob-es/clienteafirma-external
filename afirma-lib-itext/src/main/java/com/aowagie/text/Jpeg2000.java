@@ -61,7 +61,7 @@ import java.net.URL;
  * @see		Image
  */
 
-class Jpeg2000 extends Image {
+public class Jpeg2000 extends Image {
 
     // public static final membervariables
 
@@ -78,6 +78,10 @@ class Jpeg2000 extends Image {
 
     // Constructors
 
+    Jpeg2000(Image image) {
+        super(image);
+    }
+    
     /**
      * Constructs a <CODE>Jpeg2000</CODE>-object, using an <VAR>url</VAR>.
      *

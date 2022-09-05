@@ -70,6 +70,10 @@ public class ImgJBIG2 extends Image {
 		super((Image) null);
 	}
 
+    public ImgJBIG2(final Image image) {
+        super(image);
+    }
+
 	/**
 	 * Actual constructor for ImgJBIG2 images.
 	 * @param	width	the width of the image

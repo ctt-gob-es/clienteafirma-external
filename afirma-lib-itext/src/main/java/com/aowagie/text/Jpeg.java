@@ -100,6 +100,10 @@ public class Jpeg extends Image {
     private byte[][] icc;
     // Constructors
 
+    Jpeg(Image image) {
+        super(image);
+    }
+    
     /**
      * Constructs a <CODE>Jpeg</CODE>-object, using an <VAR>url</VAR>.
      *
