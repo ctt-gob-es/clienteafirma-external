@@ -67,7 +67,7 @@ public class PRAcroForm extends PdfDictionary {
     /**
      * This class holds the information for a single field
      */
-    private static class FieldInformation {
+    public static class FieldInformation {
         private final String name;
         private final PdfDictionary info;
         private final PRIndirectReference ref;
