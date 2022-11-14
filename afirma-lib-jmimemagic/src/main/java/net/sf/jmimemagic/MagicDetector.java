@@ -48,27 +48,31 @@ public interface MagicDetector {
      * @return List of file extensions this detector typically deals with. */
     String[] getHandledExtensions();
 
-    /** Process the stream and return all matching content types.
-     * @param data
-     * @param offset
-     * @param length
-     * @param bitmask
-     * @param comparator
-     * @param mimeType
-     * @param params
-     * @return Matching content types. */
+    /**
+     * Process the stream and return all matching content types.
+     * @param data Datos.
+     * @param offset Punto de inicio del an&aacute;lisis.
+     * @param length Longitud de los datos a analizar.
+     * @param bitmask M&aacute;scara para el an&aacute;lisis.
+     * @param comparator Caracter  esperado.
+     * @param mimeType Mimetype.
+     * @param params Par&aacute;metros.
+     * @return Matching content types.
+     */
     String[] process(byte[] data, int offset, int length, long bitmask, char comparator,
         String mimeType, Map<String, String> params);
 
-    /** Process the file and return all matching content types.
-     * @param file
-     * @param offset
-     * @param length
-     * @param bitmask
-     * @param comparator
-     * @param mimeType
-     * @param params
-     * @return Matching content types. */
+    /**
+     * Process the file and return all matching content types.
+     * @param file Fichero del que cargar los datos.
+     * @param offset Punto de inicio del an&aacute;lisis.
+     * @param length Longitud de los datos a analizar.
+     * @param bitmask M&aacute;scara para el an&aacute;lisis.
+     * @param comparator Caracter  esperado.
+     * @param mimeType Mimetype.
+     * @param params Par&aacute;metros.
+     * @return Matching content types.
+     */
     String[] process(File file, int offset, int length, long bitmask, char comparator,
         String mimeType, Map<String, String> params);
 }

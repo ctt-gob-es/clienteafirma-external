@@ -220,12 +220,14 @@ public final class MagicMatcher implements Cloneable, Serializable {
 
     }
 
-    /** Test to see if this match or any submatches match.
+    /**
+     * Test to see if this match or any submatches match.
      * @param data the data that should be used to test the match
-     * @param onlyMimeMatch
+     * @param onlyMimeMatch Indica que s&oacute;lo se identifique el mimetype de los datos.
      * @return the deepest magic match object that matched
-     * @throws IOException
-     * @throws UnsupportedTypeException */
+     * @throws IOException Cuando falla la lectura de los datos.
+     * @throws UnsupportedTypeException Cuando no se identifiquen los datos.
+     */
     public MagicMatch test(final byte[] data,
     		               final boolean onlyMimeMatch) throws IOException,
     		                                                   UnsupportedTypeException {
@@ -551,7 +553,10 @@ public final class MagicMatcher implements Cloneable, Serializable {
         return false;
     }
 
-    /** Get the extensions for the underlying detectory. */
+    /**
+     * Get the extensions for the underlying detectory.
+     * @return Listado de extensiones.
+     */
     public String[] getDetectorExtensions() {
 
         final String detectorClassName = new String(this.match.getTest().array()).trim();

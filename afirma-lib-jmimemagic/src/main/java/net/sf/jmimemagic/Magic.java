@@ -82,12 +82,28 @@ public final class Magic {
         }
     }
 
-    /** Get a match from a stream of data. */
+    /**
+     * Get a match from a stream of data.
+     * @param data Data.
+     * @return Match.
+     * @throws MagicParseException Cuando falla la carga de las relaciones.
+     * @throws MagicMatchNotFoundException Cuando no se identifican los datos.
+     * @throws MagicException Cuando falla el an&aacute;lisis.
+     */
     public static MagicMatch getMagicMatch(final byte[] data) throws MagicParseException, MagicMatchNotFoundException, MagicException {
         return getMagicMatch(data, false);
     }
 
-    /** Get a match from a stream of data. */
+    /**
+     * Get a match from a stream of data.
+     * @param data Data.
+     * @param onlyMimeMatch {@code true} para indicar que s&oacute;lo se identifique el MimeType
+     * de los datos, {@code false} en caso contrario.
+     * @return Match.
+     * @throws MagicParseException Cuando falla la carga de las relaciones.
+     * @throws MagicMatchNotFoundException Cuando no se identifican los datos.
+     * @throws MagicException Cuando falla el an&aacute;lisis.
+     */
 	public static MagicMatch getMagicMatch(final byte[] data,
 			                               final boolean onlyMimeMatch) throws MagicParseException,
 			                                                                   MagicMatchNotFoundException,

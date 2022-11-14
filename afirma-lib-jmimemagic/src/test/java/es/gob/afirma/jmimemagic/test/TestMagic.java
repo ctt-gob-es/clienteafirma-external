@@ -4,16 +4,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sf.jmimemagic.Magic;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import net.sf.jmimemagic.Magic;
 
 /** Prueba directa de JMIMEMagic. */
 public class TestMagic {
 
 	/** Prueba simple de detacci&oacute;n de un PDF.
-	 * @throws Exception */
+	 * @throws Exception Cuando ocurre un error. */
 	@SuppressWarnings("static-method")
 	@Test
 	public void testMagic() throws Exception {

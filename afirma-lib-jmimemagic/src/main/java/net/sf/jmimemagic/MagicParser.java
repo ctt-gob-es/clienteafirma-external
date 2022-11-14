@@ -57,8 +57,10 @@ public final class MagicParser extends DefaultHandler {
     private boolean isTest = false;
 
 
-    /** Parse the xml file and create our MagicMatcher object list.
-     * @throws MagicParseException */
+    /**
+     * Parse the xml file and create our MagicMatcher object list.
+     * @throws MagicParseException Cuando falla el an&aacute;lisis de los datos.
+     */
     public synchronized void initialize() throws MagicParseException {
         if (!this.initialized) {
             // use default parser
@@ -78,7 +80,9 @@ public final class MagicParser extends DefaultHandler {
                 			"No se ha podido obtener el analizador SAX de Apache Xerces, se usara el por defecto: " + e2 //$NON-NLS-1$
             			);
             		try {
-                		this.parser = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            			final SAXParserFactory factory = SAXParserFactory.newInstance();
+            			factory.setNamespaceAware(true);
+            			this.parser = factory.newSAXParser().getXMLReader();
                 	}
                 	catch (final Exception e3) {
                 		throw new MagicParseException("unable to instantiate parser", e3); //$NON-NLS-1$
@@ -98,7 +102,7 @@ public final class MagicParser extends DefaultHandler {
 
             // parse file
             try {
-                final String  magic = magicUrl.toString();
+            	final String magic = magicUrl.toString();
                 this.parser.parse(magic);
             }
             catch (final SAXParseException e) {
