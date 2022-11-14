@@ -65,13 +65,13 @@ package org.apache.oro.text.regex;
  * regular expressions recognized by a compiler and the Pattern
  * implementations produced as a result of compilation are not
  * restricted.
- * <p>
+ *
  * A PatternCompiler instance is used to compile the string representation
  * (either as a String or char[]) of a regular expression into a Pattern
  * instance.  The Pattern can then be used in conjunction with the appropriate
  * PatternMatcher instance to perform pattern searches.  A form
  * of use might be:
- * <p>
+ *
  * <blockquote><pre>
  * PatternCompiler compiler;
  * PatternMatcher matcher;
@@ -117,7 +117,7 @@ public interface PatternCompiler {
    *  does not conform to the grammar understood by the PatternCompiler or
    *  if some other error in the expression is encountered.
    */
-  public Pattern compile(String pattern) throws MalformedPatternException;
+  Pattern compile(String pattern) throws MalformedPatternException;
 
 
   /**
@@ -137,7 +137,7 @@ public interface PatternCompiler {
    *  does not conform to the grammar understood by the PatternCompiler or
    *  if some other error in the expression is encountered.
    */
-  public Pattern compile(String pattern, int options)
+  Pattern compile(String pattern, int options)
        throws MalformedPatternException;
 
 
@@ -151,7 +151,7 @@ public interface PatternCompiler {
    *  does not conform to the grammar understood by the PatternCompiler or
    *  if some other error in the expression is encountered.
    */
-  public Pattern compile(char[] pattern) throws MalformedPatternException;
+  Pattern compile(char[] pattern) throws MalformedPatternException;
 
 
   /**
@@ -171,7 +171,7 @@ public interface PatternCompiler {
    *  does not conform to the grammar understood by the PatternCompiler or
    *  if some other error in the expression is encountered.
    */
-  public Pattern compile(char[] pattern, int options)
+  Pattern compile(char[] pattern, int options)
        throws MalformedPatternException;
 
 }

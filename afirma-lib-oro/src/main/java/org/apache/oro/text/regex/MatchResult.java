@@ -135,7 +135,6 @@ public interface MatchResult {
    * If you want to get the length of a particular subgroup you should
    * use the {@link #group(int)} method to get
    * the string and then access its length() method as follows:
-   * <p>
    * <blockquote><pre>
    * int length = -1; // Use -1 to indicate group doesn't exist
    * MatchResult result;
@@ -148,18 +147,15 @@ public interface MatchResult {
    *   length = subgroup.length();
    *
    * </pre></blockquote>
-   * <p>
    *
    * The length() method serves as a more a more efficient way to do:
-   * <p>
    * <blockquote><pre>
    * length = result.group(0).length();
    * </pre></blockquote>
-   * <p>
    *
    * @return The length of the match.
    */
-  public int length();
+  int length();
 
 
   /**
@@ -168,7 +164,7 @@ public interface MatchResult {
    *         to the number of parenthesized subgroups plus the entire match
    *         itself.
    */
-  public int groups();
+  int groups();
 
   /**
    * Returns the contents of the parenthesized subgroups of a match,
@@ -188,7 +184,7 @@ public interface MatchResult {
    *         a group matching the null string, which will return a String
    *         of length 0.
    */
-  public String group(int group);
+  String group(int group);
 
 
   /**
@@ -200,7 +196,7 @@ public interface MatchResult {
    *         equal to the length of the string, so you shouldn't blindly
    *         use the offset to index an array or String.
    */
-  public int begin(int group);
+  int begin(int group);
 
 
   /**
@@ -210,7 +206,7 @@ public interface MatchResult {
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
    */
-  public int end(int group);
+  int end(int group);
 
 
   /**
@@ -223,7 +219,7 @@ public interface MatchResult {
    *         pattern subgroup.  If a group was never matched or does
    *         not exist, returns -1.
    */
-  public int beginOffset(int group);
+  int beginOffset(int group);
 
 
   /**
@@ -237,7 +233,7 @@ public interface MatchResult {
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
    */
-  public int endOffset(int group);
+  int endOffset(int group);
 
 
   /**
@@ -245,6 +241,5 @@ public interface MatchResult {
    *
    * @return A string containing the entire match.
    */
-  @Override
-  public String toString();
+  @Override String toString();
 }

@@ -54,7 +54,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
- 
+
 package org.apache.oro.text.perl;
 
 import org.apache.oro.text.PatternCache;
@@ -320,7 +320,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact>
+   * <dl>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
@@ -367,7 +367,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact>
+   * <dl>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
