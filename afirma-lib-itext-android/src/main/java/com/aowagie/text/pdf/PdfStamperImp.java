@@ -231,7 +231,7 @@ public class PdfStamperImp extends PdfWriter {
 			skipInfo = iInfo.getNumber();
 		}
 
-        final String producer ="Cliente @firma";
+//        final String producer ="Cliente @firma";
 
         // XMP
         byte[] altMetadata = null;
@@ -249,9 +249,9 @@ public class PdfStamperImp extends PdfWriter {
         	PdfStream xmp;
         	try {
         		final XmpReader xmpr = new XmpReader(altMetadata);
-        		if (!xmpr.replace("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "Producer", producer)) {
-					xmpr.add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "pdf:Producer", producer);
-				}
+//        		if (!xmpr.replace("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "Producer", producer)) {
+//					xmpr.add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "pdf:Producer", producer);
+//				}
         		if (!xmpr.replace("rdf:Description", "http://ns.adobe.com/xap/1.0/", "ModifyDate", date.getW3CDate())) {
 					xmpr.add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "xmp:ModifyDate", date.getW3CDate());
 				}
@@ -364,7 +364,7 @@ public class PdfStamperImp extends PdfWriter {
         }
         // "ModDate" y "Producer" se sobreescriben
         newInfo.put(PdfName.MODDATE, date);
-        newInfo.put(PdfName.PRODUCER, new PdfString(producer));
+//        newInfo.put(PdfName.PRODUCER, new PdfString(producer));
         if (this.append) {
             if (iInfo == null) {
 				info = addToBody(newInfo, false).getIndirectReference();
