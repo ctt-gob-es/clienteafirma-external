@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>support-libraries</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<packaging>pom</packaging>
 	
 	<name>support-libraries</name>
@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 		<jdk.version>1.7</jdk.version>
 		<spongycastle.version>1.56.0.0</spongycastle.version>
-		<junit.version>4.13.1</junit.version>
+		<junit.version>4.13.2</junit.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 	</properties>
 
