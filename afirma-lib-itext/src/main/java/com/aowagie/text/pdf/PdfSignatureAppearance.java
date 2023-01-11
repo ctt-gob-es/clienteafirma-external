@@ -279,7 +279,6 @@ public class PdfSignatureAppearance {
         this.pageRect = new Rectangle(pageRect);
         this.pageRect.normalize();
         this.rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
-        this.rect.rotate();
         this.page = page;
     }
 

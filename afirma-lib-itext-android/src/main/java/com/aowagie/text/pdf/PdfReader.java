@@ -327,11 +327,11 @@ public class PdfReader implements PdfViewerPreferences {
      * @param index the page number. The first page is 1
      * @return the page rotation
      */
-    int getPageRotation(final int index) {
+    public int getPageRotation(final int index) {
         return getPageRotation(this.pageRefs.getPageNRelease(index));
     }
 
-    int getPageRotation(final PdfDictionary page) {
+    public int getPageRotation(final PdfDictionary page) {
         final PdfNumber rotate = page.getAsNumber(PdfName.ROTATE);
         if (rotate == null) {
 			return 0;

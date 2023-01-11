@@ -573,7 +573,7 @@ public class PdfWriter extends DocWriter implements
          * @param		root		an indirect reference to the root of the PDF document
          * @param		info		an indirect reference to the info object of the PDF document
          * @param encryption Encryption
-         * @param fileID File Id 
+         * @param fileID File Id
          * @param prevxref Prev xref
          */
 
@@ -2578,7 +2578,7 @@ public class PdfWriter extends DocWriter implements
 //  [U7] run direction (doesn't actually do anything)
 
     /** Use the default run direction. */
-    static final int RUN_DIRECTION_DEFAULT = 0;
+    public static final int RUN_DIRECTION_DEFAULT = 0;
     /** Do not use bidirectional reordering. */
     static final int RUN_DIRECTION_NO_BIDI = 1;
     /** Use bidirectional reordering with left-to-right
