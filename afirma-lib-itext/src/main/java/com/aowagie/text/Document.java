@@ -222,7 +222,7 @@ public class Document implements DocListener {
 	 *            the margin on the bottom
  */
 
-	private Document(final Rectangle pageSize, final float marginLeft, final float marginRight,
+	public Document(final Rectangle pageSize, final float marginLeft, final float marginRight,
 			final float marginTop, final float marginBottom) {
         this.pageSize = pageSize;
         this.marginLeft = marginLeft;

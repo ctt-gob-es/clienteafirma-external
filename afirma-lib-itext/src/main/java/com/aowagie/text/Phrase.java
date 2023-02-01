@@ -167,7 +167,7 @@ public class Phrase extends ArrayList implements TextElementArray {
      * @param	string		a <CODE>String</CODE>
      * @param	font		a <CODE>Font</CODE>
      */
-    private Phrase(final float leading, final String string, final Font font) {
+    public Phrase(final float leading, final String string, final Font font) {
         this.leading = leading;
         this.font = font;
     	/* bugfix by August Detlefsen */
