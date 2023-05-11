@@ -912,12 +912,12 @@ public abstract class BaseFont {
         return total;
     }
 
-/**
- * Gets the descent of a <CODE>String</CODE> in normalized 1000 units. The descent will always be
- * less than or equal to zero even if all the characters have an higher descent.
- * @param text the <CODE>String</CODE> to get the descent of
- * @return the descent in normalized 1000 units
- */
+	/**
+	 * Gets the descent of a <CODE>String</CODE> in normalized 1000 units. The descent will always be
+	 * less than or equal to zero even if all the characters have an higher descent.
+	 * @param text the <CODE>String</CODE> to get the descent of
+	 * @return the descent in normalized 1000 units
+	 */
     public int getDescent(final String text) {
         int min = 0;
         final char chars[] = text.toCharArray();
@@ -930,12 +930,12 @@ public abstract class BaseFont {
         return min;
     }
 
-/**
- * Gets the ascent of a <CODE>String</CODE> in normalized 1000 units. The ascent will always be
- * greater than or equal to zero even if all the characters have a lower ascent.
- * @param text the <CODE>String</CODE> to get the ascent of
- * @return the ascent in normalized 1000 units
- */
+	/**
+	 * Gets the ascent of a <CODE>String</CODE> in normalized 1000 units. The ascent will always be
+	 * greater than or equal to zero even if all the characters have a lower ascent.
+	 * @param text the <CODE>String</CODE> to get the ascent of
+	 * @return the ascent in normalized 1000 units
+	 */
     public int getAscent(final String text) {
         int max = 0;
         final char chars[] = text.toCharArray();
@@ -948,25 +948,25 @@ public abstract class BaseFont {
         return max;
     }
 
-/**
- * Gets the descent of a <CODE>String</CODE> in points. The descent will always be
- * less than or equal to zero even if all the characters have an higher descent.
- * @param text the <CODE>String</CODE> to get the descent of
- * @param fontSize the size of the font
- * @return the descent in points
- */
-    public float getDescentPoint(final String text, final float fontSize)
-    {
-        return getDescent(text) * 0.001f * fontSize;
-    }
-
-/**
- * Gets the ascent of a <CODE>String</CODE> in points. The ascent will always be
- * greater than or equal to zero even if all the characters have a lower ascent.
- * @param text the <CODE>String</CODE> to get the ascent of
- * @param fontSize the size of the font
- * @return the ascent in points
- */
+	/**
+	 * Gets the descent of a <CODE>String</CODE> in points. The descent will always be
+	 * less than or equal to zero even if all the characters have an higher descent.
+	 * @param text the <CODE>String</CODE> to get the descent of
+	 * @param fontSize the size of the font
+	 * @return the descent in points
+	 */
+	    public float getDescentPoint(final String text, final float fontSize)
+	    {
+	        return getDescent(text) * 0.001f * fontSize;
+	    }
+	
+	/**
+	 * Gets the ascent of a <CODE>String</CODE> in points. The ascent will always be
+	 * greater than or equal to zero even if all the characters have a lower ascent.
+	 * @param text the <CODE>String</CODE> to get the ascent of
+	 * @param fontSize the size of the font
+	 * @return the ascent in points
+	 */
     public float getAscentPoint(final String text, final float fontSize)
     {
         return getAscent(text) * 0.001f * fontSize;
@@ -1015,7 +1015,7 @@ public abstract class BaseFont {
     }
 
     /**
-     * Converts a <CODE>String</CODE> to a </CODE>byte</CODE> array according
+     * Converts a <CODE>String</CODE> to a <CODE>byte</CODE> array according
      * to the font's encoding.
      * @param text the <CODE>String</CODE> to be converted
      * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
@@ -1046,7 +1046,7 @@ public abstract class BaseFont {
     }
 
     /**
-     * Converts a <CODE>char</CODE> to a </CODE>byte</CODE> array according
+     * Converts a <CODE>char</CODE> to a <CODE>byte</CODE> array according
      * to the font's encoding.
      * @param char1 the <CODE>char</CODE> to be converted
      * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding

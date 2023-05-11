@@ -67,7 +67,11 @@ class EnumerateTTC extends TrueTypeFont{
         findNames();
     }
 
-
+    EnumerateTTC(byte ttcArray[]) throws DocumentException, IOException {
+        fileName = "Byte array TTC";
+        rf = new RandomAccessFileOrArray(ttcArray);
+        findNames();
+    }
 
     private void findNames() throws DocumentException, IOException {
         this.tables = new LinkedHashMap();
