@@ -49,7 +49,10 @@ package com.aowagie.text.xml.xmp;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -59,6 +62,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.aowagie.text.ExceptionConverter;
@@ -74,23 +79,69 @@ public class XmpReader {
 
     private Document domDocument;
 
+    private static DocumentBuilderFactory SECURE_FACTORY = null;
+
+    private static final Logger LOGGER = Logger.getLogger(XmpReader.class.getName());
+
     /**
      * Constructs an XMP reader
      * @param	bytes	the XMP content
-     * @throws ExceptionConverter Exception with a converter error
-     * @throws IOException Exception with a IO error
-     * @throws SAXException Exception with a SAX error
+     * @throws IOException Exception with information about a IO error
+     * @throws SAXException Exception with information about a SAX error
      */
 	public XmpReader(final byte[] bytes) throws SAXException, IOException {
 		try {
-	        final DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+	        final DocumentBuilderFactory fact = getSecureDocumentFactory();
 	        fact.setNamespaceAware(true);
 			final DocumentBuilder db = fact.newDocumentBuilder();
+			db.setEntityResolver(new SafeEmptyEntityResolver());
 	        final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 	        this.domDocument = db.parse(bais);
 		} catch (final ParserConfigurationException e) {
 			throw new ExceptionConverter(e);
 		}
+	}
+
+	private synchronized static DocumentBuilderFactory getSecureDocumentFactory() {
+
+    	if (SECURE_FACTORY != null) {
+    		return SECURE_FACTORY;
+    	}
+
+    	SECURE_FACTORY = DocumentBuilderFactory.newInstance();
+
+    	// Configuramos un procesado seguro
+    	try {
+    		SECURE_FACTORY.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE.booleanValue());
+		}
+		catch (final Exception e) {
+			LOGGER.log(Level.WARNING, "No se pudo configurar el procesador seguro: " + e); //$NON-NLS-1$
+		}
+
+		// Los siguientes atributos deberia establececerlos automaticamente la implementacion de
+		// la biblioteca al habilitar la caracteristica anterior. Por si acaso, los establecemos
+		// expresamente
+		final String[] securityProperties = new String[] {
+				javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD,
+				javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA,
+				javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET
+		};
+		for (final String securityProperty : securityProperties) {
+			try {
+				SECURE_FACTORY.setAttribute(securityProperty, ""); //$NON-NLS-1$
+			}
+			catch (final Exception e) {
+				// Ponemos las trazas en debug ya que estas propiedades son adicionales
+				// a la activacion de el procesado seguro
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.log(Level.FINE, "No se ha podido establecer una propiedad de seguridad '" + securityProperty + "' en la factoria XML: " + e); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		}
+
+		SECURE_FACTORY.setValidating(false);
+
+		return SECURE_FACTORY;
 	}
 
 	/**
@@ -197,8 +248,8 @@ public class XmpReader {
 
     /**
      * Writes the document to a byte array.
-     * @return return a serialize document
-     * @throws IOException with a I/O error
+     * @return array with bytes of a doc
+     * @throws IOException Exception about a IO error
      */
 	public byte[] serializeDoc() throws IOException {
 		final XmlDomWriter xw = new XmlDomWriter();
@@ -216,4 +267,11 @@ public class XmpReader {
         fout.close();
         return fout.toByteArray();
 	}
+
+	private static class SafeEmptyEntityResolver implements EntityResolver {
+        @Override
+		public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
+            return new InputSource(new StringReader(""));
+        }
+    }
 }

@@ -52,17 +52,22 @@ package com.aowagie.text.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.aowagie.text.xml.XmlDomWriter;
@@ -83,6 +88,10 @@ public class XfaForm {
     private org.w3c.dom.Document domDocument;
     private boolean changed;
     public static final String XFA_DATA_SCHEMA = "http://www.xfa.org/schema/xfa-data/1.0/";
+
+    private static DocumentBuilderFactory SECURE_FACTORY = null;
+
+    private static final Logger LOGGER = Logger.getLogger(XfaForm.class.getName());
 
     /**
      * An empty constructor to build on.
@@ -137,14 +146,15 @@ public class XfaForm {
             bout.write(b);
         }
         bout.close();
-        final DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory fact = getSecureDocumentFactory();
         fact.setNamespaceAware(true);
         final DocumentBuilder db = fact.newDocumentBuilder();
+		db.setEntityResolver(new SafeEmptyEntityResolver());
         this.domDocument = db.parse(new ByteArrayInputStream(bout.toByteArray()));
         extractNodes();
     }
 
-    /**
+	/**
      * Extracts the nodes from the domDocument.
      * @since	2.1.5
      */
@@ -409,6 +419,48 @@ public class XfaForm {
     public void setChanged(final boolean changed) {
         this.changed = changed;
     }
+
+    private synchronized static DocumentBuilderFactory getSecureDocumentFactory() {
+
+    	if (SECURE_FACTORY != null) {
+    		return SECURE_FACTORY;
+    	}
+
+    	SECURE_FACTORY = DocumentBuilderFactory.newInstance();
+
+    	// Configuramos un procesado seguro
+    	try {
+    		SECURE_FACTORY.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE.booleanValue());
+		}
+		catch (final Exception e) {
+			LOGGER.log(Level.WARNING, "No se pudo configurar el procesador seguro: " + e); //$NON-NLS-1$
+		}
+
+		// Los siguientes atributos deberia establececerlos automaticamente la implementacion de
+		// la biblioteca al habilitar la caracteristica anterior. Por si acaso, los establecemos
+		// expresamente
+		final String[] securityProperties = new String[] {
+				javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD,
+				javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA,
+				javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET
+		};
+		for (final String securityProperty : securityProperties) {
+			try {
+				SECURE_FACTORY.setAttribute(securityProperty, ""); //$NON-NLS-1$
+			}
+			catch (final Exception e) {
+				// Ponemos las trazas en debug ya que estas propiedades son adicionales
+				// a la activacion de el procesado seguro
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.log(Level.FINE, "No se ha podido establecer una propiedad de seguridad '" + securityProperty + "' en la factoria XML: " + e); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		}
+
+		SECURE_FACTORY.setValidating(false);
+
+		return SECURE_FACTORY;
+	}
 
     /**
      * A structure to store each part of a SOM name and link it to the next part
@@ -1139,5 +1191,12 @@ public class XfaForm {
      */
     public Node getDatasetsNode() {
         return this.datasetsNode;
+    }
+
+	private static class SafeEmptyEntityResolver implements EntityResolver {
+        @Override
+		public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
+            return new InputSource(new StringReader(""));
+        }
     }
 }
