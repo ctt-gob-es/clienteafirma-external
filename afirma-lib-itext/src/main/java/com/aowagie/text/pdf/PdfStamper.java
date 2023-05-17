@@ -53,6 +53,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -62,6 +63,7 @@ import com.aowagie.text.DocWriter;
 import com.aowagie.text.DocumentException;
 import com.aowagie.text.ExceptionConverter;
 import com.aowagie.text.Rectangle;
+import com.aowagie.text.pdf.PRAcroForm.FieldInformation;
 import com.aowagie.text.pdf.interfaces.PdfEncryptionSettings;
 import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
 
@@ -86,7 +88,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * document.
      * @param reader the original document. It cannot be reused
      * @param os the output stream
-     * @param globalDate global date
+     * @param globalDate Date
      * @throws DocumentException on error
      * @throws IOException on error
      */
@@ -94,7 +96,8 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         this.stamper = new PdfStamperImp(reader, os, '\0', false, globalDate);
     }
 
-    /** Starts the process of adding extra content to an existing PDF
+    /**
+     * Starts the process of adding extra content to an existing PDF
      * document.
      * @param reader the original document. It cannot be reused
      * @param os the output stream
@@ -104,7 +107,8 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         this.stamper = new PdfStamperImp(reader, os, '\0', false, new GregorianCalendar());
     }
 
-    /** Starts the process of adding extra content to an existing PDF
+    /**
+     * Starts the process of adding extra content to an existing PDF
      * document, possibly as a new revision.
      * @param reader the original document. It cannot be reused
      * @param os the output stream
@@ -112,8 +116,10 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      * document
      * @param append if <CODE>true</CODE> appends the document changes as a new revision. This is
      * only useful for multiple signatures as nothing is gained in speed or memory
+     * @param globalDate Date
      * @throws DocumentException on error
-     * @throws IOException on error. */
+     * @throws IOException on error
+     */
     private PdfStamper(final PdfReader reader, final OutputStream os, final char pdfVersion, final boolean append, final Calendar globalDate) throws DocumentException, IOException {
         this.stamper = new PdfStamperImp(reader, os, pdfVersion, append, globalDate);
     }
@@ -383,6 +389,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /** Adds a file attachment at the document level. Existing attachments will be kept.
      * @param description the file description
      * @param fs the file specification
+     * @throws IOException on error
      */
     private void addFileAttachment(final String description, final PdfFileSpecification fs) throws IOException {
         this.stamper.addFileAttachment(description, fs);
@@ -521,7 +528,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
      *     no temporary file will be created and memory will be used
      * @param append if <CODE>true</CODE> the signature and all the other content will be added as a
      * new revision thus not invalidating existing signatures
-     * @param globalDate global date
+     * @param globalDate Date
      * @return a <CODE>PdfStamper</CODE>
      * @throws DocumentException on error
      * @throws IOException on error
@@ -537,7 +544,10 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         if (tempFile == null) {
             final ByteBuffer bout = new ByteBuffer();
             stp = new PdfStamper(reader, bout, pdfVersion, append, gDate);
-            stp.sigApp = new PdfSignatureAppearance(stp.stamper, gDate);
+
+            final List<PRAcroForm.FieldInformation> formFieldNames = getFieldsWithSignatureName(reader.getAcroForm());
+
+            stp.sigApp = new PdfSignatureAppearance(stp.stamper, gDate, formFieldNames);
             stp.sigApp.setSigout(bout);
         }
         else {
@@ -560,6 +570,23 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         }
         return stp;
     }
+
+    private static List<FieldInformation> getFieldsWithSignatureName(final PRAcroForm acroForm) {
+
+    	final List<PRAcroForm.FieldInformation> resultFormFields = new ArrayList<>();
+
+    	if (acroForm != null) {
+    		final List<?> formFields = acroForm.getFields();
+    		for (final Object field : formFields) {
+    			final PRAcroForm.FieldInformation fieldInfo = (PRAcroForm.FieldInformation) field;
+    			if (fieldInfo.getName() != null && fieldInfo.getName().startsWith("Signature")) { //$NON-NLS-1$
+    				resultFormFields.add(fieldInfo);
+    			}
+    		}
+    	}
+
+		return resultFormFields;
+	}
 
     /** Gets a <CODE>PdfContentByte</CODE> to write over the page of
      * the original document.

@@ -53,6 +53,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -62,6 +63,7 @@ import com.aowagie.text.DocWriter;
 import com.aowagie.text.DocumentException;
 import com.aowagie.text.ExceptionConverter;
 import com.aowagie.text.Rectangle;
+import com.aowagie.text.pdf.PRAcroForm.FieldInformation;
 import com.aowagie.text.pdf.interfaces.PdfEncryptionSettings;
 import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
 
@@ -72,8 +74,7 @@ import com.aowagie.text.pdf.interfaces.PdfViewerPreferences;
  * <p>
  * It is also possible to change the field values and to
  * flatten them. New fields can be added but not flattened.
- * @author Paulo Soares (psoares@consiste.pt)
- */
+ * @author Paulo Soares (psoares@consiste.pt). */
 public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /**
      * The writer
@@ -97,6 +98,17 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
 
     /**
      * Starts the process of adding extra content to an existing PDF
+     * document.
+     * @param reader the original document. It cannot be reused
+     * @param os the output stream
+     * @throws DocumentException on error
+     * @throws IOException on error. */
+    public PdfStamper(final PdfReader reader, final OutputStream os) throws DocumentException, IOException {
+        this.stamper = new PdfStamperImp(reader, os, '\0', false, new GregorianCalendar());
+    }
+
+    /**
+     * Starts the process of adding extra content to an existing PDF
      * document, possibly as a new revision.
      * @param reader the original document. It cannot be reused
      * @param os the output stream
@@ -114,9 +126,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
 
     /** Gets the optional <CODE>String</CODE> map to add or change values in
      * the info dictionary.
-     * @return the map or <CODE>null</CODE>
-     *
-     */
+     * @return the map or <CODE>null</CODE>. */
     public Map getMoreInfo() {
         return this.moreInfo;
     }
@@ -124,9 +134,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
     /** An optional <CODE>String</CODE> map to add or change values in
      * the info dictionary. Entries with <CODE>null</CODE>
      * values delete the key in the original info dictionary
-     * @param moreInfo additional entries to the info dictionary
-     *
-     */
+     * @param moreInfo additional entries to the info dictionary. */
     public void setMoreInfo(final Map moreInfo) {
         this.moreInfo = moreInfo;
     }
@@ -150,16 +158,25 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         return this.sigApp;
     }
 
-    /**
-     * Closes the document. No more content can be written after the
+    /** Closes the document. No more content can be written after the
      * document is closed.
      * <p>
      * If closing a signed document with an external signature the closing must be done
      * in the <CODE>PdfSignatureAppearance</CODE> instance.
-     * @param globalDate Global date
      * @throws DocumentException on error
-     * @throws IOException on error
-     */
+     * @throws IOException on error. */
+    public void close() throws DocumentException, IOException {
+    	close(new GregorianCalendar());
+    }
+
+    /** Closes the document. No more content can be written after the
+     * document is closed.
+     * <p>
+     * If closing a signed document with an external signature the closing must be done
+     * in the <CODE>PdfSignatureAppearance</CODE> instance.
+     * @param globalDate global date
+     * @throws DocumentException on error
+     * @throws IOException on error. */
     public void close(final Calendar globalDate) throws DocumentException, IOException {
         if (!this.hasSignature) {
             this.stamper.close(this.moreInfo, globalDate);
@@ -399,7 +416,7 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
 
     /**
      * Sets the XMP metadata.
-     * @param xmp XMP
+     * @param xmp info with xmp
      * @see PdfWriter#setXmpMetadata(byte[])
      */
     public void setXmpMetadata(final byte[] xmp) {
@@ -527,7 +544,10 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         if (tempFile == null) {
             final ByteBuffer bout = new ByteBuffer();
             stp = new PdfStamper(reader, bout, pdfVersion, append, gDate);
-            stp.sigApp = new PdfSignatureAppearance(stp.stamper, gDate);
+
+            final List<PRAcroForm.FieldInformation> formFieldNames = getFieldsWithSignatureName(reader.getAcroForm());
+
+            stp.sigApp = new PdfSignatureAppearance(stp.stamper, gDate, formFieldNames);
             stp.sigApp.setSigout(bout);
         }
         else {
@@ -550,6 +570,23 @@ public class PdfStamper implements PdfViewerPreferences, PdfEncryptionSettings {
         }
         return stp;
     }
+
+    private static List<FieldInformation> getFieldsWithSignatureName(final PRAcroForm acroForm) {
+
+    	final List<PRAcroForm.FieldInformation> resultFormFields = new ArrayList();
+
+    	if (acroForm != null) {
+    		final List<?> formFields = acroForm.getFields();
+    		for (final Object field : formFields) {
+    			final PRAcroForm.FieldInformation fieldInfo = (PRAcroForm.FieldInformation) field;
+    			if (fieldInfo.getName() != null && fieldInfo.getName().startsWith("Signature")) { //$NON-NLS-1$
+    				resultFormFields.add(fieldInfo);
+    			}
+    		}
+    	}
+
+		return resultFormFields;
+	}
 
     /** Gets a <CODE>PdfContentByte</CODE> to write over the page of
      * the original document.

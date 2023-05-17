@@ -1,5 +1,5 @@
 /*
- * $Id: java 3905 2009-04-24 10:40:24Z blowagie $
+ * $Id: PdfSignatureAppearance.java 3905 2009-04-24 10:40:24Z blowagie $
  *
  * Copyright 2004-2006 by Paulo Soares.
  *
@@ -148,6 +148,13 @@ public class PdfSignatureAppearance {
         this.writer = writer;
         this.signDate = globalDate!=null ? globalDate : new GregorianCalendar();
         this.fieldName = getNewSigName();
+    }
+
+    PdfSignatureAppearance(final PdfStamperImp writer, final Calendar globalDate,
+    		final List<PRAcroForm.FieldInformation> signatureFieldNames) {
+        this.writer = writer;
+        this.signDate = globalDate!=null ? globalDate : new GregorianCalendar();
+        this.fieldName = getNewSigName(signatureFieldNames);
     }
 
     private int render = SignatureRenderDescription;
@@ -837,24 +844,45 @@ public class PdfSignatureAppearance {
      * @return a new signature fied name
      */
     public String getNewSigName() {
+    	return getNewSigName(null);
+    }
+
+    /**
+     * Gets a new signature fied name that doesn't clash with any existing name.
+     * @param signatureFieldNames Field names to avoid
+     * @return a new signature fied name
+     */
+    public String getNewSigName(final List<PRAcroForm.FieldInformation> signatureFieldNames) {
         final AcroFields af = this.writer.getAcroFields();
         String name = "Signature"; //$NON-NLS-1$
         int step = 0;
         boolean found = false;
         while (!found) {
             ++step;
-            String n1 = name + step;
+            final String n1 = name + step;
             if (af.getFieldItem(n1) != null) {
 				continue;
 			}
-            n1 += "."; //$NON-NLS-1$
+            final String nameWithDot = n1 + "."; //$NON-NLS-1$
             found = true;
             for (final Object element : af.getFields().keySet()) {
                 final String fn = (String)element;
-                if (fn.startsWith(n1)) {
+                if (fn.startsWith(nameWithDot)) {
                     found = false;
                     break;
                 }
+            }
+            // Si parece que los hemos encontrado, hacemos una ultima
+            // comprobacion buscando el nombre con el resto de
+            if (found && signatureFieldNames != null) {
+            	for (int i = 0; found && i < signatureFieldNames.size(); i++) {
+            		final PRAcroForm.FieldInformation fieldInfo = signatureFieldNames.get(i);
+            		if (fieldInfo.getName() != null
+            				&& (fieldInfo.getName().equals(n1) || fieldInfo.getName().startsWith(nameWithDot))) {
+            			found = false;
+            			break;
+            		}
+            	}
             }
         }
         name += step;
@@ -868,7 +896,7 @@ public class PdfSignatureAppearance {
      * If calling preClose() <B>dont't</B> call PdfStamper.close().
      * <p>
      * No external signatures are allowed if this method is called.
-     * @param globalDate
+     * @param globalDate Date
      * @throws IOException on error
      * @throws DocumentException on error
      */
@@ -913,7 +941,7 @@ public class PdfSignatureAppearance {
      * @param exclusionSizes a <CODE>HashMap</CODE> with names and sizes to be excluded in the signature
      * calculation. The key is a <CODE>PdfName</CODE> and the value an
      * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
-     * @param globalDate global date
+     * @param globalDate Date
      * @throws IOException on error
      * @throws DocumentException on error
      */
@@ -990,7 +1018,7 @@ public class PdfSignatureAppearance {
     	            this.writer.addAnnotation(sigField, pages.get(i));
             	}
             } else {
-            	int pagen = getPage();
+            	final int pagen = getPage();
 	            sigField.setPage(pagen);
 	            this.writer.addAnnotation(sigField, pagen);
             }

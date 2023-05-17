@@ -88,21 +88,28 @@ public class PdfSignatureAppearance {
      * The rendering mode is just the description
      */
     public static final int SignatureRenderDescription = 0;
+
     /**
      * The rendering mode is the name of the signer and the description
      */
-    private static final int SignatureRenderNameAndDescription = 1;
+    public static final int SignatureRenderNameAndDescription = 1;
+
     /**
      * The rendering mode is an image and the description
      */
-    private static final int SignatureRenderGraphicAndDescription = 2;
+    public static final int SignatureRenderGraphicAndDescription = 2;
+
+    /**
+     * The self signed filter.
+     */
+    public static final PdfName SELF_SIGNED = PdfName.ADOBE_PPKLITE;
 
     public static final int NOT_CERTIFIED = 0;
     public static final int CERTIFIED_NO_CHANGES_ALLOWED = 1;
     public static final int CERTIFIED_FORM_FILLING = 2;
     public static final int CERTIFIED_FORM_FILLING_AND_ANNOTATIONS = 3;
 
-    private static final float TOP_SECTION = 0.3f;
+    private static final float TOP_SECTION = 0.0f;
     private static final float MARGIN = 2;
     private Rectangle rect;
     private Rectangle pageRect;
@@ -141,6 +148,13 @@ public class PdfSignatureAppearance {
         this.writer = writer;
         this.signDate = globalDate!=null ? globalDate : new GregorianCalendar();
         this.fieldName = getNewSigName();
+    }
+
+    PdfSignatureAppearance(final PdfStamperImp writer, final Calendar globalDate,
+    		final List<PRAcroForm.FieldInformation> signatureFieldNames) {
+        this.writer = writer;
+        this.signDate = globalDate!=null ? globalDate : new GregorianCalendar();
+        this.fieldName = getNewSigName(signatureFieldNames);
     }
 
     private int render = SignatureRenderDescription;
@@ -290,7 +304,7 @@ public class PdfSignatureAppearance {
 			throw new IllegalArgumentException("The field " + fieldName + " is not a signature field."); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
-		// Se utilizara este campo de firma preexistente
+        // Se utilizara este campo de firma preexistente
         this.newField = false;
         this.fieldName = fieldName;
 
@@ -333,25 +347,25 @@ public class PdfSignatureAppearance {
         this.rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
     }
 
-   /**
-    * Gets a template layer to create a signature appearance. The layers can go from 0 to 4.
-    * <p>
-    * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
-    * for further details.
-    * @param layer the layer
-    * @return a template
-    */
+    /**
+     * Gets a template layer to create a signature appearance. The layers can go from 0 to 4.
+     * <p>
+     * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
+     * for further details.
+     * @param layer the layer
+     * @return a template
+     */
     public PdfTemplate getLayer(final int layer) {
-       if (layer < 0 || layer >= this.app.length) {
-	return null;
-       }
-       PdfTemplate t = this.app[layer];
-       if (t == null) {
-           t = this.app[layer] = new PdfTemplate(this.writer);
-           t.setBoundingBox(this.rect);
-           this.writer.addDirectTemplateSimple(t, new PdfName("n" + layer)); //$NON-NLS-1$
-       }
-       return t;
+        if (layer < 0 || layer >= this.app.length) {
+			return null;
+		}
+        PdfTemplate t = this.app[layer];
+        if (t == null) {
+            t = this.app[layer] = new PdfTemplate(this.writer);
+            t.setBoundingBox(this.rect);
+            this.writer.addDirectTemplateSimple(t, new PdfName("n" + layer)); //$NON-NLS-1$
+        }
+        return t;
     }
 
     /**
@@ -400,8 +414,12 @@ public class PdfSignatureAppearance {
         if (this.app[2] == null) {
             String text;
             if (this.layer2Text == null) {
-                final StringBuilder buf = new StringBuilder();
-                buf.append("Firmado por ").append(PdfPKCS7.getSubjectFields((X509Certificate)this.certChain[0]).getField("CN")).append('\n'); //$NON-NLS-1$ //$NON-NLS-2$
+                final StringBuffer buf = new StringBuffer();
+                buf.append("Firmado por ").append( //$NON-NLS-1$
+            		PdfPKCS7.getSubjectFields(
+        				(X509Certificate)this.certChain[0]
+					).getField("CN") //$NON-NLS-1$
+        		).append('\n');
                 final SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z"); //$NON-NLS-1$
                 buf.append("Fecha: ").append(sd.format(this.signDate.getTime())); //$NON-NLS-1$
                 if (this.reason != null) {
@@ -599,8 +617,8 @@ public class PdfSignatureAppearance {
      */
     private static float fitText(final Font font, final String text, final Rectangle rect, float maxFontSize, final int runDirection) {
         try {
-            ColumnText ct = null;
-            int status = 0;
+            ColumnText ct;
+            int status;
             if (maxFontSize <= 0) {
                 int cr = 0;
                 int lf = 0;
@@ -651,7 +669,19 @@ public class PdfSignatureAppearance {
         }
     }
 
-
+    /**
+     * Sets the digest/signature to an external calculated value.
+     * @param digest the digest. This is the actual signature
+     * @param RSAdata the extra data that goes into the data tag in PKCS#7
+     * @param digestEncryptionAlgorithm the encryption algorithm. It may must be <CODE>null</CODE> if the <CODE>digest</CODE>
+     * is also <CODE>null</CODE>. If the <CODE>digest</CODE> is not <CODE>null</CODE>
+     * then it may be "RSA" or "DSA"
+     */
+    public void setExternalDigest(final byte digest[], final byte RSAdata[], final String digestEncryptionAlgorithm) {
+        this.externalDigest = digest;
+        this.externalRSAdata = RSAdata;
+        this.digestEncryptionAlgorithm = digestEncryptionAlgorithm;
+    }
 
     /**
      * Gets the signing reason.
@@ -814,24 +844,45 @@ public class PdfSignatureAppearance {
      * @return a new signature fied name
      */
     public String getNewSigName() {
+    	return getNewSigName(null);
+    }
+
+    /**
+     * Gets a new signature fied name that doesn't clash with any existing name.
+     * @param signatureFieldNames Field names to avoid
+     * @return a new signature fied name
+     */
+    public String getNewSigName(final List<PRAcroForm.FieldInformation> signatureFieldNames) {
         final AcroFields af = this.writer.getAcroFields();
         String name = "Signature"; //$NON-NLS-1$
         int step = 0;
         boolean found = false;
         while (!found) {
             ++step;
-            String n1 = name + step;
+            final String n1 = name + step;
             if (af.getFieldItem(n1) != null) {
 				continue;
 			}
-            n1 += "."; //$NON-NLS-1$
+            final String nameWithDot = n1 + "."; //$NON-NLS-1$
             found = true;
             for (final Object element : af.getFields().keySet()) {
                 final String fn = (String)element;
-                if (fn.startsWith(n1)) {
+                if (fn.startsWith(nameWithDot)) {
                     found = false;
                     break;
                 }
+            }
+            // Si parece que los hemos encontrado, hacemos una ultima
+            // comprobacion buscando el nombre con el resto de
+            if (found && signatureFieldNames != null) {
+            	for (int i = 0; found && i < signatureFieldNames.size(); i++) {
+            		final PRAcroForm.FieldInformation fieldInfo = signatureFieldNames.get(i);
+            		if (fieldInfo.getName() != null
+            				&& (fieldInfo.getName().equals(n1) || fieldInfo.getName().startsWith(nameWithDot))) {
+            			found = false;
+            			break;
+            		}
+            	}
             }
         }
         name += step;
@@ -850,7 +901,11 @@ public class PdfSignatureAppearance {
      * @throws DocumentException on error
      */
     void preClose(final Calendar globalDate) throws IOException, DocumentException {
-        preClose(null, globalDate);
+        preClose(null, globalDate, null);
+    }
+
+    public void preClose() throws IOException, DocumentException {
+    	preClose(null, null, null);
     }
 
     /**
@@ -870,7 +925,7 @@ public class PdfSignatureAppearance {
      * @throws DocumentException on error
      */
     public void preClose(final HashMap exclusionSizes) throws IOException, DocumentException {
-    	preClose(exclusionSizes, null);
+    	preClose(exclusionSizes, null, null);
     }
 
     /**
@@ -891,7 +946,7 @@ public class PdfSignatureAppearance {
      * @throws DocumentException on error
      */
     public void preClose(final HashMap exclusionSizes, final Calendar globalDate) throws IOException, DocumentException {
-    	preClose(exclusionSizes, globalDate, null);
+        preClose(exclusionSizes, globalDate, null);
     }
 
     /**
@@ -1187,7 +1242,7 @@ public class PdfSignatureAppearance {
      * @return the document bytes that are hashable
      */
     public InputStream getRangeStream() {
-        return new PdfSignatureAppearance.RangeStream(this.raf, this.bout, this.range);
+        return new RangeStream(this.raf, this.bout, this.range);
     }
 
     /**
