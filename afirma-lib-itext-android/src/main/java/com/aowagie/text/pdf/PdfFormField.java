@@ -111,7 +111,7 @@ public class PdfFormField extends PdfAnnotation {
         this.annotation = false;
     }
 
-    void setWidget(final Rectangle rect, final PdfName highlight) {
+    public void setWidget(final Rectangle rect, final PdfName highlight) {
         put(PdfName.TYPE, PdfName.ANNOT);
         put(PdfName.SUBTYPE, PdfName.WIDGET);
         put(PdfName.RECT, new PdfRectangle(rect));
@@ -208,7 +208,7 @@ public class PdfFormField extends PdfAnnotation {
         return array;
     }
 
-    static PdfFormField createSignature(final PdfWriter writer) {
+    public static PdfFormField createSignature(final PdfWriter writer) {
         final PdfFormField field = new PdfFormField(writer);
         field.put(PdfName.FT, PdfName.SIG);
         return field;

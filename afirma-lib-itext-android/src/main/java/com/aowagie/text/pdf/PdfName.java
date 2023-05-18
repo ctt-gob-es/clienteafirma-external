@@ -491,7 +491,7 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name */
     static final PdfName FS = new PdfName("FS");
     /** A name */
-    static final PdfName FT = new PdfName("FT");
+    public static final PdfName FT = new PdfName("FT");
     /** A name */
     public static final PdfName FULLSCREEN = new PdfName("FullScreen");
     /** A name */
@@ -543,6 +543,8 @@ public class PdfName extends PdfObject implements Comparable{
     public static final PdfName HIDETOOLBAR = new PdfName("HideToolbar");
     /** A name */
     public static final PdfName HIDEWINDOWUI = new PdfName("HideWindowUI");
+    /** A name */
+    public static final PdfName HIGHLIGHT = new PdfName("Highlight");
 
 
     /** A name */

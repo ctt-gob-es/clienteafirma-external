@@ -89,7 +89,7 @@ import com.aowagie.text.pdf.draw.DrawInterface;
  * @author Paulo Soares (psoares@consiste.pt)
  */
 
-class ColumnText {
+public class ColumnText {
 
 
 
@@ -113,7 +113,7 @@ class ColumnText {
 
 
     /** Signals that there is no more text available. */
-    static final int NO_MORE_TEXT = 1;
+    public static final int NO_MORE_TEXT = 1;
 
     /** Signals that there is no more column. */
     static final int NO_MORE_COLUMN = 2;
@@ -228,7 +228,7 @@ class ColumnText {
      * @param canvas the place where the text will be written to. Can
      * be a template.
      */
-    ColumnText(final PdfContentByte canvas) {
+    public ColumnText(final PdfContentByte canvas) {
         this.canvas = canvas;
     }
 
@@ -563,7 +563,7 @@ class ColumnText {
      * @param leading the leading
      * @param alignment the column alignment
      */
-    void setSimpleColumn(final Phrase phrase, final float llx, final float lly, final float urx, final float ury, final float leading, final int alignment) {
+    public void setSimpleColumn(final Phrase phrase, final float llx, final float lly, final float urx, final float ury, final float leading, final int alignment) {
         addText(phrase);
         setSimpleColumn(llx, lly, urx, ury, leading, alignment);
     }
@@ -745,7 +745,7 @@ class ColumnText {
      * and/or <CODE>NO_MORE_COLUMN</CODE>
      * @throws DocumentException on error
      */
-    int go() throws DocumentException {
+    public int go() throws DocumentException {
         return go(false);
     }
 
@@ -756,7 +756,7 @@ class ColumnText {
      * and/or <CODE>NO_MORE_COLUMN</CODE>
      * @throws DocumentException on error
      */
-    int go(final boolean simulate) throws DocumentException {
+    public int go(final boolean simulate) throws DocumentException {
         if (this.composite) {
 			return goComposite(simulate);
 		}

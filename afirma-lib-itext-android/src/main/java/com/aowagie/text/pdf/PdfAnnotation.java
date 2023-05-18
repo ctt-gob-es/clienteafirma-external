@@ -65,26 +65,26 @@ import harmony.java.awt.Color;
 public class PdfAnnotation extends PdfDictionary {
 
     /** highlight attributename */
-    static final PdfName HIGHLIGHT_INVERT = PdfName.I;
+	public static final PdfName HIGHLIGHT_INVERT = PdfName.I;
 
 
     /** highlight attributename */
-    static final PdfName HIGHLIGHT_TOGGLE = PdfName.T;
+    public static final PdfName HIGHLIGHT_TOGGLE = PdfName.T;
 
     /** flagvalue */
-    static final int FLAGS_HIDDEN = 2;
+    public static final int FLAGS_HIDDEN = 2;
     /** flagvalue */
-    static final int FLAGS_PRINT = 4;
+    public static final int FLAGS_PRINT = 4;
 
 
     /** flagvalue */
-    static final int FLAGS_NOVIEW = 32;
+    public static final int FLAGS_NOVIEW = 32;
 
     /** flagvalue */
-    static final int FLAGS_LOCKED = 128;
+    public static final int FLAGS_LOCKED = 128;
 
     /** appearance attributename */
-    static final PdfName APPEARANCE_NORMAL = PdfName.N;
+    public static final PdfName APPEARANCE_NORMAL = PdfName.N;
 
     /** attributevalue */
     private static final int MARKUP_UNDERLINE = 1;

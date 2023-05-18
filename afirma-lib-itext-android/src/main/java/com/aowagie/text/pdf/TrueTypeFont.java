@@ -54,7 +54,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.aowagie.text.Document;
@@ -69,7 +68,7 @@ class TrueTypeFont extends BaseFont {
 
     /** The code pages possible for a True Type font.
      */
-    private static final String codePages[] = {
+    static final String codePages[] = {
         "1252 Latin 1",
         "1250 Latin 2: Eastern Europe",
         "1251 Cyrillic",
@@ -135,7 +134,7 @@ class TrueTypeFont extends BaseFont {
         "850 WE/Latin 1",
         "437 US"};
 
-    private boolean justNames = false;
+    protected boolean justNames = false;
     /** Contains the location of the several tables. The key is the name of
      * the table and the value is an <CODE>int[2]</CODE> where position 0
      * is the offset from the start of the file and position 1 is the length
@@ -151,9 +150,9 @@ class TrueTypeFont extends BaseFont {
 
     protected boolean cff = false;
 
-    private int cffOffset;
+    protected int cffOffset;
 
-    private int cffLength;
+    protected int cffLength;
 
     /** The offset from the start of the file to the table directory.
      * It is 0 for TTF and may vary for TTC depending on the chosen font.
@@ -167,17 +166,17 @@ class TrueTypeFont extends BaseFont {
     protected String style = "";
     /** The content of table 'head'.
      */
-    private final FontHeader head = new FontHeader();
+    protected FontHeader head = new FontHeader();
     /** The content of table 'hhea'.
      */
-    private final HorizontalHeader hhea = new HorizontalHeader();
+    protected HorizontalHeader hhea = new HorizontalHeader();
     /** The content of table 'OS/2'.
      */
     protected WindowsMetrics os_2 = new WindowsMetrics();
     /** The width of the glyphs. This is essentially the content of table
      * 'hmtx' normalized to 1000 units.
      */
-    private int GlyphWidths[];
+    protected int GlyphWidths[];
 
     protected int bboxes[][];
     /** The map containing the code information for the table 'cmap', encoding 1.0.
@@ -203,7 +202,7 @@ class TrueTypeFont extends BaseFont {
      * glyph number for the second character. The value is the amount of kerning in
      * normalized 1000 units as an <CODE>Integer</CODE>. This value is usually negative.
      */
-    private final IntHashtable kerning = new IntHashtable();
+    protected IntHashtable kerning = new IntHashtable();
     /**
      * The font name.
      * This name is usually extracted from the table 'name' with
@@ -213,117 +212,133 @@ class TrueTypeFont extends BaseFont {
 
     /** The full name of the font
      */
-    private String fullName[][];
+    protected String fullName[][];
 
     /** All the names of the Names-Table
      */
-    private String allNameEntries[][];
+    protected String allNameEntries[][];
 
     /** The family name of the font
      */
-    private String familyName[][];
+    protected String familyName[][];
     /** The italic angle. It is usually extracted from the 'post' table or in it's
      * absence with the code:
      * <PRE>
      * -Math.atan2(hhea.caretSlopeRun, hhea.caretSlopeRise) * 180 / Math.PI
      * </PRE>
      */
-    private double italicAngle;
+    protected double italicAngle;
     /** <CODE>true</CODE> if all the glyphs have the same width.
      */
-    private boolean isFixedPitch = false;
+    protected boolean isFixedPitch = false;
 
-    private int underlinePosition;
+    protected int underlinePosition;
 
-    private int underlineThickness;
+    protected int underlineThickness;
 
     /** The components of table 'head'.
      */
-    private static class FontHeader {
-
+    protected static class FontHeader {
         /** A variable. */
-        private int unitsPerEm;
+        int flags;
         /** A variable. */
-        private short xMin;
+        int unitsPerEm;
         /** A variable. */
-        private short yMin;
+        short xMin;
         /** A variable. */
-        private short xMax;
+        short yMin;
         /** A variable. */
-        private short yMax;
+        short xMax;
         /** A variable. */
-        private int macStyle;
+        short yMax;
+        /** A variable. */
+        int macStyle;
     }
 
     /** The components of table 'hhea'.
      */
-    private static class HorizontalHeader {
+    protected static class HorizontalHeader {
         /** A variable. */
-        private short Ascender;
+        short Ascender;
         /** A variable. */
-        private short Descender;
+        short Descender;
         /** A variable. */
-        private short LineGap;
+        short LineGap;
         /** A variable. */
-        private int advanceWidthMax;
-
-
-
+        int advanceWidthMax;
         /** A variable. */
-        private short caretSlopeRise;
+        short minLeftSideBearing;
         /** A variable. */
-        private short caretSlopeRun;
+        short minRightSideBearing;
         /** A variable. */
-        private int numberOfHMetrics;
+        short xMaxExtent;
+        /** A variable. */
+        short caretSlopeRise;
+        /** A variable. */
+        short caretSlopeRun;
+        /** A variable. */
+        int numberOfHMetrics;
     }
 
     /** The components of table 'OS/2'.
      */
-    static class WindowsMetrics {
+    protected static class WindowsMetrics {
         /** A variable. */
-        private short xAvgCharWidth;
-
-
+        short xAvgCharWidth;
+        /** A variable. */
+        int usWeightClass;
+        /** A variable. */
+        int usWidthClass;
         /** A variable. */
         short fsType;
         /** A variable. */
-        private short ySubscriptXSize;
+        short ySubscriptXSize;
         /** A variable. */
-        private short ySubscriptYSize;
-
+        short ySubscriptYSize;
         /** A variable. */
-        private short ySubscriptYOffset;
-
+        short ySubscriptXOffset;
         /** A variable. */
-        private short ySuperscriptYSize;
-
+        short ySubscriptYOffset;
         /** A variable. */
-        private short ySuperscriptYOffset;
+        short ySuperscriptXSize;
         /** A variable. */
-        private short yStrikeoutSize;
+        short ySuperscriptYSize;
         /** A variable. */
-        private short yStrikeoutPosition;
-
+        short ySuperscriptXOffset;
         /** A variable. */
-        private final byte panose[] = new byte[10];
+        short ySuperscriptYOffset;
         /** A variable. */
-        private final byte achVendID[] = new byte[4];
-
-
-
+        short yStrikeoutSize;
         /** A variable. */
-        private short sTypoAscender;
+        short yStrikeoutPosition;
         /** A variable. */
-        private short sTypoDescender;
-
-
-
+        short sFamilyClass;
         /** A variable. */
-        private int ulCodePageRange1;
+        byte panose[] = new byte[10];
         /** A variable. */
-        private int ulCodePageRange2;
+        byte achVendID[] = new byte[4];
         /** A variable. */
-        private int sCapHeight;
+        int fsSelection;
+        /** A variable. */
+        int usFirstCharIndex;
+        /** A variable. */
+        int usLastCharIndex;
+        /** A variable. */
+        short sTypoAscender;
+        /** A variable. */
+        short sTypoDescender;
+        /** A variable. */
+        short sTypoLineGap;
+        /** A variable. */
+        int usWinAscent;
+        /** A variable. */
+        int usWinDescent;
+        /** A variable. */
+        int ulCodePageRange1;
+        /** A variable. */
+        int ulCodePageRange2;
+        /** A variable. */
+        int sCapHeight;
     }
 
     /** This constructor is present to allow extending the class.
@@ -394,13 +409,14 @@ class TrueTypeFont extends BaseFont {
      * @throws DocumentException the font is invalid
      * @throws IOException the font file could not be read
      */
-    private void fillTables() throws DocumentException, IOException {
+    void fillTables() throws DocumentException, IOException {
         int table_location[];
         table_location = (int[])this.tables.get("head");
         if (table_location == null) {
 			throw new DocumentException("Table 'head' does not exist in " + this.fileName + this.style);
 		}
         this.rf.seek(table_location[0] + 16);
+        this.head.flags = this.rf.readUnsignedShort();
         this.head.unitsPerEm = this.rf.readUnsignedShort();
         this.rf.skipBytes(16);
         this.head.xMin = this.rf.readShort();
@@ -418,6 +434,9 @@ class TrueTypeFont extends BaseFont {
         this.hhea.Descender = this.rf.readShort();
         this.hhea.LineGap = this.rf.readShort();
         this.hhea.advanceWidthMax = this.rf.readUnsignedShort();
+        this.hhea.minLeftSideBearing = this.rf.readShort();
+        this.hhea.minRightSideBearing = this.rf.readShort();
+        this.hhea.xMaxExtent = this.rf.readShort();
         this.hhea.caretSlopeRise = this.rf.readShort();
         this.hhea.caretSlopeRun = this.rf.readShort();
         this.rf.skipBytes(12);
@@ -430,22 +449,34 @@ class TrueTypeFont extends BaseFont {
         this.rf.seek(table_location[0]);
         final int version = this.rf.readUnsignedShort();
         this.os_2.xAvgCharWidth = this.rf.readShort();
+        this.os_2.usWeightClass = this.rf.readUnsignedShort();
+        this.os_2.usWidthClass = this.rf.readUnsignedShort();
         this.os_2.fsType = this.rf.readShort();
         this.os_2.ySubscriptXSize = this.rf.readShort();
         this.os_2.ySubscriptYSize = this.rf.readShort();
+        this.os_2.ySubscriptXOffset = this.rf.readShort();
         this.os_2.ySubscriptYOffset = this.rf.readShort();
+        this.os_2.ySuperscriptXSize = this.rf.readShort();
         this.os_2.ySuperscriptYSize = this.rf.readShort();
+        this.os_2.ySuperscriptXOffset = this.rf.readShort();
         this.os_2.ySuperscriptYOffset = this.rf.readShort();
         this.os_2.yStrikeoutSize = this.rf.readShort();
         this.os_2.yStrikeoutPosition = this.rf.readShort();
+        this.os_2.sFamilyClass = this.rf.readShort();
         this.rf.readFully(this.os_2.panose);
         this.rf.skipBytes(16);
         this.rf.readFully(this.os_2.achVendID);
+        this.os_2.fsSelection = this.rf.readUnsignedShort();
+        this.os_2.usFirstCharIndex = this.rf.readUnsignedShort();
+        this.os_2.usLastCharIndex = this.rf.readUnsignedShort();
         this.os_2.sTypoAscender = this.rf.readShort();
         this.os_2.sTypoDescender = this.rf.readShort();
         if (this.os_2.sTypoDescender > 0) {
 			this.os_2.sTypoDescender = (short)-this.os_2.sTypoDescender;
 		}
+        this.os_2.sTypoLineGap = this.rf.readShort();
+        this.os_2.usWinAscent = this.rf.readUnsignedShort();
+        this.os_2.usWinDescent = this.rf.readUnsignedShort();
         this.os_2.ulCodePageRange1 = 0;
         this.os_2.ulCodePageRange2 = 0;
         if (version > 0) {
@@ -514,7 +545,7 @@ class TrueTypeFont extends BaseFont {
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    private String[][] getNames(final int id) throws DocumentException, IOException {
+    String[][] getNames(final int id) throws DocumentException, IOException {
         int table_location[];
         table_location = (int[])this.tables.get("name");
         if (table_location == null) {
@@ -558,7 +589,7 @@ class TrueTypeFont extends BaseFont {
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    private String[][] getAllNames() throws DocumentException, IOException {
+    String[][] getAllNames() throws DocumentException, IOException {
         int table_location[];
         table_location = (int[])this.tables.get("name");
         if (table_location == null) {
@@ -595,7 +626,7 @@ class TrueTypeFont extends BaseFont {
         return thisName;
     }
 
-    private void checkCff() {
+    void checkCff() {
         int table_location[];
         table_location = (int[])this.tables.get("CFF ");
         if (table_location != null) {
@@ -613,7 +644,7 @@ class TrueTypeFont extends BaseFont {
      * @since	2.1.5
      */
     void process(final byte ttfAfm[], final boolean preload) throws DocumentException, IOException {
-        this.tables = new LinkedHashMap();
+        this.tables = new HashMap();
 
         try {
             if (ttfAfm == null) {
@@ -701,7 +732,7 @@ class TrueTypeFont extends BaseFont {
      * @return the <CODE>String</CODE> read
      * @throws IOException the font file could not be read
      */
-    private String readUnicodeString(int length) throws IOException {
+    protected String readUnicodeString(int length) throws IOException {
         final StringBuffer buf = new StringBuffer();
         length /= 2;
         for (int k = 0; k < length; ++k) {
@@ -715,7 +746,7 @@ class TrueTypeFont extends BaseFont {
      * @throws DocumentException the font is invalid
      * @throws IOException the font file could not be read
      */
-    private void readGlyphWidths() throws DocumentException, IOException {
+    protected void readGlyphWidths() throws DocumentException, IOException {
         int table_location[];
         table_location = (int[])this.tables.get("hmtx");
         if (table_location == null) {
@@ -733,7 +764,7 @@ class TrueTypeFont extends BaseFont {
      * @param glyph the glyph to get the width of
      * @return the width of the glyph in normalized 1000 units
      */
-    private int getGlyphWidth(int glyph) {
+    protected int getGlyphWidth(int glyph) {
         if (glyph >= this.GlyphWidths.length) {
 			glyph = this.GlyphWidths.length - 1;
 		}
@@ -792,7 +823,7 @@ class TrueTypeFont extends BaseFont {
      * @throws DocumentException the font is invalid
      * @throws IOException the font file could not be read
      */
-    private void readCMaps() throws DocumentException, IOException {
+    void readCMaps() throws DocumentException, IOException {
         int table_location[];
         table_location = (int[])this.tables.get("cmap");
         if (table_location == null) {
@@ -873,8 +904,8 @@ class TrueTypeFont extends BaseFont {
         }
     }
 
-    private HashMap readFormat12() throws IOException {
-        final HashMap h = new LinkedHashMap();
+    HashMap readFormat12() throws IOException {
+        final HashMap h = new HashMap();
         this.rf.skipBytes(2);
         final int table_lenght = this.rf.readInt();
         this.rf.skipBytes(4);
@@ -899,8 +930,8 @@ class TrueTypeFont extends BaseFont {
      * @return a <CODE>HashMap</CODE> representing this map
      * @throws IOException the font file could not be read
      */
-    private HashMap readFormat0() throws IOException {
-        final HashMap h = new LinkedHashMap();
+    HashMap readFormat0() throws IOException {
+        final HashMap h = new HashMap();
         this.rf.skipBytes(4);
         for (int k = 0; k < 256; ++k) {
             final int r[] = new int[2];
@@ -916,8 +947,8 @@ class TrueTypeFont extends BaseFont {
      * @return a <CODE>HashMap</CODE> representing this map
      * @throws IOException the font file could not be read
      */
-    private HashMap readFormat4() throws IOException {
-        final HashMap h = new LinkedHashMap();
+    HashMap readFormat4() throws IOException {
+        final HashMap h = new HashMap();
         final int table_lenght = this.rf.readUnsignedShort();
         this.rf.skipBytes(2);
         final int segCount = this.rf.readUnsignedShort() / 2;
@@ -971,8 +1002,8 @@ class TrueTypeFont extends BaseFont {
      * @return a <CODE>HashMap</CODE> representing this map
      * @throws IOException the font file could not be read
      */
-    private HashMap readFormat6() throws IOException {
-        final HashMap h = new LinkedHashMap();
+    HashMap readFormat6() throws IOException {
+        final HashMap h = new HashMap();
         this.rf.skipBytes(4);
         final int start_code = this.rf.readUnsignedShort();
         final int code_count = this.rf.readUnsignedShort();
@@ -988,7 +1019,7 @@ class TrueTypeFont extends BaseFont {
     /** Reads the kerning information from the 'kern' table.
      * @throws IOException the font file could not be read
      */
-    private void readKerning() throws IOException {
+    void readKerning() throws IOException {
         int table_location[];
         table_location = (int[])this.tables.get("kern");
         if (table_location == null) {
@@ -1112,7 +1143,7 @@ class TrueTypeFont extends BaseFont {
      * @param shortTag a 256 bytes long <CODE>byte</CODE> array where each unused byte is represented by 0
      * @param fontDescriptor the indirect reference to a PdfDictionary containing the font descriptor or <CODE>null</CODE>
      */
-    private PdfDictionary getFontBaseType(final PdfIndirectReference fontDescriptor, final String subsetPrefix, int firstChar, final int lastChar, final byte shortTag[]) {
+    protected PdfDictionary getFontBaseType(final PdfIndirectReference fontDescriptor, final String subsetPrefix, int firstChar, final int lastChar, final byte shortTag[]) {
         final PdfDictionary dic = new PdfDictionary(PdfName.FONT);
         if (this.cff) {
             dic.put(PdfName.SUBTYPE, PdfName.TYPE1);
@@ -1182,7 +1213,7 @@ class TrueTypeFont extends BaseFont {
         }
     }
 
-    private static int[] compactRanges(final ArrayList ranges) {
+    protected static int[] compactRanges(final ArrayList ranges) {
         final ArrayList simp = new ArrayList();
         for (int k = 0; k < ranges.size(); ++k) {
             final int[] r = (int[])ranges.get(k);
@@ -1281,7 +1312,7 @@ class TrueTypeFont extends BaseFont {
                 if (subsetp) {
 					subsetPrefix = createSubsetPrefix();
 				}
-                final HashMap glyphs = new LinkedHashMap();
+                final HashMap glyphs = new HashMap();
                 for (int k = firstChar; k <= lastChar; ++k) {
                     if (shortTag[k] != 0) {
                         int[] metrics = null;
