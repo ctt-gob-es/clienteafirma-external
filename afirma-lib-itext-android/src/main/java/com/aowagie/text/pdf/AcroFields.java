@@ -169,13 +169,22 @@ public class AcroFields {
 				continue;
 			}
             for (int j = 0; j < annots.size(); ++j) {
+            	PdfDictionary annot = annots.getAsDict(j);
+                if (annot == null) {
+                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                    continue;
+                }
 
-                // Comprobamos que la firma encontrada estaba entre las firmas declaradas
+                // Comprobamos que la firma encontrada (o el padre de esta) estaba entre las
+                // firmas declaradas
                 boolean found = false;
                 final PRIndirectReference foundSignRef = (PRIndirectReference) annots.getPdfObject(j);
+                final PRIndirectReference parentFoundSignRef = getParentReference(annot);
                 for (int l = 0; l < arrfds.size() && !found; l++) {
                 	final PRIndirectReference declaredSignRef = (PRIndirectReference) arrfds.getPdfObject(l);
                 	if (foundSignRef.getNumber() == declaredSignRef.getNumber()) {
+                		found = true;
+                	} else if (parentFoundSignRef != null && parentFoundSignRef.getNumber() == declaredSignRef.getNumber()) {
                 		found = true;
                 	}
                 }
@@ -184,11 +193,6 @@ public class AcroFields {
                 	continue;
                 }
 
-            	PdfDictionary annot = annots.getAsDict(j);
-                if (annot == null) {
-                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
-                    continue;
-                }
                 if (!PdfName.WIDGET.equals(annot.getAsName(PdfName.SUBTYPE))) {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
@@ -287,7 +291,27 @@ public class AcroFields {
         }
     }
 
+    /**
+     * Obtiene la referencia del objeto padre del diccionario indicado.
+     * @param dict Diccionario del que tomar el padre.
+     * @return Referencia al elemento padre o {@code null} si no ten&iacute;a.
+     */
+    private static PRIndirectReference getParentReference(final PdfDictionary dict) {
 
+    	PdfDictionary parentDict = dict;
+
+    	PRIndirectReference parentRef = null;
+    	do {
+    		final PdfObject parentObj = parentDict.get(PdfName.PARENT);
+    		if (parentObj != null && parentObj instanceof PRIndirectReference) {
+    			parentRef = (PRIndirectReference) parentObj;
+    		}
+    		parentDict = parentDict.getAsDict(PdfName.PARENT);
+    	}
+    	while (parentDict != null);
+
+		return parentRef;
+	}
 
     private String[] getListOption(final String fieldName, final int idx) {
         final Item fd = getFieldItem(fieldName);
