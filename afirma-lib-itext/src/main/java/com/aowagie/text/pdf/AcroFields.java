@@ -2366,6 +2366,10 @@ public class AcroFields {
             if (str != null) {
 				pk.setLocation(str.toUnicodeString());
 			}
+            str = v.getAsString(PdfName.CONTACTINFO);
+            if (str != null) {
+				pk.setContactInfo(str.toUnicodeString());
+			}
             return pk;
         }
         catch (final Exception e) {

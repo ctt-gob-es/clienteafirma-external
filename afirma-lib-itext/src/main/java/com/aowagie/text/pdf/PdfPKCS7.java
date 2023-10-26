@@ -161,6 +161,11 @@ public final class PdfPKCS7 {
     private String location;
 
     /**
+     * Holds value of property contactInfo.
+     */
+    private String contactInfo;
+
+    /**
      * Holds value of property signDate.
      */
     private Calendar signDate;
@@ -188,7 +193,7 @@ public final class PdfPKCS7 {
         STRICT_DIGEST_NAMES.put("1.3.36.3.2.2", "RIPEMD128"); //$NON-NLS-1$ //$NON-NLS-2$
         STRICT_DIGEST_NAMES.put("1.3.36.3.2.1", "RIPEMD160"); //$NON-NLS-1$ //$NON-NLS-2$
         STRICT_DIGEST_NAMES.put("1.3.36.3.2.3", "RIPEMD256"); //$NON-NLS-1$ //$NON-NLS-2$
-    	
+
         DIGEST_NAMES.put("1.2.840.113549.2.5", "MD5"); //$NON-NLS-1$ //$NON-NLS-2$
         DIGEST_NAMES.put("1.2.840.113549.2.2", "MD2"); //$NON-NLS-1$ //$NON-NLS-2$
         DIGEST_NAMES.put("1.3.14.3.2.26", "SHA1"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -808,7 +813,7 @@ public final class PdfPKCS7 {
     public String getHashAlgorithm() {
         return getDigest(this.digestAlgorithm);
     }
-    
+
     /**
      * Returns the algorithm de hash declarado.
      * @return the digest algorithm or {@code null} is there isn't a valid
@@ -1218,6 +1223,22 @@ public final class PdfPKCS7 {
      */
     public void setLocation(final String location) {
         this.location = location;
+    }
+
+    /**
+     * Getter for property contactinfo.
+     * @return Value of property contactinfo.
+     */
+    public String getContactInfo() {
+        return this.contactInfo;
+    }
+
+    /**
+     * Setter for property contactInfo.
+     * @param location New value of property contactInfo.
+     */
+    public void setContactInfo(final String contactInfo) {
+        this.contactInfo = contactInfo;
     }
 
     /**

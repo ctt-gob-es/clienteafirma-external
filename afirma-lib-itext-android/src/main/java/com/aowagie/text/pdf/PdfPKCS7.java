@@ -163,6 +163,11 @@ public class PdfPKCS7 {
     private String location;
 
     /**
+     * Holds value of property contactInfo.
+     */
+    private String contactInfo;
+
+    /**
      * Holds value of property signDate.
      */
     private Calendar signDate;
@@ -1219,6 +1224,22 @@ public class PdfPKCS7 {
      */
     public void setLocation(final String location) {
         this.location = location;
+    }
+
+    /**
+     * Getter for property contactinfo.
+     * @return Value of property contactinfo.
+     */
+    public String getContactInfo() {
+        return this.contactInfo;
+    }
+
+    /**
+     * Setter for property contactInfo.
+     * @param location New value of property contactInfo.
+     */
+    public void setContactInfo(final String contactInfo) {
+        this.contactInfo = contactInfo;
     }
 
     /**
