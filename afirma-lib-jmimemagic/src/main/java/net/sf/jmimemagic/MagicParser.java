@@ -76,7 +76,7 @@ public final class MagicParser extends DefaultHandler {
             				).getDeclaredConstructor().newInstance();
             	}
             	catch (final Exception e2) {
-            		Logger.getLogger("es.gob.afirma").info( //$NON-NLS-1$
+            		Logger.getLogger("es.gob.afirma").fine( //$NON-NLS-1$
                 			"No se ha podido obtener el analizador SAX de Apache Xerces, se usara el por defecto: " + e2 //$NON-NLS-1$
             			);
             		try {
