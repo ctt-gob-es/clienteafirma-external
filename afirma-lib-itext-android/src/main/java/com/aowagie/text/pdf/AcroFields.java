@@ -82,51 +82,51 @@ public class AcroFields {
     private int topFirst;
     private HashMap<String, int[]> sigNames;
     private boolean append;
-    private static final int DA_FONT = 0;
-    private static final int DA_SIZE = 1;
-    private static final int DA_COLOR = 2;
+    public static final int DA_FONT = 0;
+    public static final int DA_SIZE = 1;
+    public static final int DA_COLOR = 2;
     private final HashMap<Integer, BaseFont> extensionFonts = new LinkedHashMap<Integer, BaseFont>();
     private XfaForm xfa;
 
     /**
      * A field type invalid or not found.
      */
-    private static final int FIELD_TYPE_NONE = 0;
+    public static final int FIELD_TYPE_NONE = 0;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_PUSHBUTTON = 1;
+    public static final int FIELD_TYPE_PUSHBUTTON = 1;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_CHECKBOX = 2;
+    public static final int FIELD_TYPE_CHECKBOX = 2;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_RADIOBUTTON = 3;
+    public static final int FIELD_TYPE_RADIOBUTTON = 3;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_TEXT = 4;
+    public static final int FIELD_TYPE_TEXT = 4;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_LIST = 5;
+    public static final int FIELD_TYPE_LIST = 5;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_COMBO = 6;
+    public static final int FIELD_TYPE_COMBO = 6;
 
     /**
      * A field type.
      */
-    private static final int FIELD_TYPE_SIGNATURE = 7;
+    public static final int FIELD_TYPE_SIGNATURE = 7;
 
     /** Holds value of property generateAppearances. */
     private boolean generateAppearances = true;
@@ -152,7 +152,7 @@ public class AcroFields {
         fill();
     }
 
-    private void fill() {
+    void fill() {
         this.fields = new LinkedHashMap<String, Item>();
         final PdfDictionary top = (PdfDictionary)PdfReader.getPdfObjectRelease(this.reader.getCatalog().get(PdfName.ACROFORM));
         if (top == null) {
@@ -188,6 +188,7 @@ public class AcroFields {
                 		found = true;
                 	}
                 }
+
                 if (!found) {
                 	PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                 	continue;
@@ -197,6 +198,15 @@ public class AcroFields {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
                 }
+
+            	// 19/01/2024 - Ignoraremos las firmas en las que haya un valor
+                // en el lugar erroneo y no uno en el correcto
+                if (!checkInvalidValuePosition(annot)) {
+                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                    continue;
+                }
+            	// 19/01/2024 - FIN
+
                 final PdfDictionary widget = annot;
                 final PdfDictionary dic = new PdfDictionary();
                 dic.putAll(annot);
@@ -204,7 +214,15 @@ public class AcroFields {
                 PdfDictionary value = null;
                 PdfObject lastV = null;
                 while (annot != null) {
-                    dic.mergeDifferent(annot);
+                	// 19/01/2024 - Cargamos el valor correcto de la firma
+                	// con cuidado de no sobreescribirlo con uno anterior
+                	if (PdfName.SIG.equals(annot.getAsName(PdfName.FT))
+                			&& dic.get(PdfName.V) != null) {
+                		dic.remove(PdfName.V);
+                	}
+                	// 19/01/2024 - FIN
+
+                	dic.mergeDifferent(annot);
                     final PdfString t = annot.getAsString(PdfName.T);
                     if (t != null) {
 						name = t.toUnicodeString() + "." + name; //$NON-NLS-1$
@@ -245,14 +263,7 @@ public class AcroFields {
         }
         // some tools produce invisible signatures without an entry in the page annotation array
         // look for a single level annotation
-
-        final PdfNumber sigFlags;
-        if (top != null) {
-        	sigFlags = top.getAsNumber(PdfName.SIGFLAGS);
-        }
-        else {
-        	sigFlags = null;
-        }
+        final PdfNumber sigFlags = top != null ? top.getAsNumber(PdfName.SIGFLAGS) : null;
         if (sigFlags == null || (sigFlags.intValue() & 1) != 1) {
 			return;
 		}
@@ -290,6 +301,45 @@ public class AcroFields {
             item.addTabOrder(-1);
         }
     }
+
+    /**
+     * Comprueba si una anotacion es defirma y tiene asignado su valor en un lugar
+     * no v&aacute;lido.
+     * @param targetAnnot Anotaci&oacute;n que se quiere comprobar.
+     * @return {@code true} si la anotacion no es de firma, si no tiene valor o
+     * si este esta en el sitio correcto; {@code false} en caso contrario.
+     */
+    private static boolean checkInvalidValuePosition(final PdfDictionary targetAnnot) {
+
+    	PdfDictionary annot = new PdfDictionary();
+    	annot.putAll(targetAnnot);
+
+        final PdfDictionary dic = new PdfDictionary();
+        dic.putAll(annot);
+        while (annot != null) {
+        	// Comprobamos que no se haya encontrado el valor de firma antes
+        	// de llegar al propio elemento de firma. Si se encuentra antes
+        	// y ademas el objeto de firma no tiene un valor propio, se ignora
+        	// el campo
+        	if (PdfName.SIG.equals(annot.getAsName(PdfName.FT))
+        			&& dic.get(PdfName.V) != null) {
+
+        		// Si el elemento no tiene su propio valor, no podemos admitirno
+        		 if (annot.get(PdfName.V) == null) {
+        			 return false;
+        		 }
+
+        		// Ya que el elemento de firma tiene un valor, eliminamos
+        		// el anterior
+        		dic.remove(PdfName.V);
+        	}
+        	dic.mergeDifferent(annot);
+
+            annot = annot.getAsDict(PdfName.PARENT);
+        }
+
+		return true;
+	}
 
     /**
      * Obtiene la referencia del objeto padre del diccionario indicado.
@@ -370,7 +420,7 @@ public class AcroFields {
      * @param fieldName the field name
      * @return the field type
      */
-    private int getFieldType(final String fieldName) {
+    public int getFieldType(final String fieldName) {
         final Item fd = getFieldItem(fieldName);
         if (fd == null) {
 			return FIELD_TYPE_NONE;
@@ -413,7 +463,7 @@ public class AcroFields {
 
 
 
-    private static Object[] splitDAelements(final String da) {
+    public static Object[] splitDAelements(final String da) {
         try {
             final PRTokeniser tk = new PRTokeniser(PdfEncodings.convertToBytes(da, null));
             final ArrayList<String> stack = new ArrayList<String>();
@@ -467,7 +517,7 @@ public class AcroFields {
         }
     }
 
-    private void decodeGenericDictionary(final PdfDictionary merged, final BaseField tx) {
+    public void decodeGenericDictionary(final PdfDictionary merged, final BaseField tx) {
         int flags = 0;
         // the text size and color
         final PdfString da = merged.getAsString(PdfName.DA);
@@ -779,7 +829,7 @@ public class AcroFields {
      * @return <CODE>true</CODE> if the field was found and changed,
      * <CODE>false</CODE> otherwise
      */
-    private boolean setField(final String name, final String value) throws IOException, DocumentException {
+    public boolean setField(final String name, final String value) throws IOException, DocumentException {
         return setField(name, value, null);
     }
 
@@ -798,7 +848,7 @@ public class AcroFields {
      * @throws IOException on error
      * @throws DocumentException on error
      */
-    private boolean setField(String name, String value, String display) throws IOException, DocumentException {
+    public boolean setField(String name, String value, String display) throws IOException, DocumentException {
         if (this.writer == null) {
 			throw new DocumentException("This AcroFields instance is read-only."); //$NON-NLS-1$
 		}
@@ -947,7 +997,7 @@ public class AcroFields {
      * @return	true only if the field value was changed
      * @since 2.1.4
      */
-	private boolean setListSelection(final String name, final String[] value) {
+    public boolean setListSelection(final String name, final String[] value) {
         final Item item = getFieldItem(name);
         if (item == null) {
 			return false;
@@ -972,7 +1022,7 @@ public class AcroFields {
         return true;
 	}
 
-    private static boolean isInAP(final PdfDictionary dic, final PdfName check) {
+    public static boolean isInAP(final PdfDictionary dic, final PdfName check) {
         final PdfDictionary appDic = dic.getAsDict(PdfName.AP);
         if (appDic == null) {
 			return false;
@@ -998,7 +1048,7 @@ public class AcroFields {
      * @return the field structure or <CODE>null</CODE> if the field
      * does not exist
      */
-    Item getFieldItem(String name) {
+    public Item getFieldItem(String name) {
         if (this.xfa.isXfaPresent()) {
             name = this.xfa.findFieldName(name, this);
             if (name == null) {
@@ -1014,7 +1064,7 @@ public class AcroFields {
      * @param name the name of the field
      * @return the long field name
      */
-    private String getTranslatedFieldName(String name) {
+    public String getTranslatedFieldName(String name) {
         if (this.xfa.isXfaPresent()) {
             final String namex = this.xfa.findFieldName(name, this);
             if (namex != null) {
@@ -1117,7 +1167,7 @@ public class AcroFields {
      * @param page the page to remove the fields from
      * @return <CODE>true</CODE> if any field was removed, <CODE>false otherwise</CODE>
      */
-    boolean removeFieldsFromPage(final int page) {
+    public boolean removeFieldsFromPage(final int page) {
         if (page < 1) {
 			return false;
 		}
@@ -1140,7 +1190,7 @@ public class AcroFields {
      * @param page the page to remove the field from or -1 to remove it from all the pages
      * @return <CODE>true</CODE> if the field exists, <CODE>false otherwise</CODE>
      */
-    private boolean removeField(final String name, final int page) {
+    public boolean removeField(final String name, final int page) {
         final Item item = getFieldItem(name);
         if (item == null) {
 			return false;
@@ -1234,21 +1284,21 @@ public class AcroFields {
          *
          *  @since 2.1.5
          */
-        private static final int WRITE_MERGED = 1;
+    	public static final int WRITE_MERGED = 1;
 
         /**
          * <CODE>writeToAll</CODE> and <CODE>markUsed</CODE> constant.
          *
          *  @since 2.1.5
          */
-        private static final int WRITE_WIDGET = 2;
+    	public static final int WRITE_WIDGET = 2;
 
         /**
          * <CODE>writeToAll</CODE> and <CODE>markUsed</CODE> constant.
          *
          *  @since 2.1.5
          */
-        private static final int WRITE_VALUE = 4;
+    	public static final int WRITE_VALUE = 4;
 
         /**
          * This function writes the given key/value pair to all the instances
@@ -1260,7 +1310,7 @@ public class AcroFields {
          * @param value      if value is null, the key will be removed
          * @param writeFlags ORed together WRITE_* flags
          */
-        void writeToAll(final PdfName key, final PdfObject value, final int writeFlags) {
+    	public void writeToAll(final PdfName key, final PdfObject value, final int writeFlags) {
             int i;
             PdfDictionary curDict = null;
             if ((writeFlags & WRITE_MERGED) != 0) {
@@ -1287,10 +1337,10 @@ public class AcroFields {
          * Mark all the item dictionaries used matching the given flags
          *
          * @since 2.1.5
+         * @param parentFields Fields to mark
          * @param writeFlags WRITE_MERGED is ignored
-         * @param parentFields Fields
          */
-        void markUsed( final AcroFields parentFields, final int writeFlags ) {
+    	public void markUsed( final AcroFields parentFields, final int writeFlags ) {
             if ((writeFlags & WRITE_VALUE) != 0) {
                 for (int i = 0; i < size(); ++i) {
                     parentFields.markUsed( getValue( i ) );
@@ -1310,7 +1360,7 @@ public class AcroFields {
          * @deprecated (will remove 'public' in the future)
          */
         @Deprecated
-		private final ArrayList<PdfDictionary> values = new ArrayList<PdfDictionary>();
+        public final ArrayList<PdfDictionary> values = new ArrayList<PdfDictionary>();
 
         /**
          * An array of <CODE>PdfDictionary</CODE> with the widgets.
@@ -1318,7 +1368,7 @@ public class AcroFields {
          * @deprecated (will remove 'public' in the future)
          */
         @Deprecated
-		private final ArrayList<PdfDictionary> widgets = new ArrayList<PdfDictionary>();
+        public final ArrayList<PdfDictionary> widgets = new ArrayList<PdfDictionary>();
 
         /**
          * An array of <CODE>PdfDictionary</CODE> with the widget references.
@@ -1326,7 +1376,7 @@ public class AcroFields {
          * @deprecated (will remove 'public' in the future)
          */
         @Deprecated
-		private final ArrayList<PdfIndirectReference> widget_refs = new ArrayList<PdfIndirectReference>();
+        public final ArrayList<PdfIndirectReference> widget_refs = new ArrayList<PdfIndirectReference>();
 
         /**
          * An array of <CODE>PdfDictionary</CODE> with all the field
@@ -1335,7 +1385,7 @@ public class AcroFields {
          * @deprecated (will remove 'public' in the future)
          */
         @Deprecated
-		private final ArrayList<PdfDictionary> merged = new ArrayList<PdfDictionary>();
+        public final ArrayList<PdfDictionary> merged = new ArrayList<PdfDictionary>();
 
         /**
          * An array of <CODE>Integer</CODE> with the page numbers where
@@ -1344,14 +1394,14 @@ public class AcroFields {
          * @deprecated (will remove 'public' in the future)
          */
         @Deprecated
-		private final ArrayList<Integer> page = new ArrayList<Integer>();
+        public final ArrayList<Integer> page = new ArrayList<Integer>();
         /**
          * An array of <CODE>Integer</CODE> with the tab order of the field in the page.
          *
          * @deprecated (will remove 'public' in the future)
          */
         @Deprecated
-		private final ArrayList<Integer> tabOrder = new ArrayList<Integer>();
+        public final ArrayList<Integer> tabOrder = new ArrayList<Integer>();
 
         /**
          * Preferred method of determining the number of instances
@@ -1360,7 +1410,7 @@ public class AcroFields {
          * @since 2.1.5
          * @return number of instances
          */
-        int size() {
+        public int size() {
             return this.values.size();
         }
 
@@ -1371,7 +1421,7 @@ public class AcroFields {
          * @since 2.1.5
          * @param killIdx Idx
          */
-        private void remove(final int killIdx) {
+        void remove(final int killIdx) {
             this.values.remove(killIdx);
             this.widgets.remove(killIdx);
             this.widget_refs.remove(killIdx);
@@ -1387,7 +1437,7 @@ public class AcroFields {
          * @param idx instance index
          * @return dictionary storing this instance's value.  It may be shared across instances.
          */
-        PdfDictionary getValue(final int idx) {
+        public PdfDictionary getValue(final int idx) {
             return this.values.get(idx);
         }
 
@@ -1408,7 +1458,7 @@ public class AcroFields {
          * @param idx instance index
          * @return The dictionary found in the appropriate page's Annot array.
          */
-        PdfDictionary getWidget(final int idx) {
+        public PdfDictionary getWidget(final int idx) {
             return this.widgets.get(idx);
         }
 
@@ -1429,7 +1479,7 @@ public class AcroFields {
          * @param idx instance index
          * @return reference to the given field instance
          */
-        PdfIndirectReference getWidgetRef(final int idx) {
+        public PdfIndirectReference getWidgetRef(final int idx) {
             return this.widget_refs.get(idx);
         }
 
@@ -1439,7 +1489,7 @@ public class AcroFields {
          * @since 2.1.5
          * @param widgRef Widget reference
          */
-        private void addWidgetRef(final PdfIndirectReference widgRef) {
+        void addWidgetRef(final PdfIndirectReference widgRef) {
             this.widget_refs.add(widgRef);
         }
 
@@ -1453,7 +1503,7 @@ public class AcroFields {
          * @param idx  instance index
          * @return the merged dictionary for the given instance
          */
-        PdfDictionary getMerged(final int idx) {
+        public PdfDictionary getMerged(final int idx) {
             return this.merged.get(idx);
         }
 
@@ -1474,7 +1524,7 @@ public class AcroFields {
          * @param idx Index
          * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
          */
-        Integer getPage(final int idx) {
+        public Integer getPage(final int idx) {
             return this.page.get(idx);
         }
 
@@ -1503,10 +1553,10 @@ public class AcroFields {
          * Gets the tabOrder.
          *
          * @since 2.1.5
-         * @param idx Index
+         * @param idx Number of tab
          * @return tab index of the given field instance
          */
-        Integer getTabOrder(final int idx) {
+        public Integer getTabOrder(final int idx) {
             return this.tabOrder.get(idx);
         }
 
@@ -1578,8 +1628,7 @@ public class AcroFields {
 
     /**
      * Gets the field names that have blank signatures.
-     *
-     * @return the field names that have blank signatures
+     * @return the field names that have blank signatures.
      */
     public ArrayList getBlankSignatureNames() {
         getSignatureNames();
@@ -1642,7 +1691,6 @@ public class AcroFields {
      *        System.out.println("Certificate failed: " + fails[1]);
      * }
      * </pre>
-     *
      * @param name the signature field name
      * @return a <CODE>PdfPKCS7</CODE> class to continue the verification
      */
@@ -1673,12 +1721,11 @@ public class AcroFields {
      *        System.out.println("Certificate failed: " + fails[1]);
      * }
      * </pre>
-     *
      * @param name the signature field name
      * @param provider the provider or <code>null</code> for the default provider
      * @return a <CODE>PdfPKCS7</CODE> class to continue the verification
      */
-    private PdfPKCS7 verifySignature(final String name, final String provider) {
+    public PdfPKCS7 verifySignature(final String name, final String provider) {
         final PdfDictionary v = getSignatureDictionary(name);
         if (v == null) {
 			return null;
@@ -1690,8 +1737,7 @@ public class AcroFields {
             if (sub.equals(PdfName.ADBE_X509_RSA_SHA1)) {
                 final PdfString cert = v.getAsString(PdfName.CERT);
                 pk = new PdfPKCS7(contents.getOriginalBytes(), cert.getBytes(), provider);
-            }
-            else {
+            } else {
 				pk = new PdfPKCS7(contents.getOriginalBytes(), provider);
 			}
             updateByteRange(pk, v);
@@ -1703,8 +1749,7 @@ public class AcroFields {
             if (obj != null) {
             	if (obj.isString()) {
             		pk.setSignName(((PdfString)obj).toUnicodeString());
-            	}
-            	else if(obj.isName()) {
+            	} else if(obj.isName()) {
             		pk.setSignName(PdfName.decodeName(obj.toString()));
             	}
             }
@@ -1757,7 +1802,7 @@ public class AcroFields {
         }
     }
 
-    public void markUsed(final PdfObject obj) {
+    private void markUsed(final PdfObject obj) {
         if (!this.append) {
 			return;
 		}

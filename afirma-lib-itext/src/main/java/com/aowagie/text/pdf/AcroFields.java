@@ -169,7 +169,7 @@ public class AcroFields {
 				continue;
 			}
             for (int j = 0; j < annots.size(); ++j) {
-                PdfDictionary annot = annots.getAsDict(j);
+            	PdfDictionary annot = annots.getAsDict(j);
                 if (annot == null) {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
@@ -198,6 +198,15 @@ public class AcroFields {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
                 }
+
+            	// 19/01/2024 - Ignoraremos las firmas en las que haya un valor
+                // en el lugar erroneo y no uno en el correcto
+                if (!checkInvalidValuePosition(annot)) {
+                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                    continue;
+                }
+            	// 19/01/2024 - FIN
+
                 final PdfDictionary widget = annot;
                 final PdfDictionary dic = new PdfDictionary();
                 dic.putAll(annot);
@@ -205,7 +214,15 @@ public class AcroFields {
                 PdfDictionary value = null;
                 PdfObject lastV = null;
                 while (annot != null) {
-                    dic.mergeDifferent(annot);
+                	// 19/01/2024 - Cargamos el valor correcto de la firma
+                	// con cuidado de no sobreescribirlo con uno anterior
+                	if (PdfName.SIG.equals(annot.getAsName(PdfName.FT))
+                			&& dic.get(PdfName.V) != null) {
+                		dic.remove(PdfName.V);
+                	}
+                	// 19/01/2024 - FIN
+
+                	dic.mergeDifferent(annot);
                     final PdfString t = annot.getAsString(PdfName.T);
                     if (t != null) {
 						name = t.toUnicodeString() + "." + name; //$NON-NLS-1$
@@ -246,7 +263,7 @@ public class AcroFields {
         }
         // some tools produce invisible signatures without an entry in the page annotation array
         // look for a single level annotation
-        final PdfNumber sigFlags = top.getAsNumber(PdfName.SIGFLAGS);
+        final PdfNumber sigFlags = top != null ? top.getAsNumber(PdfName.SIGFLAGS) : null;
         if (sigFlags == null || (sigFlags.intValue() & 1) != 1) {
 			return;
 		}
@@ -286,6 +303,45 @@ public class AcroFields {
     }
 
     /**
+     * Comprueba si una anotacion es defirma y tiene asignado su valor en un lugar
+     * no v&aacute;lido.
+     * @param targetAnnot Anotaci&oacute;n que se quiere comprobar.
+     * @return {@code true} si la anotacion no es de firma, si no tiene valor o
+     * si este esta en el sitio correcto; {@code false} en caso contrario.
+     */
+    private static boolean checkInvalidValuePosition(final PdfDictionary targetAnnot) {
+
+    	PdfDictionary annot = new PdfDictionary();
+    	annot.putAll(targetAnnot);
+
+        final PdfDictionary dic = new PdfDictionary();
+        dic.putAll(annot);
+        while (annot != null) {
+        	// Comprobamos que no se haya encontrado el valor de firma antes
+        	// de llegar al propio elemento de firma. Si se encuentra antes
+        	// y ademas el objeto de firma no tiene un valor propio, se ignora
+        	// el campo
+        	if (PdfName.SIG.equals(annot.getAsName(PdfName.FT))
+        			&& dic.get(PdfName.V) != null) {
+
+        		// Si el elemento no tiene su propio valor, no podemos admitirno
+        		 if (annot.get(PdfName.V) == null) {
+        			 return false;
+        		 }
+
+        		// Ya que el elemento de firma tiene un valor, eliminamos
+        		// el anterior
+        		dic.remove(PdfName.V);
+        	}
+        	dic.mergeDifferent(annot);
+
+            annot = annot.getAsDict(PdfName.PARENT);
+        }
+
+		return true;
+	}
+
+	/**
      * Obtiene la referencia del objeto padre del diccionario indicado.
      * @param dict Diccionario del que tomar el padre.
      * @return Referencia al elemento padre o {@code null} si no ten&iacute;a.
@@ -500,9 +556,8 @@ public class AcroFields {
 			}
             if ((ff & PdfFormField.FF_RADIO) != 0) {
 				return FIELD_TYPE_RADIOBUTTON;
-			} else {
-				return FIELD_TYPE_CHECKBOX;
 			}
+            return FIELD_TYPE_CHECKBOX;
         }
         else if (PdfName.TX.equals(type)) {
             return FIELD_TYPE_TEXT;
@@ -510,9 +565,8 @@ public class AcroFields {
         else if (PdfName.CH.equals(type)) {
             if ((ff & PdfFormField.FF_COMBO) != 0) {
 				return FIELD_TYPE_COMBO;
-			} else {
-				return FIELD_TYPE_LIST;
 			}
+            return FIELD_TYPE_LIST;
         }
         else if (PdfName.SIG.equals(type)) {
             return FIELD_TYPE_SIGNATURE;
@@ -2043,7 +2097,7 @@ public class AcroFields {
          * Add a widget dict to this Item
          *
          * @since 2.1.5
-         * @param widget
+         * @param widget 
          */
         void addWidget(final PdfDictionary widget) {
             this.widgets.add(widget);
@@ -2064,7 +2118,7 @@ public class AcroFields {
          * Add a widget ref to this Item
          *
          * @since 2.1.5
-         * @param widgRef
+         * @param widgRef Widget reference
          */
         void addWidgetRef(final PdfIndirectReference widgRef) {
             this.widget_refs.add(widgRef);
@@ -2088,7 +2142,7 @@ public class AcroFields {
          * Adds a merged dictionary to this Item.
          *
          * @since 2.1.5
-         * @param mergeDict
+         * @param mergeDict 
          */
         void addMerged(final PdfDictionary mergeDict) {
             this.merged.add(mergeDict);
@@ -2098,7 +2152,7 @@ public class AcroFields {
          * Retrieve the page number of the given instance
          *
          * @since 2.1.5
-         * @param idx Number of page
+         * @param idx Index
          * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
          */
         public Integer getPage(final int idx) {
@@ -2109,7 +2163,7 @@ public class AcroFields {
          * Adds a page to the current Item.
          *
          * @since 2.1.5
-         * @param pg
+         * @param pg Page
          */
         void addPage(final int pg) {
             this.page.add(new Integer(pg));
@@ -2119,7 +2173,8 @@ public class AcroFields {
          * forces a page value into the Item.
          *
          * @since 2.1.5
-         * @param idx
+         * @param idx Index
+         * @param pg Page
          */
         void forcePage(final int idx, final int pg) {
             this.page.set(idx, new Integer( pg ));
@@ -2140,7 +2195,7 @@ public class AcroFields {
          * Adds a tab order value to this Item.
          *
          * @since 2.1.5
-         * @param order
+         * @param order Order
          */
         void addTabOrder(final int order) {
             this.tabOrder.add(new Integer(order));
@@ -2219,8 +2274,10 @@ public class AcroFields {
         return new ArrayList(this.sigNames.keySet());
     }
 
-    /** Gets the field names that have blank signatures.
-     * @return the field names that have blank signatures. */
+    /**
+     * Gets the field names that have blank signatures.
+     * @return the field names that have blank signatures.
+     */
     public List<String> getBlankSignatureNames() {
         getSignatureNames();
         final ArrayList sigs = new ArrayList();
@@ -2401,7 +2458,9 @@ public class AcroFields {
             throw new ExceptionConverter(e);
         }
         finally {
-            try{rf.close();}catch(final Exception e){}
+            try{rf.close();}catch(final Exception e){
+	        	// Vacio
+	        }
         }
     }
 
