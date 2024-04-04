@@ -62,6 +62,7 @@ class OutputStreamEncryption extends OutputStream {
     private AESCipher cipher;
     private final byte[] sb = new byte[1];
     private static final int AES_128 = 4;
+    private static final int AES_256_V3 = 6;
     private boolean aes;
     private boolean finished;
 
@@ -76,7 +77,7 @@ class OutputStreamEncryption extends OutputStream {
     OutputStreamEncryption(final OutputStream out, final byte key[], final int off, final int len, final int revision) {
         try {
             this.out = out;
-            this.aes = revision == AES_128;
+            this.aes = (revision == AES_128) || (revision == AES_256_V3);
             if (this.aes) {
                 final byte[] iv = IVGenerator.getIV();
                 final byte[] nkey = new byte[len];

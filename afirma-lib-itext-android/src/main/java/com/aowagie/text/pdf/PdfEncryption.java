@@ -52,11 +52,19 @@ package com.aowagie.text.pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
+import java.util.Arrays;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.aowagie.text.ExceptionConverter;
 import com.aowagie.text.pdf.crypto.ARCFOUREncryption;
+import com.aowagie.text.pdf.crypto.IVGenerator;
 
 /**
  *
@@ -70,6 +78,8 @@ class PdfEncryption {
 	private static final int STANDARD_ENCRYPTION_128 = 3;
 
 	private static final int AES_128 = 4;
+	
+	public static final int AES_256_V3 = 6;
 
 	private static final byte[] pad = { (byte) 0x28, (byte) 0xBF, (byte) 0x4E,
 			(byte) 0x5E, (byte) 0x4E, (byte) 0x75, (byte) 0x8A, (byte) 0x41,
@@ -109,7 +119,7 @@ class PdfEncryption {
 	/** The public key security handler for certificate encryption */
 	private PdfPublicKeySecurityHandler publicKeyHandler = null;
 
-	private int permissions;
+	int permissions;
 
 	private byte documentID[];
 
@@ -123,6 +133,10 @@ class PdfEncryption {
 	private int keyLength;
 
 	private boolean encryptMetadata;
+	
+    byte[] oeKey;
+    byte[] ueKey;
+    byte[] perms;
 
 	/**
 	 * Indicates if the encryption is only necessary for embedded files.
@@ -143,18 +157,33 @@ class PdfEncryption {
 
 	public PdfEncryption(final PdfEncryption enc) {
 		this();
-		this.mkey = enc.mkey.clone();
-		this.ownerKey = enc.ownerKey.clone();
-		this.userKey = enc.userKey.clone();
-		this.permissions = enc.permissions;
-		if (enc.documentID != null) {
-			this.documentID = enc.documentID.clone();
-		}
-		this.revision = enc.revision;
-		this.keyLength = enc.keyLength;
-		this.encryptMetadata = enc.encryptMetadata;
-		this.embeddedFilesOnly = enc.embeddedFilesOnly;
-		this.publicKeyHandler = enc.publicKeyHandler;
+	    if (enc.mkey != null) {
+	        this.mkey = enc.mkey.clone();
+	    }
+	    this.ownerKey = enc.ownerKey.clone();
+	    this.userKey = enc.userKey.clone();
+	    this.permissions = enc.permissions;
+	    if (enc.documentID != null) {
+	        this.documentID = enc.documentID.clone();
+	    }
+	    this.revision = enc.revision;
+	    this.keyLength = enc.keyLength;
+	    this.encryptMetadata = enc.encryptMetadata;
+	    this.embeddedFilesOnly = enc.embeddedFilesOnly;
+	    this.publicKeyHandler = enc.publicKeyHandler;
+	    if (enc.ueKey != null) {
+	        this.ueKey = enc.ueKey.clone();
+	    }
+	    if (enc.oeKey != null) {
+	        this.oeKey = enc.oeKey.clone();
+	    }
+	    if (enc.perms != null) {
+	        this.perms = enc.perms.clone();
+	    }
+	    if (enc.key != null) {
+	        this.key = enc.key.clone();
+	    }
+	    this.keySize = enc.keySize;
 	}
 
 	public void setCryptoMode(int mode, final int kl) {
@@ -181,6 +210,11 @@ class PdfEncryption {
 		case PdfWriter.ENCRYPTION_AES_128:
 			this.keyLength = 128;
 			this.revision = AES_128;
+			break;
+		case PdfWriter.ENCRYPTION_AES_256_V3:
+			this.keyLength = 256;
+			this.keySize = 32;
+			this.revision = AES_256_V3;
 			break;
 		default:
 			throw new IllegalArgumentException("No valid encryption mode");
@@ -326,17 +360,30 @@ class PdfEncryption {
 		if (ownerPassword == null || ownerPassword.length == 0) {
 			ownerPassword = this.md5.digest(createDocumentId());
 		}
-		permissions |= this.revision == STANDARD_ENCRYPTION_128 || this.revision == AES_128 ? 0xfffff0c0
-				: 0xffffffc0;
+		permissions |= (this.revision == STANDARD_ENCRYPTION_128 || this.revision == AES_128
+				|| this.revision == AES_256_V3) ? 0xfffff0c0 : 0xffffffc0;
 		permissions &= 0xfffffffc;
-		// PDF reference 3.5.2 Standard Security Handler, Algorithm 3.3-1
-		// If there is no owner password, use the user password instead.
-		final byte userPad[] = padPassword(userPassword);
-		final byte ownerPad[] = padPassword(ownerPassword);
-
-		this.ownerKey = computeOwnerKey(userPad, ownerPad);
+		this.permissions = permissions;
 		this.documentID = createDocumentId();
-		setupByUserPad(this.documentID, userPad, this.ownerKey, permissions);
+		if (this.revision < AES_256_V3) {
+			// PDF reference 3.5.2 Standard Security Handler, Algorithm 3.3-1
+			// If there is no owner password, use the user password instead.
+			final byte[] userPad = padPassword(userPassword);
+			final byte[] ownerPad = padPassword(ownerPassword);
+
+			this.ownerKey = computeOwnerKey(userPad, ownerPad);
+			setupByUserPad(this.documentID, userPad, this.ownerKey, permissions);
+		} else {
+			try {
+				this.key = IVGenerator.getIV(32);
+				this.keySize = 32;
+				computeUAndUeAlg8(userPassword);
+				computeOAndOeAlg9(ownerPassword);
+				computePermsAlg10(permissions);
+			} catch (final GeneralSecurityException e) {
+				throw new ExceptionConverter(e);
+			}
+		}
 	}
 
 	public static byte[] createDocumentId() {
@@ -357,6 +404,27 @@ class PdfEncryption {
 		setupByUserPad(documentID, padPassword(userPassword), ownerKey,
 				permissions);
 	}
+	
+	/**
+	 * implements step e of Algorithm 2.A: Retrieving the file encryption key from
+	 * an encrypted document in order to decrypt it (revision 6 and later) - ISO
+	 * 32000-2 section 7.6.4.3.3
+	 */
+	public void setupByUserPassword(final byte[] documentID, final byte[] userPassword, final byte[] uValue,
+			final byte[] ueValue, final byte[] oValue, final byte[] oeValue, final int permissions)
+			throws GeneralSecurityException {
+		final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding"); //$NON-NLS-1$
+
+		final byte[] hashAlg2B = hashAlg2B(userPassword, Arrays.copyOfRange(uValue, 40, 48), null);
+		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(hashAlg2B, "AES"), //$NON-NLS-1$
+				new IvParameterSpec(new byte[16]));
+		this.key = cipher.update(ueValue, 0, ueValue.length);
+
+		this.ownerKey = oValue;
+		this.userKey = uValue;
+		this.documentID = documentID;
+		this.permissions = permissions;
+	}
 
 	private void setupByUserPad(final byte[] documentID, final byte userPad[],
 			final byte ownerKey[], final int permissions) {
@@ -369,6 +437,27 @@ class PdfEncryption {
 		setupByOwnerPad(documentID, padPassword(ownerPassword), userKey,
 				ownerKey, permissions);
 	}
+	
+    /**
+     * implements step d of Algorithm 2.A: Retrieving the file encryption key from an encrypted document in order to
+     * decrypt it (revision 6 and later) - ISO 32000-2 section 7.6.4.3.3
+     */
+    public void setupByOwnerPassword(final byte[] documentID, final byte[] ownerPassword,
+            final byte[] uValue, final byte[] ueValue, final byte[] oValue, final byte[] oeValue, final int permissions)
+            throws GeneralSecurityException {
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+        final byte[] hashAlg2B = hashAlg2B(ownerPassword, Arrays.copyOfRange(oValue, 40, 48), uValue);
+        cipher.init(Cipher.DECRYPT_MODE,
+                new SecretKeySpec(hashAlg2B, "AES"),
+                new IvParameterSpec(new byte[16]));
+        this.key = cipher.update(oeValue, 0, oeValue.length);
+
+        this.ownerKey = oValue;
+        this.userKey = uValue;
+        this.documentID = documentID;
+        this.permissions = permissions;
+    }
 
 	private void setupByOwnerPad(final byte[] documentID, final byte ownerPad[],
 			final byte userKey[], final byte ownerKey[], final int permissions) {
@@ -379,6 +468,25 @@ class PdfEncryption {
 																				// 3
 		setupUserKey();
 	}
+	
+    /**
+     * implements step f of Algorithm 2.A: Retrieving the file encryption key from an encrypted document in order to
+     * decrypt it (revision 6 and later) - ISO 32000-2 section 7.6.4.3.3
+     */
+    public boolean decryptAndCheckPerms(final byte[] permsValue) throws GeneralSecurityException {
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding"); //$NON-NLS-1$
+
+        cipher.init(Cipher.DECRYPT_MODE,
+                new SecretKeySpec(this.key, "AES"), //$NON-NLS-1$
+                new IvParameterSpec(new byte[16]));
+        final byte[] decPerms = cipher.update(permsValue, 0, permsValue.length);
+
+        this.permissions = (decPerms[0] & 0xff) | ((decPerms[1] & 0xff) << 8)
+                | ((decPerms[2] & 0xff) << 16) | ((decPerms[2] & 0xff) << 24);
+        this.encryptMetadata = decPerms[8] == (byte) 'T';
+
+        return decPerms[9] == (byte) 'a' && decPerms[10] == (byte) 'd' && decPerms[11] == (byte) 'b';
+    }
 
 	public void setupByEncryptionKey(final byte[] key, final int keylength) {
 		this.mkey = new byte[keylength / 8];
@@ -386,6 +494,11 @@ class PdfEncryption {
 	}
 
 	public void setHashKey(final int number, final int generation) {
+		
+        if (this.revision >= AES_256_V3) {
+            return;
+        }
+		
 		this.md5.reset(); // added by ujihara
 		this.extra[0] = (byte) number;
 		this.extra[1] = (byte) (number >> 8);
@@ -443,7 +556,32 @@ class PdfEncryption {
 				dic.put(PdfName.LENGTH, new PdfNumber(128));
 				dic.put(PdfName.SUBFILTER, PdfName.ADBE_PKCS7_S4);
 				dic.put(PdfName.RECIPIENTS, recipients);
-			} else {
+			} else if (this.revision == AES_256_V3) {
+                if (!this.encryptMetadata) {
+                    dic.put(PdfName.ENCRYPTMETADATA, PdfBoolean.PDFFALSE);
+                }
+                dic.put(PdfName.V, new PdfNumber(5));
+                dic.put(PdfName.OE, new PdfLiteral(PdfContentByte.escapeString(this.oeKey)));
+                dic.put(PdfName.UE, new PdfLiteral(PdfContentByte.escapeString(this.ueKey)));
+                dic.put(PdfName.PERMS, new PdfLiteral(PdfContentByte.escapeString(this.perms)));
+                dic.put(PdfName.LENGTH, new PdfNumber(256));
+                final PdfDictionary stdcf = new PdfDictionary();
+                stdcf.put(PdfName.LENGTH, new PdfNumber(32));
+                if (this.embeddedFilesOnly) {
+                    stdcf.put(PdfName.AUTHEVENT, PdfName.EFOPEN);
+                    dic.put(PdfName.EFF, PdfName.STDCF);
+                    dic.put(PdfName.STRF, PdfName.IDENTITY);
+                    dic.put(PdfName.STMF, PdfName.IDENTITY);
+                } else {
+                    stdcf.put(PdfName.AUTHEVENT, PdfName.DOCOPEN);
+                    dic.put(PdfName.STRF, PdfName.STDCF);
+                    dic.put(PdfName.STMF, PdfName.STDCF);
+                }
+                stdcf.put(PdfName.CFM, PdfName.AESV3);
+                final PdfDictionary cf = new PdfDictionary();
+                cf.put(PdfName.STDCF, stdcf);
+                dic.put(PdfName.CF, cf);
+            } else {
 				dic.put(PdfName.R, new PdfNumber(AES_128));
 				dic.put(PdfName.V, new PdfNumber(4));
 				dic.put(PdfName.SUBFILTER, PdfName.ADBE_PKCS7_S5);
@@ -551,7 +689,7 @@ class PdfEncryption {
 	}
 
 	int calculateStreamSize(final int n) {
-		if (this.revision == AES_128) {
+		if (this.revision == AES_128 || this.revision == AES_256_V3) {
 			return (n & 0x7ffffff0) + 32;
 		} else {
 			return n;
@@ -597,6 +735,137 @@ class PdfEncryption {
 		this.publicKeyHandler.addRecipient(new PdfPublicKeyRecipient(cert,
 				permission));
 	}
+	
+	  /**
+     * implements Algorithm 8: Computing the encryption dictionary’s U (user password) and UE (user encryption) values
+     * (Security handlers of revision 6) - ISO 32000-2 section 7.6.4.4.7
+     */
+    void computeUAndUeAlg8(byte[] userPassword) throws GeneralSecurityException {
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
+        if (userPassword == null) {
+            userPassword = new byte[0];
+        } else if (userPassword.length > 127) {
+            userPassword = Arrays.copyOf(userPassword, 127);
+        }
+
+        final byte[] userSalts = IVGenerator.getIV(16);
+
+        this.userKey = new byte[48];
+        System.arraycopy(userSalts, 0, this.userKey, 32, 16);
+        byte[] hashAlg2B = hashAlg2B(userPassword, Arrays.copyOf(userSalts, 8), null);
+        System.arraycopy(hashAlg2B, 0, this.userKey, 0, 32);
+
+        hashAlg2B = hashAlg2B(userPassword, Arrays.copyOfRange(userSalts, 8, 16), null);
+        cipher.init(Cipher.ENCRYPT_MODE,
+                new SecretKeySpec(hashAlg2B, "AES"),
+                new IvParameterSpec(new byte[16]));
+        this.ueKey = cipher.update(this.key, 0, this.keySize);
+    }
+
+    /**
+     * implements Algorithm 9: Computing the encryption dictionary’s O (owner password) and OE (owner encryption) values
+     * (Security handlers of revision 6) - ISO 32000-2 section 7.6.4.4.8
+     */
+    void computeOAndOeAlg9(byte[] ownerPassword) throws GeneralSecurityException {
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+        if (ownerPassword == null) {
+            ownerPassword = new byte[0];
+        } else if (ownerPassword.length > 127) {
+            ownerPassword = Arrays.copyOf(ownerPassword, 127);
+        }
+
+        final byte[] ownerSalts = IVGenerator.getIV(16);
+
+        this.ownerKey = new byte[48];
+        System.arraycopy(ownerSalts, 0, this.ownerKey, 32, 16);
+        byte[] hashAlg2B = hashAlg2B(ownerPassword, Arrays.copyOf(ownerSalts, 8), this.userKey);
+        System.arraycopy(hashAlg2B, 0, this.ownerKey, 0, 32);
+
+        hashAlg2B = hashAlg2B(ownerPassword, Arrays.copyOfRange(ownerSalts, 8, 16), this.userKey);
+        cipher.init(Cipher.ENCRYPT_MODE,
+                new SecretKeySpec(hashAlg2B, "AES"),
+                new IvParameterSpec(new byte[16]));
+        this.oeKey = cipher.update(this.key, 0, this.keySize);
+    }
+
+    /**
+     * implements Algorithm 10: Computing the encryption dictionary’s Perms (permissions) value (Security handlers of
+     * revision 6) - ISO 32000-2 section 7.6.4.4.9
+     */
+    void computePermsAlg10(final int permissions) throws GeneralSecurityException {
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+        final byte[] rawPerms = new byte[16];
+        rawPerms[0] = (byte) (permissions & 0xff);
+        rawPerms[1] = (byte) ((permissions & 0xff00) >> 8);
+        rawPerms[2] = (byte) ((permissions & 0xff0000) >> 16);
+        rawPerms[3] = (byte) ((permissions & 0xff000000) >> 24);
+        rawPerms[4] = (byte) 0xff;
+        rawPerms[5] = (byte) 0xff;
+        rawPerms[6] = (byte) 0xff;
+        rawPerms[7] = (byte) 0xff;
+        rawPerms[8] = (byte) (this.encryptMetadata ? 'T' : 'F');
+        rawPerms[9] = (byte) 'a';
+        rawPerms[10] = (byte) 'd';
+        rawPerms[11] = (byte) 'b';
+        System.arraycopy(IVGenerator.getIV(4), 0, rawPerms, 12, 4);
+
+        cipher.init(Cipher.ENCRYPT_MODE,
+                new SecretKeySpec(this.key, "AES"),
+                new IvParameterSpec(new byte[16]));
+        this.perms = cipher.update(rawPerms, 0, 16);
+    }
+    
+    /**
+     * implements Algorithm 2.B: Computing a hash (revision 6 and later) - ISO 32000-2 section 7.6.4.3.4
+     */
+    static byte[] hashAlg2B(final byte[] input, final byte[] salt, byte[] userKey) throws GeneralSecurityException {
+        final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        final MessageDigest sha384 = MessageDigest.getInstance("SHA-384");
+        final MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+        if (userKey == null) {
+            userKey = new byte[0];
+        }
+
+        sha256.update(input);
+        sha256.update(salt);
+        sha256.update(userKey);
+        byte[] k = sha256.digest();
+
+        for (int round = 0, lastEByte = 0; round < 64 || lastEByte > round - 32; round++) {
+            final int singleSequenceSize = input.length + k.length + userKey.length;
+            final byte[] k1 = new byte[singleSequenceSize * 64];
+            System.arraycopy(input, 0, k1, 0, input.length);
+            System.arraycopy(k, 0, k1, input.length, k.length);
+            System.arraycopy(userKey, 0, k1, input.length + k.length, userKey.length);
+            for (int i = 1; i < 64; i++) {
+                System.arraycopy(k1, 0, k1, singleSequenceSize * i, singleSequenceSize);
+            }
+
+            cipher.init(Cipher.ENCRYPT_MODE,
+                    new SecretKeySpec(Arrays.copyOf(k, 16), "AES"),
+                    new IvParameterSpec(Arrays.copyOfRange(k, 16, 32)));
+            final byte[] e = cipher.update(k1, 0, k1.length);
+            lastEByte = e[e.length - 1] & 0xFF;
+
+            switch (new BigInteger(1, Arrays.copyOf(e, 16)).remainder(BigInteger.valueOf(3)).intValue()) {
+                case 0:
+                    k = sha256.digest(e);
+                    break;
+                case 1:
+                    k = sha384.digest(e);
+                    break;
+                case 2:
+                    k = sha512.digest(e);
+                    break;
+            }
+        }
+
+        return Arrays.copyOf(k, 32);
+    }
 
 }
