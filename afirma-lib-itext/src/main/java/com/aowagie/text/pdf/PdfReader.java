@@ -632,10 +632,17 @@ public class PdfReader implements PdfViewerPreferences {
 				} else {
 					throw new UnsupportedPdfException("No compatible encryption found"); //$NON-NLS-1$
 				}
-                final PdfObject em = enc.get(PdfName.ENCRYPTMETADATA);
+                PdfObject em = enc.get(PdfName.ENCRYPTMETADATA);
                 if (em != null && em.toString().equals("false")) { //$NON-NLS-1$
 					cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
 				}
+                break;
+            case 6:
+                cryptoMode = PdfWriter.ENCRYPTION_AES_256_V3;
+                em = enc.get(PdfName.ENCRYPTMETADATA);
+                if (em != null && em.toString().equals("false")) {
+                    cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
+                }
                 break;
             default:
             	throw new UnsupportedPdfException("Unknown encryption type R = " + this.rValue); //$NON-NLS-1$
@@ -680,14 +687,13 @@ public class PdfReader implements PdfViewerPreferences {
 				}
                 if (PdfName.V2.equals(dic.get(PdfName.CFM))) {
                     cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
-                    lengthValue = 128;
                 }
                 else if (PdfName.AESV2.equals(dic.get(PdfName.CFM))) {
                     cryptoMode = PdfWriter.ENCRYPTION_AES_128;
-                    lengthValue = 128;
                 } else {
 					throw new UnsupportedPdfException("No compatible encryption found"); //$NON-NLS-1$
 				}
+				lengthValue = 128;
                 final PdfObject em = dic.get(PdfName.ENCRYPTMETADATA);
                 if (em != null && em.toString().equals("false")) { //$NON-NLS-1$
 					cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
@@ -751,20 +757,86 @@ public class PdfReader implements PdfViewerPreferences {
         this.decrypt = new PdfEncryption();
         this.decrypt.setCryptoMode(cryptoMode, lengthValue);
 
-        if (filter.equals(PdfName.STANDARD)) {
-            //check by owner password
-            this.decrypt.setupByOwnerPassword(documentID, this.password, uValue, oValue, this.pValue);
-            if (!equalsArray(uValue, this.decrypt.userKey, this.rValue == 3 || this.rValue == 4 ? 16 : 32)) {
-                //check by user password
-                this.decrypt.setupByUserPassword(documentID, this.password, oValue, this.pValue);
-                if (!equalsArray(uValue, this.decrypt.userKey, this.rValue == 3 || this.rValue == 4 ? 16 : 32)) {
-                    throw new BadPasswordException("Bad user password"); //$NON-NLS-1$
-                }
-            } else {
-				this.ownerPasswordUsed = true;
+		if (filter.equals(PdfName.STANDARD)) {
+			if (this.rValue < 6) {
+				// check by owner password
+				this.decrypt.setupByOwnerPassword(documentID, this.password, uValue, oValue, this.pValue);
+				if (!equalsArray(uValue, this.decrypt.userKey, (this.rValue == 3 || this.rValue == 4) ? 16 : 32)) {
+					// check by user password
+					this.decrypt.setupByUserPassword(documentID, this.password, oValue, this.pValue);
+					if (!equalsArray(uValue, this.decrypt.userKey, (this.rValue == 3 || this.rValue == 4) ? 16 : 32)) {
+						throw new BadPasswordException("bad.user.password");
+					}
+				} else {
+					this.ownerPasswordUsed = true;
+				}
+			} else {
+				/*
+				 * implements Algorithm 2.A: Retrieving the file encryption key from an
+				 * encrypted document in order to decrypt it (revision 6 and later) - ISO
+				 * 32000-2 section 7.6.4.3.3
+				 */
+				s = enc.get(PdfName.UE).toString();
+				this.strings.remove(enc.get(PdfName.UE));
+				final byte[] ueValue = com.aowagie.text.DocWriter.getISOBytes(s);
+				s = enc.get(PdfName.OE).toString();
+				this.strings.remove(enc.get(PdfName.OE));
+				final byte[] oeValue = com.aowagie.text.DocWriter.getISOBytes(s);
+				s = enc.get(PdfName.PERMS).toString();
+				this.strings.remove(enc.get(PdfName.PERMS));
+				final byte[] permsValue = com.aowagie.text.DocWriter.getISOBytes(s);
+
+				// step b of Algorithm 2.A
+				byte[] password = this.password;
+				if (password == null) {
+					password = new byte[0];
+				} else if (password.length > 127) {
+					password = Arrays.copyOf(password, 127);
+				}
+
+				// According to ISO 32000-2 the uValue is expected to be 48 bytes in length.
+				// Actual documents from the wild tend to have the uValue filled with zeroes
+				// to a 127 bytes length. As input to computeHash for owner password related
+				// operations, though, we must only use the 48 bytes.
+				if (uValue != null && uValue.length > 48) {
+					uValue = Arrays.copyOf(uValue, 48);
+				}
+
+				try {
+					// step c of Algorithm 2.A
+					byte[] hashAlg2B = this.decrypt.hashAlg2B(password, Arrays.copyOfRange(oValue, 32, 40), uValue);
+					if (equalsArray(hashAlg2B, oValue, 32)) {
+						// step d of Algorithm 2.A
+						this.decrypt.setupByOwnerPassword(documentID, password, uValue, ueValue, oValue, oeValue,
+								this.pValue);
+						// step f of Algorithm 2.A
+						if (this.decrypt.decryptAndCheckPerms(permsValue)) {
+							this.ownerPasswordUsed = true;
+						}
+					}
+
+					if (!this.ownerPasswordUsed) {
+						// analog of step c of Algorithm 2.A for user password
+						hashAlg2B = this.decrypt.hashAlg2B(password, Arrays.copyOfRange(uValue, 32, 40), null);
+						if (!equalsArray(hashAlg2B, uValue, 32)) {
+							throw new BadPasswordException("bad.user.password");
+						}
+						// step e of Algorithm 2.A
+						this.decrypt.setupByUserPassword(documentID, password, uValue, ueValue, oValue, oeValue,
+								this.pValue);
+						// step f of Algorithm 2.A
+						if (!this.decrypt.decryptAndCheckPerms(permsValue)) {
+							throw new BadPasswordException("bad.user.password");
+						}
+					}
+					this.pValue = this.decrypt.permissions;
+				} catch (final IOException e) {
+					throw e;
+				} catch (final Exception e) {
+					throw new IOException(e);
+				}
 			}
-        }
-        else if (filter.equals(PdfName.PUBSEC)) {
+		} else if (filter.equals(PdfName.PUBSEC)) {
             this.decrypt.setupByEncryptionKey(encryptionKey, lengthValue);
             this.ownerPasswordUsed = true;
         }
@@ -1285,13 +1357,11 @@ public class PdfReader implements PdfViewerPreferences {
 		}
         if (this.xref == null) {
 			this.xref = new int[size];
-		} else {
-            if (this.xref.length < size) {
-                final int xref2[] = new int[size];
-                System.arraycopy(this.xref, 0, xref2, 0, this.xref.length);
-                this.xref = xref2;
-            }
-        }
+		} else if (this.xref.length < size) {
+		    final int xref2[] = new int[size];
+		    System.arraycopy(this.xref, 0, xref2, 0, this.xref.length);
+		    this.xref = xref2;
+		}
     }
 
     private void readXref() throws IOException {

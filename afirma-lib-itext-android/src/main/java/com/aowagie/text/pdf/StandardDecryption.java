@@ -56,6 +56,7 @@ class StandardDecryption {
     private AESCipher cipher;
     private byte[] key;
     private static final int AES_128 = 4;
+    private static final int AES_256_V3 = 6;
     private final boolean aes;
     private boolean initiated;
     private final byte[] iv = new byte[16];
@@ -69,7 +70,7 @@ class StandardDecryption {
      * @param revision Revision
      */
     StandardDecryption(final byte key[], final int off, final int len, final int revision) {
-        this.aes = revision == AES_128;
+    	this.aes = revision == AES_128 || revision == AES_256_V3;
         if (this.aes) {
             this.key = new byte[len];
             System.arraycopy(key, off, this.key, 0, len);

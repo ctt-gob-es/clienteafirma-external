@@ -81,7 +81,7 @@ public final class IVGenerator {
      * @param len the length of the initialization vector
      * @return a random initialization vector
      */
-    private static byte[] getIV(final int len) {
+    public static byte[] getIV(final int len) {
         final byte[] b = new byte[len];
         synchronized (arcfour) {
             arcfour.encryptARCFOUR(b);
