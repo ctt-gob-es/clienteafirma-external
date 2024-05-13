@@ -3,9 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>afirma-lib-itext-android</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.6</version>
 	<packaging>jar</packaging>
 	
 	<name>afirma-lib-itext-android</name>
@@ -61,19 +60,16 @@
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>core</artifactId>
-			<version>1.56.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>prov</artifactId>
-			<version>1.56.0.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
-			<version>1.56.0.0</version>
 		</dependency>
 		
 		<dependency>
