@@ -66,6 +66,7 @@ public class PRTokeniser {
     static final int TK_END_DIC = 8;
     static final int TK_REF = 9;
     static final int TK_OTHER = 10;
+    public static final int TK_ENDOFFILE = 11;
     private static final boolean delims[] = {
         true,  true,  false, false, false, false, false, false, false, false,
         true,  true,  false, true,  true,  false, false, false, false, false,
@@ -284,6 +285,21 @@ public class PRTokeniser {
                 }
             }
         }
+        // http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=687669#20
+        if (level > 0) {
+            this.type = TK_NUMBER;
+            this.file.seek(ptr);
+            this.stringValue = n1;
+            return;
+        }
+//                if (type == TK_ENDOFFILE && level > 0)
+//                    {
+//                        file.seek(ptr);
+//                        type = TK_NUMBER;
+//                        stringValue = n1;
+//                    }
+
+        throwError("Unexpected end of file");
         // if we hit here, the file is either corrupt (stream ended unexpectedly),
         // or the last token ended exactly at the end of a stream.  This last
         // case can occur inside an Object Stream.
@@ -295,6 +311,7 @@ public class PRTokeniser {
             ch = this.file.read();
         } while (ch != -1 && isWhitespace(ch));
         if (ch == -1) {
+            this.type = TK_ENDOFFILE;
 			return false;
 		}
 
@@ -527,7 +544,7 @@ public class PRTokeniser {
 	// assumes that line provided by readLineSegment does not have init. whitespace;
 	if ( ptr < len ) {
 	    while ( isWhitespace( c = read() ) ) {
-			;
+
 		}
 	}
 	while ( !eol && ptr < len ) {
