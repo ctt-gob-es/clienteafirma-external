@@ -1236,7 +1236,7 @@ public class PdfPKCS7 {
 
     /**
      * Setter for property contactInfo.
-     * @param location New value of property contactInfo.
+     * @param contactInfo New value of property contactInfo.
      */
     public void setContactInfo(final String contactInfo) {
         this.contactInfo = contactInfo;
