@@ -70,6 +70,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.aowagie.text.xml.XMLConstants;
 import com.aowagie.text.xml.XmlDomWriter;
 
 /**
@@ -430,7 +431,7 @@ public class XfaForm {
 
     	// Configuramos un procesado seguro
     	try {
-    		SECURE_FACTORY.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE.booleanValue());
+    		SECURE_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE.booleanValue());
 		}
 		catch (final Exception e) {
 			LOGGER.log(Level.WARNING, "No se pudo configurar el procesador seguro: " + e); //$NON-NLS-1$
@@ -440,9 +441,9 @@ public class XfaForm {
 		// la biblioteca al habilitar la caracteristica anterior. Por si acaso, los establecemos
 		// expresamente
 		final String[] securityProperties = new String[] {
-				javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD,
-				javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA,
-				javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET
+				XMLConstants.ACCESS_EXTERNAL_DTD,
+				XMLConstants.ACCESS_EXTERNAL_SCHEMA,
+				XMLConstants.ACCESS_EXTERNAL_STYLESHEET
 		};
 		for (final String securityProperty : securityProperties) {
 			try {
