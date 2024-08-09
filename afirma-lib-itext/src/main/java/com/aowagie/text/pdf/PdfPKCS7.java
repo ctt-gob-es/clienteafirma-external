@@ -802,7 +802,7 @@ public final class PdfPKCS7 {
         if (dea == null) {
 			dea = this.digestEncryptionAlgorithm;
 		}
-        final String algo = OIDS.get(dea);
+        final String algo = dea != null ? OIDS.get(dea) : null;
         return algo != null ? algo : getHashAlgorithm() + "with" + dea; //$NON-NLS-1$
     }
 
