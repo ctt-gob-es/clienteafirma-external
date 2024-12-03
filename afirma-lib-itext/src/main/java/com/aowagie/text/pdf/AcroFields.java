@@ -126,6 +126,12 @@ public class AcroFields {
      */
     public static final int FIELD_TYPE_SIGNATURE = 7;
 
+    /**
+     * N&uacute;mero m&aacute;ximo de saltos entre elementos que se permiten al intentar
+     * localizar el componente padre de otro.
+     */
+    private static final int MAX_NUM_LEAPS_TO_FIND_PARENT = 5;
+
     private boolean lastWasString;
 
     /** Holds value of property generateAppearances. */
@@ -350,6 +356,12 @@ public class AcroFields {
 
     	PdfDictionary parentDict = dict;
 
+    	// Contaremos el numero de saltos que tenemos que dar hasta localizar
+    	// el elemento padre de otro. Lo hacemos para poder establecer un maximo
+    	// numero de saltos y poder evitar que una referencia ciclica bloquee el
+    	// proceso.
+    	int leap = 0;
+
     	PRIndirectReference parentRef = null;
     	do {
     		final PdfObject parentObj = parentDict.get(PdfName.PARENT);
@@ -357,8 +369,9 @@ public class AcroFields {
     			parentRef = (PRIndirectReference) parentObj;
     		}
     		parentDict = parentDict.getAsDict(PdfName.PARENT);
+    		leap++;
     	}
-    	while (parentDict != null);
+    	while (parentDict != null && leap < MAX_NUM_LEAPS_TO_FIND_PARENT);
 
 		return parentRef;
 	}
@@ -2097,7 +2110,7 @@ public class AcroFields {
          * Add a widget dict to this Item
          *
          * @since 2.1.5
-         * @param widget 
+         * @param widget
          */
         void addWidget(final PdfDictionary widget) {
             this.widgets.add(widget);
@@ -2142,7 +2155,7 @@ public class AcroFields {
          * Adds a merged dictionary to this Item.
          *
          * @since 2.1.5
-         * @param mergeDict 
+         * @param mergeDict
          */
         void addMerged(final PdfDictionary mergeDict) {
             this.merged.add(mergeDict);
