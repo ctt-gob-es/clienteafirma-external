@@ -19,10 +19,10 @@
  */
 package org.apache.harmony.awt.gl.color;
 
-import harmony.java.awt.color.ICC_Profile;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import harmony.java.awt.color.ICC_Profile;
 
 /**
  * This class is a wrapper for the native CMM library
@@ -50,26 +50,50 @@ public class NativeCMM {
 	}
 
 	/* ICC profile management */
-	public static native long cmmOpenProfile(byte[] data);
+	public static long cmmOpenProfile(final byte[] data) {
+		// No hacemos nada
+		return 1;
+	}
 
-	public static native void cmmCloseProfile(long profileID);
+	public static void cmmCloseProfile(final long profileID) {
+		// No hacemos nada
+	}
 
-	public static native int cmmGetProfileSize(long profileID);
+	public static int cmmGetProfileSize(final long profileID) {
+		// No hacemos nada
+		return 1;
+	}
 
-	public static native void cmmGetProfile(long profileID, byte[] data);
+	public static void cmmGetProfile(final long profileID, final byte[] data) {
+		// No hacemos nada
+	}
 
-	public static native int cmmGetProfileElementSize(long profileID, int signature);
+	public static int cmmGetProfileElementSize(final long profileID, final int signature) {
+		// No hacemos nada
+		return 1;
+	}
 
-	public static native void cmmGetProfileElement(long profileID, int signature, byte[] data);
+	public static void cmmGetProfileElement(final long profileID, final int signature, final byte[] data) {
+		// No hacemos nada
+	}
 
-	public static native void cmmSetProfileElement(long profileID, int tagSignature, byte[] data);
+	public static void cmmSetProfileElement(final long profileID, final int tagSignature, final byte[] data) {
+		// No hacemos nada
+	}
 
 	/* ICC transforms */
-	public static native long cmmCreateMultiprofileTransform(long[] profileHandles, int[] renderingIntents);
+	public static long cmmCreateMultiprofileTransform(final long[] profileHandles, final int[] renderingIntents) {
+		// No hacemos nada
+		return 1;
+	}
 
-	public static native void cmmDeleteTransform(long transformHandle);
+	public static void cmmDeleteTransform(final long transformHandle) {
+		// No hacemos nada
+	}
 
-	public static native void cmmTranslateColors(long transformHandle, NativeImageFormat src, NativeImageFormat dest);
+	public static void cmmTranslateColors(final long transformHandle, final NativeImageFormat src, final NativeImageFormat dest) {
+		// No hacemos nada
+	}
 
 	static void loadCMM() {
 		// if (!isCMMLoaded) {

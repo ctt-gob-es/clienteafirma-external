@@ -19,7 +19,6 @@
  */
 package org.apache.harmony.awt.gl.color;
 
-import java.util.ArrayList;
 
 import org.apache.harmony.awt.internal.nls.Messages;
 
@@ -27,7 +26,7 @@ import org.apache.harmony.awt.internal.nls.Messages;
  * This class converts java color/sample models to the LCMS pixel formats. It
  * also encapsulates all the information about the image format, which native
  * CMM needs to have in order to read/write data.
- * 
+ *
  * At present planar formats (multiple bands) are not supported and they are
  * handled as a common (custom) case. Samples other than 1 - 7 bytes and
  * multiple of 8 bits are also handled as custom (and won't be supported in the
@@ -69,17 +68,19 @@ class NativeImageFormat {
 	private int cols = 0;
 
 	// Scanline may contain some padding in the end
-	private int scanlineStride = -1;
+	private final int scanlineStride = -1;
 
 	private Object imageData;
 	// It's possible to have offset from the beginning of the array
 	private int dataOffset;
 
 	// Has the image alpha channel? If has - here its band band offset goes
-	private int alphaOffset = -1;
+	private final int alphaOffset = -1;
 
 	// initializes proper field IDs
-	private static native void initIDs();
+	private static void initIDs() {
+		// No hacemos nada
+	}
 
 	static {
 		NativeCMM.loadCMM();
@@ -89,39 +90,39 @@ class NativeImageFormat {
 	// //////////////////////////////////
 	// LCMS image format encoders
 	// //////////////////////////////////
-	private static int colorspaceSh(int s) {
-		return (s << 16);
+	private static int colorspaceSh(final int s) {
+		return s << 16;
 	}
 
-	private static int swapfirstSh(int s) {
-		return (s << 14);
+	private static int swapfirstSh(final int s) {
+		return s << 14;
 	}
 
-	private static int flavorSh(int s) {
-		return (s << 13);
+	private static int flavorSh(final int s) {
+		return s << 13;
 	}
 
-	private static int planarSh(int s) {
-		return (s << 12);
+	private static int planarSh(final int s) {
+		return s << 12;
 	}
 
-	private static int endianSh(int s) {
-		return (s << 11);
+	private static int endianSh(final int s) {
+		return s << 11;
 	}
 
-	private static int doswapSh(int s) {
-		return (s << 10);
+	private static int doswapSh(final int s) {
+		return s << 10;
 	}
 
-	private static int extraSh(int s) {
-		return (s << 7);
+	private static int extraSh(final int s) {
+		return s << 7;
 	}
 
-	private static int channelsSh(int s) {
-		return (s << 3);
+	private static int channelsSh(final int s) {
+		return s << 3;
 	}
 
-	private static int bytesSh(int s) {
+	private static int bytesSh(final int s) {
 		return s;
 	}
 
@@ -131,15 +132,15 @@ class NativeImageFormat {
 
 	// Accessors
 	Object getChannelData() {
-		return imageData;
+		return this.imageData;
 	}
 
 	int getNumCols() {
-		return cols;
+		return this.cols;
 	}
 
 	int getNumRows() {
-		return rows;
+		return this.rows;
 	}
 
 	// Constructors
@@ -148,17 +149,17 @@ class NativeImageFormat {
 
 	/**
 	 * Simple image layout for common case with not optimized workflow.
-	 * 
+	 *
 	 * For hifi colorspaces with 5+ color channels imgData should be
 	 * <code>byte</code> array.
-	 * 
+	 *
 	 * For common colorspaces with up to 4 color channels it should be
 	 * <code>short</code> array.
-	 * 
+	 *
 	 * Alpha channel is handled by caller, not by CMS.
-	 * 
+	 *
 	 * Color channels are in their natural order (not BGR but RGB).
-	 * 
+	 *
 	 * @param imgData
 	 *            - array of <code>byte</code> or <code>short</code>
 	 * @param nChannels
@@ -168,29 +169,31 @@ class NativeImageFormat {
 	 * @param nCols
 	 *            - number of pixels in one row of the image
 	 */
-	public NativeImageFormat(Object imgData, int nChannels, int nRows, int nCols) {
+	public NativeImageFormat(final Object imgData, final int nChannels, final int nRows, final int nCols) {
 		if (imgData instanceof short[]) {
-			cmmFormat |= bytesSh(2);
+			this.cmmFormat |= bytesSh(2);
 		} else if (imgData instanceof byte[]) {
-			cmmFormat |= bytesSh(1);
-		} else
+			this.cmmFormat |= bytesSh(1);
+		}
+		else {
 			// awt.47=First argument should be byte or short array
 			throw new IllegalArgumentException(Messages.getString("awt.47")); //$NON-NLS-1$
+		}
 
-		cmmFormat |= channelsSh(nChannels);
+		this.cmmFormat |= channelsSh(nChannels);
 
-		rows = nRows;
-		cols = nCols;
+		this.rows = nRows;
+		this.cols = nCols;
 
-		imageData = imgData;
+		this.imageData = imgData;
 
-		dataOffset = 0;
+		this.dataOffset = 0;
 	}
 
 	/**
 	 * Deduces image format from the buffered image type or color and sample
 	 * models.
-	 * 
+	 *
 	 * @param bi
 	 *            - image
 	 * @return image format object
@@ -287,7 +290,7 @@ class NativeImageFormat {
 
 	/**
 	 * Deduces image format from the raster sample model.
-	 * 
+	 *
 	 * @param r
 	 *            - raster
 	 * @return image format object
@@ -322,7 +325,7 @@ class NativeImageFormat {
 
 	/**
 	 * Obtains LCMS format from the component sample model
-	 * 
+	 *
 	 * @param sm
 	 *            - sample model
 	 * @param hasAlpha
@@ -424,7 +427,7 @@ class NativeImageFormat {
 
 	/**
 	 * Obtains LCMS format from the single pixel packed sample model
-	 * 
+	 *
 	 * @param sm
 	 *            - sample model
 	 * @param hasAlpha
@@ -559,7 +562,7 @@ class NativeImageFormat {
 
 	/**
 	 * Obtains data array from the DataBuffer object
-	 * 
+	 *
 	 * @param db
 	 *            - data buffer
 	 * @return - true if successful
@@ -578,7 +581,7 @@ class NativeImageFormat {
 
 	/**
 	 * Calculates scanline stride in bytes
-	 * 
+	 *
 	 * @param csm
 	 *            - component sample model
 	 * @param r
@@ -597,7 +600,7 @@ class NativeImageFormat {
 
 	/**
 	 * Calculates scanline stride in bytes
-	 * 
+	 *
 	 * @param sppsm
 	 *            - sample model
 	 * @param r
@@ -618,7 +621,7 @@ class NativeImageFormat {
 	/**
 	 * Calculates byte offset of the alpha channel from the beginning of the
 	 * pixel data
-	 * 
+	 *
 	 * @param sm
 	 *            - sample model
 	 * @param r
