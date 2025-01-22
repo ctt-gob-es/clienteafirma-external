@@ -54,7 +54,7 @@ import com.aowagie.text.ExceptionConverter;
  * @author Paulo Soares (psoares@consiste.pt)
  */
 
-class DefaultFontMapper implements FontMapper {
+public class DefaultFontMapper implements FontMapper {
 
     /** A representation of BaseFont parameters.
      */

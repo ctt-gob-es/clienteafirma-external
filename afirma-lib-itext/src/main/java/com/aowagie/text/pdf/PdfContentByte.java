@@ -2604,6 +2604,17 @@ public class PdfContentByte {
         endText();
     }
 
+    /** Gets a <CODE>Graphics2D</CODE> to write on. The graphics
+     * are translated to PDF commands.
+     * @param width the width of the panel
+     * @param height the height of the panel
+     * @param fontMapper the mapping from awt fonts to <CODE>BaseFont</CODE>
+     * @return a <CODE>Graphics2D</CODE>
+     */
+    public java.awt.Graphics2D createGraphics(final float width, final float height, final FontMapper fontMapper) {
+        return new PdfGraphics2D(this, width, height, fontMapper, false, false, 0);
+    }
+
     PageResources getPageResources() {
         return this.pdf.getPageResources();
     }
@@ -2730,7 +2741,7 @@ public class PdfContentByte {
      * @since 2.1.6
      * @throws IllegalPdfSyntaxException (a runtime exception)
      */
-    private void sanityCheck() {
+    public void sanityCheck() {
     	if (this.mcDepth != 0) {
     		throw new IllegalPdfSyntaxException("Unbalanced marked content operators." );
     	}

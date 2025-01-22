@@ -664,7 +664,16 @@ public class PdfWriter extends DocWriter implements
         return this.pdf.getInfo();
     }
 
-
+    /**
+     * Use this method to get the current vertical page position.
+     * @param ensureNewLine Tells whether a new line shall be enforced. This may cause side effects
+     *   for elements that do not terminate the lines they've started because those lines will get
+     *   terminated.
+     * @return The current vertical page position.
+     */
+    public float getVerticalPosition(final boolean ensureNewLine) {
+        return this.pdf.getVerticalPosition(ensureNewLine);
+    }
 
     /**
      * Sets the initial leading for the PDF document.
@@ -2843,7 +2852,7 @@ public class PdfWriter extends DocWriter implements
                     iccArray.add(PdfName.ICCBASED);
                     iccArray.add(iccRef);
                     final PdfArray colorspace = i.getAsArray(PdfName.COLORSPACE);
-                    if ((colorspace != null) && (colorspace.size() > 1 && PdfName.INDEXED.equals(colorspace.getPdfObject(0)))) {
+                    if (colorspace != null && colorspace.size() > 1 && PdfName.INDEXED.equals(colorspace.getPdfObject(0))) {
 						colorspace.set(1, iccArray);
 					} else {
 						i.put(PdfName.COLORSPACE, iccArray);

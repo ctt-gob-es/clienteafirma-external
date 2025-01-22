@@ -2717,7 +2717,7 @@ public class PdfContentByte {
      *                     saveState() calls.
      * @since 2.1.6
      */
-    private void sanityCheck() {
+    public void sanityCheck() {
     	if (this.mcDepth != 0) {
     		throw new IllegalPdfSyntaxException("Unbalanced marked content operators." ); //$NON-NLS-1$
     	}

@@ -46,17 +46,17 @@
  */
 package com.aowagie.text.pdf;
 
-import harmony.java.awt.Font;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.aowagie.text.ExceptionConverter;
+
+import harmony.java.awt.Font;
 /** Default class to map awt fonts to BaseFont.
  * @author Paulo Soares (psoares@consiste.pt)
  */
 
-class DefaultFontMapper implements FontMapper {
+public class DefaultFontMapper implements FontMapper {
 
     /** A representation of BaseFont parameters.
      */
