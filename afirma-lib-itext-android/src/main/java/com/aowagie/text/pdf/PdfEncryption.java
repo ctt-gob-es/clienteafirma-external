@@ -49,8 +49,10 @@
 
 package com.aowagie.text.pdf;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
@@ -58,11 +60,18 @@ import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import org.spongycastle.crypto.BlockCipher;
+import org.spongycastle.crypto.BufferedBlockCipher;
+import org.spongycastle.crypto.InvalidCipherTextException;
+import org.spongycastle.crypto.engines.AESEngine;
+import org.spongycastle.crypto.modes.CBCBlockCipher;
+import org.spongycastle.crypto.paddings.BlockCipherPadding;
+import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.crypto.params.ParametersWithIV;
 
 import com.aowagie.text.ExceptionConverter;
+import com.aowagie.text.pdf.bouncycastle.DefaultBufferedBlockCipher;
 import com.aowagie.text.pdf.crypto.ARCFOUREncryption;
 import com.aowagie.text.pdf.crypto.IVGenerator;
 
@@ -413,12 +422,13 @@ class PdfEncryption {
 	public void setupByUserPassword(final byte[] documentID, final byte[] userPassword, final byte[] uValue,
 			final byte[] ueValue, final byte[] oValue, final byte[] oeValue, final int permissions)
 			throws GeneralSecurityException {
-		final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding"); //$NON-NLS-1$
 
 		final byte[] hashAlg2B = hashAlg2B(userPassword, Arrays.copyOfRange(uValue, 40, 48), null);
-		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(hashAlg2B, "AES"), //$NON-NLS-1$
-				new IvParameterSpec(new byte[16]));
-		this.key = cipher.update(ueValue, 0, ueValue.length);
+		try {
+			this.key = doAes(ueValue, new byte[16], hashAlg2B, null, false);
+		} catch (Exception e) {
+			throw new GeneralSecurityException(e);
+		}
 
 		this.ownerKey = oValue;
 		this.userKey = uValue;
@@ -445,13 +455,13 @@ class PdfEncryption {
     public void setupByOwnerPassword(final byte[] documentID, final byte[] ownerPassword,
             final byte[] uValue, final byte[] ueValue, final byte[] oValue, final byte[] oeValue, final int permissions)
             throws GeneralSecurityException {
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
         final byte[] hashAlg2B = hashAlg2B(ownerPassword, Arrays.copyOfRange(oValue, 40, 48), uValue);
-        cipher.init(Cipher.DECRYPT_MODE,
-                new SecretKeySpec(hashAlg2B, "AES"),
-                new IvParameterSpec(new byte[16]));
-        this.key = cipher.update(oeValue, 0, oeValue.length);
+        try {
+			this.key = doAes(oeValue, new byte[16], hashAlg2B, null, false);
+		} catch (Exception e) {
+			throw new GeneralSecurityException(e);
+		}
 
         this.ownerKey = oValue;
         this.userKey = uValue;
@@ -474,12 +484,13 @@ class PdfEncryption {
      * decrypt it (revision 6 and later) - ISO 32000-2 section 7.6.4.3.3
      */
     public boolean decryptAndCheckPerms(final byte[] permsValue) throws GeneralSecurityException {
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding"); //$NON-NLS-1$
 
-        cipher.init(Cipher.DECRYPT_MODE,
-                new SecretKeySpec(this.key, "AES"), //$NON-NLS-1$
-                new IvParameterSpec(new byte[16]));
-        final byte[] decPerms = cipher.update(permsValue, 0, permsValue.length);
+        byte[] decPerms;
+        try {
+        	decPerms = doAes(permsValue, new byte[16], this.key, null, false);
+		} catch (Exception e) {
+			throw new GeneralSecurityException(e);
+		}
 
         this.permissions = (decPerms[0] & 0xff) | ((decPerms[1] & 0xff) << 8)
                 | ((decPerms[2] & 0xff) << 16) | ((decPerms[2] & 0xff) << 24);
@@ -737,11 +748,10 @@ class PdfEncryption {
 	}
 	
 	  /**
-     * implements Algorithm 8: Computing the encryption dictionary’s U (user password) and UE (user encryption) values
+     * implements Algorithm 8: Computing the encryption dictionary's U (user password) and UE (user encryption) values
      * (Security handlers of revision 6) - ISO 32000-2 section 7.6.4.4.7
      */
     void computeUAndUeAlg8(byte[] userPassword) throws GeneralSecurityException {
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
         if (userPassword == null) {
             userPassword = new byte[0];
@@ -757,18 +767,19 @@ class PdfEncryption {
         System.arraycopy(hashAlg2B, 0, this.userKey, 0, 32);
 
         hashAlg2B = hashAlg2B(userPassword, Arrays.copyOfRange(userSalts, 8, 16), null);
-        cipher.init(Cipher.ENCRYPT_MODE,
-                new SecretKeySpec(hashAlg2B, "AES"),
-                new IvParameterSpec(new byte[16]));
-        this.ueKey = cipher.update(this.key, 0, this.keySize);
+
+        try {
+        	this.ueKey = doAes(this.key, new byte[16], hashAlg2B, null, true);
+		} catch (Exception e) {
+			throw new GeneralSecurityException(e);
+		}
     }
 
     /**
-     * implements Algorithm 9: Computing the encryption dictionary’s O (owner password) and OE (owner encryption) values
+     * implements Algorithm 9: Computing the encryption dictionary's O (owner password) and OE (owner encryption) values
      * (Security handlers of revision 6) - ISO 32000-2 section 7.6.4.4.8
      */
     void computeOAndOeAlg9(byte[] ownerPassword) throws GeneralSecurityException {
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
         if (ownerPassword == null) {
             ownerPassword = new byte[0];
@@ -784,18 +795,19 @@ class PdfEncryption {
         System.arraycopy(hashAlg2B, 0, this.ownerKey, 0, 32);
 
         hashAlg2B = hashAlg2B(ownerPassword, Arrays.copyOfRange(ownerSalts, 8, 16), this.userKey);
-        cipher.init(Cipher.ENCRYPT_MODE,
-                new SecretKeySpec(hashAlg2B, "AES"),
-                new IvParameterSpec(new byte[16]));
-        this.oeKey = cipher.update(this.key, 0, this.keySize);
+
+        try {
+        	this.oeKey = doAes(this.key, new byte[16], hashAlg2B, null, true);
+		} catch (Exception e) {
+			throw new GeneralSecurityException(e);
+		}
     }
 
     /**
-     * implements Algorithm 10: Computing the encryption dictionary’s Perms (permissions) value (Security handlers of
+     * implements Algorithm 10: Computing the encryption dictionary's Perms (permissions) value (Security handlers of
      * revision 6) - ISO 32000-2 section 7.6.4.4.9
      */
     void computePermsAlg10(final int permissions) throws GeneralSecurityException {
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
         final byte[] rawPerms = new byte[16];
         rawPerms[0] = (byte) (permissions & 0xff);
@@ -812,10 +824,11 @@ class PdfEncryption {
         rawPerms[11] = (byte) 'b';
         System.arraycopy(IVGenerator.getIV(4), 0, rawPerms, 12, 4);
 
-        cipher.init(Cipher.ENCRYPT_MODE,
-                new SecretKeySpec(this.key, "AES"),
-                new IvParameterSpec(new byte[16]));
-        this.perms = cipher.update(rawPerms, 0, 16);
+        try {
+        	this.perms = doAes(rawPerms, new byte[16], this.key, null, true);
+		} catch (Exception e) {
+			throw new GeneralSecurityException(e);
+		}
     }
     
     /**
@@ -825,7 +838,6 @@ class PdfEncryption {
         final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         final MessageDigest sha384 = MessageDigest.getInstance("SHA-384");
         final MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
         if (userKey == null) {
             userKey = new byte[0];
@@ -846,10 +858,13 @@ class PdfEncryption {
                 System.arraycopy(k1, 0, k1, singleSequenceSize * i, singleSequenceSize);
             }
 
-            cipher.init(Cipher.ENCRYPT_MODE,
-                    new SecretKeySpec(Arrays.copyOf(k, 16), "AES"),
-                    new IvParameterSpec(Arrays.copyOfRange(k, 16, 32)));
-            final byte[] e = cipher.update(k1, 0, k1.length);
+            byte[] e;
+            try {
+            	e = doAes(k1, Arrays.copyOfRange(k, 16, 32), Arrays.copyOf(k, 16), null, true);
+    		} catch (Exception ex) {
+    			throw new GeneralSecurityException(ex);
+    		}
+            
             lastEByte = e[e.length - 1] & 0xFF;
 
             switch (new BigInteger(1, Arrays.copyOf(e, 16)).remainder(BigInteger.valueOf(3)).intValue()) {
@@ -868,4 +883,69 @@ class PdfEncryption {
         return Arrays.copyOf(k, 32);
     }
 
+    private static byte[] doAes(final byte[] data,
+    		final byte[] iv,
+    		final byte[] aesKey,
+    		final BlockCipherPadding padding,
+    		final boolean forEncryption) throws IOException, InvalidCipherTextException {
+    	
+    	final BlockCipher engine = new AESEngine();
+
+    	// Vector de inicializacion
+    	final byte[] ivector;
+    	if (iv == null) {
+    		ivector = null;
+    	}
+    	else if (iv.length == 0) {
+    		ivector = new byte[engine.getBlockSize()];
+    	}
+    	else {
+    		ivector = iv;
+    	}
+
+    	// Creamos los parametros de cifrado con el vector de inicializacion (iv)
+    	final ParametersWithIV parameterIV = new ParametersWithIV(
+    			new KeyParameter(aesKey),
+    			ivector
+    			);
+
+    	int noBytesRead; // Numero de octetos leidos de la entrada
+    	int noBytesProcessed = 0; // Numero de octetos procesados
+
+    	// AES block cipher en modo CBC
+    	final BufferedBlockCipher aesCipher =
+    			padding != null ?
+    					// Con relleno
+    					new PaddedBufferedBlockCipher(
+    							new CBCBlockCipher(new AESEngine()),
+    							padding) :
+    								// Sin relleno
+    								new DefaultBufferedBlockCipher(new CBCBlockCipher(engine));
+
+    	// Inicializamos
+    	aesCipher.init(forEncryption, parameterIV);
+
+    	// Buffers para mover octetos de un flujo a otro
+    	final byte[] buf = new byte[16]; // Buffer de entrada
+    	final byte[] obuf = new byte[512]; // Buffer de salida
+
+    	InputStream bin = new ByteArrayInputStream(data);
+    	ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    	try {
+    		while ((noBytesRead = bin.read(buf)) >= 0) {
+    			noBytesProcessed = aesCipher.processBytes(buf, 0, noBytesRead, obuf, 0);
+    			bout.write(obuf, 0, noBytesProcessed);
+    		}
+
+    		noBytesProcessed = aesCipher.doFinal(obuf, 0);
+    		bout.write(obuf, 0, noBytesProcessed);
+    		bout.flush();
+
+    		return bout.toByteArray();
+    	}
+    	finally {
+    		try { bin.close(); } catch (Exception e) { /* No hacemos nada */ }
+    		try { bout.close(); } catch (Exception e) { /* No hacemos nada */ }
+    	}
+    }
 }

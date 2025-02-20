@@ -813,7 +813,7 @@ public class PdfPKCS7 {
     }
 
     /**
-     * Returns the algorithm de hash declarado.
+     * Returns the declared hash algorithm.
      * @return the digest algorithm or {@code null} is there isn't a valid
      * hash algorithm.
      */
