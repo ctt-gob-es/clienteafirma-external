@@ -15,7 +15,11 @@
 	<properties>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 		<jdk.version>1.7</jdk.version>
+		<jdk.android.version>1.8</jdk.android.version>
 		<spongycastle.version>1.56.0.0</spongycastle.version>
+		<spongycastle.version>1.56.0.0</spongycastle.version>
+		<itext.version>1.6</itext.version>
+		<libraries.version>0.0.8</libraries.version>
 		<junit.version>4.13.2</junit.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 	</properties>
@@ -72,6 +76,12 @@
 				<groupId>com.madgag.spongycastle</groupId>
 				<artifactId>bcpkix-jdk15on</artifactId>
 				<version>${spongycastle.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>es.gob.afirma.lib</groupId>
+				<artifactId>afirma-lib-oro</artifactId>
+				<version>${libraries.version}</version>
 			</dependency>
 					
 			<dependency>
