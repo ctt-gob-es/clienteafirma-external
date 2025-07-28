@@ -169,14 +169,24 @@ public class AcroFields {
 			return;
 		}
         for (int k = 1; k <= this.reader.getNumberOfPages(); ++k) {
+
             final PdfDictionary page = this.reader.getPageNRelease(k);
-            final PdfArray annots = (PdfArray)PdfReader.getPdfObjectRelease(page.get(PdfName.ANNOTS), page);
+            final Object o = PdfReader.getPdfObjectRelease(page.get(PdfName.ANNOTS), page);
+            // 10/06/2028: Agregamos comprobacion de tipo
+            final PdfArray annots = o instanceof PdfArray ? (PdfArray) o : null;
             if (annots == null) {
 				continue;
 			}
             for (int j = 0; j < annots.size(); ++j) {
             	PdfDictionary annot = annots.getAsDict(j);
                 if (annot == null) {
+                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                    continue;
+                }
+
+                // 10/06/2025 - Adelantamos hasta este punto una comprobacion
+                // que estaba aparecia posteriormente
+                if (!PdfName.WIDGET.equals(annot.getAsName(PdfName.SUBTYPE))) {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
                 }
@@ -198,11 +208,6 @@ public class AcroFields {
                 if (!found) {
                 	PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                 	continue;
-                }
-
-                if (!PdfName.WIDGET.equals(annot.getAsName(PdfName.SUBTYPE))) {
-                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
-                    continue;
                 }
 
             	// 19/01/2024 - Ignoraremos las firmas en las que haya un valor
