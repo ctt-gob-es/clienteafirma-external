@@ -21,7 +21,9 @@
 		<itext.version>1.6</itext.version>
 		<libraries.version>0.0.8</libraries.version>
 		<junit.version>4.13.2</junit.version>
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 	</properties>
 
 	<licenses>
@@ -163,23 +165,12 @@
 				</property>
 			</activation>
 
-			<distributionManagement>
-				<snapshotRepository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-				</snapshotRepository>
-				<repository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-				</repository>
-			</distributionManagement>
-			
 			<build>
 				<plugins>
 					<plugin>
 					  <groupId>org.apache.maven.plugins</groupId>
 					  <artifactId>maven-source-plugin</artifactId>
-					  <version>2.2.1</version>
+					  <version>${maven-source-plugin.version}</version>
 					  <executions>
 						<execution>
 						  <id>attach-sources</id>
@@ -189,10 +180,11 @@
 						</execution>
 					  </executions>
 					</plugin>
+					
 					<plugin>
 					  <groupId>org.apache.maven.plugins</groupId>
 					  <artifactId>maven-javadoc-plugin</artifactId>
-					  <version>2.9.1</version>
+					  <version>${maven-javadoc-plugin.version}</version>
 					  <executions>
 						<execution>
 						  <id>attach-javadocs</id>
@@ -225,7 +217,7 @@
 					<plugin>
 					  <groupId>org.apache.maven.plugins</groupId>
 					  <artifactId>maven-gpg-plugin</artifactId>
-					  <version>1.5</version>
+					  <version>3.2.0</version>
 					  <executions>
 						<execution>
 						  <id>sign-artifacts</id>
@@ -235,6 +227,16 @@
 						  </goals>
 						</execution>
 					  </executions>
+					</plugin>
+
+					<plugin>
+					  <groupId>org.sonatype.central</groupId>
+					  <artifactId>central-publishing-maven-plugin</artifactId>
+					  <version>0.8.0</version>
+					  <extensions>true</extensions>
+					  <configuration>
+						<publishingServerId>central</publishingServerId>
+					  </configuration>
 					</plugin>
 					
 				</plugins>
