@@ -985,11 +985,27 @@ public class PdfSignatureAppearance {
         final PdfIndirectReference refSig = this.writer.getPdfIndirectReference();
         this.writer.setSigFlags(3);
         if (fieldExists) {
+
+        	// CORRECCION con codigo extraido de OpenPDF
+        	// -----------
+            //Patch by Lonzak: the signature dictionary must be added to the formfield and no the widget! (testdoc: SignatureWidgetFormfield-Separate.pdf)
+            final PdfDictionary data = af.getFieldItem(name).getValue(0);
+            this.writer.markUsed(data);
+            data.put(PdfName.V, refSig);
+            //for widget attributes
             final PdfDictionary widget = af.getFieldItem(name).getWidget(0);
             this.writer.markUsed(widget);
             widget.put(PdfName.P, this.writer.getPageReference(getPage()));
-            widget.put(PdfName.V, refSig);
             final PdfObject obj = PdfReader.getPdfObjectRelease(widget.get(PdfName.F));
+            // -----------
+            // Codigo antiguo
+//            final PdfDictionary widget = af.getFieldItem(name).getWidget(0);
+//            this.writer.markUsed(widget);
+//            widget.put(PdfName.P, this.writer.getPageReference(getPage()));
+//            widget.put(PdfName.V, refSig);
+//            final PdfObject obj = PdfReader.getPdfObjectRelease(widget.get(PdfName.F));
+            // -----------
+
             int flags = 0;
             if (obj != null && obj.isNumber()) {
 				flags = ((PdfNumber)obj).intValue();

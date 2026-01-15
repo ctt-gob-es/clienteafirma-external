@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma.lib</groupId>
 	<artifactId>support-libraries</artifactId>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 	<packaging>pom</packaging>
 	
 	<name>support-libraries</name>
@@ -18,7 +18,7 @@
 		<jdk.android.version>1.8</jdk.android.version>
 		<spongycastle.version>1.56.0.0</spongycastle.version>
 		<spongycastle.version>1.56.0.0</spongycastle.version>
-		<itext.version>1.6</itext.version>
+		<itext.version>1.7-SNAPSHOT</itext.version>
 		<libraries.version>0.0.8</libraries.version>
 		<junit.version>4.13.2</junit.version>
 		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
