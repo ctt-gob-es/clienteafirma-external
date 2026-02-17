@@ -74,7 +74,7 @@ public class PolylineShape implements Shape {
 	 * Creates a PolylineShape
 	 * @param x All the X-values of the coordinates in the polyline.
 	 * @param y All the Y-values of the coordinates in the polyline.
-	 * @param nPoints com.lowagie.text
+	 * @param nPoints com.aowagie.text
 	 */
 	public PolylineShape(final int[] x, final int[] y, final int nPoints) {
 		// Should copy array (as done in Polygon)

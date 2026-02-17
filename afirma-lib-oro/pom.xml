@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>afirma-lib-oro</artifactId>
-	<version>0.0.9</version>
+	<version>0.0.10</version>
 	<packaging>jar</packaging>
 	
 	<name>afirma-lib-oro</name>
@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>es.gob.afirma.lib</groupId>
 		<artifactId>support-libraries</artifactId>
-		<version>1.0.7</version>
+		<version>1.0.8</version>
 	</parent>
 	
 	<licenses>
